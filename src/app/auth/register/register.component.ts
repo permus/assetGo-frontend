@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -9,9 +10,14 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-  isSignIn = false;
+  isLoading = false;
+  errorMessage = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.registerForm = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
@@ -30,17 +36,28 @@ export class RegisterComponent {
   }
 
   toggleMode() {
-    this.isSignIn = !this.isSignIn;
-    if (this.isSignIn) {
-      this.router.navigate(['/auth/login']);
-    }
+    this.router.navigate(['/auth/login']);
   }
 
   onSubmit() {
-    if (this.registerForm.valid) {
-      // Handle registration logic here
-      console.log('Register form submitted:', this.registerForm.value);
-      this.router.navigate(['/dashboard']);
+    if (this.registerForm.valid && !this.isLoading) {
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      this.authService.register(this.registerForm.value).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.errorMessage = response.message || 'Registration failed';
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.errorMessage = error.error?.message || 'An error occurred during registration';
+          this.isLoading = false;
+        }
+      });
     }
   }
 }
