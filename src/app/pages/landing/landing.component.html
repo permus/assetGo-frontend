@@ -27,12 +27,12 @@
 
       <!-- CTA Buttons -->
       <div class="flex justify-center space-x-4 mb-16">
-        <button class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center space-x-2">
+        <a routerLink="/auth/login" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center space-x-2">
           <span>Get Started Free</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
           </svg>
-        </button>
+        </a>
         <button class="text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
           Watch Demo
         </button>
@@ -193,15 +193,15 @@
       </div>
 
       <!-- CTA Button -->
-      <button class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center space-x-2 mx-auto mb-6">
+      <a routerLink="/auth/login" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center space-x-2 mx-auto mb-6">
         <span>Start Your Free Trial</span>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-      </button>
+      </a>
 
       <p class="text-blue-200 text-sm">
-        Already have an account? <a href="#" class="text-white underline hover:no-underline">Sign in here</a>
+        Already have an account? <a routerLink="/auth/login" class="text-white underline hover:no-underline">Sign in here</a>
       </p>
     </div>
   </section>
