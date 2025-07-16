@@ -5,7 +5,8 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-activate-account',
   templateUrl: './activate-account.component.html',
-  styleUrl: './activate-account.component.scss'
+  styleUrl: './activate-account.component.scss',
+  standalone: false
 })
 export class ActivateAccountComponent implements OnInit {
   isLoading = true;

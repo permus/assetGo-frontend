@@ -6,7 +6,8 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss'
+  styleUrl: './forgot-password.component.scss',
+  standalone: false
 })
 export class ForgotPasswordComponent {
   forgotPasswordForm: FormGroup;

@@ -6,7 +6,8 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss'
+  styleUrl: './reset-password.component.scss',
+  standalone: false
 })
 export class ResetPasswordComponent implements OnInit {
   resetPasswordForm: FormGroup;
@@ -40,7 +41,7 @@ export class ResetPasswordComponent implements OnInit {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('password_confirmation');
-    return password && confirmPassword && password.value === confirmPassword.value 
+    return password && confirmPassword && password.value === confirmPassword.value
       ? null : { passwordMismatch: true };
   }
 
