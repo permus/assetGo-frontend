@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
+  standalone: false
 })
 export class RegisterComponent {
   registerForm: FormGroup;
@@ -25,7 +26,7 @@ export class RegisterComponent {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('confirmPassword');
-    return password && confirmPassword && password.value === confirmPassword.value 
+    return password && confirmPassword && password.value === confirmPassword.value
       ? null : { passwordMismatch: true };
   }
 
