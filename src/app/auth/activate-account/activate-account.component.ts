@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-activate-account',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './activate-account.component.html',
-  styleUrl: './activate-account.component.scss',
-  standalone: false
+  styleUrl: './activate-account.component.scss'
 })
 export class ActivateAccountComponent implements OnInit {
   isLoading = true;
