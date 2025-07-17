@@ -28,12 +28,12 @@
       <!-- Tab Buttons -->
       <div class="flex mb-8 bg-gray-100 rounded-lg p-1">
         <button 
-          class="flex-1 py-2 px-4 text-center font-medium rounded-md bg-blue-600 text-white transition-all"
+          class="flex-1 py-2 px-4 text-center font-medium rounded-md bg-blue-600 text-white transition-all cursor-pointer"
           type="button">
           Sign In
         </button>
         <button 
-          class="flex-1 py-2 px-4 text-center font-medium rounded-md text-gray-600 hover:text-gray-800 transition-all"
+          class="flex-1 py-2 px-4 text-center font-medium rounded-md text-gray-600 hover:text-gray-800 transition-all cursor-pointer"
           type="button"
           (click)="toggleMode()">
           Sign Up
@@ -47,7 +47,7 @@
           *ngIf="showResendVerification"
           (click)="resendVerification()"
           [disabled]="isLoading"
-          class="mt-2 text-blue-600 hover:text-blue-500 text-sm font-medium disabled:opacity-50">
+          class="mt-2 text-blue-600 hover:text-blue-500 text-sm font-medium disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed">
           Resend verification email
         </button>
       </div>
@@ -67,7 +67,7 @@
               type="email"
               formControlName="email"
               placeholder="Enter your email"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400"
               [class.border-red-300]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
               required>
           </div>
@@ -79,13 +79,13 @@
               type="password"
               formControlName="password"
               placeholder="Enter your password"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400"
               [class.border-red-300]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
               required>
           </div>
 
           <div class="text-left">
-            <button type="button" (click)="goToForgotPassword()" class="text-blue-600 hover:text-blue-500 text-sm font-medium">
+            <button type="button" (click)="goToForgotPassword()" class="text-blue-600 hover:text-blue-500 text-sm font-medium cursor-pointer">
               Forgot password?
             </button>
           </div>
@@ -93,7 +93,7 @@
           <button
             type="submit"
             [disabled]="loginForm.invalid || isLoading"
-            class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
             <span *ngIf="!isLoading">Sign In</span>
             <span *ngIf="isLoading" class="flex items-center justify-center">
               <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
