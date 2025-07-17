@@ -4,12 +4,12 @@ import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
-  { 
-    path: 'auth', 
+  {
+    path: '',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
-  { 
-    path: 'dashboard', 
+  {
+    path: 'dashboard',
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
     canActivate: [AuthGuard]
   },

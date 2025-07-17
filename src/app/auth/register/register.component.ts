@@ -44,7 +44,7 @@ export class RegisterComponent implements OnDestroy {
   }
 
   toggleMode() {
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 
   onSubmit() {
@@ -77,7 +77,7 @@ export class RegisterComponent implements OnDestroy {
       this.countdown--;
       if (this.countdown <= 0) {
         clearInterval(this.countdownInterval);
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/login']);
       }
     }, 1000);
   }

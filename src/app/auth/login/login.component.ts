@@ -32,7 +32,7 @@ export class LoginComponent {
   }
 
   toggleMode() {
-    this.router.navigate(['/auth/register']);
+    this.router.navigate(['/register']);
   }
 
   onSubmit() {

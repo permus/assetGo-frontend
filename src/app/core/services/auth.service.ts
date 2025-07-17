@@ -95,7 +95,9 @@ export class AuthService {
   }
 
   login(data: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data, this.getAuthHeaders())
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data, {headers: {
+        'Content-Type': 'application/json',
+      }})
       .pipe(
         tap(response => {
           if (response.success && response.data?.token) {
@@ -135,7 +137,7 @@ export class AuthService {
   }
 
   logoutAll(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/logout-all`, {}, this.getAuthHeaders())
+    return this.http.post<AuthResponse>(`${this.apiUrl}/logout-all`, {})
       .pipe(
         tap(() => {
           this.clearSession();

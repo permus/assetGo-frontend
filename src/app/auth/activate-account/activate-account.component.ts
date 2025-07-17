@@ -54,10 +54,10 @@ export class ActivateAccountComponent implements OnInit {
   }
 
   goToLogin() {
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 
   resendActivation() {
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 }

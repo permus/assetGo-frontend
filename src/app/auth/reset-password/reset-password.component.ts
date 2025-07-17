@@ -66,7 +66,7 @@ export class ResetPasswordComponent implements OnInit {
           if (response.success) {
             this.successMessage = response.message || 'Password reset successfully';
             setTimeout(() => {
-              this.router.navigate(['/auth/login']);
+              this.router.navigate(['/login']);
             }, 2000);
           } else {
             this.errorMessage = response.message || 'Failed to reset password';
@@ -82,6 +82,6 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   goToLogin() {
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['//login']);
   }
 }
