@@ -1,9 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import * as AuthActions from '../../store/auth/auth.actions';
+import { 
+  selectAuthLoading, 
+  selectAuthError, 
+  selectAuthSuccessMessage 
+} from '../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-forgot-password',
@@ -12,42 +19,41 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss'
 })
-export class ForgotPasswordComponent {
+export class ForgotPasswordComponent implements OnInit, OnDestroy {
   forgotPasswordForm: FormGroup;
-  isLoading = false;
-  successMessage = '';
-  errorMessage = '';
+  private destroy$ = new Subject<void>();
+  
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  successMessage$: Observable<string | null>;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private store: Store
   ) {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
+
+    this.isLoading$ = this.store.select(selectAuthLoading);
+    this.error$ = this.store.select(selectAuthError);
+    this.successMessage$ = this.store.select(selectAuthSuccessMessage);
+  }
+
+  ngOnInit() {
+    // Clear any previous auth state
+    this.store.dispatch(AuthActions.clearMessages());
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onSubmit() {
-    if (this.forgotPasswordForm.valid && !this.isLoading) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
-      this.authService.forgotPassword(this.forgotPasswordForm.value).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.successMessage = response.message || 'Password reset link sent to your email';
-          } else {
-            this.errorMessage = response.message || 'Failed to send reset link';
-          }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          this.errorMessage = error.error?.message || error.error?.error || 'An error occurred';
-          this.isLoading = false;
-        }
-      });
+    if (this.forgotPasswordForm.valid) {
+      this.store.dispatch(AuthActions.forgotPassword(this.forgotPasswordForm.value));
     }
   }
 
