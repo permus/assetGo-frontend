@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { OnDestroy } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -12,7 +13,6 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
-export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;
   errorMessage = '';
