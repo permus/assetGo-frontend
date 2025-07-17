@@ -16,7 +16,9 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;
   errorMessage = '';
-  successMessage = '';
+  showSuccessMessage = false;
+  countdown = 60;
+  countdownInterval: any;
 
   constructor(
     private fb: FormBuilder,
@@ -48,12 +50,13 @@ export class RegisterComponent {
     if (this.registerForm.valid && !this.isLoading) {
       this.isLoading = true;
       this.errorMessage = '';
-      this.successMessage = '';
+      this.showSuccessMessage = false;
 
       this.authService.register(this.registerForm.value).subscribe({
         next: (response) => {
           if (response.success) {
-            this.successMessage = response.message;
+            this.showSuccessMessage = true;
+            this.startCountdown();
           } else {
             this.errorMessage = response.message || 'Registration failed';
           }
@@ -64,6 +67,23 @@ export class RegisterComponent {
           this.isLoading = false;
         }
       });
+    }
+  }
+
+  startCountdown() {
+    this.countdown = 60;
+    this.countdownInterval = setInterval(() => {
+      this.countdown--;
+      if (this.countdown <= 0) {
+        clearInterval(this.countdownInterval);
+        this.router.navigate(['/auth/login']);
+      }
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
     }
   }
 }
