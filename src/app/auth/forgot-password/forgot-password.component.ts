@@ -13,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss'
 })
+export class ForgotPasswordComponent implements OnDestroy {
   forgotPasswordForm: FormGroup;
   isLoading = false;
   errorMessage = '';
