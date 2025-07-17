@@ -38,7 +38,7 @@ export class ActivateAccountComponent implements OnInit {
 
   verifyEmail() {
     this.authService.verifyEmail(this.id, this.hash).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success) {
           this.successMessage = response.message || 'Email verified successfully';
         } else {
@@ -46,7 +46,7 @@ export class ActivateAccountComponent implements OnInit {
         }
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         this.errorMessage = error.error?.message || error.error?.error || 'An error occurred during verification';
         this.isLoading = false;
       }
@@ -57,7 +57,7 @@ export class ActivateAccountComponent implements OnInit {
     this.router.navigate(['/auth/login']);
   }
 
-  resendVerification() {
+  resendActivation() {
     this.router.navigate(['/auth/login']);
   }
 }
