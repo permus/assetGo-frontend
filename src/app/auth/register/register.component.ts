@@ -19,7 +19,7 @@ export class RegisterComponent {
   successMessage = '';
 
   constructor(
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private router: Router,
     private authService: AuthService
   ) {
@@ -54,10 +54,6 @@ export class RegisterComponent {
         next: (response) => {
           if (response.success) {
             this.successMessage = response.message;
-            // Show success message for a moment, then redirect
-            setTimeout(() => {
-              this.router.navigate(['/dashboard']);
-            }, 2000);
           } else {
             this.errorMessage = response.message || 'Registration failed';
           }

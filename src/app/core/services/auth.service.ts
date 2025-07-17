@@ -81,14 +81,7 @@ export class AuthService {
   }
 
   register(data: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
-      .pipe(
-        tap(response => {
-          if (response.success && response.data?.token) {
-            this.setSession(response.data.token, response.data.user);
-          }
-        })
-      );
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data);
   }
 
   login(data: LoginRequest): Observable<AuthResponse> {
@@ -167,7 +160,7 @@ export class AuthService {
   private loadUserFromStorage(): void {
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
-    
+
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr);
