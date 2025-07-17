@@ -1,9 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import * as AuthActions from '../../store/auth/auth.actions';
+import { 
+  selectAuthLoading, 
+  selectAuthError, 
+  selectAuthSuccessMessage 
+} from '../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-reset-password',
@@ -12,11 +19,14 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss'
 })
-export class ResetPasswordComponent implements OnInit {
+export class ResetPasswordComponent implements OnInit, OnDestroy {
   resetPasswordForm: FormGroup;
-  isLoading = false;
-  successMessage = '';
-  errorMessage = '';
+  private destroy$ = new Subject<void>();
+  
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  successMessage$: Observable<string | null>;
+  
   token = '';
   email = '';
 
@@ -24,21 +34,35 @@ export class ResetPasswordComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private store: Store
   ) {
     this.resetPasswordForm = this.fb.group({
       password: ['', [Validators.required, Validators.minLength(6)]],
       password_confirmation: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
+
+    this.isLoading$ = this.store.select(selectAuthLoading);
+    this.error$ = this.store.select(selectAuthError);
+    this.successMessage$ = this.store.select(selectAuthSuccessMessage);
   }
 
   ngOnInit() {
+    // Clear any previous auth state
+    this.store.dispatch(AuthActions.clearMessages());
+    
     this.token = this.route.snapshot.queryParams['token'] || '';
     this.email = this.route.snapshot.queryParams['email'] || '';
 
     if (!this.token || !this.email) {
-      this.errorMessage = 'Invalid reset link';
+      this.store.dispatch(AuthActions.resetPasswordFailure({ 
+        error: 'Invalid reset link' 
+      }));
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -49,11 +73,7 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.resetPasswordForm.valid && !this.isLoading && this.token && this.email) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
+    if (this.resetPasswordForm.valid && this.token && this.email) {
       const resetData = {
         token: this.token,
         email: this.email,
@@ -61,23 +81,7 @@ export class ResetPasswordComponent implements OnInit {
         password_confirmation: this.resetPasswordForm.value.password_confirmation
       };
 
-      this.authService.resetPassword(resetData).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.successMessage = response.message || 'Password reset successfully';
-            setTimeout(() => {
-              this.router.navigate(['/auth/login']);
-            }, 2000);
-          } else {
-            this.errorMessage = response.message || 'Failed to reset password';
-          }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          this.errorMessage = error.error?.message || error.error?.error || 'An error occurred';
-          this.isLoading = false;
-        }
-      });
+      this.store.dispatch(AuthActions.resetPassword(resetData));
     }
   }
 

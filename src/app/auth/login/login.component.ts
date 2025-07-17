@@ -1,9 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import * as AuthActions from '../../store/auth/auth.actions';
+import { 
+  selectAuthLoading, 
+  selectAuthError, 
+  selectEmailVerified, 
+  selectUserId 
+} from '../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -12,23 +21,55 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
-  isLoading = false;
-  errorMessage = '';
+  private destroy$ = new Subject<void>();
+  
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+  emailVerified$: Observable<boolean | null>;
+  userId$: Observable<number | null>;
+
   emailVerificationMessage = '';
   showResendVerification = false;
-  userId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private store: Store
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    this.isLoading$ = this.store.select(selectAuthLoading);
+    this.error$ = this.store.select(selectAuthError);
+    this.emailVerified$ = this.store.select(selectEmailVerified);
+    this.userId$ = this.store.select(selectUserId);
+  }
+
+  ngOnInit() {
+    // Clear any previous auth state
+    this.store.dispatch(AuthActions.clearMessages());
+
+    // Subscribe to auth state changes
+    this.error$.pipe(takeUntil(this.destroy$)).subscribe(error => {
+      if (error) {
+        this.emailVerificationMessage = error;
+      }
+    });
+
+    this.emailVerified$.pipe(takeUntil(this.destroy$)).subscribe(emailVerified => {
+      if (emailVerified === false) {
+        this.showResendVerification = true;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   toggleMode() {
@@ -36,69 +77,19 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    if (this.loginForm.valid && !this.isLoading) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.emailVerificationMessage = '';
-      this.showResendVerification = false;
-
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.router.navigate(['/dashboard']);
-          } else {
-            this.errorMessage = response.message || 'Login failed';
-            
-            // Check if it's an email verification issue
-            if (response.email_verified === false) {
-              this.emailVerificationMessage = response.message;
-              this.showResendVerification = true;
-              this.userId = response.user_id || null;
-            }
-          }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          const errorResponse = error.error;
-          this.errorMessage = errorResponse?.message || 'An error occurred during login';
-          
-          // Check if it's an email verification issue
-          if (errorResponse?.email_verified === false) {
-            this.emailVerificationMessage = errorResponse.message;
-            this.showResendVerification = true;
-            this.userId = errorResponse.user_id || null;
-          }
-          
-          this.isLoading = false;
-        }
-      });
+    if (this.loginForm.valid) {
+      this.store.dispatch(AuthActions.login(this.loginForm.value));
     }
   }
 
   resendVerification() {
     if (!this.loginForm.get('email')?.value) {
-      this.errorMessage = 'Please enter your email address';
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.authService.resendVerification({ email: this.loginForm.get('email')?.value }).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.emailVerificationMessage = response.message;
-          this.showResendVerification = false;
-        } else {
-          this.errorMessage = response.message || 'Failed to resend verification email';
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'Failed to resend verification email';
-        this.isLoading = false;
-      }
-    });
+    this.store.dispatch(AuthActions.resendVerification({ 
+      email: this.loginForm.get('email')?.value 
+    }));
   }
 
   goToForgotPassword() {
