@@ -22,7 +22,7 @@
     <div class="bg-white rounded-2xl shadow-lg p-8 max-w-md mx-auto">
       <div class="text-center">
         <!-- Loading State -->
-        <div *ngIf="isLoading$ | async" class="py-8">
+        <div *ngIf="isLoading" class="py-8">
           <div class="flex justify-center mb-4">
             <svg class="animate-spin h-12 w-12 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -34,7 +34,7 @@
         </div>
 
         <!-- Success State -->
-        <div *ngIf="!(isLoading$ | async) && (successMessage$ | async)" class="py-8">
+        <div *ngIf="!isLoading && successMessage" class="py-8">
           <div class="flex justify-center mb-4">
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,7 +43,7 @@
             </div>
           </div>
           <h2 class="text-2xl font-bold text-gray-900 mb-2">Account Activated!</h2>
-          <p class="text-gray-600 mb-6">{{ successMessage$ | async }}</p>
+          <p class="text-gray-600 mb-6">{{ successMessage }}</p>
           
           <button
             (click)="goToLogin()"
@@ -53,7 +53,7 @@
         </div>
 
         <!-- Error State -->
-        <div *ngIf="!(isLoading$ | async) && (errorMessage$ | async)" class="py-8">
+        <div *ngIf="!isLoading && errorMessage" class="py-8">
           <div class="flex justify-center mb-4">
             <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
               <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@
             </div>
           </div>
           <h2 class="text-2xl font-bold text-gray-900 mb-2">Activation Failed</h2>
-          <p class="text-gray-600 mb-6">{{ errorMessage$ | async }}</p>
+          <p class="text-gray-600 mb-6">{{ errorMessage }}</p>
           
           <div class="space-y-3">
             <button
