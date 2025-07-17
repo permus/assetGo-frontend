@@ -1,8 +1,4 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { selectUser } from '../store/auth/auth.selectors';
-import { User } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,11 +7,11 @@ import { User } from '../core/services/auth.service';
   standalone: false
 })
 export class DashboardComponent {
-  user$: Observable<User | null>;
-
-  constructor(private store: Store) {
-    this.user$ = this.store.select(selectUser);
-  }
+  user = {
+    name: 'omar',
+    role: 'Company Admin',
+    company: 'Omeda'
+  };
 
   stats = [
     { title: 'Total Assets', value: '24', subtitle: 'Live data', icon: 'info', color: 'blue' },
