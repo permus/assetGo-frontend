@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -12,11 +13,13 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss'
 })
-export class ResetPasswordComponent implements OnInit {
+export class ResetPasswordComponent implements OnInit, OnDestroy {
   resetPasswordForm: FormGroup;
   isLoading = false;
-  successMessage = '';
   errorMessage = '';
+  showSuccessMessage = false;
+  countdown = 10;
+  countdownInterval: any;
   token = '';
   email = '';
 
@@ -64,10 +67,8 @@ export class ResetPasswordComponent implements OnInit {
       this.authService.resetPassword(resetData).subscribe({
         next: (response) => {
           if (response.success) {
-            this.successMessage = response.message || 'Password reset successfully';
-            setTimeout(() => {
-              this.router.navigate(['/login']);
-            }, 2000);
+            this.showSuccessMessage = true;
+            this.startCountdown();
           } else {
             this.errorMessage = response.message || 'Failed to reset password';
           }
@@ -81,7 +82,24 @@ export class ResetPasswordComponent implements OnInit {
     }
   }
 
+  startCountdown() {
+    this.countdown = 10;
+    this.countdownInterval = setInterval(() => {
+      this.countdown--;
+      if (this.countdown <= 0) {
+        clearInterval(this.countdownInterval);
+        this.router.navigate(['/login']);
+      }
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+  }
+
   goToLogin() {
-    this.router.navigate(['//login']);
+    this.router.navigate(['/login']);
   }
 }

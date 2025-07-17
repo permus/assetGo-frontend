@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -12,11 +13,12 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss'
 })
-export class ForgotPasswordComponent {
   forgotPasswordForm: FormGroup;
   isLoading = false;
-  successMessage = '';
   errorMessage = '';
+  showSuccessMessage = false;
+  countdown = 10;
+  countdownInterval: any;
 
   constructor(
     private fb: FormBuilder,
@@ -32,12 +34,13 @@ export class ForgotPasswordComponent {
     if (this.forgotPasswordForm.valid && !this.isLoading) {
       this.isLoading = true;
       this.errorMessage = '';
-      this.successMessage = '';
+      this.showSuccessMessage = false;
 
       this.authService.forgotPassword(this.forgotPasswordForm.value).subscribe({
         next: (response) => {
           if (response.success) {
-            this.successMessage = response.message || 'Password reset link sent to your email';
+            this.showSuccessMessage = true;
+            this.startCountdown();
           } else {
             this.errorMessage = response.message || 'Failed to send reset link';
           }
@@ -48,6 +51,23 @@ export class ForgotPasswordComponent {
           this.isLoading = false;
         }
       });
+    }
+  }
+
+  startCountdown() {
+    this.countdown = 10;
+    this.countdownInterval = setInterval(() => {
+      this.countdown--;
+      if (this.countdown <= 0) {
+        clearInterval(this.countdownInterval);
+        this.router.navigate(['/login']);
+      }
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
     }
   }
 
