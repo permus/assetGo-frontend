@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgIf} from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-activate-account',
   templateUrl: './activate-account.component.html',
+  standalone: true,
+  imports: [
+    NgIf
+  ],
   styleUrl: './activate-account.component.scss'
 })
 export class ActivateAccountComponent implements OnInit {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgIf} from '@angular/common';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
@@ -9,6 +9,11 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
+  standalone: true,
+  imports: [
+    NgIf,
+    ReactiveFormsModule
+  ],
   styleUrl: './forgot-password.component.scss'
 })
 export class ForgotPasswordComponent implements OnDestroy {
