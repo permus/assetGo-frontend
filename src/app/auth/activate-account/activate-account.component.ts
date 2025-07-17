@@ -5,8 +5,6 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-activate-account',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './activate-account.component.html',
   styleUrl: './activate-account.component.scss'
 })

@@ -8,8 +8,6 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-reset-password',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss'
 })
@@ -55,7 +53,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     if (this.resetPasswordForm.valid && !this.isLoading && this.token && this.email) {
       this.isLoading = true;
       this.errorMessage = '';
-      this.successMessage = '';
+      this.showSuccessMessage = false;
 
       const resetData = {
         token: this.token,
