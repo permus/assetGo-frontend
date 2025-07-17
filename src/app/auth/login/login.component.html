@@ -40,8 +40,20 @@
         </button>
       </div>
 
+      <!-- Email Verification Message -->
+      <div *ngIf="emailVerificationMessage" class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <p class="text-yellow-800 text-sm">{{ emailVerificationMessage }}</p>
+        <button 
+          *ngIf="showResendVerification"
+          (click)="resendVerification()"
+          [disabled]="isLoading"
+          class="mt-2 text-blue-600 hover:text-blue-500 text-sm font-medium disabled:opacity-50">
+          Resend verification email
+        </button>
+      </div>
+
       <!-- Error Message -->
-      <div *ngIf="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+      <div *ngIf="errorMessage && !emailVerificationMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
         <p class="text-red-600 text-sm">{{ errorMessage }}</p>
       </div>
 

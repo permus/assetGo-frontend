@@ -6,25 +6,46 @@ import { environment } from '../../../environments/environment';
 
 export interface User {
   id: number;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   email_verified_at?: string;
+  user_type: string;
+  company_id: number;
+  company?: Company;
+}
+
+export interface Company {
+  id: number;
+  name: string;
+  slug: string;
+  owner_id: number;
+  subscription_status: string;
 }
 
 export interface AuthResponse {
   success: boolean;
   message: string;
-  user?: User;
-  token?: string;
+  data?: {
+    user: User;
+    company?: Company;
+    token: string;
+    token_type: string;
+    email_verified: boolean;
+  };
+  error?: string;
+  email_verified?: boolean;
+  user_id?: number;
 }
 
 export interface RegisterRequest {
-  firstName: string;
-  lastName: string;
-  companyName: string;
+  first_name: string;
+  last_name: string;
+  company_name: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  password_confirmation: string;
+  user_type?: string;
 }
 
 export interface LoginRequest {
@@ -43,6 +64,10 @@ export interface ResetPasswordRequest {
   password_confirmation: string;
 }
 
+export interface ResendVerificationRequest {
+  email?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -56,19 +81,11 @@ export class AuthService {
   }
 
   register(data: RegisterRequest): Observable<AuthResponse> {
-    const payload = {
-      name: `${data.firstName} ${data.lastName}`,
-      email: data.email,
-      password: data.password,
-      password_confirmation: data.confirmPassword,
-      company_name: data.companyName
-    };
-
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, payload)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
       .pipe(
         tap(response => {
-          if (response.success && response.token) {
-            this.setSession(response.token, response.user!);
+          if (response.success && response.data?.token) {
+            this.setSession(response.data.token, response.data.user);
           }
         })
       );
@@ -78,8 +95,8 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data)
       .pipe(
         tap(response => {
-          if (response.success && response.token) {
-            this.setSession(response.token, response.user!);
+          if (response.success && response.data?.token) {
+            this.setSession(response.data.token, response.data.user);
           }
         })
       );
@@ -93,14 +110,34 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/reset-password`, data);
   }
 
-  activateAccount(token: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/activate-account`, { token });
+  verifyEmail(id: string, hash: string): Observable<AuthResponse> {
+    return this.http.get<AuthResponse>(`${this.apiUrl}/email/verify/${id}/${hash}`);
   }
 
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
+  resendVerification(data?: ResendVerificationRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/email/resend`, data || {});
+  }
+
+  getProfile(): Observable<AuthResponse> {
+    return this.http.get<AuthResponse>(`${this.apiUrl}/profile`);
+  }
+
+  logout(): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/logout`, {})
+      .pipe(
+        tap(() => {
+          this.clearSession();
+        })
+      );
+  }
+
+  logoutAll(): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/logout-all`, {})
+      .pipe(
+        tap(() => {
+          this.clearSession();
+        })
+      );
   }
 
   isAuthenticated(): boolean {
@@ -121,6 +158,12 @@ export class AuthService {
     this.currentUserSubject.next(user);
   }
 
+  private clearSession(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    this.currentUserSubject.next(null);
+  }
+
   private loadUserFromStorage(): void {
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
@@ -130,7 +173,7 @@ export class AuthService {
         const user = JSON.parse(userStr);
         this.currentUserSubject.next(user);
       } catch (error) {
-        this.logout();
+        this.clearSession();
       }
     }
   }
