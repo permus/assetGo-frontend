@@ -10,17 +10,16 @@ import { ActivateAccountComponent } from './activate-account/activate-account.co
 import { AuthRoutingModule } from './auth-routing.module';
 
 @NgModule({
-  declarations: [
+  declarations: [],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    AuthRoutingModule,
     LoginComponent,
     RegisterComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
     ActivateAccountComponent
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    AuthRoutingModule
   ]
 })
 export class AuthModule { }
