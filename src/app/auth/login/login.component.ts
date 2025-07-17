@@ -36,44 +36,47 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    if (this.loginForm.valid && !this.isLoading) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.emailVerificationMessage = '';
-      this.showResendVerification = false;
+    if (this.loginForm.invalid || this.isLoading) return;
 
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.router.navigate(['/dashboard']);
-          } else {
-            this.errorMessage = response.message || 'Login failed';
-            
-            // Check if it's an email verification issue
-            if (response.email_verified === false) {
-              this.emailVerificationMessage = response.message;
-              this.showResendVerification = true;
-              this.userId = response.user_id || null;
-            }
-          }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          const errorResponse = error.error;
-          this.errorMessage = errorResponse?.message || 'An error occurred during login';
-          
-          // Check if it's an email verification issue
-          if (errorResponse?.email_verified === false) {
-            this.emailVerificationMessage = errorResponse.message;
-            this.showResendVerification = true;
-            this.userId = errorResponse.user_id || null;
-          }
-          
-          this.isLoading = false;
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.emailVerificationMessage = '';
+    this.showResendVerification = false;
+    this.userId = null;
+
+    const loginData = this.loginForm.value;
+
+    this.authService.login(loginData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+
+        if (response.success && response.data?.email_verified) {
+          this.router.navigate(['/dashboard']);
+        } else if (response.email_verified === false) {
+          this.emailVerificationMessage = response.message;
+          this.showResendVerification = true;
+          this.userId = response.user_id || null;
+        } else {
+          this.errorMessage = response.message || 'Login failed';
         }
-      });
-    }
+      },
+      error: (error) => {
+        this.isLoading = false;
+
+        const err = error?.error;
+
+        // Handle unverified email
+        if (err?.email_verified === false) {
+          this.emailVerificationMessage = err.message || 'Please verify your email.';
+          this.showResendVerification = true;
+          this.userId = err.user_id || null;
+        } else {
+          this.errorMessage = err?.message || 'An error occurred during login';
+        }
+      }
+    });
   }
+
 
   resendVerification() {
     if (!this.loginForm.get('email')?.value) {

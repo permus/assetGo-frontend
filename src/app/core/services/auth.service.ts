@@ -79,13 +79,23 @@ export class AuthService {
   constructor(private http: HttpClient) {
     this.loadUserFromStorage();
   }
+  private getAuthHeaders(): { headers: { [header: string]: string } } {
+    const token = this.getToken();
+    return {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      }
+    };
+  }
+
 
   register(data: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data, this.getAuthHeaders());
   }
 
   login(data: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data, this.getAuthHeaders())
       .pipe(
         tap(response => {
           if (response.success && response.data?.token) {
@@ -96,27 +106,27 @@ export class AuthService {
   }
 
   forgotPassword(data: ForgotPasswordRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/forgot-password`, data);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/forgot-password`, data, this.getAuthHeaders());
   }
 
   resetPassword(data: ResetPasswordRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/reset-password`, data);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/reset-password`, data, this.getAuthHeaders());
   }
 
   verifyEmail(id: string, hash: string): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(`${this.apiUrl}/email/verify/${id}/${hash}`);
+    return this.http.get<AuthResponse>(`${this.apiUrl}/email/verify/${id}/${hash}`, this.getAuthHeaders());
   }
 
   resendVerification(data?: ResendVerificationRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/email/resend`, data || {});
+    return this.http.post<AuthResponse>(`${this.apiUrl}/email/resend`, data || {}, this.getAuthHeaders());
   }
 
   getProfile(): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(`${this.apiUrl}/profile`);
+    return this.http.get<AuthResponse>(`${this.apiUrl}/profile`, this.getAuthHeaders());
   }
 
   logout(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/logout`, {})
+    return this.http.post<AuthResponse>(`${this.apiUrl}/logout`, {}, this.getAuthHeaders())
       .pipe(
         tap(() => {
           this.clearSession();
@@ -125,7 +135,7 @@ export class AuthService {
   }
 
   logoutAll(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/logout-all`, {})
+    return this.http.post<AuthResponse>(`${this.apiUrl}/logout-all`, {}, this.getAuthHeaders())
       .pipe(
         tap(() => {
           this.clearSession();
