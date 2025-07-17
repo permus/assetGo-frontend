@@ -60,13 +60,13 @@
         </div>
 
         <!-- User menu -->
-        <div class="flex items-center space-x-3" *ngIf="user$ | async as user">
+        <div class="flex items-center space-x-3">
           <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
-            {{ (user.first_name | slice:0:1) || 'U' }}
+            O
           </div>
           <div class="text-sm">
-            <div class="font-medium text-gray-900">{{ user.first_name }} {{ user.last_name }}</div>
-            <div class="text-gray-500">{{ user.user_type | titlecase }} • {{ user.company?.name }}</div>
+            <div class="font-medium text-gray-900">{{user.name}}</div>
+            <div class="text-gray-500">{{user.role}} • {{user.company}}</div>
           </div>
         </div>
       </div>
