@@ -13,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
+export class RegisterComponent implements OnDestroy {
   registerForm: FormGroup;
   isLoading = false;
   errorMessage = '';
