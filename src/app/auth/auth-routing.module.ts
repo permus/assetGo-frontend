@@ -12,7 +12,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
-  { path: 'activate-account', component: ActivateAccountComponent }
+  { path: 'activate-account', component: ActivateAccountComponent },
+  { path: 'email/verify/:id/:hash', component: ActivateAccountComponent }
 ];
 
 @NgModule({

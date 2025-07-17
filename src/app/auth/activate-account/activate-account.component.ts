@@ -14,7 +14,8 @@ export class ActivateAccountComponent implements OnInit {
   isLoading = true;
   successMessage = '';
   errorMessage = '';
-  token = '';
+  id = '';
+  hash = '';
 
   constructor(
     private router: Router,
@@ -23,29 +24,30 @@ export class ActivateAccountComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.token = this.route.snapshot.queryParams['token'] || '';
+    this.id = this.route.snapshot.params['id'] || '';
+    this.hash = this.route.snapshot.params['hash'] || '';
 
-    if (!this.token) {
-      this.errorMessage = 'Invalid activation link';
+    if (!this.id || !this.hash) {
+      this.errorMessage = 'Invalid verification link';
       this.isLoading = false;
       return;
     }
 
-    this.activateAccount();
+    this.verifyEmail();
   }
 
-  activateAccount() {
-    this.authService.activateAccount(this.token).subscribe({
-      next: (response) => {
+  verifyEmail() {
+    this.authService.verifyEmail(this.id, this.hash).subscribe({
+      next: (response: any) => {
         if (response.success) {
-          this.successMessage = response.message || 'Account activated successfully';
+          this.successMessage = response.message || 'Email verified successfully';
         } else {
-          this.errorMessage = response.message || 'Failed to activate account';
+          this.errorMessage = response.message || 'Failed to verify email';
         }
         this.isLoading = false;
       },
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'An error occurred during activation';
+      error: (error: any) => {
+        this.errorMessage = error.error?.message || error.error?.error || 'An error occurred during verification';
         this.isLoading = false;
       }
     });
@@ -56,8 +58,6 @@ export class ActivateAccountComponent implements OnInit {
   }
 
   resendActivation() {
-    // This would typically require the user's email
-    // For now, redirect to login where they can request a new activation
     this.router.navigate(['/auth/login']);
   }
 }

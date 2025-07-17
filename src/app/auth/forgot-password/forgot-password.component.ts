@@ -44,7 +44,7 @@ export class ForgotPasswordComponent {
           this.isLoading = false;
         },
         error: (error) => {
-          this.errorMessage = error.error?.message || 'An error occurred';
+          this.errorMessage = error.error?.message || error.error?.error || 'An error occurred';
           this.isLoading = false;
         }
       });
