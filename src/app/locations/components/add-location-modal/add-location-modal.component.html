@@ -121,7 +121,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div
               *ngFor="let type of getDisplayedTypes()"
-              (click)="selectLocationType(type.id)"
+              (click)="selectLocationType(type)"
               [class]="selectedTypeId === type.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
               class="border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-sm">
               <div class="text-center">
@@ -129,7 +129,7 @@
                   <img src="/assets/icons/building.svg" alt="{{type.name}}" class="w-8 h-8 text-gray-600">
                 </div>
                 <div class="font-medium text-gray-900 mb-1">{{type.name}}</div>
-                <div class="text-xs text-gray-500">{{type.description || 'Location type'}}</div>
+                <div class="text-xs text-gray-500">{{getTypeDescription(type)}}</div>
               </div>
             </div>
           </div>

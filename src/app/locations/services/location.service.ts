@@ -6,8 +6,12 @@ import { environment } from '../../../environments/environment';
 export interface LocationType {
   id: number;
   name: string;
+  category: string;
   hierarchy_level: number;
-  icon?: string;
+  icon: string;
+  suggestions: any[];
+  created_at: string;
+  updated_at: string;
   description?: string;
 }
 

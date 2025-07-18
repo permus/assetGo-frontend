@@ -23,50 +23,7 @@ export class AddLocationModalComponent implements OnInit {
   showAllTypes = false;
 
   // Predefined location types with icons and descriptions
-  predefinedTypes = [
-    {
-      id: 1,
-      name: 'Community',
-      icon: '🏘️',
-      description: 'Residential community or complex',
-      hierarchy_level: 0
-    },
-    {
-      id: 2,
-      name: 'Campus',
-      icon: '🏫',
-      description: 'Educational or corporate campus',
-      hierarchy_level: 0
-    },
-    {
-      id: 3,
-      name: 'Office Building',
-      icon: '🏢',
-      description: 'Commercial office building',
-      hierarchy_level: 1
-    },
-    {
-      id: 4,
-      name: 'Residential Building',
-      icon: '🏠',
-      description: 'Residential apartment or condo building',
-      hierarchy_level: 1
-    },
-    {
-      id: 5,
-      name: 'Warehouse',
-      icon: '🏭',
-      description: 'Storage and distribution facility',
-      hierarchy_level: 1
-    },
-    {
-      id: 6,
-      name: 'Retail Store',
-      icon: '🏪',
-      description: 'Commercial retail location',
-      hierarchy_level: 1
-    }
-  ];
+  predefinedTypes: LocationType[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -93,8 +50,6 @@ export class AddLocationModalComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading location types:', error);
-        // Use predefined types as fallback
-        this.locationTypes = this.predefinedTypes;
       }
     });
   }
@@ -103,26 +58,13 @@ export class AddLocationModalComponent implements OnInit {
     return this.showAllTypes ? this.locationTypes : this.locationTypes.slice(0, 6);
   }
 
-  selectLocationType(typeId: number) {
-    this.selectedTypeId = typeId;
-    this.locationForm.patchValue({ location_type_id: typeId });
+  selectLocationType(type: LocationType) {
+    this.selectedTypeId = type.id;
+    this.locationForm.patchValue({ location_type_id: type.id });
   }
 
-  getTypeIcon(type: any): string {
-    const iconMap: { [key: string]: string } = {
-      'Community': '🏘️',
-      'Campus': '🏫',
-      'Office Building': '🏢',
-      'Residential Building': '🏠',
-      'Warehouse': '🏭',
-      'Retail Store': '🏪',
-      'Factory': '🏭',
-      'Garden': '🌳',
-      'Apartment': '🏠',
-      'Room': '🚪',
-      'Floor': '📋'
-    };
-    return iconMap[type.name] || '📍';
+  getTypeDescription(type: LocationType): string {
+    return type.description || `${type.category} location`;
   }
 
   onSubmit() {
