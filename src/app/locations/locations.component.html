@@ -341,4 +341,11 @@
       </div>
     </div>
   </div>
+
+  <!-- Add Location Modal -->
+  <app-add-location-modal
+    [isOpen]="showAddLocationModal"
+    (closeModal)="closeAddLocationModal()"
+    (locationCreated)="onLocationCreated($event)">
+  </app-add-location-modal>
 </div>

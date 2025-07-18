@@ -4,10 +4,11 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { LocationService, Location, LocationType, LocationsResponse } from './services/location.service';
+import { AddLocationModalComponent } from './components/add-location-modal/add-location-modal.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AddLocationModalComponent],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'
@@ -24,6 +25,9 @@ export class LocationsComponent implements OnInit, OnDestroy {
   showFilters = false;
   currentView: 'grid' | 'tree' | 'analytics' | 'mgmt' = 'grid';
   currentListView: 'grid' | 'list' = 'list';
+  
+  // Modal state
+  showAddLocationModal = false;
   
   // Pagination
   pagination = {
@@ -246,8 +250,17 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   addLocation() {
-    // TODO: Implement add modal
-    console.log('Add location');
+    this.showAddLocationModal = true;
+  }
+
+  closeAddLocationModal() {
+    this.showAddLocationModal = false;
+  }
+
+  onLocationCreated(location: Location) {
+    // Refresh the locations list
+    this.loadLocations(this.pagination.current_page);
+    this.showAddLocationModal = false;
   }
 
   bulkActions() {

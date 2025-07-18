@@ -1,0 +1,180 @@
+<!-- Modal Backdrop -->
+<div *ngIf="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <!-- Modal Container -->
+  <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-900">Add New Location</h2>
+      </div>
+      <button 
+        (click)="closeModalHandler()"
+        class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="p-6">
+      <!-- Add New Facility Section -->
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Add New Facility</h3>
+        <p class="text-gray-600 text-sm">Create a new top-level facility or community</p>
+        
+        <!-- Location Hierarchy Info -->
+        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+          <p class="text-sm font-medium text-blue-900 mb-2">Location Hierarchy:</p>
+          <div class="text-xs text-blue-700 space-y-1">
+            <div><strong>Level 0:</strong> Communities, Campuses, Buildings</div>
+            <div><strong>Level 1:</strong> Buildings, Floors</div>
+            <div><strong>Level 2+:</strong> Rooms, Areas, Amenities</div>
+          </div>
+          <p class="text-xs text-blue-600 mt-2">Available types: 16 options including Community, Campus, and Buildings</p>
+        </div>
+      </div>
+
+      <form [formGroup]="locationForm" (ngSubmit)="onSubmit()">
+        <!-- Basic Information Section -->
+        <div class="mb-8">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h4 class="text-lg font-semibold text-gray-900">Basic Information</h4>
+          </div>
+
+          <!-- Location Name -->
+          <div class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+              Location Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              placeholder="Enter location name"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+              [class.border-red-300]="locationForm.get('name')?.invalid && locationForm.get('name')?.touched">
+          </div>
+
+          <!-- Description -->
+          <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="3"
+              placeholder="Brief description of this location"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 resize-none"></textarea>
+          </div>
+
+          <!-- Address -->
+          <div class="mb-4">
+            <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <input
+                id="address"
+                type="text"
+                formControlName="address"
+                placeholder="Enter the address"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400">
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Type Section -->
+        <div class="mb-8">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <h4 class="text-lg font-semibold text-gray-900">Location Type</h4>
+          </div>
+
+          <!-- All Types Filter -->
+          <div class="mb-4">
+            <button
+              type="button"
+              class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-full hover:bg-blue-700 transition-colors">
+              All Types
+            </button>
+          </div>
+
+          <!-- Location Type Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div 
+              *ngFor="let type of getDisplayedTypes()"
+              (click)="selectLocationType(type.id)"
+              [class]="selectedTypeId === type.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+              class="border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-sm">
+              <div class="text-center">
+                <div class="text-2xl mb-2">{{getTypeIcon(type)}}</div>
+                <div class="font-medium text-gray-900 mb-1">{{type.name}}</div>
+                <div class="text-xs text-gray-500">{{type.description || 'Location type'}}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Show More Types Button -->
+          <div *ngIf="locationTypes.length > 6" class="text-center">
+            <button
+              type="button"
+              (click)="toggleShowAllTypes()"
+              class="flex items-center space-x-2 mx-auto px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+              <span>{{showAllTypes ? 'Show Less' : locationTypes.length - 6 + ' More Types'}}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-600 text-sm">{{errorMessage}}</p>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+          <button
+            type="button"
+            (click)="closeModalHandler()"
+            class="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors">
+            Use Template
+          </button>
+          
+          <button
+            type="submit"
+            [disabled]="locationForm.invalid || isLoading"
+            class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            <span *ngIf="!isLoading">Create Location</span>
+            <span *ngIf="isLoading" class="flex items-center space-x-2">
+              <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Creating...</span>
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
