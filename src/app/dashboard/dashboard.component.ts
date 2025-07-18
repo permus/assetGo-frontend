@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService, User } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,11 +10,8 @@ import { Component } from '@angular/core';
   standalone: false
 })
 export class DashboardComponent {
-  user = {
-    name: 'omar',
-    role: 'Company Admin',
-    company: 'Omeda'
-  };
+  currentUser: User | null = null;
+  showUserDropdown = false;
 
   stats = [
     { title: 'Total Assets', value: '24', subtitle: 'Live data', icon: 'info', color: 'blue' },
@@ -29,4 +29,42 @@ export class DashboardComponent {
     { title: 'Scheduled This Week', value: 0 },
     { title: 'Overdue', value: 1 }
   ];
+
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.currentUser = this.authService.getCurrentUser();
+  }
+
+  getUserInitials(): string {
+    if (!this.currentUser) return 'U';
+    const firstInitial = this.currentUser.first_name?.charAt(0) || '';
+    const lastInitial = this.currentUser.last_name?.charAt(0) || '';
+    return (firstInitial + lastInitial).toUpperCase() || 'U';
+  }
+
+  toggleUserDropdown() {
+    this.showUserDropdown = !this.showUserDropdown;
+  }
+
+  signOut() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        // Even if logout fails on server, clear local session
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.showUserDropdown = false;
+    }
+  }
 }
