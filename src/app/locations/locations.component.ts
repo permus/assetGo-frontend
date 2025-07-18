@@ -1,9 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { LocationService, Location, LocationType, LocationsResponse } from './services/location.service';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'
