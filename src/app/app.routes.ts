@@ -13,5 +13,10 @@ export const routes: Routes = [
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
     canActivate: [AuthGuard]
   },
+  {
+    path: 'locations',
+    loadChildren: () => import('./locations/locations.module').then(m => m.LocationsModule),
+    canActivate: [AuthGuard]
+  },
   { path: '**', redirectTo: '' }
 ];

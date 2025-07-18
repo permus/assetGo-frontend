@@ -1,0 +1,100 @@
+// Custom styles for locations component
+.location-card {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.hierarchy-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.location-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.filter-panel {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.search-input {
+  transition: all 0.2s ease-in-out;
+  
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+.view-toggle {
+  button {
+    transition: all 0.2s ease-in-out;
+    
+    &.active {
+      background: #3b82f6;
+      color: white;
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    }
+  }
+}
+
+.table-row {
+  transition: background-color 0.15s ease-in-out;
+  
+  &:hover {
+    background-color: #f8fafc;
+  }
+}
+
+.action-button {
+  transition: all 0.15s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// Loading animation
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .location-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .table-header,
+  .table-row {
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+}

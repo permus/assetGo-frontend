@@ -1,0 +1,178 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+export interface LocationType {
+  id: number;
+  name: string;
+  hierarchy_level: number;
+  icon?: string;
+}
+
+export interface Location {
+  id: number;
+  name: string;
+  slug?: string;
+  address?: string;
+  description?: string;
+  location_type_id: number;
+  parent_id?: number;
+  company_id: number;
+  user_id: number;
+  hierarchy_level: number;
+  qr_code_path?: string;
+  created_at: string;
+  updated_at: string;
+  type: LocationType;
+  parent?: Location;
+  children?: Location[];
+  creator?: any;
+  asset_summary?: {
+    asset_count: number;
+    total_value: number;
+  };
+}
+
+export interface LocationsResponse {
+  success: boolean;
+  data: {
+    locations: Location[];
+    pagination: {
+      current_page: number;
+      last_page: number;
+      per_page: number;
+      total: number;
+      from: number;
+      to: number;
+    };
+    filters: {
+      search?: string;
+      type_id?: number;
+      parent_id?: number;
+    };
+  };
+}
+
+export interface LocationResponse {
+  success: boolean;
+  data: {
+    location: Location;
+    ancestors?: Location[];
+    children_count?: number;
+    descendants_count?: number;
+  };
+  message?: string;
+}
+
+export interface LocationTypesResponse {
+  success: boolean;
+  data: {
+    types: LocationType[];
+  };
+}
+
+export interface HierarchyResponse {
+  success: boolean;
+  data: {
+    hierarchy: any[];
+  };
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LocationService {
+  private apiUrl = `${environment.apiUrl}/locations`;
+
+  constructor(private http: HttpClient) {}
+
+  // Get locations with filtering and pagination
+  getLocations(params: {
+    search?: string;
+    type_id?: number;
+    parent_id?: number;
+    per_page?: number;
+    page?: number;
+  } = {}): Observable<LocationsResponse> {
+    let httpParams = new HttpParams();
+    
+    Object.keys(params).forEach(key => {
+      const value = params[key as keyof typeof params];
+      if (value !== undefined && value !== null && value !== '') {
+        httpParams = httpParams.set(key, value.toString());
+      }
+    });
+
+    return this.http.get<LocationsResponse>(this.apiUrl, { params: httpParams });
+  }
+
+  // Get single location
+  getLocation(id: number): Observable<LocationResponse> {
+    return this.http.get<LocationResponse>(`${this.apiUrl}/${id}`);
+  }
+
+  // Create location
+  createLocation(location: Partial<Location>): Observable<LocationResponse> {
+    return this.http.post<LocationResponse>(this.apiUrl, location);
+  }
+
+  // Update location
+  updateLocation(id: number, location: Partial<Location>): Observable<LocationResponse> {
+    return this.http.put<LocationResponse>(`${this.apiUrl}/${id}`, location);
+  }
+
+  // Delete location
+  deleteLocation(id: number): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(`${this.apiUrl}/${id}`);
+  }
+
+  // Bulk create locations
+  bulkCreateLocations(locations: Partial<Location>[]): Observable<LocationResponse> {
+    return this.http.post<LocationResponse>(`${this.apiUrl}/bulk`, { locations });
+  }
+
+  // Move locations
+  moveLocations(locationIds: number[], newParentId?: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/move`, {
+      location_ids: locationIds,
+      new_parent_id: newParentId
+    });
+  }
+
+  // Get QR code
+  getQRCode(id: number, action: string = 'download', format: string = 'png'): Observable<Blob> {
+    const params = new HttpParams()
+      .set('action', action)
+      .set('format', format);
+    
+    return this.http.get(`${this.apiUrl}/${id}/qr`, {
+      params,
+      responseType: 'blob'
+    });
+  }
+
+  // Get location types
+  getLocationTypes(): Observable<LocationTypesResponse> {
+    return this.http.get<LocationTypesResponse>(`${environment.apiUrl}/location-types`);
+  }
+
+  // Get hierarchy
+  getHierarchy(): Observable<HierarchyResponse> {
+    return this.http.get<HierarchyResponse>(`${environment.apiUrl}/locations-hierarchy`);
+  }
+
+  // Get possible parents
+  getPossibleParents(typeId: number, locationId?: number): Observable<any> {
+    let params = new HttpParams().set('type_id', typeId.toString());
+    if (locationId) {
+      params = params.set('location_id', locationId.toString());
+    }
+    
+    const url = locationId 
+      ? `${environment.apiUrl}/locations/possible-parents/${locationId}`
+      : `${environment.apiUrl}/locations/possible-parents`;
+    
+    return this.http.get(url, { params });
+  }
+}
