@@ -22,9 +22,6 @@ export class AddLocationModalComponent implements OnInit {
   errorMessage = '';
   showAllTypes = false;
 
-  // Predefined location types with icons and descriptions
-  predefinedTypes: LocationType[] = [];
-
   constructor(
     private fb: FormBuilder,
     private locationService: LocationService
