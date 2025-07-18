@@ -10,8 +10,8 @@ import { AuthService, User } from '../core/services/auth.service';
   standalone: false
 })
 export class DashboardComponent {
-  currentUser: User | null = null;
-  showUserDropdown = false;
+  public currentUser: User | null = null;
+  public showUserDropdown = false;
 
   stats = [
     { title: 'Total Assets', value: '24', subtitle: 'Live data', icon: 'info', color: 'blue' },
@@ -37,18 +37,18 @@ export class DashboardComponent {
     this.currentUser = this.authService.getCurrentUser();
   }
 
-  getUserInitials(): string {
+  public getUserInitials(): string {
     if (!this.currentUser) return 'U';
     const firstInitial = this.currentUser.first_name?.charAt(0) || '';
     const lastInitial = this.currentUser.last_name?.charAt(0) || '';
     return (firstInitial + lastInitial).toUpperCase() || 'U';
   }
 
-  toggleUserDropdown() {
+  public toggleUserDropdown() {
     this.showUserDropdown = !this.showUserDropdown;
   }
 
-  signOut() {
+  public signOut() {
     this.authService.logout().subscribe({
       next: () => {
         this.router.navigate(['/login']);
