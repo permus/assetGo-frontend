@@ -68,6 +68,10 @@ export class AddLocationModalComponent implements OnInit {
     return `/assets/icons/${type.icon}.svg`;
   }
 
+  onImageError(event: any) {
+    event.target.src = '/assets/icons/default-location.svg';
+  }
+
   onSubmit() {
     if (this.locationForm.valid && !this.isLoading) {
       this.isLoading = true;

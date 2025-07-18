@@ -129,7 +129,11 @@
                   <img [src]="getTypeIcon(type)" [alt]="type.name" class="w-8 h-8 text-gray-600">
                 </div>
                 <div class="font-medium text-gray-900 mb-1">{{type.name}}</div>
-                <div class="text-xs text-gray-500">{{getTypeDescription(type)}}</div>
+                <img 
+                  [src]="getTypeIcon(type)" 
+                  [alt]="type.name" 
+                  class="w-8 h-8 text-gray-600"
+                  (error)="onImageError($event)">
               </div>
             </div>
           </div>
