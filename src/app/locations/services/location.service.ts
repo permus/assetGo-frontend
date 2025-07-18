@@ -87,6 +87,16 @@ export class LocationService {
 
   constructor(private http: HttpClient) {}
 
+  private getAuthHeaders(): { headers: { [header: string]: string } } {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      }
+    };
+  }
+
   // Get locations with filtering and pagination
   getLocations(params: {
     search?: string;
@@ -104,32 +114,35 @@ export class LocationService {
       }
     });
 
-    return this.http.get<LocationsResponse>(this.apiUrl, { params: httpParams });
+    return this.http.get<LocationsResponse>(this.apiUrl, { 
+      params: httpParams,
+      ...this.getAuthHeaders()
+    });
   }
 
   // Get single location
   getLocation(id: number): Observable<LocationResponse> {
-    return this.http.get<LocationResponse>(`${this.apiUrl}/${id}`);
+    return this.http.get<LocationResponse>(`${this.apiUrl}/${id}`, this.getAuthHeaders());
   }
 
   // Create location
   createLocation(location: Partial<Location>): Observable<LocationResponse> {
-    return this.http.post<LocationResponse>(this.apiUrl, location);
+    return this.http.post<LocationResponse>(this.apiUrl, location, this.getAuthHeaders());
   }
 
   // Update location
   updateLocation(id: number, location: Partial<Location>): Observable<LocationResponse> {
-    return this.http.put<LocationResponse>(`${this.apiUrl}/${id}`, location);
+    return this.http.put<LocationResponse>(`${this.apiUrl}/${id}`, location, this.getAuthHeaders());
   }
 
   // Delete location
   deleteLocation(id: number): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<{ success: boolean; message: string }>(`${this.apiUrl}/${id}`);
+    return this.http.delete<{ success: boolean; message: string }>(`${this.apiUrl}/${id}`, this.getAuthHeaders());
   }
 
   // Bulk create locations
   bulkCreateLocations(locations: Partial<Location>[]): Observable<LocationResponse> {
-    return this.http.post<LocationResponse>(`${this.apiUrl}/bulk`, { locations });
+    return this.http.post<LocationResponse>(`${this.apiUrl}/bulk`, { locations }, this.getAuthHeaders());
   }
 
   // Move locations
@@ -137,7 +150,7 @@ export class LocationService {
     return this.http.post(`${this.apiUrl}/move`, {
       location_ids: locationIds,
       new_parent_id: newParentId
-    });
+    }, this.getAuthHeaders());
   }
 
   // Get QR code
@@ -148,18 +161,19 @@ export class LocationService {
     
     return this.http.get(`${this.apiUrl}/${id}/qr`, {
       params,
-      responseType: 'blob'
+      responseType: 'blob',
+      ...this.getAuthHeaders()
     });
   }
 
   // Get location types
   getLocationTypes(): Observable<LocationTypesResponse> {
-    return this.http.get<LocationTypesResponse>(`${environment.apiUrl}/location-types`);
+    return this.http.get<LocationTypesResponse>(`${environment.apiUrl}/location-types`, this.getAuthHeaders());
   }
 
   // Get hierarchy
   getHierarchy(): Observable<HierarchyResponse> {
-    return this.http.get<HierarchyResponse>(`${environment.apiUrl}/locations-hierarchy`);
+    return this.http.get<HierarchyResponse>(`${environment.apiUrl}/locations-hierarchy`, this.getAuthHeaders());
   }
 
   // Get possible parents
@@ -173,6 +187,9 @@ export class LocationService {
       ? `${environment.apiUrl}/locations/possible-parents/${locationId}`
       : `${environment.apiUrl}/locations/possible-parents`;
     
-    return this.http.get(url, { params });
+    return this.http.get(url, { 
+      params,
+      ...this.getAuthHeaders()
+    });
   }
 }
