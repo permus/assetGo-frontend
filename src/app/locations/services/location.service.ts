@@ -8,6 +8,7 @@ export interface LocationType {
   name: string;
   hierarchy_level: number;
   icon?: string;
+  description?: string;
 }
 
 export interface Location {
