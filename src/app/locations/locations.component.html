@@ -29,29 +29,29 @@
     </div>
 
     <!-- View Tabs -->
-    <div class="flex items-center space-x-1 bg-gray-100 rounded-lg p-1 w-fit">
+    <div class="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
       <button 
         (click)="setView('grid')"
         [class]="currentView === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-800'"
-        class="px-4 py-2 rounded-md text-sm font-medium transition-all">
+        class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all">
         Grid
       </button>
       <button 
         (click)="setView('tree')"
         [class]="currentView === 'tree' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-800'"
-        class="px-4 py-2 rounded-md text-sm font-medium transition-all">
+        class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all">
         Tree
       </button>
       <button 
         (click)="setView('analytics')"
         [class]="currentView === 'analytics' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-800'"
-        class="px-4 py-2 rounded-md text-sm font-medium transition-all">
+        class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all">
         Analytics
       </button>
       <button 
         (click)="setView('mgmt')"
         [class]="currentView === 'mgmt' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-800'"
-        class="px-4 py-2 rounded-md text-sm font-medium transition-all">
+        class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all">
         Mgmt
       </button>
     </div>
