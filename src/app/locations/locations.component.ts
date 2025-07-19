@@ -263,8 +263,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   viewLocation(location: Location) {
-    // TODO: Implement view modal or navigation
-    console.log('View location:', location);
+    this.router.navigate(['/locations', location.id]);
   }
 
   addLocation() {
