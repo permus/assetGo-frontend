@@ -408,7 +408,7 @@
     </div>
 
     <!-- Pagination -->
-    <div *ngIf="!loading && locations.length > 0 && pagination.last_page > 1" class="flex items-center justify-between mt-6">
+    <div *ngIf="!loading && locations.length > 0 && pagination.last_page > 1" class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
       <div class="text-sm text-gray-700">
         Showing {{pagination.from}} to {{pagination.to}} of {{pagination.total}} results
       </div>
@@ -417,7 +417,107 @@
         <button
           (click)="goToPage(pagination.current_page - 1)"
           [disabled]="pagination.current_page === 1"
-          class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          class="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span>Previous</span>
+        </button>
+
+        <!-- Page Numbers -->
+        <div class="flex items-center space-x-1">
+          <!-- First page -->
+          <button
+            *ngIf="pagination.current_page > 3"
+            (click)="goToPage(1)"
+            class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            1
+          </button>
+          
+          <!-- Ellipsis before current pages -->
+          <span *ngIf="pagination.current_page > 4" class="px-2 py-2 text-gray-400">...</span>
+          
+          <!-- Pages around current page -->
+          <button
+            *ngFor="let page of getVisiblePages()"
+            (click)="goToPage(page)"
+            [class]="pagination.current_page === page ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-300 hover:bg-gray-50'"
+            class="px-3 py-2 text-sm font-medium border rounded-lg transition-colors">
+            {{page}}
+          </button>
+          
+          <!-- Ellipsis after current pages -->
+          <span *ngIf="pagination.current_page < pagination.last_page - 3" class="px-2 py-2 text-gray-400">...</span>
+          
+          <!-- Last page -->
+          <button
+            *ngIf="pagination.current_page < pagination.last_page - 2"
+            (click)="goToPage(pagination.last_page)"
+            class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            {{pagination.last_page}}
+          </button>
+        </div>
+
+        <button
+          (click)="goToPage(pagination.current_page + 1)"
+          [disabled]="pagination.current_page === pagination.last_page"
+          class="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          <span>Next</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Per Page Selector -->
+    <div *ngIf="!loading && locations.length > 0" class="flex items-center justify-center mt-4">
+      <div class="flex items-center space-x-2 text-sm text-gray-600">
+        <span>Show</span>
+        <select 
+          [(ngModel)]="pagination.per_page" 
+          (change)="changePerPage($event)"
+          class="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+        <span>locations per page</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Location Modal -->
+  <app-add-location-modal
+    [isOpen]="showAddLocationModal"
+    (closeModal)="closeAddLocationModal()"
+    (locationCreated)="onLocationCreated($event)">
+  </app-add-location-modal>
+
+  <!-- Edit Location Modal -->
+  <app-edit-location-modal
+    [isOpen]="showEditLocationModal"
+    [location]="selectedLocation"
+    (closeModal)="closeEditLocationModal()"
+    (locationUpdated)="onLocationUpdated($event)">
+  </app-edit-location-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-delete-confirmation-modal
+    [isOpen]="showDeleteConfirmationModal"
+    [location]="selectedLocation"
+    (closeModal)="closeDeleteConfirmationModal()"
+    (locationDeleted)="onLocationDeleted($event)">
+  </app-delete-confirmation-modal>
+
+  <!-- Bulk Create Modal -->
+  <app-bulk-create-modal
+    [isOpen]="showBulkCreateModal"
+    (closeModal)="closeBulkCreateModal()"
+    (locationsCreated)="onLocationsCreated($event)">
+  </app-bulk-create-modal>
+</div>
           Previous
         </button>
 

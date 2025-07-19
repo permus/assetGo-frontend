@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { HostListener } from '@angular/core';
 import { LocationService, Location, LocationType, LocationsResponse } from './services/location.service';
@@ -11,8 +11,8 @@ import { DeleteConfirmationModalComponent } from './components/delete-confirmati
 import { BulkCreateModalComponent } from './components/bulk-create-modal/bulk-create-modal.component';
 
 @Component({
-  standalone: true, 
-  imports: [CommonModule, ReactiveFormsModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'
@@ -204,6 +204,27 @@ export class LocationsComponent implements OnInit, OnDestroy {
     if (page >= 1 && page <= this.pagination.last_page) {
       this.loadLocations(page);
     }
+  }
+
+  getVisiblePages(): number[] {
+    const current = this.pagination.current_page;
+    const total = this.pagination.last_page;
+    const pages: number[] = [];
+    
+    // Show current page and 2 pages on each side
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+    
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    
+    return pages;
+  }
+
+  changePerPage(event: any) {
+    this.pagination.per_page = parseInt(event.target.value);
+    this.loadLocations(1); // Reset to first page when changing per page
   }
 
   // Utility Methods
