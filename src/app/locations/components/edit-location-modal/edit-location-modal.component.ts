@@ -46,8 +46,9 @@ export class EditLocationModalComponent implements OnInit, OnChanges {
   }
 
   loadLocationTypes() {
-    // Load all location types for editing
-    this.locationService.getLocationTypes().subscribe({
+    // Get location types based on current location's hierarchy level
+    const hierarchyLevel = this.location?.hierarchy_level;
+    this.locationService.getLocationTypes(hierarchyLevel).subscribe({
       next: (response) => {
         if (response.success) {
           this.locationTypes = response.data.types;
