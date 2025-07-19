@@ -39,7 +39,8 @@ export class AddLocationModalComponent implements OnInit {
   }
 
   loadLocationTypes() {
-    this.locationService.getLocationTypes().subscribe({
+    // Get only top-level types (level 0) for creating new facilities
+    this.locationService.getLocationTypes(0).subscribe({
       next: (response) => {
         if (response.success) {
           this.locationTypes = response.data.types;

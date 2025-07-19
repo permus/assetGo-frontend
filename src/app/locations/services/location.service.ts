@@ -172,8 +172,16 @@ export class LocationService {
   }
 
   // Get location types
-  getLocationTypes(): Observable<LocationTypesResponse> {
-    return this.http.get<LocationTypesResponse>(`${environment.apiUrl}/location-types`, this.getAuthHeaders());
+  getLocationTypes(hierarchyLevel?: number): Observable<LocationTypesResponse> {
+    let params = new HttpParams();
+    if (hierarchyLevel !== undefined) {
+      params = params.set('hierarchy_level', hierarchyLevel.toString());
+    }
+    
+    return this.http.get<LocationTypesResponse>(`${environment.apiUrl}/location-types`, { 
+      params,
+      ...this.getAuthHeaders()
+    });
   }
 
   // Get hierarchy
