@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { HostListener } from '@angular/core';
 import { LocationService, Location, LocationType, LocationsResponse } from './services/location.service';
@@ -77,7 +78,8 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private router: Router
   ) {
     this.searchForm = this.fb.group({
       search: ['']
