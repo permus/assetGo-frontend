@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { HostListener } from '@angular/core';
 import { LocationService, Location, LocationType, LocationsResponse } from './services/location.service';
 import { AddLocationModalComponent } from './components/add-location-modal/add-location-modal.component';
 import { EditLocationModalComponent } from './components/edit-location-modal/edit-location-modal.component';
@@ -302,5 +303,17 @@ export class LocationsComponent implements OnInit, OnDestroy {
   exportQR() {
     // TODO: Implement QR export
     console.log('Export QR');
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    const filterButton = target.closest('.filter-button');
+    const filterDropdown = target.closest('.filter-dropdown');
+    
+    // Close dropdown if click is outside both button and dropdown
+    if (!filterButton && !filterDropdown && this.showFilters) {
+      this.showFilters = false;
+    }
   }
 }
