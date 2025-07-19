@@ -363,6 +363,7 @@
 
   <!-- Add Sub-location Modal -->
   <app-add-location-modal
+   *ngIf="location"
     [isOpen]="showAddSubLocationModal"
     [parentLocation]="location"
     (closeModal)="closeAddSubLocationModal()"
