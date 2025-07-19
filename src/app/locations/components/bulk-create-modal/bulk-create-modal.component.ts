@@ -95,7 +95,24 @@ export class BulkCreateModalComponent implements OnInit {
   }
 
   addLocationRow() {
+    if (this.locationsArray.length >= 5) {
+      return; // Don't add more than 5 locations
+    }
     this.locationsArray.push(this.createLocationFormGroup());
+  }
+
+  duplicateLocationRow(index: number) {
+    if (this.locationsArray.length >= 5) {
+      return; // Don't add more than 5 locations
+    }
+    
+    const sourceLocation = this.locationsArray.at(index);
+    if (sourceLocation) {
+      const duplicatedLocation = this.createLocationFormGroup();
+      // Copy values from source location
+      duplicatedLocation.patchValue(sourceLocation.value);
+      this.locationsArray.push(duplicatedLocation);
+    }
   }
 
   removeLocationRow(index: number) {
