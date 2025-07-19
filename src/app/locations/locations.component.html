@@ -399,83 +399,145 @@
       </div>
     </div>
 
-    <!-- Pagination -->
-    <div *ngIf="!loading && locations.length > 0 && pagination.last_page > 1" class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-      <div class="text-sm text-gray-700">
-        Showing {{pagination.from}} to {{pagination.to}} of {{pagination.total}} results
+    <!-- Enhanced Pagination -->
+    <div *ngIf="!loading && locations.length > 0" class="mt-8 pt-6 border-t border-gray-200">
+      <!-- Pagination Info and Per Page Selector -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="text-sm text-gray-700">
+          Showing <span class="font-medium">{{pagination.from}}</span> to <span class="font-medium">{{pagination.to}}</span> of <span class="font-medium">{{pagination.total}}</span> results
+        </div>
+        
+        <div class="flex items-center space-x-2 text-sm text-gray-600">
+          <span>Show</span>
+          <select 
+            [(ngModel)]="pagination.per_page" 
+            (change)="changePerPage($event)"
+            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+          <span>per page</span>
+        </div>
       </div>
 
-      <div class="flex items-center space-x-2">
-        <button
-          (click)="goToPage(pagination.current_page - 1)"
-          [disabled]="pagination.current_page === 1"
-          class="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-          <span>Previous</span>
-        </button>
-
-        <!-- Page Numbers -->
-        <div class="flex items-center space-x-1">
-          <!-- First page -->
+      <!-- Pagination Controls -->
+      <div *ngIf="pagination.last_page > 1" class="flex items-center justify-center">
+        <nav class="flex items-center space-x-1" aria-label="Pagination">
+          <!-- First Page Button -->
           <button
-            *ngIf="pagination.current_page > 3"
             (click)="goToPage(1)"
-            class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-            1
+            [disabled]="pagination.current_page === 1"
+            class="flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            title="First page">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+            </svg>
           </button>
-          
-          <!-- Ellipsis before current pages -->
-          <span *ngIf="pagination.current_page > 4" class="px-2 py-2 text-gray-400">...</span>
-          
-          <!-- Pages around current page -->
+
+          <!-- Previous Page Button -->
           <button
-            *ngFor="let page of getVisiblePages()"
-            (click)="goToPage(page)"
-            [class]="pagination.current_page === page ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-300 hover:bg-gray-50'"
-            class="px-3 py-2 text-sm font-medium border rounded-lg transition-colors">
-            {{page}}
+            (click)="goToPage(pagination.current_page - 1)"
+            [disabled]="pagination.current_page === 1"
+            class="flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            title="Previous page">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
           </button>
-          
-          <!-- Ellipsis after current pages -->
-          <span *ngIf="pagination.current_page < pagination.last_page - 3" class="px-2 py-2 text-gray-400">...</span>
-          
-          <!-- Last page -->
+
+          <!-- Page Numbers -->
+          <div class="flex items-center space-x-1">
+            <!-- First page (if not in visible range) -->
+            <button
+              *ngIf="getVisiblePages()[0] > 1"
+              (click)="goToPage(1)"
+              class="flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              1
+            </button>
+            
+            <!-- Ellipsis before visible pages -->
+            <span *ngIf="getVisiblePages()[0] > 2" class="flex items-center justify-center w-10 h-10 text-gray-400">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <circle cx="3" cy="10" r="1.5"></circle>
+                <circle cx="10" cy="10" r="1.5"></circle>
+                <circle cx="17" cy="10" r="1.5"></circle>
+              </svg>
+            </span>
+            
+            <!-- Visible page numbers -->
+            <button
+              *ngFor="let page of getVisiblePages()"
+              (click)="goToPage(page)"
+              [class]="pagination.current_page === page ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-white text-gray-500 border-gray-300 hover:bg-gray-50'"
+              class="flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg transition-colors"
+              [title]="'Page ' + page">
+              {{page}}
+            </button>
+            
+            <!-- Ellipsis after visible pages -->
+            <span *ngIf="getVisiblePages()[getVisiblePages().length - 1] < pagination.last_page - 1" class="flex items-center justify-center w-10 h-10 text-gray-400">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <circle cx="3" cy="10" r="1.5"></circle>
+                <circle cx="10" cy="10" r="1.5"></circle>
+                <circle cx="17" cy="10" r="1.5"></circle>
+              </svg>
+            </span>
+            
+            <!-- Last page (if not in visible range) -->
+            <button
+              *ngIf="getVisiblePages()[getVisiblePages().length - 1] < pagination.last_page"
+              (click)="goToPage(pagination.last_page)"
+              class="flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              {{pagination.last_page}}
+            </button>
+          </div>
+
+          <!-- Next Page Button -->
           <button
-            *ngIf="pagination.current_page < pagination.last_page - 2"
+            (click)="goToPage(pagination.current_page + 1)"
+            [disabled]="pagination.current_page === pagination.last_page"
+            class="flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            title="Next page">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+
+          <!-- Last Page Button -->
+          <button
             (click)="goToPage(pagination.last_page)"
-            class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-            {{pagination.last_page}}
+            [disabled]="pagination.current_page === pagination.last_page"
+            class="flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            title="Last page">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Page Jump Input (for large datasets) -->
+      <div *ngIf="pagination.last_page > 10" class="flex items-center justify-center mt-4">
+        <div class="flex items-center space-x-2 text-sm text-gray-600">
+          <span>Go to page:</span>
+          <input
+            type="number"
+            [min]="1"
+            [max]="pagination.last_page"
+            [(ngModel)]="jumpToPage"
+            (keyup.enter)="goToPage(jumpToPage)"
+            class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="{{pagination.current_page}}">
+          <button
+            (click)="goToPage(jumpToPage)"
+            [disabled]="!jumpToPage || jumpToPage < 1 || jumpToPage > pagination.last_page"
+            class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            Go
           </button>
         </div>
-
-        <button
-          (click)="goToPage(pagination.current_page + 1)"
-          [disabled]="pagination.current_page === pagination.last_page"
-          class="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-          <span>Next</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Per Page Selector -->
-    <div *ngIf="!loading && locations.length > 0" class="flex items-center justify-center mt-4">
-      <div class="flex items-center space-x-2 text-sm text-gray-600">
-        <span>Show</span>
-        <select 
-          [(ngModel)]="pagination.per_page" 
-          (change)="changePerPage($event)"
-          class="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-        </select>
-        <span>locations per page</span>
       </div>
     </div>
   </div>
