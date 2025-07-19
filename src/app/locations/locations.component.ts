@@ -8,10 +8,11 @@ import { LocationService, Location, LocationType, LocationsResponse } from './se
 import { AddLocationModalComponent } from './components/add-location-modal/add-location-modal.component';
 import { EditLocationModalComponent } from './components/edit-location-modal/edit-location-modal.component';
 import { DeleteConfirmationModalComponent } from './components/delete-confirmation-modal/delete-confirmation-modal.component';
+import { BulkCreateModalComponent } from './components/bulk-create-modal/bulk-create-modal.component';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent],
+  standalone: true, 
+  imports: [CommonModule, ReactiveFormsModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'
@@ -33,6 +34,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   showAddLocationModal = false;
   showEditLocationModal = false;
   showDeleteConfirmationModal = false;
+  showBulkCreateModal = false;
   selectedLocation: Location | null = null;
   
   // Pagination
@@ -262,6 +264,14 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.selectedLocation = null;
   }
 
+  openBulkCreateModal() {
+    this.showBulkCreateModal = true;
+  }
+
+  closeBulkCreateModal() {
+    this.showBulkCreateModal = false;
+  }
+
   onLocationCreated(location: Location) {
     // Refresh the locations list
     this.loadLocations(this.pagination.current_page);
@@ -295,9 +305,10 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.selectedLocation = null;
   }
 
-  bulkActions() {
-    // TODO: Implement bulk actions
-    console.log('Bulk actions');
+  onLocationsCreated(locations: Location[]) {
+    // Refresh the locations list
+    this.loadLocations(this.pagination.current_page);
+    this.showBulkCreateModal = false;
   }
 
   exportQR() {
