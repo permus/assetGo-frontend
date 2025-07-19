@@ -223,22 +223,71 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   // Actions
   editLocation(location: Location) {
-    // TODO: Implement edit modal
-    console.log('Edit location:', location);
+    if (confirm(`Are you sure you want to edit "${location.name}"?`)) {
+      // For now, we'll implement a simple prompt-based edit
+      const newName = prompt('Enter new location name:', location.name);
+      if (newName && newName.trim() && newName !== location.name) {
+        this.isLoading = true;
+        
+        const updateData = {
+          ...location,
+          name: newName.trim()
+        };
+        
+        this.locationService.updateLocation(location.id, updateData)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              if (response.success) {
+                // Update the location in the current list
+                const index = this.locations.findIndex(l => l.id === location.id);
+                if (index !== -1) {
+                  this.locations[index] = response.data.location;
+                }
+              } else {
+                alert('Failed to update location: ' + (response.message || 'Unknown error'));
+              }
+              this.isLoading = false;
+            },
+            error: (error) => {
+              console.error('Error updating location:', error);
+              alert('Error updating location: ' + (error.error?.message || 'Unknown error'));
+              this.isLoading = false;
+            }
+          });
+      }
+    }
   }
 
   deleteLocation(location: Location) {
     if (confirm(`Are you sure you want to delete "${location.name}"?`)) {
+      this.isLoading = true;
+      
       this.locationService.deleteLocation(location.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response) => {
             if (response.success) {
-              this.loadLocations(this.pagination.current_page);
+              // Remove the location from the current list
+              this.locations = this.locations.filter(l => l.id !== location.id);
+              
+              // Update pagination totals
+              this.pagination.total = Math.max(0, this.pagination.total - 1);
+              this.pagination.to = Math.max(0, this.pagination.to - 1);
+              
+              // If current page is empty and not the first page, go to previous page
+              if (this.locations.length === 0 && this.pagination.current_page > 1) {
+                this.loadLocations(this.pagination.current_page - 1);
+              }
+            } else {
+              alert('Failed to delete location: ' + (response.message || 'Unknown error'));
             }
+            this.isLoading = false;
           },
           error: (error) => {
             console.error('Error deleting location:', error);
+            alert('Error deleting location: ' + (error.error?.message || 'Unknown error'));
+            this.isLoading = false;
           }
         });
     }
