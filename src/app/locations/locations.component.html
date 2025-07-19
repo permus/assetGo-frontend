@@ -109,9 +109,57 @@
           <!-- Asset Count -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Asset Count</label>
+            <select formControlName="asset_count" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Any Count</option>
+              <option value="0">No Assets</option>
+              <option value="1-10">1-10 Assets</option>
+              <option value="11-50">11-50 Assets</option>
+              <option value="51+">51+ Assets</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+            Clear Filters
+          </button>
+          <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700">
+            Apply Filters
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="px-6 py-6">
+    <!-- View Toggle -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="text-sm text-gray-600">
+        Showing {{locations.length}} locations
+      </div>
+      <div class="flex items-center space-x-2">
+        <button 
+          (click)="currentListView = 'grid'"
+          [class]="currentListView === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-300'"
+          class="px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+          </svg>
+        </button>
+        <button 
+          (click)="currentListView = 'list'"
+          [class]="currentListView === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-300'"
+          class="px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
 
     <!-- Grid View -->
-    <div *ngIf="!loading && currentListView === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div *ngIf="!loading && currentListView === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
       <div *ngFor="let location of locations" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
         <!-- Location Header -->
         <div class="flex items-start justify-between mb-4">
@@ -201,97 +249,22 @@
         </div>
       </div>
     </div>
-      <!-- Grid View -->
-      <div *ngIf="!loading && currentListView === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div *ngFor="let location of locations" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <!-- Location Header -->
-          <div class="flex items-start justify-between mb-4">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <img [src]="'assets/icons/' + location.type.icon + '.svg'" [alt]="location.type.name" class="w-6 h-6">
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-900">{{location.name}}</h3>
-                <div class="flex items-center space-x-2 mt-1">
-                  <span 
-                    [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getHierarchyLevelColor(location.hierarchy_level) + '-100 text-' + getHierarchyLevelColor(location.hierarchy_level) + '-800'">
-                    {{getHierarchyLevelBadge(location.hierarchy_level)}}
-                  </span>
-                  <span class="text-xs text-gray-500">{{location.type.name}}</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center space-x-1 text-gray-400">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-              </svg>
-              <span class="text-sm">{{location.asset_summary?.asset_count || 0}}</span>
-            </div>
-          </div>
 
-          <!-- Location Details -->
-          <div class="space-y-2 mb-4">
-            <div *ngIf="location.parent" class="flex items-center text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              {{location.parent.name}}
-            </div>
-            <div *ngIf="location.address" class="flex items-center text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              {{location.address}}
-            </div>
-            <div *ngIf="location.description" class="text-sm text-gray-600">
-              {{location.description}}
-            </div>
-          </div>
-
-          <!-- Stats -->
-          <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
-            <div class="flex items-center space-x-4">
-              <div class="flex items-center space-x-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                </svg>
-                <span>{{location.children?.length || 0}}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex items-center space-x-2">
-            <button 
-              (click)="viewLocation(location)"
-              class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-              <span>View Details</span>
-              <span *ngIf="location.children?.length" class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">({{location.children.length}})</span>
-            </button>
-            
-            <button 
-              (click)="editLocation(location)"
-              class="p-2 text-gray-400 hover:text-blue-600 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-            
-            <button 
-              (click)="deleteLocation(location)"
-              class="p-2 text-gray-400 hover:text-red-600 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </button>
-          </div>
+    <!-- List View -->
+    <div *ngIf="!loading && currentListView === 'list'" class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <!-- Table Header -->
+      <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div class="grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <div class="col-span-3">Location</div>
+          <div class="col-span-2">Type</div>
+          <div class="col-span-2">Parent</div>
+          <div class="col-span-1">Level</div>
+          <div class="col-span-1">Assets</div>
+          <div class="col-span-1">Children</div>
+          <div class="col-span-2">Actions</div>
         </div>
       </div>
+      
       <!-- Table Body -->
       <div class="divide-y divide-gray-200">
         <div *ngFor="let location of locations" class="px-6 py-4 hover:bg-gray-50 transition-colors">
@@ -401,37 +374,38 @@
     </div>
 
     <!-- Pagination -->
-    <div *ngIf="!loading && locations.length > 0 && pagination.last_page > 1" class="flex items-center justify-between mt-6">
+    <div *ngIf="!loading && locations.length > 0 && pagination?.last_page > 1" class="flex items-center justify-between mt-6">
       <div class="text-sm text-gray-700">
-        Showing {{pagination.from}} to {{pagination.to}} of {{pagination.total}} results
+        Showing {{pagination?.from}} to {{pagination?.to}} of {{pagination?.total}} results
       </div>
       
       <div class="flex items-center space-x-2">
         <button 
-          (click)="goToPage(pagination.current_page - 1)"
-          [disabled]="pagination.current_page === 1"
+          (click)="goToPage(pagination?.current_page - 1)"
+          [disabled]="pagination?.current_page === 1"
           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
           Previous
         </button>
         
         <div class="flex items-center space-x-1">
           <button 
-            *ngFor="let page of [].constructor(pagination.last_page); let i = index"
+            *ngFor="let page of [].constructor(pagination?.last_page); let i = index"
             (click)="goToPage(i + 1)"
-            [class]="pagination.current_page === (i + 1) ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'"
+            [class]="pagination?.current_page === (i + 1) ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'"
             class="px-3 py-2 text-sm font-medium border border-gray-300 rounded-md">
             {{i + 1}}
           </button>
         </div>
         
         <button 
-          (click)="goToPage(pagination.current_page + 1)"
-          [disabled]="pagination.current_page === pagination.last_page"
+          (click)="goToPage(pagination?.current_page + 1)"
+          [disabled]="pagination?.current_page === pagination?.last_page"
           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
           Next
         </button>
       </div>
     </div>
+  </div>
   </div>
 
   <!-- Add Location Modal -->
