@@ -62,7 +62,7 @@ export class AddLocationModalComponent implements OnInit {
   }
 
   getTypeDescription(type: LocationType): string {
-    return type.description || `${type.category} - Level ${type.hierarchy_level}`;
+    return type.description || `${type.category`;
   }
 
   getTypeIcon(type: LocationType): string {
