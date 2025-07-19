@@ -51,6 +51,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   // Forms
   searchForm: FormGroup;
   filtersForm: FormGroup;
+  jumpToPage: number | undefined;
   
   // Filters
   sortOptions = [
