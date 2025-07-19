@@ -24,7 +24,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   loading = false;
   showFilters = false;
   currentView: 'grid' | 'tree' | 'analytics' | 'mgmt' = 'grid';
-  currentListView: 'grid' | 'list' = 'list';
+  currentListView: 'grid' | 'list' = 'grid';
   
   // Modal state
   showAddLocationModal = false;
