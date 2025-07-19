@@ -52,17 +52,17 @@
             <div class="text-left">
               <div class="font-medium text-gray-900">{{location.name}}</div>
               <div class="text-sm text-gray-500">{{location.type.name}}</div>
-              <div *ngIf="location.children && location.children.length > 0" class="text-xs text-red-600 mt-1">
-                ⚠️ This location has {{location.children.length}} child location(s)
+              <div *ngIf="location.children && location.children?.length > 0" class="text-xs text-red-600 mt-1">
+                ⚠️ This location has {{location.children?.length}} child location(s)
               </div>
             </div>
           </div>
         </div>
 
         <!-- Warning for child locations -->
-        <div *ngIf="location?.children && location.children.length > 0" class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+        <div *ngIf="location?.children && location.children?.length > 0" class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
           <p class="text-red-800 text-sm">
-            <strong>Warning:</strong> Deleting this location will also delete all {{location.children.length}} child location(s) and their associated data.
+            <strong>Warning:</strong> Deleting this location will also delete all {{location.children?.length}} child location(s) and their associated data.
           </p>
         </div>
       </div>
