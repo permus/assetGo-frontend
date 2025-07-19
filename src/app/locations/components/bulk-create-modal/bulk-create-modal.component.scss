@@ -3,9 +3,13 @@
   backdrop-filter: blur(4px);
 }
 
-.table-container {
-  max-height: 60vh;
-  overflow-y: auto;
+.location-card {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #e5e7eb;
+  }
 }
 
 .form-input {
@@ -21,28 +25,17 @@
   }
 }
 
-.toolbar-button {
-  transition: all 0.2s ease-in-out;
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-}
-
-.table-row {
-  transition: background-color 0.15s ease-in-out;
-  
-  &:hover {
-    background-color: #f8fafc;
-  }
+.card-header {
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .action-button {
   transition: all 0.15s ease-in-out;
   
   &:hover:not(:disabled) {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 }
 
@@ -59,54 +52,18 @@
   }
 }
 
-// Sticky header
-.sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-// Custom scrollbar
-.table-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.table-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-// Responsive adjustments
-@media (max-width: 768px) {
-  .modal-container {
-    margin: 1rem;
-    max-height: calc(100vh - 2rem);
-  }
+// Custom select styling
+select {
+  background-image: none;
   
-  .table-container {
-    max-height: 50vh;
-  }
-  
-  .toolbar-buttons {
-    flex-direction: column;
-    gap: 0.5rem;
+  &:focus {
+    outline: none;
   }
 }
 
 // Form validation styles
 .ng-invalid.ng-touched {
-  border-color: #ef4444;
+  border-color: #ef4444 !important;
 }
 
 .ng-valid.ng-touched {
@@ -127,4 +84,61 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+// Card styling
+.location-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .modal-container {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .location-card {
+    padding: 1rem;
+  }
+}
+
+// Smooth transitions
+* {
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+// Focus states
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+// Placeholder styling
+::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+// Button hover effects
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
 }

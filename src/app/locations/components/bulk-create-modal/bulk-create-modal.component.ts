@@ -62,7 +62,10 @@ export class BulkCreateModalComponent implements OnInit {
 
   ngOnInit() {
     this.loadLocationTypes();
-    this.addLocationRow(); // Start with one row
+    // Start with 3 rows as shown in the design
+    this.addLocationRow();
+    this.addLocationRow();
+    this.addLocationRow();
   }
 
   get locationsArray(): FormArray {
@@ -99,20 +102,6 @@ export class BulkCreateModalComponent implements OnInit {
     if (this.locationsArray.length > 1) {
       this.locationsArray.removeAt(index);
     }
-  }
-
-  addMultipleRows() {
-    for (let i = 0; i < 5; i++) {
-      this.addLocationRow();
-    }
-  }
-
-  clearAllRows() {
-    while (this.locationsArray.length > 1) {
-      this.locationsArray.removeAt(this.locationsArray.length - 1);
-    }
-    // Reset the remaining row
-    this.locationsArray.at(0)?.reset();
   }
 
   getLocationTypeName(typeId: number): string {
@@ -159,12 +148,14 @@ export class BulkCreateModalComponent implements OnInit {
   }
 
   resetForm() {
-    // Clear all rows except the first one
-    while (this.locationsArray.length > 1) {
-      this.locationsArray.removeAt(1);
+    // Clear all rows and start with 3 empty rows
+    while (this.locationsArray.length > 0) {
+      this.locationsArray.removeAt(0);
     }
-    // Reset the first row
-    this.locationsArray.at(0)?.reset();
+    // Add 3 new empty rows
+    this.addLocationRow();
+    this.addLocationRow();
+    this.addLocationRow();
     this.errorMessage = '';
     this.successCount = 0;
   }
