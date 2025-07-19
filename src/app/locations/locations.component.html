@@ -87,11 +87,7 @@
         </svg>
 
         <!-- Filters Dropdown -->
-        <div *ngIf="showFilters" class="absolute top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 py-4 z-50">
-          <div class="px-4 pb-3 border-b border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-900">Advanced Filters</h3>
-          </div>
-
+        <div *ngIf="showFilters" class="absolute text-start top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 py-4 z-50">
           <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()" class="p-4">
             <div class="space-y-4">
               <!-- Location Type -->

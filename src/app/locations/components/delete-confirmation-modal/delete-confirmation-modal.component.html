@@ -1,5 +1,5 @@
 <!-- Delete Confirmation Modal -->
-<div *ngIf="isOpen" 
+<div *ngIf="isOpen"
      class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4"
      [@backdropAnimation]>
   <!-- Modal Container -->
@@ -39,10 +39,10 @@
       <div class="text-center mb-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Are you sure?</h3>
         <p class="text-gray-600 mb-4">
-          You are about to delete the location <strong>"{{location?.name}}"</strong>. 
+          You are about to delete the location <strong>"{{location?.name}}"</strong>.
           This action cannot be undone.
         </p>
-        
+
         <!-- Location Details -->
         <div *ngIf="location" class="bg-gray-50 rounded-lg p-4 mb-4">
           <div class="flex items-center space-x-3">
@@ -57,13 +57,6 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Warning for child locations -->
-        <div *ngIf="location.children?.length" class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-          <p class="text-red-800 text-sm">
-            <strong>Warning:</strong> Deleting this location will also delete all {{location.children?.length}} child location(s) and their associated data.
-          </p>
         </div>
       </div>
 
