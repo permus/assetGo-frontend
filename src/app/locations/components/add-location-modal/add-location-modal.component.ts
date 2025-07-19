@@ -42,6 +42,7 @@ import { LocationService, LocationType, Location } from '../../services/location
 })
 export class AddLocationModalComponent implements OnInit {
   @Input() isOpen = false;
+  @Input() parentLocation: Location | null = null;
   @Output() closeModal = new EventEmitter<void>();
   @Output() locationCreated = new EventEmitter<Location>();
 
@@ -69,8 +70,9 @@ export class AddLocationModalComponent implements OnInit {
   }
 
   loadLocationTypes() {
-    // Get only top-level types (level 0) for creating new facilities
-    this.locationService.getLocationTypes(0).subscribe({
+    // Get location types based on parent location hierarchy level
+    const hierarchyLevel = this.parentLocation ? this.parentLocation.hierarchy_level + 1 : 0;
+    this.locationService.getLocationTypes(hierarchyLevel).subscribe({
       next: (response) => {
         if (response.success) {
           this.locationTypes = response.data.types;
@@ -106,7 +108,7 @@ export class AddLocationModalComponent implements OnInit {
 
       const locationData = {
         ...this.locationForm.value,
-        parent_id: null // For now, creating top-level locations
+        parent_id: this.parentLocation ? this.parentLocation.id : null
       };
 
       this.locationService.createLocation(locationData).subscribe({

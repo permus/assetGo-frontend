@@ -34,11 +34,15 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Add New Facility</h3>
-        <p class="text-gray-600 text-sm">Create a new top-level facility or community</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+          {{parentLocation ? 'Add New Sub-location' : 'Add New Facility'}}
+        </h3>
+        <p class="text-gray-600 text-sm">
+          {{parentLocation ? 'Create a new sub-location under ' + parentLocation.name : 'Create a new top-level facility or community'}}
+        </p>
 
         <!-- Location Hierarchy Info -->
-        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+        <div *ngIf="!parentLocation" class="mt-4 p-4 bg-blue-50 rounded-lg">
           <p class="text-sm font-medium text-blue-900 mb-2">Location Hierarchy:</p>
           <div class="text-xs text-blue-700 space-y-1">
             <div><strong>Level 0:</strong> Communities, Campuses, Buildings</div>
@@ -46,6 +50,20 @@
             <div><strong>Level 2+:</strong> Rooms, Areas, Amenities</div>
           </div>
           <p class="text-xs text-blue-600 mt-2">Available types: 16 options including Community, Campus, and Buildings</p>
+        </div>
+        
+        <!-- Parent Location Info -->
+        <div *ngIf="parentLocation" class="mt-4 p-4 bg-green-50 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <img [src]="parentLocation.type.icon" [alt]="parentLocation.type.name" class="w-6 h-6">
+            </div>
+            <div class="text-left">
+              <p class="text-sm font-medium text-green-900">Parent Location:</p>
+              <p class="text-sm text-green-700">{{parentLocation.name}} ({{parentLocation.type.name}})</p>
+              <p class="text-xs text-green-600">Creating Level {{parentLocation.hierarchy_level + 1}} location</p>
+            </div>
+          </div>
         </div>
       </div>
 

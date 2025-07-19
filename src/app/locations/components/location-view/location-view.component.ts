@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LocationService, Location } from '../../services/location.service';
+import { AddLocationModalComponent } from '../add-location-modal/add-location-modal.component';
 
 @Component({
   selector: 'app-location-view',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, AddLocationModalComponent],
   templateUrl: './location-view.component.html',
   styleUrl: './location-view.component.scss'
 })
@@ -17,6 +18,9 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   location: Location | null = null;
   loading = true;
   error = '';
+  
+  // Modal state
+  showAddSubLocationModal = false;
   
   // Mock data for demonstration
   mockStats = {
@@ -127,8 +131,23 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   addSubLocation() {
-    // TODO: Implement add sub-location functionality
-    console.log('Add sub-location');
+    this.showAddSubLocationModal = true;
+  }
+  
+  closeAddSubLocationModal() {
+    this.showAddSubLocationModal = false;
+  }
+  
+  onSubLocationCreated(subLocation: Location) {
+    // Update the location's children count
+    if (this.location) {
+      if (!this.location.children) {
+        this.location.children = [];
+      }
+      this.location.children.push(subLocation);
+      this.updateMockStats();
+    }
+    this.showAddSubLocationModal = false;
   }
 
   regenerateQR() {
