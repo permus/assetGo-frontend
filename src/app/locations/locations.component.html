@@ -417,4 +417,12 @@
     (closeModal)="closeAddLocationModal()"
     (locationCreated)="onLocationCreated($event)">
   </app-add-location-modal>
+
+  <!-- Edit Location Modal -->
+  <app-edit-location-modal
+    [isOpen]="showEditLocationModal"
+    [location]="selectedLocation"
+    (closeModal)="closeEditLocationModal()"
+    (locationUpdated)="onLocationUpdated($event)">
+  </app-edit-location-modal>
 </div>

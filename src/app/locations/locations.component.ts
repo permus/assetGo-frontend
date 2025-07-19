@@ -5,10 +5,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { LocationService, Location, LocationType, LocationsResponse } from './services/location.service';
 import { AddLocationModalComponent } from './components/add-location-modal/add-location-modal.component';
+import { EditLocationModalComponent } from './components/edit-location-modal/edit-location-modal.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AddLocationModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, AddLocationModalComponent, EditLocationModalComponent],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'
@@ -28,6 +29,8 @@ export class LocationsComponent implements OnInit, OnDestroy {
   
   // Modal state
   showAddLocationModal = false;
+  showEditLocationModal = false;
+  selectedLocation: Location | null = null;
   
   // Pagination
   pagination = {
@@ -223,40 +226,8 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   // Actions
   editLocation(location: Location) {
-    if (confirm(`Are you sure you want to edit "${location.name}"?`)) {
-      // For now, we'll implement a simple prompt-based edit
-      const newName = prompt('Enter new location name:', location.name);
-      if (newName && newName.trim() && newName !== location.name) {
-        this.loading = true;
-        
-        const updateData = {
-          ...location,
-          name: newName.trim()
-        };
-        
-        this.locationService.updateLocation(location.id, updateData)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (response) => {
-              if (response.success) {
-                // Update the location in the current list
-                const index = this.locations.findIndex(l => l.id === location.id);
-                if (index !== -1) {
-                  this.locations[index] = response.data.location;
-                }
-              } else {
-                alert('Failed to update location: ' + (response.message || 'Unknown error'));
-              }
-              this.loading = false;
-            },
-            error: (error) => {
-              console.error('Error updating location:', error);
-              alert('Error updating location: ' + (error.error?.message || 'Unknown error'));
-              this.loading = false;
-            }
-          });
-      }
-    }
+    this.selectedLocation = location;
+    this.showEditLocationModal = true;
   }
 
   deleteLocation(location: Location) {
@@ -306,10 +277,25 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.showAddLocationModal = false;
   }
 
+  closeEditLocationModal() {
+    this.showEditLocationModal = false;
+    this.selectedLocation = null;
+  }
+
   onLocationCreated(location: Location) {
     // Refresh the locations list
     this.loadLocations(this.pagination.current_page);
     this.showAddLocationModal = false;
+  }
+
+  onLocationUpdated(updatedLocation: Location) {
+    // Update the location in the current list
+    const index = this.locations.findIndex(l => l.id === updatedLocation.id);
+    if (index !== -1) {
+      this.locations[index] = updatedLocation;
+    }
+    this.showEditLocationModal = false;
+    this.selectedLocation = null;
   }
 
   bulkActions() {
