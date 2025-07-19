@@ -19,6 +19,10 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   loading = true;
   error = '';
   
+  // Sublocation data
+  subLocations: Location[] = [];
+  subLocationsLoading = false;
+  
   // Modal state
   showAddSubLocationModal = false;
   
@@ -87,6 +91,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
           if (response.success) {
             this.location = response.data.location;
             this.updateMockStats();
+            this.loadSubLocations();
           } else {
             this.error = response.message || 'Failed to load location';
           }
@@ -99,12 +104,39 @@ export class LocationViewComponent implements OnInit, OnDestroy {
       });
   }
 
+  loadSubLocations() {
+    if (!this.location) return;
+    
+    this.subLocationsLoading = true;
+    
+    const params = {
+      parent_id: this.location.id,
+      per_page: 50 // Load more sublocations
+    };
+    
+    this.locationService.getLocations(params)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.subLocations = response.data.locations;
+            this.updateMockStats();
+          }
+          this.subLocationsLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading sub-locations:', error);
+          this.subLocationsLoading = false;
+        }
+      });
+  }
+
   updateMockStats() {
     if (this.location) {
       this.mockStats = {
         totalAssets: this.location.asset_summary?.asset_count || 0,
         healthScore: 100,
-        subLocations: this.location.children?.length || 0,
+        subLocations: this.subLocations.length,
         totalValue: this.location.asset_summary?.total_value || 0
       };
     }
@@ -139,14 +171,8 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
   
   onSubLocationCreated(subLocation: Location) {
-    // Update the location's children count
-    if (this.location) {
-      if (!this.location.children) {
-        this.location.children = [];
-      }
-      this.location.children.push(subLocation);
-      this.updateMockStats();
-    }
+    // Reload sublocations to get the updated list
+    this.loadSubLocations();
     this.showAddSubLocationModal = false;
   }
 
@@ -181,5 +207,19 @@ export class LocationViewComponent implements OnInit, OnDestroy {
       shield: 'blue'
     };
     return colors[type] || 'gray';
+  }
+
+  viewSubLocation(subLocation: Location) {
+    this.router.navigate(['/locations', subLocation.id]);
+  }
+
+  editSubLocation(subLocation: Location) {
+    // TODO: Implement edit sublocation functionality
+    console.log('Edit sublocation:', subLocation);
+  }
+
+  deleteSubLocation(subLocation: Location) {
+    // TODO: Implement delete sublocation functionality
+    console.log('Delete sublocation:', subLocation);
   }
 }
