@@ -118,7 +118,7 @@
               class="border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-sm">
               <div class="text-center">
                 <div class="mb-2 flex justify-center">
-                  <img [src]="type.icon" [alt]="type.name" class="w-8 h-8 text-gray-600">
+                  <img [src]="getTypeIcon(type)" [alt]="type.name" class="w-8 h-8">
                 </div>
                 <div class="font-medium text-gray-900 mb-1">{{type.name}}</div>
                 <div class="text-xs text-gray-500">{{getTypeDescription(type)}}</div>
