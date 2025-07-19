@@ -181,7 +181,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   // Filter Actions
   applyFilters() {
     this.loadLocations(1);
-    this.toggleFilters();
+    this.showFilters = false;
   }
 
   clearFilters() {
