@@ -62,11 +62,11 @@ export class AddLocationModalComponent implements OnInit {
   }
 
   getTypeDescription(type: LocationType): string {
-    return type.description || `${type.category`;
+    return type.description || `${type.category}`;
   }
 
   getTypeIcon(type: LocationType): string {
-    return `/assets/icons/${type.icon}.svg`;
+    return `assets/icons/${type.icon}.svg`;
   }
 
   onSubmit() {
