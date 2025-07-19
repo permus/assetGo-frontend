@@ -310,9 +310,11 @@ export class LocationsComponent implements OnInit, OnDestroy {
     const target = event.target as HTMLElement;
     const filterButton = target.closest('.filter-button');
     const filterDropdown = target.closest('.filter-dropdown');
+    const selectElement = target.closest('select');
+    const optionElement = target.tagName === 'OPTION';
     
-    // Close dropdown if click is outside both button and dropdown
-    if (!filterButton && !filterDropdown && this.showFilters) {
+    // Close dropdown if click is outside button, dropdown, select elements, and options
+    if (!filterButton && !filterDropdown && !selectElement && !optionElement && this.showFilters) {
       this.showFilters = false;
     }
   }
