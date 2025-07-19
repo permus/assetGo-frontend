@@ -528,11 +528,11 @@
             [min]="1"
             [max]="pagination.last_page"
             [(ngModel)]="jumpToPage"
-            (keyup.enter)="goToPage(jumpToPage)"
+            (keyup.enter)="goToPage(jumpToPage!)"
             class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="{{pagination.current_page}}">
           <button
-            (click)="goToPage(jumpToPage)"
+            (click)="goToPage(jumpToPage!)"
             [disabled]="!jumpToPage || jumpToPage < 1 || jumpToPage > pagination.last_page"
             class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
             Go
