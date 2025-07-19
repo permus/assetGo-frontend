@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { LocationService, LocationType, Location } from '../../services/location.service';
 
 @Component({
@@ -8,7 +9,36 @@ import { LocationService, LocationType, Location } from '../../services/location
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './edit-location-modal.component.html',
-  styleUrl: './edit-location-modal.component.scss'
+  styleUrl: './edit-location-modal.component.scss',
+  animations: [
+    trigger('backdropAnimation', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('150ms ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('150ms ease-in', style({ opacity: 0 }))
+      ])
+    ]),
+    trigger('modalAnimation', [
+      transition(':enter', [
+        style({ 
+          opacity: 0, 
+          transform: 'scale(0.7) translateY(-50px)' 
+        }),
+        animate('200ms ease-out', style({ 
+          opacity: 1, 
+          transform: 'scale(1) translateY(0)' 
+        }))
+      ]),
+      transition(':leave', [
+        animate('150ms ease-in', style({ 
+          opacity: 0, 
+          transform: 'scale(0.7) translateY(-50px)' 
+        }))
+      ])
+    ])
+  ]
 })
 export class EditLocationModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;

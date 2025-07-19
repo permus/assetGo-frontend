@@ -1,7 +1,10 @@
 <!-- Edit Location Modal Component HTML -->
-<div *ngIf="isOpen" class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4">
+<div *ngIf="isOpen" 
+     class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4 animate-fade-in"
+     [@backdropAnimation]>
   <!-- Modal Container -->
-  <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+  <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+       [@modalAnimation]>
     <!-- Modal Header -->
     <div class="flex items-center justify-between p-6 border-b border-gray-200">
       <div class="flex items-center space-x-3">
