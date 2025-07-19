@@ -227,7 +227,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       // For now, we'll implement a simple prompt-based edit
       const newName = prompt('Enter new location name:', location.name);
       if (newName && newName.trim() && newName !== location.name) {
-        this.isLoading = true;
+        this.loading = true;
         
         const updateData = {
           ...location,
@@ -247,12 +247,12 @@ export class LocationsComponent implements OnInit, OnDestroy {
               } else {
                 alert('Failed to update location: ' + (response.message || 'Unknown error'));
               }
-              this.isLoading = false;
+              this.loading = false;
             },
             error: (error) => {
               console.error('Error updating location:', error);
               alert('Error updating location: ' + (error.error?.message || 'Unknown error'));
-              this.isLoading = false;
+              this.loading = false;
             }
           });
       }
@@ -261,7 +261,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   deleteLocation(location: Location) {
     if (confirm(`Are you sure you want to delete "${location.name}"?`)) {
-      this.isLoading = true;
+      this.loading = true;
       
       this.locationService.deleteLocation(location.id)
         .pipe(takeUntil(this.destroy$))
@@ -282,12 +282,12 @@ export class LocationsComponent implements OnInit, OnDestroy {
             } else {
               alert('Failed to delete location: ' + (response.message || 'Unknown error'));
             }
-            this.isLoading = false;
+            this.loading = false;
           },
           error: (error) => {
             console.error('Error deleting location:', error);
             alert('Error deleting location: ' + (error.error?.message || 'Unknown error'));
-            this.isLoading = false;
+            this.loading = false;
           }
         });
     }
