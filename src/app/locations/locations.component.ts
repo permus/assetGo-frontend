@@ -6,10 +6,11 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { LocationService, Location, LocationType, LocationsResponse } from './services/location.service';
 import { AddLocationModalComponent } from './components/add-location-modal/add-location-modal.component';
 import { EditLocationModalComponent } from './components/edit-location-modal/edit-location-modal.component';
+import { DeleteConfirmationModalComponent } from './components/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AddLocationModalComponent, EditLocationModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'
@@ -30,6 +31,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   // Modal state
   showAddLocationModal = false;
   showEditLocationModal = false;
+  showDeleteConfirmationModal = false;
   selectedLocation: Location | null = null;
   
   // Pagination
@@ -231,37 +233,8 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   deleteLocation(location: Location) {
-    if (confirm(`Are you sure you want to delete "${location.name}"?`)) {
-      this.loading = true;
-      
-      this.locationService.deleteLocation(location.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (response) => {
-            if (response.success) {
-              // Remove the location from the current list
-              this.locations = this.locations.filter(l => l.id !== location.id);
-              
-              // Update pagination totals
-              this.pagination.total = Math.max(0, this.pagination.total - 1);
-              this.pagination.to = Math.max(0, this.pagination.to - 1);
-              
-              // If current page is empty and not the first page, go to previous page
-              if (this.locations.length === 0 && this.pagination.current_page > 1) {
-                this.loadLocations(this.pagination.current_page - 1);
-              }
-            } else {
-              alert('Failed to delete location: ' + (response.message || 'Unknown error'));
-            }
-            this.loading = false;
-          },
-          error: (error) => {
-            console.error('Error deleting location:', error);
-            alert('Error deleting location: ' + (error.error?.message || 'Unknown error'));
-            this.loading = false;
-          }
-        });
-    }
+    this.selectedLocation = location;
+    this.showDeleteConfirmationModal = true;
   }
 
   viewLocation(location: Location) {
@@ -282,6 +255,11 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.selectedLocation = null;
   }
 
+  closeDeleteConfirmationModal() {
+    this.showDeleteConfirmationModal = false;
+    this.selectedLocation = null;
+  }
+
   onLocationCreated(location: Location) {
     // Refresh the locations list
     this.loadLocations(this.pagination.current_page);
@@ -295,6 +273,23 @@ export class LocationsComponent implements OnInit, OnDestroy {
       this.locations[index] = updatedLocation;
     }
     this.showEditLocationModal = false;
+    this.selectedLocation = null;
+  }
+
+  onLocationDeleted(deletedLocation: Location) {
+    // Remove the location from the current list
+    this.locations = this.locations.filter(l => l.id !== deletedLocation.id);
+    
+    // Update pagination totals
+    this.pagination.total = Math.max(0, this.pagination.total - 1);
+    this.pagination.to = Math.max(0, this.pagination.to - 1);
+    
+    // If current page is empty and not the first page, go to previous page
+    if (this.locations.length === 0 && this.pagination.current_page > 1) {
+      this.loadLocations(this.pagination.current_page - 1);
+    }
+    
+    this.showDeleteConfirmationModal = false;
     this.selectedLocation = null;
   }
 

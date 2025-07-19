@@ -429,4 +429,12 @@
     (closeModal)="closeEditLocationModal()"
     (locationUpdated)="onLocationUpdated($event)">
   </app-edit-location-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-delete-confirmation-modal
+    [isOpen]="showDeleteConfirmationModal"
+    [location]="selectedLocation"
+    (closeModal)="closeDeleteConfirmationModal()"
+    (locationDeleted)="onLocationDeleted($event)">
+  </app-delete-confirmation-modal>
 </div>
