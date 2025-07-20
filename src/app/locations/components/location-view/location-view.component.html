@@ -496,4 +496,20 @@
     (closeModal)="closeAddSubLocationModal()"
     (locationCreated)="onSubLocationCreated($event)">
   </app-add-location-modal>
+
+  <!-- Edit Location Modal -->
+  <app-edit-location-modal
+    [isOpen]="showEditLocationModal"
+    [location]="location"
+    (closeModal)="closeEditLocationModal()"
+    (locationUpdated)="onLocationUpdated($event)">
+  </app-edit-location-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-delete-confirmation-modal
+    [isOpen]="showDeleteConfirmationModal"
+    [location]="location"
+    (closeModal)="closeDeleteConfirmationModal()"
+    (locationDeleted)="onLocationDeleted($event)">
+  </app-delete-confirmation-modal>
 </div>

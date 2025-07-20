@@ -4,11 +4,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LocationService, Location } from '../../services/location.service';
 import { AddLocationModalComponent } from '../add-location-modal/add-location-modal.component';
+import { EditLocationModalComponent } from '../edit-location-modal/edit-location-modal.component';
+import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-location-view',
   standalone: true,
-  imports: [CommonModule, RouterModule, AddLocationModalComponent],
+  imports: [CommonModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent],
   templateUrl: './location-view.component.html',
   styleUrl: './location-view.component.scss'
 })
@@ -25,6 +27,8 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   
   // Modal state
   showAddSubLocationModal = false;
+  showEditLocationModal = false;
+  showDeleteConfirmationModal = false;
   
   // Mock data for demonstration
   mockStats = {
@@ -147,9 +151,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   editLocation() {
-    if (this.location) {
-      this.router.navigate(['/locations', this.location.id, 'edit']);
-    }
+    this.showEditLocationModal = true;
   }
 
   addAsset() {
@@ -158,8 +160,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   deleteLocation() {
-    // TODO: Implement delete location functionality
-    console.log('Delete location');
+    this.showDeleteConfirmationModal = true;
   }
 
   addSubLocation() {
@@ -174,6 +175,26 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     // Reload sublocations to get the updated list
     this.loadSubLocations();
     this.showAddSubLocationModal = false;
+  }
+
+  closeEditLocationModal() {
+    this.showEditLocationModal = false;
+  }
+
+  onLocationUpdated(updatedLocation: Location) {
+    // Update the current location with the updated data
+    this.location = updatedLocation;
+    this.updateMockStats();
+    this.showEditLocationModal = false;
+  }
+
+  closeDeleteConfirmationModal() {
+    this.showDeleteConfirmationModal = false;
+  }
+
+  onLocationDeleted(deletedLocation: Location) {
+    // Navigate back to locations list after successful deletion
+    this.router.navigate(['/locations']);
   }
 
   regenerateQR() {
