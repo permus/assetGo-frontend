@@ -151,7 +151,7 @@ export class LocationService {
   }
 
   // Move locations
-  moveLocations(locationIds: number[], newParentId?: number): Observable<any> {
+  moveLocations(locationIds: number[], newParentId?: number | null): Observable<any> {
     return this.http.post(`${this.apiUrl}/move`, {
       location_ids: locationIds,
       new_parent_id: newParentId
