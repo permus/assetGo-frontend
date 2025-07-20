@@ -208,7 +208,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       this.loadHierarchy();
     }
     if (view === 'mgmt') {
-      this.loadManagementHierarchy();
+      this.fetchManagementHierarchy();
     }
   }
 
@@ -415,7 +415,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   // Management Tab Methods
-  loadManagementHierarchy() {
+  fetchManagementHierarchy() {
     this.managementLoading = true;
     
     this.locationService.getHierarchy()
@@ -529,7 +529,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.locationService.moveLocations(locationIds, undefined).subscribe({
       next: (response) => {
         if (response.success) {
-          this.loadManagementHierarchy();
+          this.fetchManagementHierarchy();
           this.clearSelection();
         }
       },
@@ -547,7 +547,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.locationService.moveLocations(locationIds, newParent.id).subscribe({
       next: (response) => {
         if (response.success) {
-          this.loadManagementHierarchy();
+          this.fetchManagementHierarchy();
           this.clearSelection();
         }
       },
@@ -565,7 +565,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.locationService.moveLocations(locationIds, undefined).subscribe({
       next: (response) => {
         if (response.success) {
-          this.loadManagementHierarchy();
+          this.fetchManagementHierarchy();
           this.clearSelection();
         }
       },
