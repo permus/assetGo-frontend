@@ -208,7 +208,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
       this.loadHierarchy();
     }
     if (view === 'mgmt') {
-      this.fetchManagementHierarchy();
+      this.loadManagementHierarchy();
     }
   }
 
@@ -403,10 +403,19 @@ export class LocationsComponent implements OnInit, OnDestroy {
     }
   }
 
-
+  getLocationTypeColor(typeName: string): string {
+    const colorMap: { [key: string]: string } = {
+      'Community': 'gray',
+      'Residential Building': 'blue',
+      'Floor': 'green',
+      'Garden': 'orange',
+      'Office Building': 'blue'
+    };
+    return colorMap[typeName] || 'gray';
+  }
 
   // Management Tab Methods
-  fetchManagementHierarchy() {
+  loadManagementHierarchy() {
     this.managementLoading = true;
     
     this.locationService.getHierarchy()
@@ -520,7 +529,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.locationService.moveLocations(locationIds, undefined).subscribe({
       next: (response) => {
         if (response.success) {
-          this.fetchManagementHierarchy();
+          this.loadManagementHierarchy();
           this.clearSelection();
         }
       },
@@ -538,7 +547,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.locationService.moveLocations(locationIds, newParent.id).subscribe({
       next: (response) => {
         if (response.success) {
-          this.fetchManagementHierarchy();
+          this.loadManagementHierarchy();
           this.clearSelection();
         }
       },
@@ -556,7 +565,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.locationService.moveLocations(locationIds, undefined).subscribe({
       next: (response) => {
         if (response.success) {
-          this.fetchManagementHierarchy();
+          this.loadManagementHierarchy();
           this.clearSelection();
         }
       },
