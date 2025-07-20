@@ -34,6 +34,14 @@ export class LocationsComponent implements OnInit, OnDestroy {
   currentListView: 'grid' | 'list' = 'grid';
   expandedNodes: Set<number> = new Set();
   
+  // Management tab state
+  selectedLocations: Set<number> = new Set();
+  draggedLocation: Location | null = null;
+  isDragging = false;
+  dropZoneActive = false;
+  managementHierarchy: any[] = [];
+  managementLoading = false;
+  
   // Modal state
   showAddLocationModal = false;
   showEditLocationModal = false;
@@ -198,6 +206,9 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.currentView = view;
     if (view === 'tree' && this.hierarchyData.length === 0) {
       this.loadHierarchy();
+    }
+    if (view === 'mgmt') {
+      this.loadManagementHierarchy();
     }
   }
 
