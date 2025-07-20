@@ -24,12 +24,15 @@ export class LocationsComponent implements OnInit, OnDestroy {
   // Data
   locations: Location[] = [];
   locationTypes: LocationType[] = [];
+  hierarchyData: any[] = [];
   
   // UI State
   loading = false;
+  hierarchyLoading = false;
   showFilters = false;
   currentView: 'grid' | 'tree' | 'analytics' | 'mgmt' = 'grid';
   currentListView: 'grid' | 'list' = 'grid';
+  expandedNodes: Set<number> = new Set();
   
   // Modal state
   showAddLocationModal = false;
@@ -100,6 +103,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.initializeSearchSubscription();
     this.loadLocationTypes();
     this.loadLocations();
+    this.loadHierarchy();
   }
 
   ngOnDestroy() {
@@ -171,9 +175,30 @@ export class LocationsComponent implements OnInit, OnDestroy {
       });
   }
 
+  loadHierarchy() {
+    this.hierarchyLoading = true;
+    
+    this.locationService.getHierarchy()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.hierarchyData = response.data.hierarchy;
+          }
+          this.hierarchyLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading hierarchy:', error);
+          this.hierarchyLoading = false;
+        }
+      });
+  }
   // View Controls
   setView(view: 'grid' | 'tree' | 'analytics' | 'mgmt') {
     this.currentView = view;
+    if (view === 'tree' && this.hierarchyData.length === 0) {
+      this.loadHierarchy();
+    }
   }
 
   setListView(view: 'grid' | 'list') {
@@ -331,9 +356,52 @@ export class LocationsComponent implements OnInit, OnDestroy {
   onLocationsCreated(locations: Location[]) {
     // Refresh the locations list
     this.loadLocations(this.pagination.current_page);
+    this.loadHierarchy(); // Refresh hierarchy as well
     this.showBulkCreateModal = false;
   }
 
+  // Tree View Methods
+  toggleNode(nodeId: number) {
+    if (this.expandedNodes.has(nodeId)) {
+      this.expandedNodes.delete(nodeId);
+    } else {
+      this.expandedNodes.add(nodeId);
+    }
+  }
+
+  isNodeExpanded(nodeId: number): boolean {
+    return this.expandedNodes.has(nodeId);
+  }
+
+  expandAll() {
+    this.hierarchyData.forEach(node => {
+      this.addAllNodeIds(node, this.expandedNodes);
+    });
+  }
+
+  collapseAll() {
+    this.expandedNodes.clear();
+  }
+
+  private addAllNodeIds(node: any, nodeSet: Set<number>) {
+    nodeSet.add(node.id);
+    if (node.children && node.children.length > 0) {
+      node.children.forEach((child: any) => {
+        this.addAllNodeIds(child, nodeSet);
+      });
+    }
+  }
+
+  getLocationTypeColor(typeName: string): string {
+    const colorMap: { [key: string]: string } = {
+      'Community': 'gray',
+      'Residential Building': 'blue',
+      'Floor': 'green',
+      'Garden': 'orange',
+      'Office Building': 'blue'
+    };
+    return colorMap[typeName] || 'gray';
+  }
   exportQR() {
     // TODO: Implement QR export
     console.log('Export QR');
