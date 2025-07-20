@@ -10,10 +10,11 @@ import { AddLocationModalComponent } from './components/add-location-modal/add-l
 import { EditLocationModalComponent } from './components/edit-location-modal/edit-location-modal.component';
 import { DeleteConfirmationModalComponent } from './components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { BulkCreateModalComponent } from './components/bulk-create-modal/bulk-create-modal.component';
+import { HierarchyManagementComponent } from './components/hierarchy-management/hierarchy-management.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent, HierarchyManagementComponent],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'
