@@ -58,7 +58,7 @@
   </div>
 
   <!-- Search and Filters -->
-  <div class="bg-white border-b border-gray-200 px-6 py-4">
+  <div *ngIf="currentView === 'grid'" class="bg-white border-b border-gray-200 px-6 py-4">
     <div class="flex items-center justify-between mb-4">
       <!-- Search -->
       <form [formGroup]="searchForm" class="flex-1 max-w-md">
@@ -145,8 +145,8 @@
 
   <!-- Content Area -->
   <div class="px-6 py-6">
-    <!-- View Toggle -->
-    <div class="flex items-center justify-between mb-6">
+    <!-- View Toggle (Only for Grid View) -->
+    <div *ngIf="currentView === 'grid'" class="flex items-center justify-between mb-6">
       <div class="text-sm text-gray-600">
         Showing {{locations.length}} locations
       </div>
@@ -170,7 +170,8 @@
       </div>
     </div>
 
-    <!-- Grid View -->
+    <!-- Grid View Content -->
+    <div *ngIf="currentView === 'grid'">
     <!-- Loading State -->
     <div *ngIf="loading" class="flex items-center justify-center py-20">
       <div class="text-center">
@@ -185,7 +186,7 @@
       </div>
     </div>
 
-    <div *ngIf="!loading && currentListView === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
+      <div *ngIf="!loading && currentListView === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
       <div *ngFor="let location of locations" class="relative bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer group">
         <!-- Top Section -->
         <div class="flex items-start justify-between mb-4">
@@ -273,8 +274,8 @@
       </div>
     </div>
 
-    <!-- List View -->
-    <div *ngIf="!loading && currentListView === 'list'" class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <!-- List View -->
+      <div *ngIf="!loading && currentListView === 'list'" class="bg-white rounded-lg shadow-sm border border-gray-200">
       <!-- Table Header -->
       <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
         <div class="grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -378,8 +379,8 @@
       </div>
     </div>
 
-    <!-- Empty State -->
-    <div *ngIf="!loading && locations.length === 0" class="text-center py-12">
+      <!-- Empty State -->
+      <div *ngIf="!loading && locations.length === 0" class="text-center py-12">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -397,23 +398,35 @@
         </button>
       </div>
     </div>
+    </div>
 
     <!-- Tree View -->
-    <div *ngIf="!loading && currentView === 'tree'" class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <!-- Tree Header -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h2 class="text-lg font-semibold text-gray-900">Location Hierarchy</h2>
+    <div *ngIf="currentView === 'tree'">
+      <!-- Tree View Header -->
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Location Hierarchy</h2>
         <div class="flex items-center space-x-3">
           <button
             (click)="expandAll()"
-            class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
+            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
             Expand All
           </button>
           <button
             (click)="collapseAll()"
-            class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
+            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
             Collapse All
           </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <!-- Tree Header -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+          <span class="text-lg font-semibold text-gray-900">Hierarchy Tree</span>
         </div>
       </div>
 
@@ -556,8 +569,10 @@
         </div>
       </div>
     </div>
-    <!-- Enhanced Pagination -->
-    <div *ngIf="!loading && locations.length > 0" class="mt-8 pt-6 border-t border-gray-200">
+    </div>
+
+    <!-- Enhanced Pagination (Only for Grid View) -->
+    <div *ngIf="currentView === 'grid' && !loading && locations.length > 0" class="mt-8 pt-6 border-t border-gray-200">
       <!-- Pagination Info and Per Page Selector -->
       <div class="flex items-center justify-between mb-4">
         <div class="text-sm text-gray-700">
