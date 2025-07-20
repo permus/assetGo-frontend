@@ -413,6 +413,201 @@ export class LocationsComponent implements OnInit, OnDestroy {
     };
     return colorMap[typeName] || 'gray';
   }
+
+  // Management Tab Methods
+  loadManagementHierarchy() {
+    this.managementLoading = true;
+    
+    this.locationService.getHierarchy()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.managementHierarchy = response.data.hierarchy;
+          }
+          this.managementLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading management hierarchy:', error);
+          this.managementLoading = false;
+        }
+      });
+  }
+
+  // Selection Methods
+  toggleLocationSelection(locationId: number, event?: MouseEvent) {
+    if (event?.ctrlKey || event?.metaKey) {
+      // Multi-select with Ctrl/Cmd
+      if (this.selectedLocations.has(locationId)) {
+        this.selectedLocations.delete(locationId);
+      } else {
+        this.selectedLocations.add(locationId);
+      }
+    } else {
+      // Single select
+      this.selectedLocations.clear();
+      this.selectedLocations.add(locationId);
+    }
+  }
+
+  isLocationSelected(locationId: number): boolean {
+    return this.selectedLocations.has(locationId);
+  }
+
+  clearSelection() {
+    this.selectedLocations.clear();
+  }
+
+  getSelectedCount(): number {
+    return this.selectedLocations.size;
+  }
+
+  // Drag and Drop Methods
+  onDragStart(event: DragEvent, location: any) {
+    this.draggedLocation = location;
+    this.isDragging = true;
+    
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', location.id.toString());
+    }
+  }
+
+  onDragEnd(event: DragEvent) {
+    this.draggedLocation = null;
+    this.isDragging = false;
+    this.dropZoneActive = false;
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+  }
+
+  onDragEnter(event: DragEvent) {
+    event.preventDefault();
+    this.dropZoneActive = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    // Only deactivate if leaving the actual drop zone
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = event.clientX;
+    const y = event.clientY;
+    
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      this.dropZoneActive = false;
+    }
+  }
+
+  onDropToRoot(event: DragEvent) {
+    event.preventDefault();
+    this.dropZoneActive = false;
+    
+    if (this.draggedLocation) {
+      this.moveLocationToRoot(this.draggedLocation);
+    }
+  }
+
+  onDropToParent(event: DragEvent, targetLocation: any) {
+    event.preventDefault();
+    
+    if (this.draggedLocation && this.draggedLocation.id !== targetLocation.id) {
+      this.moveLocationToParent(this.draggedLocation, targetLocation);
+    }
+  }
+
+  // Move Operations
+  moveLocationToRoot(location: any) {
+    const locationIds = this.selectedLocations.has(location.id) 
+      ? Array.from(this.selectedLocations)
+      : [location.id];
+
+    this.locationService.moveLocations(locationIds, undefined).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadManagementHierarchy();
+          this.clearSelection();
+        }
+      },
+      error: (error) => {
+        console.error('Error moving locations to root:', error);
+      }
+    });
+  }
+
+  moveLocationToParent(location: any, newParent: any) {
+    const locationIds = this.selectedLocations.has(location.id) 
+      ? Array.from(this.selectedLocations)
+      : [location.id];
+
+    this.locationService.moveLocations(locationIds, newParent.id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadManagementHierarchy();
+          this.clearSelection();
+        }
+      },
+      error: (error) => {
+        console.error('Error moving locations:', error);
+      }
+    });
+  }
+
+  // Bulk Operations
+  bulkMoveToRoot() {
+    if (this.selectedLocations.size === 0) return;
+    
+    const locationIds = Array.from(this.selectedLocations);
+    this.locationService.moveLocations(locationIds, undefined).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadManagementHierarchy();
+          this.clearSelection();
+        }
+      },
+      error: (error) => {
+        console.error('Error bulk moving to root:', error);
+      }
+    });
+  }
+
+  bulkDelete() {
+    if (this.selectedLocations.size === 0) return;
+    
+    if (confirm(`Are you sure you want to delete ${this.selectedLocations.size} selected locations?`)) {
+      // Implement bulk delete functionality
+      console.log('Bulk delete:', Array.from(this.selectedLocations));
+    }
+  }
+
+  // Helper Methods
+  getLocationIcon(type: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Community': 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z',
+      'Residential Building': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+      'Floor': 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
+      'Office Building': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+      'Garden': 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'
+    };
+    return iconMap[type] || iconMap['Community'];
+  }
+
+  getLocationTypeColor(typeName: string): string {
+    const colorMap: { [key: string]: string } = {
+      'Community': 'gray',
+      'Residential Building': 'blue',
+      'Floor': 'green',
+      'Garden': 'orange',
+      'Office Building': 'blue',
+      'Apartment': 'purple'
+    };
+    return colorMap[typeName] || 'gray';
+  }
+
   exportQR() {
     // TODO: Implement QR export
     console.log('Export QR');
