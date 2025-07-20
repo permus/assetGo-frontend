@@ -1,0 +1,198 @@
+// Hierarchy Management Component Styles
+.hierarchy-management {
+  .hierarchy-card {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  .drag-handle {
+    opacity: 0.6;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      opacity: 1;
+      background-color: #f3f4f6;
+    }
+  }
+
+  // Drag and drop states
+  .dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+  }
+
+  .drop-zone-active {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff !important;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 2px dashed #3b82f6;
+      border-radius: 0.5rem;
+      pointer-events: none;
+    }
+  }
+
+  .drop-target {
+    background-color: #eff6ff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+
+  // Selection states
+  .selected {
+    background-color: #eff6ff !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+
+  // Level styling
+  .level-0 {
+    border-left: 4px solid #3b82f6;
+  }
+
+  .level-1 {
+    border-left: 4px solid #10b981;
+    margin-left: 1rem;
+  }
+
+  .level-2 {
+    border-left: 4px solid #f59e0b;
+    margin-left: 2rem;
+  }
+
+  // Hover effects
+  .node-card {
+    transition: all 0.15s ease-in-out;
+    
+    &:hover {
+      background-color: #f8fafc;
+      border-color: #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  // Badge styling
+  .level-badge {
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  // Icon styling
+  .node-icon {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  // Multi-select indicator
+  .multi-select-info {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #1f2937;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    z-index: 50;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  // Loading animation
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .hierarchy-card {
+      margin: 0.5rem;
+    }
+    
+    .drag-handle {
+      display: none; // Hide drag handles on mobile
+    }
+    
+    .level-1 {
+      margin-left: 0.5rem;
+    }
+    
+    .level-2 {
+      margin-left: 1rem;
+    }
+  }
+
+  // Print styles
+  @media print {
+    .drag-handle,
+    .multi-select-info {
+      display: none;
+    }
+  }
+}
+
+// Custom scrollbar
+.hierarchy-management {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+}
+
+// Drag preview styling
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background: #f3f4f6;
+  border: 2px dashed #d1d5db;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
