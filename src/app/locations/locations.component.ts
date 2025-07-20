@@ -403,16 +403,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getLocationTypeColor(typeName: string): string {
-    const colorMap: { [key: string]: string } = {
-      'Community': 'gray',
-      'Residential Building': 'blue',
-      'Floor': 'green',
-      'Garden': 'orange',
-      'Office Building': 'blue'
-    };
-    return colorMap[typeName] || 'gray';
-  }
+
 
   // Management Tab Methods
   fetchManagementHierarchy() {
