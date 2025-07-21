@@ -75,16 +75,18 @@
       </form>
 
       <!-- Filters Toggle -->
-      <button
-        (click)="toggleFilters()"
-        class="filter-button relative flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
-        </svg>
-        <span>Filters</span>
-        <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showFilters" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
+      <div class="relative">
+        <button
+          (click)="toggleFilters()"
+          class="filter-button relative flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
+          </svg>
+          <span>Filters</span>
+          <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showFilters" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
 
         <!-- Filters Dropdown -->
         <div *ngIf="showFilters" class="filter-dropdown absolute text-start top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 py-4 z-50">
@@ -137,7 +139,7 @@
             </div>
           </form>
         </div>
-      </button>
+      </div>
     </div>
 
   </div>
@@ -192,7 +194,8 @@
         <div class="flex items-start justify-between mb-4">
           <!-- Left: Icon and Title -->
           <div class="flex items-start space-x-3">
-            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors duration-300">
+            <!--w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200-->
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
               <img [src]="location.type.icon" [alt]="location.type.name" class="w-7 h-7">
             </div>
             <div>
@@ -442,7 +445,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <!-- Expand/Collapse Icon -->
-                <button 
+                <button
                   *ngIf="node.children && node.children.length > 0"
                   (click)="toggleNode(node.id)"
                   class="w-4 h-4 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
@@ -483,13 +486,13 @@
             </div>
 
             <!-- Child Nodes -->
-            <div *ngIf="isNodeExpanded(node.id) && node.children && node.children.length > 0" 
+            <div *ngIf="isNodeExpanded(node.id) && node.children && node.children.length > 0"
                  class="mt-4 ml-7 space-y-3">
               <ng-container *ngFor="let child of node.children">
                 <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
                   <div class="flex items-center space-x-3">
                     <!-- Child Expand/Collapse Icon -->
-                    <button 
+                    <button
                       *ngIf="child.children && child.children.length > 0"
                       (click)="toggleNode(child.id)"
                       class="w-4 h-4 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
@@ -529,9 +532,9 @@
                 </div>
 
                 <!-- Grandchild Nodes -->
-                <div *ngIf="isNodeExpanded(child.id) && child.children && child.children.length > 0" 
+                <div *ngIf="isNodeExpanded(child.id) && child.children && child.children.length > 0"
                      class="ml-7 space-y-2">
-                  <div *ngFor="let grandchild of child.children" 
+                  <div *ngFor="let grandchild of child.children"
                        class="flex items-center space-x-3 py-2 px-3 bg-white rounded border border-gray-100">
                     <!-- Grandchild Dot -->
                     <div class="w-4 h-4 flex items-center justify-center">
@@ -588,7 +591,7 @@
           </button>
         </div>
       </div>
-      
+
       <div class="text-center py-12">
         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -607,11 +610,11 @@
         <div class="text-sm text-gray-700">
           Showing <span class="font-medium">{{pagination.from}}</span> to <span class="font-medium">{{pagination.to}}</span> of <span class="font-medium">{{pagination.total}}</span> results
         </div>
-        
+
         <div class="flex items-center space-x-2 text-sm text-gray-600">
           <span>Show</span>
-          <select 
-            [(ngModel)]="pagination.per_page" 
+          <select
+            [(ngModel)]="pagination.per_page"
             (change)="changePerPage($event)"
             class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
             <option value="10">10</option>
@@ -648,7 +651,7 @@
               class="flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
               1
             </button>
-            
+
             <!-- Ellipsis before visible pages -->
             <span *ngIf="getVisiblePages()[0] > 2" class="flex items-center justify-center w-10 h-10 text-gray-400">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -657,7 +660,7 @@
                 <circle cx="17" cy="10" r="1.5"></circle>
               </svg>
             </span>
-            
+
             <!-- Visible page numbers -->
             <button
               *ngFor="let page of getVisiblePages()"
@@ -667,7 +670,7 @@
               [title]="'Page ' + page">
               {{page}}
             </button>
-            
+
             <!-- Ellipsis after visible pages -->
             <span *ngIf="getVisiblePages()[getVisiblePages().length - 1] < pagination.last_page - 1" class="flex items-center justify-center w-10 h-10 text-gray-400">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -676,7 +679,7 @@
                 <circle cx="17" cy="10" r="1.5"></circle>
               </svg>
             </span>
-            
+
             <!-- Last page (if not in visible range) -->
             <button
               *ngIf="getVisiblePages()[getVisiblePages().length - 1] < pagination.last_page"
