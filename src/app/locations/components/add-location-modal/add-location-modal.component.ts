@@ -183,6 +183,7 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
       this.autocomplete = null;
     }
     this.isOpen = false;
+  }
   public toggleShowAllTypes() {
     this.showAllTypes = !this.showAllTypes;
   }
