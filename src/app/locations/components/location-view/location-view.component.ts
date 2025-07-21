@@ -21,6 +21,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   location: Location | null = null;
   loading = true;
   error = '';
+  ancestors: Location[] = [];
 
   // Sublocation data
   subLocations: Location[] = [];
@@ -96,6 +97,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success) {
             this.location = response.data.location;
+            this.ancestors = response.data.ancestors || [];
             this.updateMockStats();
             this.loadSubLocations();
           } else {
