@@ -6,6 +6,7 @@ import { LocationService, Location } from '../../services/location.service';
 import { AddLocationModalComponent } from '../add-location-modal/add-location-modal.component';
 import { EditLocationModalComponent } from '../edit-location-modal/edit-location-modal.component';
 import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
+import { Location as angularLocation } from '@angular/common';
 
 @Component({
   selector: 'app-location-view',
@@ -65,7 +66,8 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private angularLocation: angularLocation,
   ) {}
 
   ngOnInit() {
@@ -147,7 +149,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/locations']);
+    this.angularLocation.back();
   }
 
   editLocation() {
@@ -279,6 +281,16 @@ export class LocationViewComponent implements OnInit, OnDestroy {
 
   viewSubLocation(subLocation: Location) {
     this.router.navigate(['/locations', subLocation.id]);
+    setTimeout(() => {
+      this.route.params
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(params => {
+          const locationId = params['id'];
+          if (locationId) {
+            this.loadLocation(parseInt(locationId));
+          }
+        });
+    },500)
   }
 
   editSubLocation(subLocation: Location) {
