@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { LocationService, LocationType, Location } from '../../services/location.service';
+import { GooglePlacesService, PlaceResult } from '../../../shared/services/google-places.service';
+import { AfterViewInit, ViewChild, ElementRef, QueryList, ViewChildren } from '@angular/core';
 
 @Component({
   selector: 'app-bulk-create-modal',
@@ -40,20 +42,23 @@ import { LocationService, LocationType, Location } from '../../services/location
     ])
   ]
 })
-export class BulkCreateModalComponent implements OnInit {
+export class BulkCreateModalComponent implements OnInit, AfterViewInit {
   @Input() isOpen = false;
   @Output() closeModal = new EventEmitter<void>();
   @Output() locationsCreated = new EventEmitter<Location[]>();
+  @ViewChildren('addressInput') addressInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   bulkForm: FormGroup;
   locationTypes: LocationType[] = [];
   isLoading = false;
   errorMessage = '';
   successCount = 0;
+  autocompleteInstances: any[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private googlePlacesService: GooglePlacesService
   ) {
     this.bulkForm = this.fb.group({
       locations: this.fb.array([])
@@ -66,6 +71,12 @@ export class BulkCreateModalComponent implements OnInit {
     this.addLocationRow();
     this.addLocationRow();
     this.addLocationRow();
+  }
+
+  ngAfterViewInit() {
+    if (this.isOpen) {
+      this.initializeAllAutocomplete();
+    }
   }
 
   get locationsArray(): FormArray {
@@ -101,6 +112,38 @@ export class BulkCreateModalComponent implements OnInit {
     this.locationsArray.push(this.createLocationFormGroup());
   }
 
+  private async initializeAllAutocomplete() {
+    // Wait for view to update
+    setTimeout(async () => {
+      if (this.addressInputs) {
+        this.addressInputs.forEach(async (inputRef, index) => {
+          if (inputRef?.nativeElement) {
+            try {
+              const autocomplete = await this.googlePlacesService.initializeAutocomplete(
+                inputRef.nativeElement,
+                (place: PlaceResult) => {
+                  const locationControl = this.locationsArray.at(index);
+                  if (locationControl) {
+                    locationControl.patchValue({
+                      address: place.formatted_address
+                    });
+                  }
+                },
+                {
+                  types: ['address'],
+                  componentRestrictions: { country: 'us' }
+                }
+              );
+              this.autocompleteInstances[index] = autocomplete;
+            } catch (error) {
+              console.error('Failed to initialize Google Places Autocomplete:', error);
+            }
+          }
+        });
+      }
+    }, 100);
+  }
+
   duplicateLocationRow(index: number) {
     if (this.locationsArray.length >= 5) {
       return; // Don't add more than 5 locations
@@ -113,6 +156,9 @@ export class BulkCreateModalComponent implements OnInit {
       duplicatedLocation.patchValue(sourceLocation.value);
       this.locationsArray.push(duplicatedLocation);
     }
+    
+    // Reinitialize autocomplete for new row
+    setTimeout(() => this.initializeAllAutocomplete(), 100);
   }
 
   removeLocationRow(index: number) {

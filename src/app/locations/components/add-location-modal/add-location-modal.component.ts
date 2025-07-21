@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { LocationService, LocationType, Location } from '../../services/location.service';
+import { GooglePlacesService, PlaceResult } from '../../../shared/services/google-places.service';
+import { AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-add-location-modal',
@@ -40,11 +42,12 @@ import { LocationService, LocationType, Location } from '../../services/location
     ])
   ]
 })
-export class AddLocationModalComponent implements OnInit {
+export class AddLocationModalComponent implements OnInit, AfterViewInit {
   @Input() isOpen = false;
   @Input() parentLocation: Location | null = null;
   @Output() closeModal = new EventEmitter<void>();
   @Output() locationCreated = new EventEmitter<Location>();
+  @ViewChild('addressInput', { static: false }) addressInput!: ElementRef<HTMLInputElement>;
 
   locationForm: FormGroup;
   locationTypes: LocationType[] = [];
@@ -52,10 +55,12 @@ export class AddLocationModalComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   showAllTypes = false;
+  autocomplete: any;
 
   constructor(
     private fb: FormBuilder,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private googlePlacesService: GooglePlacesService
   ) {
     this.locationForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -67,6 +72,12 @@ export class AddLocationModalComponent implements OnInit {
 
   ngOnInit() {
     this.loadLocationTypes();
+  }
+
+  ngAfterViewInit() {
+    if (this.isOpen) {
+      this.initializeAutocomplete();
+    }
   }
 
   loadLocationTypes() {
@@ -128,6 +139,27 @@ export class AddLocationModalComponent implements OnInit {
       });
     }
   }
+  private async initializeAutocomplete() {
+    if (this.addressInput?.nativeElement) {
+      try {
+        this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
+          this.addressInput.nativeElement,
+          (place: PlaceResult) => {
+            this.locationForm.patchValue({
+              address: place.formatted_address
+            });
+          },
+          {
+            types: ['address'],
+            componentRestrictions: { country: 'us' }
+          }
+        );
+      } catch (error) {
+        console.error('Failed to initialize Google Places Autocomplete:', error);
+      }
+    }
+  }
+
 
   closeModalHandler() {
     this.isOpen = false;
