@@ -16,20 +16,20 @@ import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/d
 })
 export class LocationViewComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   location: Location | null = null;
   loading = true;
   error = '';
-  
+
   // Sublocation data
   subLocations: Location[] = [];
   subLocationsLoading = false;
-  
+
   // Modal state
   showAddSubLocationModal = false;
   showEditLocationModal = false;
   showDeleteConfirmationModal = false;
-  
+
   // Mock data for demonstration
   mockStats = {
     totalAssets: 0,
@@ -37,7 +37,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     subLocations: 0,
     totalValue: 0
   };
-  
+
   mockActivities = [
     {
       type: 'maintenance',
@@ -87,7 +87,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   loadLocation(id: number) {
     this.loading = true;
     this.error = '';
-    
+
     this.locationService.getLocation(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -110,14 +110,14 @@ export class LocationViewComponent implements OnInit, OnDestroy {
 
   loadSubLocations() {
     if (!this.location) return;
-    
+
     this.subLocationsLoading = true;
-    
+
     const params = {
       parent_id: this.location.id,
       per_page: 50 // Load more sublocations
     };
-    
+
     this.locationService.getLocations(params)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -166,11 +166,11 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   addSubLocation() {
     this.showAddSubLocationModal = true;
   }
-  
+
   closeAddSubLocationModal() {
     this.showAddSubLocationModal = false;
   }
-  
+
   onSubLocationCreated(subLocation: Location) {
     // Reload sublocations to get the updated list
     this.loadSubLocations();
@@ -196,13 +196,6 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     // Navigate back to locations list after successful deletion
     this.router.navigate(['/locations']);
   }
-
-  onQRCodeError(event: any) {
-    // Hide the broken image and show placeholder
-    event.target.style.display = 'none';
-    console.log('QR code image failed to load');
-  }
-
   onQRCodeError(event: any) {
     // Hide the broken image and show placeholder
     event.target.style.display = 'none';
@@ -215,10 +208,10 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   downloadQR() {
-    if (this.location?.qr_code_path) {
-      // Create a temporary link to download the QR code
+    if (this.location?.qr_code_url) {
       const link = document.createElement('a');
-      link.href = this.location.qr_code_path;
+      link.href = this.location.qr_code_url;
+      link.target = '_blank';
       link.download = `qr-code-${this.location.name.toLowerCase().replace(/\s+/g, '-')}.png`;
       document.body.appendChild(link);
       link.click();
@@ -226,10 +219,45 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  printLabel() {
-    // TODO: Implement label printing
-    console.log('Print label');
-  }
+ printLabel() {
+   if (this.location?.qr_code_url) {
+     const printWindow = window.open('', '_blank');
+     if (printWindow) {
+       printWindow.document.write(`
+         <html>
+           <head>
+             <title>Print Label</title>
+             <style>
+               body {
+                 font-family: Arial, sans-serif;
+                 text-align: center;
+                 margin: 20px;
+               }
+               img {
+                 max-width: 100%;
+                 height: auto;
+               }
+             </style>
+           </head>
+           <body>
+             <h1>${this.location.name}</h1>
+             <img src="${this.location.qr_code_url}" alt="QR Code for ${this.location.name}">
+             <p>Scan this QR code to access location details.</p>
+             <script>
+               window.onload = function() {
+                 window.print();
+                 window.close();
+               };
+             </script>
+           </body>
+         </html>
+       `);
+       printWindow.document.close();
+     }
+   } else {
+     console.error('QR code URL is not available for printing.');
+   }
+ }
 
   getActivityIcon(type: string): string {
     const icons: { [key: string]: string } = {

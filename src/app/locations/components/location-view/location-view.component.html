@@ -5,7 +5,7 @@
     <div class="flex items-center justify-between">
       <!-- Back Button and Title -->
       <div class="flex items-center space-x-4">
-        <button 
+        <button
           (click)="goBack()"
           class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,7 +17,7 @@
 
       <!-- Action Buttons -->
       <div class="flex items-center space-x-3">
-        <button 
+        <button
           (click)="editLocation()"
           class="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,8 +25,8 @@
           </svg>
           <span>Edit</span>
         </button>
-        
-        <button 
+
+        <button
           (click)="addAsset()"
           class="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,8 +34,8 @@
           </svg>
           <span>Add Asset</span>
         </button>
-        
-        <button 
+
+        <button
           (click)="deleteLocation()"
           class="flex items-center space-x-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@
       </div>
       <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Location</h3>
       <p class="text-sm text-gray-500 mb-4">{{error}}</p>
-      <button 
+      <button
         (click)="goBack()"
         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
         Back to Locations
@@ -93,10 +93,10 @@
           </div>
           <h1 class="text-2xl font-bold text-gray-900">{{location.name}}</h1>
         </div>
-        
+
         <!-- Right: Action Buttons -->
         <div class="flex items-center space-x-3">
-          <button 
+          <button
             (click)="editLocation()"
             class="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-blue-200 rounded-lg transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,8 +104,8 @@
             </svg>
             <span>Edit</span>
           </button>
-          
-          <button 
+
+          <button
             (click)="addAsset()"
             class="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-blue-200 rounded-lg transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,8 +113,8 @@
             </svg>
             <span>Add Asset</span>
           </button>
-          
-          <button 
+
+          <button
             (click)="deleteLocation()"
             class="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,13 +193,13 @@
             </svg>
             <h2 class="text-lg font-semibold text-gray-900">Location Overview</h2>
           </div>
-          
+
           <div class="space-y-4">
             <div>
               <h4 class="text-sm font-medium text-gray-700 mb-2">Description</h4>
               <p class="text-gray-600">{{location.description || location.name}}</p>
             </div>
-            
+
             <div>
               <h4 class="text-sm font-medium text-gray-700 mb-2">Capacity & Utilization</h4>
               <div class="space-y-2">
@@ -211,7 +211,7 @@
                   <div class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
                 </div>
               </div>
-              
+
               <div class="grid grid-cols-2 gap-4 mt-4">
                 <div class="flex items-center space-x-2">
                   <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,7 +222,7 @@
                     <div class="text-xs text-gray-500">Temperature</div>
                   </div>
                 </div>
-                
+
                 <div class="flex items-center space-x-2">
                   <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -245,7 +245,7 @@
             </svg>
             <h2 class="text-lg font-semibold text-gray-900">Asset Health Dashboard</h2>
           </div>
-          
+
           <div class="text-center py-12">
             <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +254,7 @@
             </div>
             <h3 class="text-lg font-medium text-gray-900 mb-2">No Assets Found</h3>
             <p class="text-gray-600 mb-4">This location doesn't have any assets assigned yet.</p>
-            <button 
+            <button
               (click)="addAsset()"
               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               Add Assets
@@ -271,7 +271,7 @@
               </svg>
               <h2 class="text-lg font-semibold text-gray-900">Sub-locations ({{mockStats.subLocations}})</h2>
             </div>
-            <button 
+            <button
               (click)="addSubLocation()"
               class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,7 +280,7 @@
               <span>Add Sub-location</span>
             </button>
           </div>
-          
+
           <!-- Loading State -->
           <div *ngIf="subLocationsLoading" class="text-center py-12">
             <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
@@ -296,7 +296,7 @@
           <!-- Sub-locations List -->
           <div *ngIf="!subLocationsLoading && subLocations.length > 0" class="space-y-4">
             <!-- Sub-location Cards -->
-            <div *ngFor="let subLocation of subLocations" 
+            <div *ngFor="let subLocation of subLocations"
                  class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-all cursor-pointer"
                  (click)="viewSubLocation(subLocation)">
               <!-- Location Header -->
@@ -315,7 +315,7 @@
                     <div class="text-sm text-gray-500 mt-1">{{subLocation.description || subLocation.name}}</div>
                   </div>
                 </div>
-                
+
                 <!-- Action Menu -->
                 <div class="flex items-center space-x-1">
                   <button
@@ -332,7 +332,7 @@
                   </button>
                 </div>
               </div>
-              
+
               <!-- Location Stats -->
               <div class="flex items-center justify-between text-sm">
                 <div class="flex items-center space-x-4">
@@ -343,11 +343,11 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Hierarchy View Section -->
             <div class="mt-8 pt-6 border-t border-gray-200">
               <h3 class="text-base font-semibold text-gray-900 mb-4">Hierarchy View</h3>
-              
+
               <!-- Parent Location -->
               <div class="bg-blue-100 rounded-lg p-3 mb-2">
                 <div class="flex items-center space-x-3">
@@ -361,7 +361,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- Sub-locations in hierarchy -->
               <div class="space-y-1">
                 <div *ngFor="let subLocation of subLocations" class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded transition-colors">
@@ -393,7 +393,7 @@
             </div>
             <h3 class="text-lg font-medium text-gray-900 mb-2">No Sub-locations</h3>
             <p class="text-gray-600 mb-4">Create sub-locations to organize your space more effectively.</p>
-            <button 
+            <button
               (click)="addSubLocation()"
               class="flex items-center space-x-2 mx-auto px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -415,7 +415,7 @@
             </svg>
             <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
           </div>
-          
+
           <div class="space-y-4">
             <div *ngFor="let activity of mockActivities" class="flex items-start space-x-3">
               <div [class]="'w-8 h-8 bg-' + getActivityColor(activity.type) + '-100 rounded-lg flex items-center justify-center'">
@@ -440,17 +440,17 @@
             </svg>
             <h2 class="text-lg font-semibold text-gray-900">Location QR Code</h2>
           </div>
-          
+
           <div class="text-center">
             <!-- QR Code Image -->
             <div class="w-32 h-32 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center overflow-hidden">
-              <img 
-                *ngIf="location.qr_code_path" 
-                [src]="location.qr_code_path" 
+              <img
+                *ngIf="location.qr_code_url"
+                [src]="location.qr_code_url"
                 [alt]="'QR Code for ' + location.name"
                 class="w-full h-full object-contain"
                 (error)="onQRCodeError($event)">
-              
+
               <!-- Fallback placeholder if no QR code -->
               <div *ngIf="!location.qr_code_path" class="w-24 h-24 bg-gray-300 rounded flex items-center justify-center">
                 <svg class="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -458,21 +458,12 @@
                 </svg>
               </div>
             </div>
-            
+
             <h4 class="font-medium text-gray-900 mb-2">{{location.name}}</h4>
             <p class="text-sm text-gray-600 mb-4">{{mockStats.totalAssets}}</p>
-            
+
             <div class="space-y-2">
-              <button 
-                (click)="regenerateQR()"
-                class="w-full flex items-center justify-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                <span>Regenerate</span>
-              </button>
-              
-              <button 
+              <button
                 (click)="downloadQR()"
                 class="w-full flex items-center justify-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -480,8 +471,8 @@
                 </svg>
                 <span>Download</span>
               </button>
-              
-              <button 
+
+              <button
                 (click)="printLabel()"
                 class="w-full flex items-center justify-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -490,7 +481,7 @@
                 <span>Print Label</span>
               </button>
             </div>
-            
+
             <p class="text-xs text-gray-500 mt-4">
               Scan this QR code to quickly access location details and view assets.
             </p>
