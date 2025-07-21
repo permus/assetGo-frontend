@@ -184,18 +184,11 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
     }
     this.isOpen = false;
   }
-  public toggleShowAllTypes() {
-    this.showAllTypes = !this.showAllTypes;
-  }
 
   resetForm() {
     this.locationForm.reset();
     this.selectedTypeId = null;
     this.errorMessage = '';
     this.showAllTypes = false;
-  }
-
-  toggleShowAllTypes() {
-    this.showAllTypes = !this.showAllTypes;
   }
 }
