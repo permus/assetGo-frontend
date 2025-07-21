@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { LocationService, LocationType, Location } from '../../services/location.service';
 import { GooglePlacesService, PlaceResult } from '../../../shared/services/google-places.service';
-import { AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { AfterViewInit, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-add-location-modal',
@@ -42,7 +42,7 @@ import { AfterViewInit, ViewChild, ElementRef } from '@angular/core';
     ])
   ]
 })
-export class AddLocationModalComponent implements OnInit, AfterViewInit {
+export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() isOpen = false;
   @Input() parentLocation: Location | null = null;
   @Output() closeModal = new EventEmitter<void>();
@@ -75,8 +75,16 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.isOpen) {
-      this.initializeAutocomplete();
+    // Initialize autocomplete when view is ready
+    this.initializeAutocomplete();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // Reinitialize autocomplete when modal opens
+    if (changes['isOpen'] && this.isOpen && !changes['isOpen'].firstChange) {
+      setTimeout(() => {
+        this.initializeAutocomplete();
+      }, 200);
     }
   }
 
@@ -139,29 +147,41 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit {
       });
     }
   }
+
   private async initializeAutocomplete() {
-    if (this.addressInput?.nativeElement) {
-      try {
-        this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
-          this.addressInput.nativeElement,
-          (place: PlaceResult) => {
-            this.locationForm.patchValue({
-              address: place.formatted_address
-            });
-          },
-          {
-            types: ['address'],
-            componentRestrictions: { country: 'us' }
+    // Wait for the view to be fully rendered
+    setTimeout(async () => {
+      if (this.addressInput?.nativeElement && this.isOpen) {
+        try {
+          // Clear any existing autocomplete
+          if (this.autocomplete) {
+            this.autocomplete = null;
           }
-        );
-      } catch (error) {
-        console.error('Failed to initialize Google Places Autocomplete:', error);
+
+          this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
+            this.addressInput.nativeElement,
+            (place: PlaceResult) => {
+              this.locationForm.patchValue({
+                address: place.formatted_address
+              });
+            },
+            {
+              types: ['address'],
+              componentRestrictions: { country: 'us' }
+            }
+          );
+        } catch (error) {
+          console.error('Failed to initialize Google Places Autocomplete:', error);
+        }
       }
-    }
+    }, 300);
   }
 
-
   closeModalHandler() {
+    // Clear autocomplete when closing
+    if (this.autocomplete) {
+      this.autocomplete = null;
+    }
     this.isOpen = false;
     this.closeModal.emit();
     this.resetForm();
