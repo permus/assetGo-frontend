@@ -605,12 +605,9 @@
 
     <!-- Enhanced Pagination (Only for Grid View) -->
     <div *ngIf="currentView === 'grid' && !loading && locations.length > 0" class="mt-8 pt-6 border-t border-gray-200">
-      <!-- Pagination Info and Per Page Selector -->
-      <div class="flex items-center justify-between mb-4">
-        <div class="text-sm text-gray-700">
-          Showing <span class="font-medium">{{pagination.from}}</span> to <span class="font-medium">{{pagination.to}}</span> of <span class="font-medium">{{pagination.total}}</span> results
-        </div>
-
+      <!-- Pagination Controls -->
+      <div *ngIf="pagination.last_page > 1" class="flex items-center justify-between">
+        <!-- Left: Per Page Selector -->
         <div class="flex items-center space-x-2 text-sm text-gray-600">
           <span>Show</span>
           <select
@@ -623,12 +620,10 @@
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
-          <span>per page</span>
+          <span>entries</span>
         </div>
-      </div>
 
-      <!-- Pagination Controls -->
-      <div *ngIf="pagination.last_page > 1" class="flex items-center justify-center">
+        <!-- Center: Page Navigation -->
         <nav class="flex items-center space-x-1" aria-label="Pagination">
           <!-- Previous Page Button -->
           <button
@@ -699,6 +694,11 @@
             </svg>
           </button>
         </nav>
+
+        <!-- Right: Pagination Info -->
+        <div class="text-sm text-gray-700">
+          Showing {{pagination.from}} - {{pagination.to}} of {{pagination.total}} entries
+        </div>
       </div>
 
       <!-- Page Jump Input (for large datasets) -->
