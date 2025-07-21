@@ -184,14 +184,14 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     this.resetForm();
   }
 
-  resetForm() {
+  public resetForm() {
     this.editForm.reset();
     this.selectedTypeId = null;
     this.errorMessage = '';
     this.showAllTypes = false;
   }
 
-  toggleShowAllTypes() {
+  public toggleShowAllTypes() {
     this.showAllTypes = !this.showAllTypes;
   }
 }
