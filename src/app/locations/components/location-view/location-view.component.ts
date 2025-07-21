@@ -197,14 +197,27 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     this.router.navigate(['/locations']);
   }
 
+  onQRCodeError(event: any) {
+    // Hide the broken image and show placeholder
+    event.target.style.display = 'none';
+    console.log('QR code image failed to load');
+  }
+
   regenerateQR() {
     // TODO: Implement QR regeneration
     console.log('Regenerate QR code');
   }
 
   downloadQR() {
-    // TODO: Implement QR download
-    console.log('Download QR code');
+    if (this.location?.qr_code_path) {
+      // Create a temporary link to download the QR code
+      const link = document.createElement('a');
+      link.href = this.location.qr_code_path;
+      link.download = `qr-code-${this.location.name.toLowerCase().replace(/\s+/g, '-')}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   }
 
   printLabel() {

@@ -27,6 +27,7 @@ export interface Location {
   user_id: number;
   hierarchy_level: number;
   qr_code_path?: string;
+  qr_code_url?: string;
   created_at: string;
   updated_at: string;
   type: LocationType;
