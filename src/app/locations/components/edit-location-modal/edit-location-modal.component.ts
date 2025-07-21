@@ -166,7 +166,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     return `assets/icons/${type.icon}.svg`;
   }
 
-  onSubmit() {
+  public onSubmit() {
     if (this.editForm.valid && !this.loading && this.location) {
       this.loading = true;
       this.errorMessage = '';
@@ -193,7 +193,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     }
   }
 
-  closeModalHandler() {
+  public closeModalHandler() {
     // Clear autocomplete when closing
     if (this.autocomplete) {
       this.autocomplete = null;
