@@ -606,7 +606,7 @@
     <!-- Enhanced Pagination (Only for Grid View) -->
     <div *ngIf="currentView === 'grid' && !loading && locations.length > 0" class="mt-8 pt-6 border-t border-gray-200">
       <!-- Pagination Controls -->
-      <div *ngIf="pagination.last_page > 1" class="flex items-center justify-between">
+      <div class="flex items-center justify-between">
         <!-- Left: Per Page Selector -->
         <div class="flex items-center space-x-2 text-sm text-gray-600">
           <span>Show</span>
@@ -624,7 +624,7 @@
         </div>
 
         <!-- Center: Page Navigation -->
-        <nav class="flex items-center space-x-1" aria-label="Pagination">
+        <nav *ngIf="pagination.last_page > 1" class="flex items-center space-x-1" aria-label="Pagination">
           <!-- Previous Page Button -->
           <button
             (click)="goToPage(pagination.current_page - 1)"
