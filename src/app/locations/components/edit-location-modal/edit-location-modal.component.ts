@@ -121,24 +121,6 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
       }
     }, 300);
   }
-      try {
-        this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
-          this.addressInput.nativeElement,
-          (place: PlaceResult) => {
-            this.editForm.patchValue({
-              address: place.formatted_address
-            });
-          },
-          {
-            types: ['address'],
-            componentRestrictions: { country: 'us' }
-          }
-        );
-      } catch (error) {
-        console.error('Failed to initialize Google Places Autocomplete:', error);
-      }
-    }
-  }
 
   loadLocationTypes() {
     // Get location types based on current location's hierarchy level
@@ -212,10 +194,6 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
   }
 
   closeModalHandler() {
-    // Clear autocomplete when closing
-    if (this.autocomplete) {
-      this.autocomplete = null;
-    }
     this.isOpen = false;
     this.closeModal.emit();
     this.resetForm();
