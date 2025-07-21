@@ -177,26 +177,12 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
     }, 300);
   }
 
-  closeModalHandler() {
-    // Clear autocomplete when closing
-    if (this.autocomplete) {
-      this.autocomplete = null;
-    }
-    this.isOpen = false;
-    this.closeModal.emit();
-    this.resetForm();
-  }
-
   public closeModalHandler() {
     // Clear autocomplete when closing
     if (this.autocomplete) {
       this.autocomplete = null;
     }
     this.isOpen = false;
-    this.closeModal.emit();
-    this.resetForm();
-  }
-
   public toggleShowAllTypes() {
     this.showAllTypes = !this.showAllTypes;
   }
