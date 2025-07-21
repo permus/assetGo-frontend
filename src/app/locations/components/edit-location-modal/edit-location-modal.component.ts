@@ -194,6 +194,10 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
   }
 
   closeModalHandler() {
+    // Clear autocomplete when closing
+    if (this.autocomplete) {
+      this.autocomplete = null;
+    }
     this.isOpen = false;
     this.closeModal.emit();
     this.resetForm();
