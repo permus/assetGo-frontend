@@ -84,10 +84,43 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     if (changes['location'] && this.location) {
       this.populateForm();
     }
+    
+    // Reinitialize autocomplete when modal opens
+    if (changes['isOpen'] && this.isOpen && !changes['isOpen'].firstChange) {
+      setTimeout(() => {
+        this.initializeAutocomplete();
+      }, 200);
+    }
   }
 
   private async initializeAutocomplete() {
-    if (this.addressInput?.nativeElement) {
+    // Wait for the view to be fully rendered
+    setTimeout(async () => {
+      if (this.addressInput?.nativeElement && this.isOpen) {
+        try {
+          // Clear any existing autocomplete
+          if (this.autocomplete) {
+            this.autocomplete = null;
+          }
+
+          this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
+            this.addressInput.nativeElement,
+            (place: PlaceResult) => {
+              this.editForm.patchValue({
+                address: place.formatted_address
+              });
+            },
+            {
+              types: ['address'],
+              componentRestrictions: { country: 'us' }
+            }
+          );
+        } catch (error) {
+          console.error('Failed to initialize Google Places Autocomplete:', error);
+        }
+      }
+    }, 300);
+  }
       try {
         this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
           this.addressInput.nativeElement,
@@ -179,6 +212,10 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
   }
 
   closeModalHandler() {
+    // Clear autocomplete when closing
+    if (this.autocomplete) {
+      this.autocomplete = null;
+    }
     this.isOpen = false;
     this.closeModal.emit();
     this.resetForm();
