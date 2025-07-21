@@ -203,6 +203,12 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     console.log('QR code image failed to load');
   }
 
+  onQRCodeError(event: any) {
+    // Hide the broken image and show placeholder
+    event.target.style.display = 'none';
+    console.log('QR code image failed to load');
+  }
+
   regenerateQR() {
     // TODO: Implement QR regeneration
     console.log('Regenerate QR code');
