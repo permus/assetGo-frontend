@@ -1,0 +1,322 @@
+<div class="asset-list-page min-h-screen bg-gray-50 p-6">
+  <!-- Page Title and Subtitle + Actions -->
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 mb-1">Asset Intelligence Hub</h1>
+      <p class="text-gray-600 text-base">Advanced asset monitoring with AI-powered insights and real-time analytics</p>
+    </div>
+    <div class="flex items-center space-x-3 mt-4 md:mt-0">
+      <button (click)="goToCreateAsset()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Add Asset
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button (click)="showMenu = !showMenu" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="5" r="2" />
+            <circle cx="12" cy="12" r="2" />
+            <circle cx="12" cy="19" r="2" />
+          </svg>
+        </button>
+        <div *ngIf="showMenu" class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2"></path>
+            </svg>
+            <span>Analytics</span>
+          </button>
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span>View Archived Assets</span>
+          </button>
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16h16V4H4zm4 4h8v8H8V8z"></path>
+            </svg>
+            <span>Import Assets</span>
+          </button>
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8M8 12h8m-8-4h8"></path>
+            </svg>
+            <span>Export to Excel</span>
+          </button>
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Export to PDF</span>
+          </button>
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+            </svg>
+            <span>Export QR Codes</span>
+          </button>
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8M8 12h8m-8-4h8"></path>
+            </svg>
+            <span>Print Report</span>
+          </button>
+          <div class="border-t border-gray-100 my-2"></div>
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-orange-50 text-left transition-colors cursor-pointer text-orange-600">
+            <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+            </svg>
+            <span>Archive Selected</span>
+          </button>
+          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-red-50 text-left transition-colors cursor-pointer text-red-600">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            <span>Delete Selected</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+    <!-- Total Assets -->
+    <div class="rounded-xl bg-blue-50 border border-blue-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Total Assets</span>
+        <span class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ summary.totalAssets }}</div>
+      <a href="#" class="text-sm text-blue-600 font-medium mt-1">Assets in system</a>
+    </div>
+    <!-- Active Assets -->
+    <div class="rounded-xl bg-green-50 border border-green-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Active</span>
+        <span class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2" fill="none" />
+            <circle cx="12" cy="12" r="4" fill="currentColor" class="text-green-400" />
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ summary.activeAssets }}</div>
+      <span class="text-sm text-green-600 font-medium mt-1">Operational assets</span>
+    </div>
+    <!-- Maintenance -->
+    <div class="rounded-xl bg-orange-50 border border-orange-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Maintenance</span>
+        <span class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-1.5a2.5 2.5 0 11-3.536 3.536l-7.5 7.5a2 2 0 102.828 2.828l7.5-7.5a2.5 2.5 0 013.536-3.536z" />
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ summary.maintenance }}</div>
+      <span class="text-sm text-orange-600 font-medium mt-1">Under maintenance</span>
+    </div>
+    <!-- Total Value -->
+    <div class="rounded-xl bg-purple-50 border border-purple-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Total Value</span>
+        <span class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ summary.totalValue | currency:'USD':'symbol':'1.0-0' }}</div>
+      <span class="text-sm text-purple-600 font-medium mt-1">Asset portfolio value</span>
+    </div>
+    <!-- Asset Health -->
+    <div class="rounded-xl bg-cyan-50 border border-cyan-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Asset Health</span>
+        <span class="w-10 h-10 bg-cyan-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8m8-8h-8m8 0a8 8 0 11-16 0 8 8 0 0116 0z"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ summary.assetHealth }}%</div>
+      <span class="text-sm text-cyan-600 font-medium mt-1">Excellent health</span>
+    </div>
+  </div>
+
+  <!-- Filters and View Type -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+    <!-- Left: Search and Filters -->
+    <div class="flex-1 flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:space-x-3">
+      <!-- Search -->
+      <div class="relative w-full md:w-80">
+        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input type="text" placeholder="Search assets by name, location, or ID..." class="w-full pl-10 pr-4 py-2 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
+      </div>
+      <!-- All Types Dropdown -->
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button (click)="showTypeDropdown = !showTypeDropdown" class="px-5 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[120px] cursor-pointer">
+          <span>{{ selectedType }}</span>
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div *ngIf="showTypeDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+          <button *ngFor="let type of typeOptions" (click)="selectType(type)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedType === type">{{ type }}</button>
+        </div>
+      </div>
+      <!-- All Status Dropdown -->
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button (click)="showStatusDropdown = !showStatusDropdown" class="px-5 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[120px] cursor-pointer">
+          <span>{{ selectedStatus }}</span>
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div *ngIf="showStatusDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+          <button *ngFor="let status of statusOptions" (click)="selectStatus(status)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedStatus === status">{{ status }}</button>
+        </div>
+      </div>
+      <!-- Sort By Dropdown -->
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button (click)="showSortDropdown = !showSortDropdown" class="px-5 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[120px] cursor-pointer">
+          <span>{{ selectedSort }}</span>
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div *ngIf="showSortDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+          <button *ngFor="let sort of sortOptions" (click)="selectSort(sort)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedSort === sort">{{ sort }}</button>
+        </div>
+      </div>
+      <!-- Sort Direction Button (toggle) -->
+      <div class="relative">
+        <button (click)="toggleSortDir()" class="px-4 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[70px] cursor-pointer"
+          [class.bg-blue-100]="selectedSortDir === 'A-Z'" [class.text-blue-700]="selectedSortDir === 'A-Z'">
+          <svg *ngIf="selectedSortDir === 'Z-A'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"></path>
+          </svg>
+          <svg *ngIf="selectedSortDir === 'A-Z'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7l4-4m0 0l4 4m-4-4v18"></path>
+          </svg>
+          <span>{{ selectedSortDir }}</span>
+        </button>
+      </div>
+    </div>
+    <!-- Right: View Type Toggle -->
+    <div class="flex items-center space-x-2 mt-4 md:mt-0">
+      <button (click)="viewType = 'grid'" [class.bg-blue-100]="viewType === 'grid'" [class.text-blue-700]="viewType === 'grid'" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="7" height="7" rx="2" />
+          <rect x="13" y="4" width="7" height="7" rx="2" />
+          <rect x="4" y="13" width="7" height="7" rx="2" />
+          <rect x="13" y="13" width="7" height="7" rx="2" />
+        </svg>
+      </button>
+      <button (click)="viewType = 'list'" [class.bg-blue-100]="viewType === 'list'" [class.text-blue-700]="viewType === 'list'" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <rect x="4" y="6" width="16" height="4" rx="2" />
+          <rect x="4" y="14" width="16" height="4" rx="2" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <!-- Selection Bar (when nothing is selected) -->
+  <div class="w-full bg-white rounded-xl border border-gray-200 px-6 py-3 mb-4 flex items-center" *ngIf="viewType === 'grid' && selectedCount === 0">
+    <button type="button" (click)="toggleSelectAllAssets()" class="focus:outline-none inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-blue-400 mr-3 transition-colors">
+      <span class="w-3 h-3 rounded-full block bg-white transition-colors"></span>
+    </button>
+    <span class="font-semibold text-gray-900">Select all {{ assetList.length }} assets</span>
+  </div>
+  <!-- Grid View Cards -->
+  <!-- Action Bar (Selection) -->
+  <div class="w-full bg-white rounded-xl border border-gray-200 px-6 py-3 mb-4 flex items-center justify-between" *ngIf="viewType === 'grid' && selectedCount > 0">
+    <div class="flex items-center space-x-4">
+      <button type="button" (click)="toggleSelectAllAssets()" class="focus:outline-none inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-blue-400 mr-3 transition-colors"
+        [class.bg-blue-100]="selectedCount === assetList.length">
+        <span class="w-3 h-3 rounded-full block transition-colors"
+          [class.bg-blue-400]="selectedCount === assetList.length"
+          [class.bg-white]="selectedCount !== assetList.length"></span>
+      </button>
+      <span class="font-bold text-gray-900">{{ selectedCount }} asset{{ selectedCount > 1 ? 's' : '' }} selected</span>
+      <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm flex items-center font-medium">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"></path></svg>
+        Selection Mode Active - Click cards to select
+      </span>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button class="bg-gray-50 text-gray-700 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 border border-gray-200 cursor-pointer"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" rx="2" stroke-width="2"/><rect x="4" y="4" width="8" height="8" rx="2" stroke-width="2"/></svg> Duplicate</button>
+      <button class="bg-orange-50 text-orange-600 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/><path d="M8 12h8" stroke-width="2"/></svg> Archive</button>
+      <button class="bg-red-50 text-red-600 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/><path d="M8 8l8 8M8 16l8-8" stroke-width="2"/></svg> Delete</button>
+      <button class="bg-transparent text-gray-700 font-semibold px-2 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"><span class="text-xl">&times;</span> Clear</button>
+    </div>
+  </div>
+  <div *ngIf="viewType === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-2">
+    <div *ngFor="let asset of assetList" class="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col transition-all hover:shadow-md overflow-hidden" [class.border-blue-400]="asset.selected">
+      <!-- Card Header -->
+      <div class="relative bg-[#e0edff] h-32 flex flex-col items-center justify-center">
+        <div class="absolute left-4 top-4 flex items-center">
+          <input type="checkbox" class="asset-card-checkbox" [(ngModel)]="asset.selected" />
+        </div>
+        <div class="absolute right-4 top-4 flex items-center space-x-2">
+          <span *ngIf="asset.status === 'Active'" class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Active</span>
+          <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="6" r="1.5" />
+              <circle cx="12" cy="12" r="1.5" />
+              <circle cx="12" cy="18" r="1.5" />
+            </svg>
+          </button>
+        </div>
+        <svg class="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+      </div>
+      <!-- Card Body -->
+      <div class="flex-1 flex flex-col justify-between p-6 pt-4">
+        <div>
+          <div class="font-semibold text-lg text-gray-900 mb-1">{{ asset.name }}</div>
+          <div class="text-sm text-gray-500 mb-1">{{ asset.code }} • {{ asset.type }}</div>
+          <div class="flex items-center text-xs text-gray-400 mb-2">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 12.414a4 4 0 10-1.414 1.414l4.243 4.243a1 1 0 001.414-1.414z" />
+            </svg>
+            <span>{{ asset.location }}</span>
+          </div>
+          <hr class="my-3 border-gray-200">
+          <div class="flex items-center text-sm text-gray-700 mb-1">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8m8-8h-8m8 0a8 8 0 11-16 0 8 8 0 0116 0z" />
+            </svg>
+            <span>Value <b *ngIf="asset.value !== null">${{ asset.value | number:'1.0-0' }}</b><b *ngIf="asset.value === null">N/A</b></span>
+          </div>
+          <div class="flex items-center text-sm text-gray-700 mb-1" *ngIf="asset.purchaseDate">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Purchase Date <b>{{ asset.purchaseDate | date:'MMM d, y' }}</b></span>
+          </div>
+        </div>
+        <!-- Health Score Bar -->
+        <div class="mt-4">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs text-gray-500">Health Score</span>
+            <span class="text-xs font-semibold text-gray-700">{{ asset.healthScore }}%</span>
+          </div>
+          <div class="w-full h-2 bg-gray-200 rounded-full">
+            <div class="h-2 rounded-full bg-green-500" [style.width.%]="asset.healthScore"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

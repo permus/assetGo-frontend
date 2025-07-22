@@ -1,0 +1,60 @@
+.asset-list-page {
+  // Styles for the asset list page will go here
+
+  .asset-card-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    border-width: 2px;
+    border-color: #3b82f6; /* blue-500 */
+    appearance: none;
+    background-color: #fff;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .asset-card-checkbox:checked {
+    background-color: #3b82f6;
+    border-color: #2563eb;
+  }
+  .asset-card-checkbox:checked::after {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+  }
+
+  .asset-card-header {
+    background: #e0edff;
+    height: 8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+  }
+  .asset-card {
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px 0 rgba(16,30,54,0.08);
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #bfdbfe;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s;
+  }
+  .asset-card hr {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-color: #e5e7eb;
+  }
+}
