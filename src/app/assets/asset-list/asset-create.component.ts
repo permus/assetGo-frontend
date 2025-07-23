@@ -38,6 +38,14 @@ export class AssetCreateComponent implements OnInit {
   submitSuccess = '';
   submitFieldErrors: { [key: string]: string[] } = {};
   locations: any[] = [];
+  
+  // Dropdown state properties
+  showAssetTypeDropdown = false;
+  showCategoryDropdown = false;
+  showLocationDropdown = false;
+  selectedAssetType: any | null = null;
+  selectedCategory: any | null = null;
+  selectedLocation: any | null = null;
 
   // Validation error properties
   nameError: string = '';
@@ -149,6 +157,54 @@ export class AssetCreateComponent implements OnInit {
     this.router.navigate(['/assets']);
   }
 
+  // Dropdown toggle methods
+  toggleAssetTypeDropdown() {
+    this.showAssetTypeDropdown = !this.showAssetTypeDropdown;
+    this.showCategoryDropdown = false;
+    this.showLocationDropdown = false;
+  }
+
+  toggleCategoryDropdown() {
+    this.showCategoryDropdown = !this.showCategoryDropdown;
+    this.showAssetTypeDropdown = false;
+    this.showLocationDropdown = false;
+  }
+
+  toggleLocationDropdown() {
+    this.showLocationDropdown = !this.showLocationDropdown;
+    this.showAssetTypeDropdown = false;
+    this.showCategoryDropdown = false;
+  }
+
+  // Selection methods
+  selectAssetType(type: any) {
+    this.selectedAssetType = type;
+    this.assetType = type.value;
+    this.showAssetTypeDropdown = false;
+    this.clearErrors();
+  }
+
+  selectCategory(category: any) {
+    this.selectedCategory = category;
+    this.category = category.id;
+    this.showCategoryDropdown = false;
+    this.clearErrors();
+  }
+
+  selectLocation(location: any) {
+    this.selectedLocation = location;
+    this.location_id = location.id;
+    this.showLocationDropdown = false;
+  }
+
+  // Close dropdowns when clicking outside
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    this.showAssetTypeDropdown = false;
+    this.showCategoryDropdown = false;
+    this.showLocationDropdown = false;
+  }
+
   // Validation methods
   validateForm(): boolean {
     let isValid = true;
@@ -158,12 +214,12 @@ export class AssetCreateComponent implements OnInit {
       isValid = false;
     }
 
-    if (!this.assetType) {
+    if (!this.selectedAssetType) {
       this.assetTypeError = 'Please select an asset type';
       isValid = false;
     }
 
-    if (!this.category) {
+    if (!this.selectedCategory) {
       this.categoryError = 'Please select a category';
       isValid = false;
     }
@@ -201,7 +257,7 @@ export class AssetCreateComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    return !!(this.name && this.assetType && this.category && this.serial_number);
+    return !!(this.name && this.selectedAssetType && this.selectedCategory && this.serial_number);
   }
 
   removeImage(): void {
