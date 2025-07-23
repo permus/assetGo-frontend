@@ -185,17 +185,17 @@ export class AssetCreateComponent implements OnInit {
   }
 
   handleFieldErrors(errors: { [key: string]: string[] }): void {
-    if (errors.name) {
-      this.nameError = errors.name[0];
+    if (errors['name']) {
+      this.nameError = errors['name'][0];
     }
-    if (errors.type) {
-      this.assetTypeError = errors.type[0];
+    if (errors['type']) {
+      this.assetTypeError = errors['type'][0];
     }
-    if (errors.category_id) {
-      this.categoryError = errors.category_id[0];
+    if (errors['category_id']) {
+      this.categoryError = errors['category_id'][0];
     }
-    if (errors.serial_number) {
-      this.serialNumberError = errors.serial_number[0];
+    if (errors['serial_number']) {
+      this.serialNumberError = errors['serial_number'][0];
     }
   }
 
