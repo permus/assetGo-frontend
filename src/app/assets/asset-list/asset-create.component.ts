@@ -131,10 +131,10 @@ export class AssetCreateComponent implements OnInit {
   categories: any[] = [];
   category: any[] = [];
   assetTypes = [
-    { value: 'fixed', label: 'Fixed Asset', icon: 'building-office-2', color: '#2563eb' },
-    { value: 'semi-fixed', label: 'Semi-Fixed Asset', icon: 'cube', color: '#22c55e' },
-    { value: 'mobile', label: 'Mobile Asset', icon: 'cog', color: '#f59e42' },
-    { value: 'fleet', label: 'Fleet Asset', icon: 'car', color: '#a855f7' }
+    { value: 'fixed', label: 'Fixed Asset', icon: 'building-office-2', color: '#2563eb', description: 'Permanent assets like buildings and machinery' },
+    { value: 'semi-fixed', label: 'Semi-Fixed Asset', icon: 'cube', color: '#22c55e', description: 'Assets that can be moved but are typically stationary' },
+    { value: 'mobile', label: 'Mobile Asset', icon: 'cog', color: '#f59e42', description: 'Portable equipment and tools' },
+    { value: 'fleet', label: 'Fleet Asset', icon: 'car', color: '#a855f7', description: 'Vehicles and transportation equipment' }
   ];
   assetType: string | null = null;
 
