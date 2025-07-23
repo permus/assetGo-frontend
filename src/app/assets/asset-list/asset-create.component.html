@@ -1,12 +1,13 @@
 <div class="asset-create-page p-6">
-  <form>
+  <form (ngSubmit)="onSubmit()">
     <!-- Basic Information -->
     <div class="section-card mb-6">
       <h2 class="section-title">Basic Information</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label class="block font-medium mb-1">Asset Name</label>
-          <input type="text" class="input" placeholder="e.g., Main Server Room AC Unit" />
+          <input type="text" class="input" placeholder="e.g., Main Server Room AC Unit" [(ngModel)]="name" name="name" required />
+          <div *ngIf="submitFieldErrors['name']" class="text-red-600 text-xs mt-1">{{ submitFieldErrors['name'][0] }}</div>
         </div>
         <div>
           <label class="block font-medium mb-1">Asset ID</label>
@@ -18,7 +19,7 @@
       </div>
       <div class="mb-4">
         <label class="block font-medium mb-1">Description</label>
-        <textarea class="input" rows="2" placeholder="Brief description of the asset..."></textarea>
+        <textarea class="input" rows="2" placeholder="Brief description of the asset..." [(ngModel)]="description" name="description"></textarea>
       </div>
       <div class="mb-2 font-medium">Health Score</div>
       <div class="flex flex-col items-center mb-2">
@@ -37,17 +38,46 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block font-medium mb-1">Asset Type</label>
-          <select class="input">
-            <option>Fixed Asset</option>
-            <option>Current Asset</option>
-          </select>
+          <div class="relative">
+            <select class="input pr-10" [(ngModel)]="assetType" name="assetType" required>
+              <option value="" disabled selected>Select asset type</option>
+              <option *ngFor="let type of assetTypes" [value]="type.value">
+                {{ type.label }}
+              </option>
+            </select>
+            <!-- Custom dropdown for icons (visual only, not interactive) -->
+            <div *ngIf="assetType === ''" class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          <div *ngIf="assetType" class="flex items-center mt-2">
+            <ng-container *ngFor="let type of assetTypes">
+              <ng-container *ngIf="type.value === assetType">
+                <svg *ngIf="type.icon === 'building-office-2'" class="w-5 h-5 mr-2" [style.color]="type.color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V7a2 2 0 012-2h2a2 2 0 012 2v14M13 21V3a2 2 0 012-2h2a2 2 0 012 2v18" />
+                </svg>
+                <svg *ngIf="type.icon === 'cube'" class="w-5 h-5 mr-2" [style.color]="type.color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4a2 2 0 001-1.73z" />
+                </svg>
+                <svg *ngIf="type.icon === 'cog'" class="w-5 h-5 mr-2" [style.color]="type.color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-1.14 1.603-1.14 1.902 0a1.724 1.724 0 002.573 1.066c.996-.608 2.296.07 2.572 1.065.426 1.756 2.924 1.756 3.35 0a1.724 1.724 0 002.573-1.066c.3-1.14 1.603-1.14 1.902 0a1.724 1.724 0 002.573 1.066c.996-.608 2.296.07 2.572 1.065.426 1.756 2.924 1.756 3.35 0a1.724 1.724 0 002.573-1.066c.3-1.14 1.603-1.14 1.902 0" />
+                </svg>
+                <svg *ngIf="type.icon === 'car'" class="w-5 h-5 mr-2" [style.color]="type.color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13l2-5a2 2 0 012-2h10a2 2 0 012 2l2 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6M5 13h14" />
+                </svg>
+                <span [style.color]="type.color" class="font-medium">{{ type.label }}</span>
+              </ng-container>
+            </ng-container>
+          </div>
         </div>
         <div>
           <label class="block font-medium mb-1">Category</label>
-          <select class="input">
-            <option>Fixtures</option>
-            <option>Machinery</option>
+          <select class="input" [(ngModel)]="category" name="category" required>
+            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
           </select>
+          <div *ngIf="submitFieldErrors['category_id']" class="text-red-600 text-xs mt-1">{{ submitFieldErrors['category_id'][0] }}</div>
         </div>
       </div>
     </div>
@@ -58,15 +88,16 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label class="block font-medium mb-1">Manufacturer</label>
-          <input type="text" class="input" placeholder="e.g., Dell, HP, Toyota" />
+          <input type="text" class="input" placeholder="e.g., Dell, HP, Toyota" [(ngModel)]="manufacturer" name="manufacturer" />
         </div>
         <div>
           <label class="block font-medium mb-1">Model</label>
-          <input type="text" class="input" placeholder="e.g., PowerEdge R730" />
+          <input type="text" class="input" placeholder="e.g., PowerEdge R730" [(ngModel)]="model" name="model" />
         </div>
         <div>
           <label class="block font-medium mb-1">Serial Number</label>
-          <input type="text" class="input" placeholder="e.g., SN123456789" />
+          <input type="text" class="input" placeholder="e.g., SN123456789" [(ngModel)]="serial_number" name="serial_number" required />
+          <div *ngIf="submitFieldErrors['serial_number']" class="text-red-600 text-xs mt-1">{{ submitFieldErrors['serial_number'][0] }}</div>
         </div>
       </div>
     </div>
@@ -77,32 +108,26 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label class="block font-medium mb-1">Purchase Value (USD)</label>
-          <input type="number" class="input" placeholder="e.g., 5000.00" />
+          <input type="number" class="input" placeholder="e.g., 5000.00" [(ngModel)]="purchase_price" name="purchase_price" />
         </div>
         <div>
           <label class="block font-medium mb-1">Purchase Date</label>
-          <input type="date" class="input" />
+          <input type="date" class="input" [(ngModel)]="purchase_date" name="purchase_date" />
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label class="block font-medium mb-1">Useful Life (Years)</label>
-          <select class="input">
-            <option>10 years</option>
-            <option>5 years</option>
-          </select>
+          <input type="number" class="input" [(ngModel)]="depreciation" name="depreciation" placeholder="Depreciation" />
         </div>
         <div>
           <label class="block font-medium mb-1">Depreciation Method</label>
-          <select class="input">
-            <option>Straight Line</option>
-            <option>Declining Balance</option>
-          </select>
+          <!-- Add depreciation method if needed -->
         </div>
       </div>
       <div class="mb-4">
         <label class="block font-medium mb-1">Warranty Expiration</label>
-        <input type="date" class="input" />
+        <input type="date" class="input" [(ngModel)]="warranty" name="warranty" />
       </div>
     </div>
 
@@ -112,15 +137,14 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block font-medium mb-1">Location</label>
-          <select class="input">
-            <option>No location assigned</option>
+          <select class="input" [(ngModel)]="location_id" name="location_id">
+            <option value="" disabled selected>Select location</option>
+            <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
           </select>
         </div>
         <div>
           <label class="block font-medium mb-1">Department</label>
-          <select class="input">
-            <option>Select a department</option>
-          </select>
+          <input type="number" class="input" [(ngModel)]="department_id" name="department_id" placeholder="Department ID" />
         </div>
       </div>
     </div>
@@ -130,14 +154,21 @@
       <h2 class="section-title">Asset Image</h2>
       <div>
         <label class="block font-medium mb-1">Upload Image</label>
-        <input type="file" class="input" />
+        <input type="file" class="input" (change)="onFileChange($event)" />
+        <div *ngIf="previewImage" class="mt-4 flex justify-center">
+          <div class="bg-white rounded-xl border border-gray-200 p-6 flex items-center justify-center" style="width: 180px; height: 180px;">
+            <img [src]="previewImage" alt="Asset Preview" class="max-w-full max-h-full object-contain" />
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Actions -->
     <div class="flex justify-end space-x-3 mt-6">
-      <button type="button" class="px-6 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 font-semibold">Cancel</button>
-      <button type="submit" class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow-sm">Add Asset</button>
+      <button type="button" (click)="goBack()" class="px-6 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 font-semibold cursor-pointer">Cancel</button>
+      <button type="submit" class="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow-sm cursor-pointer" [disabled]="isSubmitting">Add Asset</button>
     </div>
+    <div *ngIf="submitError" class="text-red-600 font-semibold my-2">{{ submitError }}</div>
+    <div *ngIf="submitSuccess" class="text-green-600 font-semibold my-2">{{ submitSuccess }}</div>
   </form>
-</div> 
+</div>
