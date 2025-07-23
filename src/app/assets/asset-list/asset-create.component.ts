@@ -38,6 +38,12 @@ export class AssetCreateComponent implements OnInit {
   submitFieldErrors: { [key: string]: string[] } = {};
   locations: any[] = [];
 
+  // Validation error properties
+  nameError: string = '';
+  assetTypeError: string = '';
+  categoryError: string = '';
+  serialNumberError: string = '';
+
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length) {
       this.images = Array.from(event.target.files);
@@ -55,6 +61,14 @@ export class AssetCreateComponent implements OnInit {
   }
 
   onSubmit() {
+    // Clear previous errors
+    this.clearErrors();
+    
+    // Validate form
+    if (!this.validateForm()) {
+      return;
+    }
+
     this.isSubmitting = true;
     this.submitError = '';
     this.submitSuccess = '';
@@ -87,18 +101,19 @@ export class AssetCreateComponent implements OnInit {
         this.isSubmitting = false;
         if (res.success) {
           this.submitSuccess = 'Asset created successfully!';
-          // Optionally navigate or reset form
+          // Navigate back after 2 seconds
+          setTimeout(() => {
+            this.router.navigate(['/assets']);
+          }, 2000);
         } else {
           this.submitError = res.message || 'Failed to create asset.';
-          this.submitFieldErrors = res.errors || {};
+          this.handleFieldErrors(res.errors || {});
         }
       },
       error: (err) => {
         this.isSubmitting = false;
         this.submitError = err.error?.message || 'Failed to create asset.';
-        // Debug error structure
-        console.log('Asset create error', err);
-        this.submitFieldErrors = (err.error?.errors || err.errors || {});
+        this.handleFieldErrors(err.error?.errors || err.errors || {});
       }
     });
   }
@@ -131,5 +146,65 @@ export class AssetCreateComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/assets']);
+  }
+
+  // Validation methods
+  validateForm(): boolean {
+    let isValid = true;
+
+    if (!this.name || this.name.trim().length < 2) {
+      this.nameError = 'Asset name is required and must be at least 2 characters';
+      isValid = false;
+    }
+
+    if (!this.assetType) {
+      this.assetTypeError = 'Please select an asset type';
+      isValid = false;
+    }
+
+    if (!this.category) {
+      this.categoryError = 'Please select a category';
+      isValid = false;
+    }
+
+    if (!this.serial_number || this.serial_number.trim().length < 3) {
+      this.serialNumberError = 'Serial number is required and must be at least 3 characters';
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  clearErrors(): void {
+    this.nameError = '';
+    this.assetTypeError = '';
+    this.categoryError = '';
+    this.serialNumberError = '';
+    this.submitError = '';
+    this.submitSuccess = '';
+  }
+
+  handleFieldErrors(errors: { [key: string]: string[] }): void {
+    if (errors.name) {
+      this.nameError = errors.name[0];
+    }
+    if (errors.type) {
+      this.assetTypeError = errors.type[0];
+    }
+    if (errors.category_id) {
+      this.categoryError = errors.category_id[0];
+    }
+    if (errors.serial_number) {
+      this.serialNumberError = errors.serial_number[0];
+    }
+  }
+
+  isFormValid(): boolean {
+    return !!(this.name && this.assetType && this.category && this.serial_number);
+  }
+
+  removeImage(): void {
+    this.previewImage = null;
+    this.images = [];
   }
 }
