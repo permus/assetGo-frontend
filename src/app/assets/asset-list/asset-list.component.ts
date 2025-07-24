@@ -51,8 +51,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
   showDeleteConfirmationModal = false;
   showRestoreConfirmationModal = false;
   selectedAssetForRestore: any = null;
-  showRestoreConfirmationModal = false;
-  selectedAssetForRestore: any = null;
   
   // View state
   showingArchived = false;
