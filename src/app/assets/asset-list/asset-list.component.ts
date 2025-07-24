@@ -378,12 +378,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  showDeleteModal() {
-    if (this.selectedCount > 0) {
-      this.showDeleteConfirmationModal = true;
-    }
-  }
-
   closeDeleteModal() {
     this.showDeleteConfirmationModal = false;
   }
