@@ -61,8 +61,8 @@ export class AssetService {
   }
 
   // Custom asset endpoints
-  duplicateAsset(id: number | string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/assets/${id}/duplicate`, {}, this.getAuthHeaders());
+  duplicateAsset(id: number | string, data: any = {}): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/${id}/duplicate`, data, this.getAuthHeaders());
   }
   bulkImportAssets(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/assets/import/bulk`, data, this.getAuthHeaders());
