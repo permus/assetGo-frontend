@@ -666,6 +666,28 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
+  restoreAsset(asset: any) {
+    if (confirm(`Are you sure you want to restore "${asset.name}" from archive?`)) {
+      this.assetService.restoreAsset(asset.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.loadAssets();
+              this.loadAssetStatistics();
+              console.log('Asset restored successfully');
+            } else {
+              this.error = response.message || 'Failed to restore asset';
+            }
+          },
+          error: (error) => {
+            this.error = error.error?.message || 'An error occurred while restoring the asset';
+          }
+        });
+    }
+    asset.showMenu = false;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     this.showMenu = false;
