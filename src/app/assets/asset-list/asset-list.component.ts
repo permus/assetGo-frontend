@@ -196,9 +196,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     if (this.currentFilters.sort_direction) {
       params.sort_direction = this.currentFilters.sort_direction;
     }
-    if (this.currentFilters.archived) {
-      params.archived = this.currentFilters.archived;
-    }
+    // Add archived parameter
+    params.archived = this.currentFilters.archived;
     params.page = this.currentFilters.page;
     params.per_page = this.currentFilters.per_page;
 
