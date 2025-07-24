@@ -51,6 +51,11 @@ export class AssetService {
     return this.http.delete(`${this.baseUrl}/assets/${id}`, this.getAuthHeaders());
   }
 
+  // Archive asset
+  archiveAsset(id: number | string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/${id}/archive`, {}, this.getAuthHeaders());
+  }
+
   // Asset statistics
   getAssetStatistics(): Observable<any> {
     return this.http.get(`${this.baseUrl}/assets/statistics`, this.getAuthHeaders());

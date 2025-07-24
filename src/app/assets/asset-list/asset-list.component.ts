@@ -379,9 +379,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     
-    // Archive each selected asset
+    // Archive each selected asset using the archive endpoint
     const archivePromises = selectedAssets.map(asset => 
-      this.assetService.updateAsset(asset.id, { status: 'Archived' }).toPromise()
+      this.assetService.archiveAsset(asset.id).toPromise()
     );
 
     Promise.all(archivePromises)
