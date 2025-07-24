@@ -27,7 +27,7 @@
             </svg>
             <span>Analytics</span>
           </button>
-          <button 
+          <button
             (click)="toggleArchivedView()"
             class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
             <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +54,7 @@
             </svg>
             <span>Export to PDF</span>
           </button>
-          <button 
+          <button
             (click)="exportToPdf()"
             class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
             <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,9 +171,9 @@
         <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
-        <input 
-          type="text" 
-          placeholder="Search assets by name, location, or ID..." 
+        <input
+          type="text"
+          placeholder="Search assets by name, location, or ID..."
           class="w-full pl-10 pr-4 py-2 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
           [(ngModel)]="searchQuery"
           (input)="onSearch()" />
@@ -304,25 +304,26 @@
     </div>
     <div class="flex items-center space-x-2">
       <button (click)="duplicateSelected()" [disabled]="selectedCount === 0" class="bg-gray-50 text-gray-700 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 border border-gray-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="8" y="8" width="8" height="8" rx="2" stroke-width="2"/><rect x="4" y="4" width="8" height="8" rx="2" stroke-width="2"/></svg> Duplicate</button>
-      <button 
-        (click)="showArchiveModal()" 
-        [disabled]="selectedCount === 0" 
+      <button
+        *ngIf="!showingArchived"
+        (click)="showArchiveModal()"
+        [disabled]="selectedCount === 0"
         class="bg-orange-50 text-orange-600 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/>
           <path d="M8 12h8" stroke-width="2"/>
-        </svg> 
+        </svg>
         Archive
       </button>
       <button
-        *ngIf="!showingArchived"
-        (click)="showDeleteModal()" 
-        [disabled]="selectedCount === 0" 
+        *ngIf="showingArchived"
+        (click)="showDeleteModal()"
+        [disabled]="selectedCount === 0"
         class="bg-red-50 text-red-600 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/>
           <path d="M8 8l8 8M8 16l8-8" stroke-width="2"/>
-        </svg> 
+        </svg>
         Delete
       </button>
       <button (click)="clearSelection()" class="bg-transparent text-gray-700 font-semibold px-2 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"><span class="text-xl">&times;</span> Clear</button>
@@ -355,7 +356,7 @@
         <div class="absolute right-4 top-4 flex items-center space-x-2">
           <span *ngIf="asset.status === 'Active'" class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Active</span>
           <div class="relative" (click)="$event.stopPropagation()">
-            <button 
+            <button
               (click)="toggleAssetMenu(asset.id)"
               class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
               <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -364,7 +365,7 @@
                 <circle cx="12" cy="18" r="1.5" />
               </svg>
             </button>
-            
+
             <!-- Dropdown Menu -->
             <div *ngIf="asset.showMenu" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
               <button
@@ -376,7 +377,7 @@
                 </svg>
                 <span class="text-sm text-gray-700">View Details</span>
               </button>
-              
+
               <button
                 (click)="editAsset(asset)"
                 class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
@@ -385,7 +386,7 @@
                 </svg>
                 <span class="text-sm text-gray-700">Edit Asset</span>
               </button>
-              
+
               <button
                 (click)="duplicateAsset(asset)"
                 class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
@@ -394,9 +395,9 @@
                 </svg>
                 <span class="text-sm text-gray-700">Duplicate</span>
               </button>
-              
+
               <div class="border-t border-gray-100 my-1"></div>
-              
+
               <button
                 *ngIf="!showingArchived"
                 (click)="archiveAsset(asset)"
@@ -406,7 +407,7 @@
                 </svg>
                 <span class="text-sm text-orange-600">Archive</span>
               </button>
-              
+
               <button
                 *ngIf="showingArchived"
                 (click)="restoreAsset(asset)"
@@ -416,7 +417,7 @@
                 </svg>
                 <span class="text-sm text-green-600">Restore</span>
               </button>
-              
+
               <button
                 *ngIf="asset.status !== 'Active'"
                 (click)="deleteAsset(asset)"
@@ -436,7 +437,7 @@
       <!-- Card Body -->
       <div class="flex-1 flex flex-col justify-between p-6 pt-4">
         <div>
-          <div 
+          <div
             class="font-semibold text-lg text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
             (click)="viewAsset(asset)">
             {{ asset.name || 'Unnamed Asset' }}
@@ -482,8 +483,8 @@
     <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
       <div class="grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
         <div class="col-span-1 flex items-center">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             [checked]="selectedCount === assetList.length && assetList.length > 0"
             [indeterminate]="selectedCount > 0 && selectedCount < assetList.length"
             (change)="toggleSelectAllAssets()"
@@ -500,14 +501,14 @@
 
     <!-- Table Body -->
     <div class="divide-y divide-gray-200">
-      <div *ngFor="let asset of assetList" 
+      <div *ngFor="let asset of assetList"
            class="px-6 py-4 hover:bg-gray-50 transition-colors"
            [class.bg-blue-50]="asset.selected">
         <div class="grid grid-cols-12 gap-4 items-center">
           <!-- Checkbox -->
           <div class="col-span-1">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               [(ngModel)]="asset.selected"
               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
           </div>
@@ -521,7 +522,7 @@
                 </svg>
               </div>
               <div>
-                <div 
+                <div
                   class="font-medium text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
                   (click)="viewAsset(asset)">
                   {{asset.name || 'Unnamed Asset'}}
@@ -550,7 +551,7 @@
 
           <!-- Status -->
           <div class="col-span-1">
-            <span 
+            <span
               [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-800'">
               {{asset.status || 'Active'}}
             </span>
