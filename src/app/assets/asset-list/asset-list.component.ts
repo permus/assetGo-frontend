@@ -351,42 +351,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.selectAllAssets = false;
   }
 
-  duplicateSelected() {
-    const selectedAssets = this.assetList.filter(asset => asset.selected);
-    if (selectedAssets.length === 0) return;
-
-    // For now, duplicate the first selected asset as an example
-    // In a real implementation, you might want to show a modal for each asset
-    const assetToDuplicate = selectedAssets[0];
-    
-    // Prompt for new serial number (required by backend)
-    const newSerialNumber = prompt(`Enter new serial number for duplicated asset "${assetToDuplicate.name}":`);
-    if (!newSerialNumber) return;
-
-    this.loading = true;
-    
-    this.assetService.duplicateAsset(assetToDuplicate.id, { serial_number: newSerialNumber })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            // Reload assets to show the new duplicated asset
-            this.loadAssets();
-            this.clearSelection();
-            // Show success message (you could add a toast notification here)
-            console.log('Asset duplicated successfully:', response.data);
-          } else {
-            this.error = response.message || 'Failed to duplicate asset';
-          }
-          this.loading = false;
-        },
-        error: (error) => {
-          this.error = error.error?.message || 'An error occurred while duplicating the asset';
-          this.loading = false;
-        }
-      });
-  }
-
   toggleTypeDropdown() {
     this.showTypeDropdown = !this.showTypeDropdown;
     this.showStatusDropdown = false;
