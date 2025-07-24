@@ -46,6 +46,7 @@ export class AssetService {
   updateAsset(id: number | string, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/assets/${id}`, data, this.getAuthHeaders());
   }
+  
   deleteAsset(id: number | string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/assets/${id}`, this.getAuthHeaders());
   }

@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { AssetService } from '../services/asset.service';
 import { OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
+import { ArchiveConfirmationModalComponent } from '../components/archive-confirmation-modal/archive-confirmation-modal.component';
 
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
@@ -40,6 +41,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
   showStatusDropdown = false;
   showSortDropdown = false;
   showSortDirDropdown = false;
+
+  // Archive modal state
+  showArchiveConfirmationModal = false;
 
   typeOptions = [
     { value: '', label: 'All Types' },
@@ -354,6 +358,52 @@ export class AssetListComponent implements OnInit, OnDestroy {
   clearSelection() {
     this.assetList.forEach(asset => asset.selected = false);
     this.selectAllAssets = false;
+  }
+
+  showArchiveModal() {
+    if (this.selectedCount > 0) {
+      this.showArchiveConfirmationModal = true;
+    }
+  }
+
+  closeArchiveModal() {
+    this.showArchiveConfirmationModal = false;
+  }
+
+  archiveSelected() {
+    const selectedAssets = this.assetList.filter(asset => asset.selected);
+    if (selectedAssets.length === 0) {
+      this.closeArchiveModal();
+      return;
+    }
+
+    this.loading = true;
+    
+    // Archive each selected asset
+    const archivePromises = selectedAssets.map(asset => 
+      this.assetService.updateAsset(asset.id, { status: 'Archived' }).toPromise()
+    );
+
+    Promise.all(archivePromises)
+      .then((responses) => {
+        // Check if all requests were successful
+        const allSuccessful = responses.every(response => response.success);
+        
+        if (allSuccessful) {
+          // Reload assets and statistics
+          this.loadAssets();
+          this.loadAssetStatistics();
+          this.clearSelection();
+          this.closeArchiveModal();
+        } else {
+          this.error = 'Some assets could not be archived';
+        }
+        this.loading = false;
+      })
+      .catch((error) => {
+        this.error = error.error?.message || 'An error occurred while archiving assets';
+        this.loading = false;
+      });
   }
 
   toggleTypeDropdown() {
