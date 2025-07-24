@@ -41,25 +41,68 @@ export class AssetListComponent implements OnInit, OnDestroy {
   showSortDropdown = false;
   showSortDirDropdown = false;
 
-  typeOptions = ['All Types', 'Equipment', 'Vehicle', 'Facility', 'IT'];
-  statusOptions = ['All Status', 'Active', 'Maintenance', 'Inactive', 'Retired'];
-  sortOptions = ['Name', 'Date Added', 'Status', 'Manufacturer', 'Cost'];
-  selectedType = 'All Types';
-  selectedStatus = 'All Status';
-  selectedSort = 'Name';
-  selectedSortDir = 'Z-A';
+  typeOptions = [
+    { value: '', label: 'All Types' },
+    { value: 'fixed', label: 'Fixed Asset' },
+    { value: 'semi-fixed', label: 'Semi-Fixed Asset' },
+    { value: 'mobile', label: 'Mobile Asset' },
+    { value: 'fleet', label: 'Fleet Asset' }
+  ];
+  statusOptions = [
+    { value: '', label: 'All Status' },
+    { value: 'Active', label: 'Active' },
+    { value: 'Maintenance', label: 'Maintenance' },
+    { value: 'Inactive', label: 'Inactive' },
+    { value: 'Retired', label: 'Retired' }
+  ];
+  sortOptions = [
+    { value: 'name', label: 'Name' },
+    { value: 'created_at', label: 'Date Added' },
+    { value: 'status', label: 'Status' },
+    { value: 'manufacturer', label: 'Manufacturer' },
+    { value: 'purchase_price', label: 'Cost' }
+  ];
+  selectedType = this.typeOptions[0];
+  selectedStatus = this.statusOptions[0];
+  selectedSort = this.sortOptions[0];
+  selectedSortDir = 'desc';
 
   viewType: 'grid' | 'list' = 'grid';
   searchQuery = '';
+  
+  // Filter parameters
+  currentFilters = {
+    search: '',
+    type: '',
+    status: '',
+    category_id: '',
+    location_id: '',
+    sort_by: 'name',
+    sort_direction: 'desc',
+    page: 1,
+    per_page: 20
+  };
 
   assetList: any[] = [];
   categories: any[] = [];
+  locations: any[] = [];
+  
+  // Pagination
+  pagination = {
+    current_page: 1,
+    last_page: 1,
+    per_page: 20,
+    total: 0,
+    from: 0,
+    to: 0
+  };
 
   selectAllAssets = false;
 
   ngOnInit() {
     this.loadAssets();
     this.loadCategories();
+    this.loadLocations();
   }
 
   ngOnDestroy() {
@@ -71,15 +114,48 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = '';
 
-    this.assetService.getAssets()
+    // Build query parameters
+    const params: any = {};
+    
+    if (this.currentFilters.search) {
+      params.search = this.currentFilters.search;
+    }
+    if (this.currentFilters.type) {
+      params.type = this.currentFilters.type;
+    }
+    if (this.currentFilters.status) {
+      params.status = this.currentFilters.status;
+    }
+    if (this.currentFilters.category_id) {
+      params.category_id = this.currentFilters.category_id;
+    }
+    if (this.currentFilters.location_id) {
+      params.location_id = this.currentFilters.location_id;
+    }
+    if (this.currentFilters.sort_by) {
+      params.sort_by = this.currentFilters.sort_by;
+    }
+    if (this.currentFilters.sort_direction) {
+      params.sort_direction = this.currentFilters.sort_direction;
+    }
+    params.page = this.currentFilters.page;
+    params.per_page = this.currentFilters.per_page;
+
+    this.assetService.getAssets(params)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           if (response.success) {
-            this.assetList = response.data.assets.map((asset: any) => ({
+            this.assetList = (response.data.assets || response.data).map((asset: any) => ({
               ...asset,
               selected: false
             }));
+            
+            // Update pagination if available
+            if (response.data.pagination) {
+              this.pagination = response.data.pagination;
+            }
+            
             this.updateSummary();
           } else {
             this.error = response.message || 'Failed to load assets';
@@ -108,6 +184,21 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
   }
 
+  loadLocations() {
+    this.assetService.getLocations()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.locations = response.data.locations || response.data;
+          }
+        },
+        error: (error) => {
+          console.error('Error loading locations:', error);
+        }
+      });
+  }
+
   updateSummary() {
     const activeAssets = this.assetList.filter(asset => asset.status === 'Active');
     const maintenanceAssets = this.assetList.filter(asset => asset.status === 'Maintenance');
@@ -126,12 +217,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   onSearch() {
-    // Implement search functionality
+    this.currentFilters.search = this.searchQuery;
+    this.currentFilters.page = 1; // Reset to first page
     this.loadAssets();
   }
 
   applyFilters() {
-    // Implement filter functionality
+    this.currentFilters.page = 1; // Reset to first page
     this.loadAssets();
   }
 
@@ -145,32 +237,37 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.selectAllAssets = !allSelected;
   }
 
-  selectType(type: string) {
+  selectType(type: any) {
     this.selectedType = type;
+    this.currentFilters.type = type.value;
     this.showTypeDropdown = false;
     this.applyFilters();
   }
   
-  selectStatus(status: string) {
+  selectStatus(status: any) {
     this.selectedStatus = status;
+    this.currentFilters.status = status.value;
     this.showStatusDropdown = false;
     this.applyFilters();
   }
   
-  selectSort(sort: string) {
+  selectSort(sort: any) {
     this.selectedSort = sort;
+    this.currentFilters.sort_by = sort.value;
     this.showSortDropdown = false;
     this.applyFilters();
   }
   
-  selectSortDir(dir: 'A-Z' | 'Z-A') {
+  selectSortDir(dir: 'asc' | 'desc') {
     this.selectedSortDir = dir;
+    this.currentFilters.sort_direction = dir;
     this.showSortDirDropdown = false;
     this.applyFilters();
   }
 
   toggleSortDir() {
-    this.selectedSortDir = this.selectedSortDir === 'A-Z' ? 'Z-A' : 'A-Z';
+    this.selectedSortDir = this.selectedSortDir === 'asc' ? 'desc' : 'asc';
+    this.currentFilters.sort_direction = this.selectedSortDir;
     this.applyFilters();
   }
 
