@@ -408,6 +408,126 @@
     </div>
   </div>
 
+  <!-- List View -->
+  <div *ngIf="viewType === 'list' && !loading && !error && assetList.length > 0" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Table Header -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <div class="grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <div class="col-span-1 flex items-center">
+          <input 
+            type="checkbox" 
+            [checked]="selectedCount === assetList.length && assetList.length > 0"
+            [indeterminate]="selectedCount > 0 && selectedCount < assetList.length"
+            (change)="toggleSelectAllAssets()"
+            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+        </div>
+        <div class="col-span-3">Asset</div>
+        <div class="col-span-2">Type & Category</div>
+        <div class="col-span-2">Location</div>
+        <div class="col-span-1">Status</div>
+        <div class="col-span-2">Financial</div>
+        <div class="col-span-1">Actions</div>
+      </div>
+    </div>
+
+    <!-- Table Body -->
+    <div class="divide-y divide-gray-200">
+      <div *ngFor="let asset of assetList" 
+           class="px-6 py-4 hover:bg-gray-50 transition-colors"
+           [class.bg-blue-50]="asset.selected">
+        <div class="grid grid-cols-12 gap-4 items-center">
+          <!-- Checkbox -->
+          <div class="col-span-1">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="asset.selected"
+              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+          </div>
+
+          <!-- Asset Info -->
+          <div class="col-span-3">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                </svg>
+              </div>
+              <div>
+                <div 
+                  class="font-medium text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+                  (click)="viewAsset(asset)">
+                  {{asset.name || 'Unnamed Asset'}}
+                </div>
+                <div class="text-sm text-gray-500">{{asset.asset_id || 'AST-' + asset.id}}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type & Category -->
+          <div class="col-span-2">
+            <div class="text-sm text-gray-900">{{asset.type || 'Standard Asset'}}</div>
+            <div class="text-sm text-gray-500">{{asset.category?.name || 'General'}}</div>
+          </div>
+
+          <!-- Location -->
+          <div class="col-span-2">
+            <div class="flex items-center space-x-1">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span class="text-sm text-gray-600">{{asset.location?.name || 'No location'}}</span>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="col-span-1">
+            <span 
+              [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-800'">
+              {{asset.status || 'Active'}}
+            </span>
+          </div>
+
+          <!-- Financial -->
+          <div class="col-span-2">
+            <div class="text-sm text-gray-900">
+              {{asset.purchase_price ? (asset.purchase_price | currency:'USD':'symbol':'1.0-0') : 'N/A'}}
+            </div>
+            <div class="text-sm text-gray-500">
+              Health: {{asset.health_score || 100}}%
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-span-1">
+            <div class="flex items-center space-x-2">
+              <button
+                (click)="viewAsset(asset)"
+                class="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+              </button>
+              <button
+                class="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button
+                class="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Archive Confirmation Modal -->
   <app-archive-confirmation-modal
     [isOpen]="showArchiveConfirmationModal"

@@ -526,6 +526,16 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
+  getStatusColor(status: string): string {
+    const colors: { [key: string]: string } = {
+      'Active': 'green',
+      'Maintenance': 'orange',
+      'Inactive': 'gray',
+      'Retired': 'red'
+    };
+    return colors[status] || 'gray';
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     this.showMenu = false;
