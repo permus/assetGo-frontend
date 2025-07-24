@@ -176,44 +176,44 @@
           </svg>
         </button>
         <div *ngIf="showTypeDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-          <button *ngFor="let type of typeOptions" (click)="selectType(type)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedType === type">{{ type }}</button>
+          <button *ngFor="let type of typeOptions" (click)="selectType(type)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedType.value === type.value">{{ type.label }}</button>
         </div>
       </div>
       <!-- All Status Dropdown -->
       <div class="relative" (click)="$event.stopPropagation()">
         <button (click)="toggleStatusDropdown()" class="px-5 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[120px] cursor-pointer">
-          <span>{{ selectedStatus }}</span>
+          <span>{{ selectedStatus.label }}</span>
           <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
         <div *ngIf="showStatusDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-          <button *ngFor="let status of statusOptions" (click)="selectStatus(status)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedStatus === status">{{ status }}</button>
+          <button *ngFor="let status of statusOptions" (click)="selectStatus(status)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedStatus.value === status.value">{{ status.label }}</button>
         </div>
       </div>
       <!-- Sort By Dropdown -->
       <div class="relative" (click)="$event.stopPropagation()">
         <button (click)="toggleSortDropdown()" class="px-5 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[120px] cursor-pointer">
-          <span>{{ selectedSort }}</span>
+          <span>{{ selectedSort.label }}</span>
           <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
         <div *ngIf="showSortDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-          <button *ngFor="let sort of sortOptions" (click)="selectSort(sort)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedSort === sort">{{ sort }}</button>
+          <button *ngFor="let sort of sortOptions" (click)="selectSort(sort)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedSort.value === sort.value">{{ sort.label }}</button>
         </div>
       </div>
       <!-- Sort Direction Button (toggle) -->
       <div class="relative">
         <button (click)="toggleSortDir()" class="px-4 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[70px] cursor-pointer"
-          [class.bg-blue-100]="selectedSortDir === 'A-Z'" [class.text-blue-700]="selectedSortDir === 'A-Z'">
-          <svg *ngIf="selectedSortDir === 'Z-A'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          [class.bg-blue-100]="selectedSortDir === 'asc'" [class.text-blue-700]="selectedSortDir === 'asc'">
+          <svg *ngIf="selectedSortDir === 'desc'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"></path>
           </svg>
-          <svg *ngIf="selectedSortDir === 'A-Z'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg *ngIf="selectedSortDir === 'asc'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7l4-4m0 0l4 4m-4-4v18"></path>
           </svg>
-          <span>{{ selectedSortDir }}</span>
+          <span>{{ selectedSortDir === 'asc' ? 'A-Z' : 'Z-A' }}</span>
         </button>
       </div>
     </div>

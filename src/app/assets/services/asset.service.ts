@@ -21,8 +21,21 @@ export class AssetService {
     };
   }
   // Asset resource endpoints
-  getAssets(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/assets`, this.getAuthHeaders());
+  getAssets(params: any = {}): Observable<any> {
+    let queryParams = '';
+    const paramKeys = Object.keys(params);
+    
+    if (paramKeys.length > 0) {
+      const queryArray = paramKeys
+        .filter(key => params[key] !== '' && params[key] !== null && params[key] !== undefined)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+      
+      if (queryArray.length > 0) {
+        queryParams = '?' + queryArray.join('&');
+      }
+    }
+    
+    return this.http.get(`${this.baseUrl}/assets${queryParams}`, this.getAuthHeaders());
   }
   getAsset(id: number | string): Observable<any> {
     return this.http.get(`${this.baseUrl}/assets/${id}`, this.getAuthHeaders());
