@@ -640,24 +640,4 @@ export class AssetListComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Asset menu methods
-  toggleAssetMenu(assetId: number) {
-    // Close all other menus first
-    this.assetList.forEach(asset => {
-      if (asset.id !== assetId) {
-        asset.showMenu = false;
-      }
-    });
-    
-    // Toggle the clicked asset's menu
-    const asset = this.assetList.find(a => a.id === assetId);
-    if (asset) {
-      asset.showMenu = !asset.showMenu;
-    }
-  }
-
-  editAsset(asset: any) {
-    this.router.navigate(['/assets', asset.id, 'edit']);
-    asset.showMenu = false;
-  }
 }
