@@ -206,12 +206,15 @@ export class AssetCreateComponent implements OnInit {
       
       if (sourceAsset.category_id) {
         this.selectedCategory = this.categories.find(cat => cat.id === sourceAsset.category_id) || null;
-        this.category = sourceAsset.category_id;
+        this.category = [sourceAsset.category_id];
       }
       
       if (sourceAsset.location_id) {
         this.selectedLocation = this.locations.find(loc => loc.id === sourceAsset.location_id) || null;
       }
+      
+      // Clear validation errors after populating form
+      this.clearErrors();
     }, 100);
     
     // Clear unique fields - these will be auto-generated or user-entered
@@ -324,7 +327,14 @@ export class AssetCreateComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    return !!(this.name && this.selectedAssetType && this.selectedCategory && this.serial_number);
+    return !!(
+      this.name && 
+      this.name.trim().length >= 2 &&
+      this.selectedAssetType && 
+      this.selectedCategory && 
+      this.serial_number && 
+      this.serial_number.trim().length >= 3
+    );
   }
 
   removeImage(): void {
