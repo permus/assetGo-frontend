@@ -100,10 +100,34 @@ export class AssetListComponent implements OnInit, OnDestroy {
   selectAllAssets = false;
 
   ngOnInit() {
-    // this.loadAssetStatistics();
+    this.loadAssetStatistics();
     this.loadAssets();
     this.loadCategories();
     this.loadLocations();
+  }
+
+  loadAssetStatistics() {
+    this.assetService.getAssetStatistics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            const data = response.data;
+            this.summary = {
+              totalAssets: data.total_assets || 0,
+              activeAssets: data.active_assets || 0,
+              maintenance: data.maintenance || 0,
+              totalValue: data.total_asset_value || 0,
+              assetHealth: data.total_asset_health && data.total_assets ? 
+                Math.round(data.total_asset_health / data.total_assets) : 100
+            };
+          }
+        },
+        error: (error) => {
+          console.error('Error loading asset statistics:', error);
+          // Keep default summary values on error
+        }
+      });
   }
 
   ngOnDestroy() {
