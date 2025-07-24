@@ -635,28 +635,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   archiveAsset(asset: any) {
-    const archiveReason = prompt('Archive reason (optional):');
-    const payload: any = {};
-    if (archiveReason && archiveReason.trim()) {
-      payload.archive_reason = archiveReason.trim();
-    }
-    
-    this.assetService.archiveAsset(asset.id, payload)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadAssets();
-            this.loadAssetStatistics();
-            console.log('Asset archived successfully');
-          } else {
-            this.error = response.message || 'Failed to archive asset';
-          }
-        },
-        error: (error) => {
-          this.error = error.error?.message || 'An error occurred while archiving the asset';
-        }
-      });
+    // Set the asset for single archive and open modal
+    this.assetList.forEach(a => a.selected = false); // Clear all selections
+    asset.selected = true; // Select only this asset
+    this.showArchiveConfirmationModal = true;
     asset.showMenu = false;
   }
 
