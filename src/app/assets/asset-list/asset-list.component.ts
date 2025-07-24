@@ -22,11 +22,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
   ) {}
 
   summary = {
-    totalAssets: 26,
-    activeAssets: 26,
+    totalAssets: 0,
+    activeAssets: 0,
     maintenance: 0,
-    totalValue: 2000000,
-    assetHealth: 100
+    totalValue: 0,
+    assetHealth: 0
   };
 
   // Loading states
