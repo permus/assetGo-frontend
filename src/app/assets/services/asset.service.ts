@@ -56,6 +56,11 @@ export class AssetService {
     return this.http.post(`${this.baseUrl}/assets/${id}/archive`, {}, this.getAuthHeaders());
   }
 
+  // Bulk archive assets
+  bulkArchiveAssets(assetIds: number[]): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/bulk-archive`, { asset_ids: assetIds }, this.getAuthHeaders());
+  }
+
   // Asset statistics
   getAssetStatistics(): Observable<any> {
     return this.http.get(`${this.baseUrl}/assets/statistics`, this.getAuthHeaders());

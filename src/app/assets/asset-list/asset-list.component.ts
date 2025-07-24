@@ -377,31 +377,40 @@ export class AssetListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Archive each selected asset using the archive endpoint
-    const archivePromises = selectedAssets.map(asset => 
-      this.assetService.archiveAsset(asset.id).toPromise()
-    );
+    // Get asset IDs for bulk archive
+    const assetIds = selectedAssets.map(asset => asset.id);
 
-    Promise.all(archivePromises)
-      .then((responses) => {
-        // Check if all requests were successful
-        const allSuccessful = responses.every(response => response.success);
-        
-        if (allSuccessful) {
-          // Reload assets and statistics
-          this.loadAssets();
-          this.loadAssetStatistics();
-          this.clearSelection();
-        } else {
-          this.error = 'Some assets could not be archived';
+    this.assetService.bulkArchiveAssets(assetIds)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Check if any assets failed to archive
+            if (response.failed && response.failed.length > 0) {
+              const failedCount = response.failed.length;
+              const successCount = response.archived ? response.archived.length : 0;
+              this.error = `${successCount} assets archived successfully, ${failedCount} failed to archive`;
+            } else {
+              // All assets archived successfully
+              const archivedCount = response.archived ? response.archived.length : selectedAssets.length;
+              console.log(`${archivedCount} assets archived successfully`);
+            }
+            
+            // Reload assets and statistics
+            this.loadAssets();
+            this.loadAssetStatistics();
+            this.clearSelection();
+          } else {
+            this.error = response.message || 'Failed to archive assets';
+          }
+          // Close modal after completion
+          this.closeArchiveModal();
+        },
+        error: (error) => {
+          this.error = error.error?.message || 'An error occurred while archiving assets';
+          // Close modal even on error
+          this.closeArchiveModal();
         }
-        // Close modal after completion (success or error)
-        this.closeArchiveModal();
-      })
-      .catch((error) => {
-        this.error = error.error?.message || 'An error occurred while archiving assets';
-        // Close modal even on error
-        this.closeArchiveModal();
       });
   }
 
