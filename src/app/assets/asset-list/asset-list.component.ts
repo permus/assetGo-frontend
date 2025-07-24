@@ -432,6 +432,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
   }
 
+  viewAsset(asset: any) {
+    this.router.navigate(['/assets', asset.id]);
+  }
+
   archiveSelected() {
     const selectedAssets = this.assetList.filter(asset => asset.selected);
     if (selectedAssets.length === 0) {

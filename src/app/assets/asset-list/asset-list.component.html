@@ -360,7 +360,11 @@
       <!-- Card Body -->
       <div class="flex-1 flex flex-col justify-between p-6 pt-4">
         <div>
-          <div class="font-semibold text-lg text-gray-900 mb-1">{{ asset.name || 'Unnamed Asset' }}</div>
+          <div 
+            class="font-semibold text-lg text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
+            (click)="viewAsset(asset)">
+            {{ asset.name || 'Unnamed Asset' }}
+          </div>
           <div class="text-sm text-gray-500 mb-1">{{ asset.asset_id || asset.id }} • {{ asset.type || 'General' }}</div>
           <div class="flex items-center text-xs text-gray-400 mb-2">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
