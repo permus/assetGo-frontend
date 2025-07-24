@@ -617,7 +617,7 @@
   <!-- Restore Confirmation Modal -->
   <app-restore-confirmation-modal
     [isOpen]="showRestoreConfirmationModal"
-    [selectedCount]="1"
+    [selectedCount]="selectedCount > 0 ? selectedCount : 1"
     [assetName]="selectedAssetForRestore?.name || ''"
     (closeModal)="closeRestoreModal()"
     (confirmRestore)="restoreSelectedAsset($event)">

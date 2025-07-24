@@ -403,34 +403,40 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   restoreSelectedAsset(restoreReason?: string) {
-    if (!this.selectedAssetForRestore) {
-      this.closeRestoreModal();
-      return;
-    }
+    // Check if this is a bulk restore (multiple selected assets) or single asset restore
+    const selectedAssets = this.assetList.filter(asset => asset.selected);
+    
+    if (selectedAssets.length > 1) {
+      // Bulk restore
+      this.restoreBulkAssets(restoreReason);
+    } else if (this.selectedAssetForRestore) {
+      // Single asset restore
+      const payload: any = {};
+      if (restoreReason && restoreReason.trim()) {
+        payload.restore_reason = restoreReason.trim();
+      }
 
-    const payload: any = {};
-    if (restoreReason && restoreReason.trim()) {
-      payload.restore_reason = restoreReason.trim();
-    }
-
-    this.assetService.restoreAsset(this.selectedAssetForRestore.id, payload)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadAssets();
-            this.loadAssetStatistics();
-            console.log('Asset restored successfully');
-          } else {
-            this.error = response.message || 'Failed to restore asset';
+      this.assetService.restoreAsset(this.selectedAssetForRestore.id, payload)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.loadAssets();
+              this.loadAssetStatistics();
+              console.log('Asset restored successfully');
+            } else {
+              this.error = response.message || 'Failed to restore asset';
+            }
+            this.closeRestoreModal();
+          },
+          error: (error) => {
+            this.error = error.error?.message || 'An error occurred while restoring the asset';
+            this.closeRestoreModal();
           }
-          this.closeRestoreModal();
-        },
-        error: (error) => {
-          this.error = error.error?.message || 'An error occurred while restoring the asset';
-          this.closeRestoreModal();
-        }
-      });
+        });
+    } else {
+      this.closeRestoreModal();
+    }
   }
 
   deleteSelected() {
@@ -678,31 +684,56 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   restoreSelected() {
     const selectedAssets = this.assetList.filter(asset => asset.selected);
-    if (selectedAssets.length === 0) return;
-
-    if (confirm(`Are you sure you want to restore ${selectedAssets.length} asset(s) from archive?`)) {
-      const restorePromises = selectedAssets.map(asset => 
-        this.assetService.restoreAsset(asset.id).toPromise()
-      );
-
-      Promise.all(restorePromises).then(responses => {
-        const successful = responses.filter(r => r.success).length;
-        const failed = responses.length - successful;
-        
-        if (failed === 0) {
-          console.log(`${successful} assets restored successfully`);
-        } else {
-          this.error = `${successful} assets restored, ${failed} failed`;
-        }
-        
-        this.loadAssets();
-        this.loadAssetStatistics();
-        this.clearSelection();
-      }).catch(error => {
-        this.error = 'An error occurred while restoring assets';
-        console.error('Restore error:', error);
-      });
+    if (selectedAssets.length === 0) {
+      return;
     }
+    
+    // Open bulk restore modal
+    this.showRestoreConfirmationModal = true;
+  }
+
+  restoreBulkAssets(restoreReason?: string) {
+    const selectedAssets = this.assetList.filter(asset => asset.selected);
+    if (selectedAssets.length === 0) {
+      this.closeRestoreModal();
+      return;
+    }
+
+    // Get asset IDs for bulk restore
+    const assetIds = selectedAssets.map(asset => asset.id);
+
+    this.assetService.bulkRestoreAssets(assetIds, restoreReason)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Check if any assets failed to restore
+            if (response.failed && response.failed.length > 0) {
+              const failedCount = response.failed.length;
+              const successCount = response.restored ? response.restored.length : 0;
+              this.error = `${successCount} assets restored successfully, ${failedCount} failed to restore`;
+            } else {
+              // All assets restored successfully
+              const restoredCount = response.restored ? response.restored.length : selectedAssets.length;
+              console.log(`${restoredCount} assets restored successfully`);
+            }
+            
+            // Reload assets and statistics
+            this.loadAssets();
+            this.loadAssetStatistics();
+            this.clearSelection();
+          } else {
+            this.error = response.message || 'Failed to restore assets';
+          }
+          // Close modal after completion
+          this.closeRestoreModal();
+        },
+        error: (error) => {
+          this.error = error.error?.message || 'An error occurred while restoring assets';
+          // Close modal even on error
+          this.closeRestoreModal();
+        }
+      });
   }
 
   restoreAsset(asset: any) {

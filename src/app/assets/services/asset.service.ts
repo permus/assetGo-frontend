@@ -85,6 +85,15 @@ export class AssetService {
     return this.http.post(`${this.baseUrl}/assets/bulk-delete`, { asset_ids: assetIds }, this.getAuthHeaders());
   }
 
+  // Bulk restore assets
+  bulkRestoreAssets(assetIds: number[], restoreReason?: string): Observable<any> {
+    const payload: any = { asset_ids: assetIds };
+    if (restoreReason && restoreReason.trim()) {
+      payload.restore_reason = restoreReason.trim();
+    }
+    return this.http.post(`${this.baseUrl}/assets/bulk-restore`, payload, this.getAuthHeaders());
+  }
+
   // Asset statistics
   getAssetStatistics(): Observable<any> {
     return this.http.get(`${this.baseUrl}/assets/statistics`, this.getAuthHeaders());
