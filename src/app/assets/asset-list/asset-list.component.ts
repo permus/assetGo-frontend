@@ -107,14 +107,17 @@ export class AssetListComponent {
     this.selectedType = type;
     this.showTypeDropdown = false;
   }
+  
   selectStatus(status: string) {
     this.selectedStatus = status;
     this.showStatusDropdown = false;
   }
+  
   selectSort(sort: string) {
     this.selectedSort = sort;
     this.showSortDropdown = false;
   }
+  
   selectSortDir(dir: 'A-Z' | 'Z-A') {
     this.selectedSortDir = dir;
     this.showSortDirDropdown = false;
@@ -122,6 +125,27 @@ export class AssetListComponent {
 
   toggleSortDir() {
     this.selectedSortDir = this.selectedSortDir === 'A-Z' ? 'Z-A' : 'A-Z';
+  }
+
+  toggleTypeDropdown() {
+    this.showTypeDropdown = !this.showTypeDropdown;
+    this.showStatusDropdown = false;
+    this.showSortDropdown = false;
+    this.showSortDirDropdown = false;
+  }
+
+  toggleStatusDropdown() {
+    this.showStatusDropdown = !this.showStatusDropdown;
+    this.showTypeDropdown = false;
+    this.showSortDropdown = false;
+    this.showSortDirDropdown = false;
+  }
+
+  toggleSortDropdown() {
+    this.showSortDropdown = !this.showSortDropdown;
+    this.showTypeDropdown = false;
+    this.showStatusDropdown = false;
+    this.showSortDirDropdown = false;
   }
 
   goToCreateAsset() {
