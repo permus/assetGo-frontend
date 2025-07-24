@@ -61,6 +61,11 @@ export class AssetService {
     return this.http.post(`${this.baseUrl}/assets/bulk-archive`, { asset_ids: assetIds }, this.getAuthHeaders());
   }
 
+  // Bulk delete assets (permanently delete archived assets)
+  bulkDeleteAssets(assetIds: number[]): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/bulk-delete`, { asset_ids: assetIds }, this.getAuthHeaders());
+  }
+
   // Asset statistics
   getAssetStatistics(): Observable<any> {
     return this.http.get(`${this.baseUrl}/assets/statistics`, this.getAuthHeaders());

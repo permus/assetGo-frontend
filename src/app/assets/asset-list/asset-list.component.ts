@@ -6,11 +6,12 @@ import { AssetService } from '../services/asset.service';
 import { OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ArchiveConfirmationModalComponent } from '../components/archive-confirmation-modal/archive-confirmation-modal.component';
+import { DeleteConfirmationModalComponent } from '../components/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
@@ -44,6 +45,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   // Archive modal state
   showArchiveConfirmationModal = false;
+  showDeleteConfirmationModal = false;
 
   typeOptions = [
     { value: '', label: 'All Types' },
@@ -368,6 +370,60 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   closeArchiveModal() {
     this.showArchiveConfirmationModal = false;
+  }
+
+  showDeleteModal() {
+    if (this.selectedCount > 0) {
+      this.showDeleteConfirmationModal = true;
+    }
+  }
+
+  closeDeleteModal() {
+    this.showDeleteConfirmationModal = false;
+  }
+
+  deleteSelected() {
+    const selectedAssets = this.assetList.filter(asset => asset.selected);
+    if (selectedAssets.length === 0) {
+      this.closeDeleteModal();
+      return;
+    }
+
+    // Get asset IDs for bulk delete
+    const assetIds = selectedAssets.map(asset => asset.id);
+
+    this.assetService.bulkDeleteAssets(assetIds)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Check if any assets failed to delete
+            if (response.failed && response.failed.length > 0) {
+              const failedCount = response.failed.length;
+              const successCount = response.deleted ? response.deleted.length : 0;
+              this.error = `${successCount} assets deleted successfully, ${failedCount} failed to delete`;
+            } else {
+              // All assets deleted successfully
+              const deletedCount = response.deleted ? response.deleted.length : selectedAssets.length;
+              console.log(`${deletedCount} assets deleted successfully`);
+            }
+            
+            // Reload assets and statistics
+            this.loadAssets();
+            this.loadAssetStatistics();
+            this.clearSelection();
+          } else {
+            this.error = response.message || 'Failed to delete assets';
+          }
+          // Close modal after completion
+          this.closeDeleteModal();
+        },
+        error: (error) => {
+          this.error = error.error?.message || 'An error occurred while deleting assets';
+          // Close modal even on error
+          this.closeDeleteModal();
+        }
+      });
   }
 
   archiveSelected() {
