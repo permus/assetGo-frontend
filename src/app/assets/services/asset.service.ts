@@ -50,6 +50,11 @@ export class AssetService {
     return this.http.delete(`${this.baseUrl}/assets/${id}`, this.getAuthHeaders());
   }
 
+  // Asset statistics
+  getAssetStatistics(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/assets/statistics`, this.getAuthHeaders());
+  }
+
   // Asset category
   getAssetCategories(): Observable<any> {
     return this.http.get(`${this.baseUrl}/asset-categories`, this.getAuthHeaders());

@@ -100,6 +100,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   selectAllAssets = false;
 
   ngOnInit() {
+    this.loadAssetStatistics();
     this.loadAssets();
     this.loadCategories();
     this.loadLocations();
@@ -108,6 +109,29 @@ export class AssetListComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  loadAssetStatistics() {
+    this.assetService.getAssetStatistics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            const data = response.data;
+            this.summary = {
+              totalAssets: data.total_assets || 0,
+              activeAssets: data.active_assets || 0,
+              maintenance: data.maintenance || 0,
+              totalValue: data.total_asset_value || 0,
+              assetHealth: data.total_asset_health ? Math.round(data.total_asset_health / (data.total_assets || 1)) : 100
+            };
+          }
+        },
+        error: (error) => {
+          console.error('Error loading asset statistics:', error);
+          // Keep default summary values on error
+        }
+      });
   }
 
   loadAssets() {
@@ -156,7 +180,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
               this.pagination = response.data.pagination;
             }
             
-            this.updateSummary();
           } else {
             this.error = response.message || 'Failed to load assets';
           }
@@ -197,23 +220,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
           console.error('Error loading locations:', error);
         }
       });
-  }
-
-  updateSummary() {
-    const activeAssets = this.assetList.filter(asset => asset.status === 'Active');
-    const maintenanceAssets = this.assetList.filter(asset => asset.status === 'Maintenance');
-    const totalValue = this.assetList.reduce((sum, asset) => sum + (asset.purchase_price || 0), 0);
-    const avgHealthScore = this.assetList.length > 0 
-      ? Math.round(this.assetList.reduce((sum, asset) => sum + (asset.health_score || 100), 0) / this.assetList.length)
-      : 100;
-
-    this.summary = {
-      totalAssets: this.assetList.length,
-      activeAssets: activeAssets.length,
-      maintenance: maintenanceAssets.length,
-      totalValue: totalValue,
-      assetHealth: avgHealthScore
-    };
   }
 
   onSearch() {
