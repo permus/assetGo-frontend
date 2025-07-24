@@ -52,8 +52,8 @@ export class AssetService {
   }
 
   // Restore asset from archive
-  restoreAsset(id: number | string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/assets/${id}/restore`, {}, this.getAuthHeaders());
+  restoreAsset(id: number | string, data: any = {}): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/${id}/restore`, data, this.getAuthHeaders());
   }
 
   // Get archive analytics

@@ -613,4 +613,13 @@
     (closeModal)="closeDeleteModal()"
     (confirmDelete)="deleteSelected()">
   </app-delete-confirmation-modal>
+
+  <!-- Restore Confirmation Modal -->
+  <app-restore-confirmation-modal
+    [isOpen]="showRestoreConfirmationModal"
+    [selectedCount]="1"
+    [assetName]="selectedAssetForRestore?.name || ''"
+    (closeModal)="closeRestoreModal()"
+    (confirmRestore)="restoreSelectedAsset($event)">
+  </app-restore-confirmation-modal>
 </div>

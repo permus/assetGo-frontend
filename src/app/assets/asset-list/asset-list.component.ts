@@ -7,12 +7,13 @@ import { OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ArchiveConfirmationModalComponent } from '../components/archive-confirmation-modal/archive-confirmation-modal.component';
 import { DeleteConfirmationModalComponent } from '../components/delete-confirmation-modal/delete-confirmation-modal.component';
+import { RestoreConfirmationModalComponent } from '../components/restore-confirmation-modal/restore-confirmation-modal.component';
 import { PdfExportService } from '../../shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
@@ -48,6 +49,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   // Archive modal state
   showArchiveConfirmationModal = false;
   showDeleteConfirmationModal = false;
+  showRestoreConfirmationModal = false;
+  selectedAssetForRestore: any = null;
   
   // View state
   showingArchived = false;
@@ -394,6 +397,42 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.showDeleteConfirmationModal = false;
   }
 
+  closeRestoreModal() {
+    this.showRestoreConfirmationModal = false;
+    this.selectedAssetForRestore = null;
+  }
+
+  restoreSelectedAsset(restoreReason?: string) {
+    if (!this.selectedAssetForRestore) {
+      this.closeRestoreModal();
+      return;
+    }
+
+    const payload: any = {};
+    if (restoreReason && restoreReason.trim()) {
+      payload.restore_reason = restoreReason.trim();
+    }
+
+    this.assetService.restoreAsset(this.selectedAssetForRestore.id, payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadAssets();
+            this.loadAssetStatistics();
+            console.log('Asset restored successfully');
+          } else {
+            this.error = response.message || 'Failed to restore asset';
+          }
+          this.closeRestoreModal();
+        },
+        error: (error) => {
+          this.error = error.error?.message || 'An error occurred while restoring the asset';
+          this.closeRestoreModal();
+        }
+      });
+  }
+
   deleteSelected() {
     const selectedAssets = this.assetList.filter(asset => asset.selected);
     if (selectedAssets.length === 0) {
@@ -667,24 +706,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   restoreAsset(asset: any) {
-    if (confirm(`Are you sure you want to restore "${asset.name}" from archive?`)) {
-      this.assetService.restoreAsset(asset.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (response) => {
-            if (response.success) {
-              this.loadAssets();
-              this.loadAssetStatistics();
-              console.log('Asset restored successfully');
-            } else {
-              this.error = response.message || 'Failed to restore asset';
-            }
-          },
-          error: (error) => {
-            this.error = error.error?.message || 'An error occurred while restoring the asset';
-          }
-        });
-    }
+    this.selectedAssetForRestore = asset;
+    this.showRestoreConfirmationModal = true;
     asset.showMenu = false;
   }
 
