@@ -526,7 +526,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusColor(status: string): string {
+  public getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
       'Active': 'green',
       'Maintenance': 'orange',
