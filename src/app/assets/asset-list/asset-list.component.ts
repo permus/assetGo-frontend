@@ -335,35 +335,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
     const selectedAssets = this.assetList.filter(asset => asset.selected);
     if (selectedAssets.length === 0) return;
 
-    // For now, duplicate the first selected asset as an example
-    // In a real implementation, you might want to show a modal for each asset
+    // Navigate to create page with the first selected asset for duplication
     const assetToDuplicate = selectedAssets[0];
-    
-    // Generate new serial number automatically
-    const newSerialNumber = this.generateSerialNumber();
-
-    this.loading = true;
-    
-    this.assetService.duplicateAsset(assetToDuplicate.id, { serial_number: newSerialNumber })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            // Reload assets to show the new duplicated asset
-            this.loadAssets();
-            this.clearSelection();
-            // Show success message (you could add a toast notification here)
-            console.log('Asset duplicated successfully:', response.data);
-          } else {
-            this.error = response.message || 'Failed to duplicate asset';
-          }
-          this.loading = false;
-        },
-        error: (error) => {
-          this.error = error.error?.message || 'An error occurred while duplicating the asset';
-          this.loading = false;
-        }
-      });
+    this.router.navigate(['/assets/create'], {
+      queryParams: {
+        duplicate: true,
+        sourceId: assetToDuplicate.id
+      }
+    });
+    this.clearSelection();
   }
 
   generateSerialNumber(): string {
@@ -615,26 +595,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   duplicateAsset(asset: any) {
-    this.loading = true;
-    const newSerialNumber = this.generateSerialNumber();
-    
-    this.assetService.duplicateAsset(asset.id, { serial_number: newSerialNumber })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadAssets();
-            console.log('Asset duplicated successfully');
-          } else {
-            this.error = response.message || 'Failed to duplicate asset';
-          }
-          this.loading = false;
-        },
-        error: (error) => {
-          this.error = error.error?.message || 'An error occurred while duplicating the asset';
-          this.loading = false;
-        }
-      });
+    // Navigate to create page with duplication parameters
+    this.router.navigate(['/assets/create'], {
+      queryParams: {
+        duplicate: true,
+        sourceId: asset.id
+      }
+    });
     asset.showMenu = false;
   }
 

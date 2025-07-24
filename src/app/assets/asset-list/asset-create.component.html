@@ -13,8 +13,27 @@
           <span class="font-medium">Back to Assets</span>
         </button>
       </div>
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Create New Asset</h1>
-      <p class="text-gray-600">Add a new asset to your inventory with detailed information and specifications</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        {{route.snapshot.queryParams['duplicate'] ? 'Duplicate Asset' : 'Create New Asset'}}
+      </h1>
+      <p class="text-gray-600">
+        {{route.snapshot.queryParams['duplicate'] ? 
+          'Creating a copy of an existing asset. Please review and update the information below.' : 
+          'Add a new asset to your inventory with detailed information and specifications'}}
+      </p>
+      
+      <!-- Duplication Notice -->
+      <div *ngIf="route.snapshot.queryParams['duplicate']" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <div>
+            <p class="text-blue-800 font-medium">Duplicating Asset</p>
+            <p class="text-blue-700 text-sm">Most fields have been pre-filled. Please enter a new serial number and review all information before saving.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <form (ngSubmit)="onSubmit()" #assetForm="ngForm">
