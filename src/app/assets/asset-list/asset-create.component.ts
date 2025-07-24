@@ -86,7 +86,7 @@ export class AssetCreateComponent implements OnInit {
     const payload: any = {
       name: this.name,
       description: this.description,
-      category_id: this.category,
+      category_id: this.category_id,
       type: this.assetType,
       serial_number: this.serial_number,
       model: this.model,
@@ -130,7 +130,7 @@ export class AssetCreateComponent implements OnInit {
 
   healthScore = 85;
   categories: any[] = [];
-  category: any[] = [];
+  category_id: number | null = null;
   assetTypes = [
     { value: 'fixed', label: 'Fixed Asset', icon: 'building-office-2', color: '#2563eb', description: 'Permanent assets like buildings and machinery' },
     { value: 'semi-fixed', label: 'Semi-Fixed Asset', icon: 'cube', color: '#22c55e', description: 'Assets that can be moved but are typically stationary' },
@@ -206,7 +206,7 @@ export class AssetCreateComponent implements OnInit {
       
       if (sourceAsset.category_id) {
         this.selectedCategory = this.categories.find(cat => cat.id === sourceAsset.category_id) || null;
-        this.category = [sourceAsset.category_id];
+        this.category_id = sourceAsset.category_id;
       }
       
       if (sourceAsset.location_id) {
@@ -256,7 +256,7 @@ export class AssetCreateComponent implements OnInit {
 
   selectCategory(category: any) {
     this.selectedCategory = category;
-    this.category = category.id;
+    this.category_id = category.id;
     this.showCategoryDropdown = false;
     this.clearErrors();
   }
