@@ -318,9 +318,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     // In a real implementation, you might want to show a modal for each asset
     const assetToDuplicate = selectedAssets[0];
     
-    // Prompt for new serial number (required by backend)
-    const newSerialNumber = prompt(`Enter new serial number for duplicated asset "${assetToDuplicate.name}":`);
-    if (!newSerialNumber) return;
+    // Generate new serial number automatically
+    const newSerialNumber = this.generateSerialNumber();
 
     this.loading = true;
     
@@ -344,6 +343,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
           this.loading = false;
         }
       });
+  }
+
+  generateSerialNumber(): string {
+    const timestamp = Date.now().toString();
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `SN${timestamp.slice(-6)}${random}`;
   }
 
   clearSelection() {
