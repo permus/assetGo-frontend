@@ -609,7 +609,7 @@
     [isOpen]="showDeleteConfirmationModal"
     [selectedCount]="selectedCount"
     (closeModal)="closeDeleteModal()"
-    (confirmDelete)="deleteSelected()">
+    (confirmDelete)="deleteSelected($event)">
   </app-delete-confirmation-modal>
 
   <!-- Restore Confirmation Modal -->

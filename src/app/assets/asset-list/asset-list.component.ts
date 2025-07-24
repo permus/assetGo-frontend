@@ -439,7 +439,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteSelected() {
+  deleteSelected(deletionReason?: string) {
     const selectedAssets = this.assetList.filter(asset => asset.selected);
     if (selectedAssets.length === 0) {
       this.closeDeleteModal();
@@ -448,8 +448,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     // Get asset IDs for bulk delete
     const assetIds = selectedAssets.map(asset => asset.id);
+    const payload: any = { asset_ids: assetIds };
+    if (deletionReason && deletionReason.trim()) {
+      payload.deletion_reason = deletionReason.trim();
+    }
 
-    this.assetService.bulkDeleteAssets(assetIds)
+    this.assetService.bulkDeleteAssets(payload)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {

@@ -81,8 +81,8 @@ export class AssetService {
   }
 
   // Bulk delete assets (permanently delete archived assets)
-  bulkDeleteAssets(assetIds: number[]): Observable<any> {
-    return this.http.post(`${this.baseUrl}/assets/bulk-delete`, { asset_ids: assetIds }, this.getAuthHeaders());
+  bulkDeleteAssets(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/bulk-delete`, data, this.getAuthHeaders());
   }
 
   // Bulk restore assets

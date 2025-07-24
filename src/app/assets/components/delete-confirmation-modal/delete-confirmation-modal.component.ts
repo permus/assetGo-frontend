@@ -42,22 +42,25 @@ export class DeleteConfirmationModalComponent {
   @Input() isOpen = false;
   @Input() selectedCount = 0;
   @Output() closeModal = new EventEmitter<void>();
-  @Output() confirmDelete = new EventEmitter<void>();
+  @Output() confirmDelete = new EventEmitter<string>();
 
   loading = false;
+  deletionReason = '';
 
   onConfirm() {
     this.loading = true;
-    this.confirmDelete.emit();
+    this.confirmDelete.emit(this.deletionReason);
     
     // Stop loading after a short delay to allow the parent component to handle the delete
     setTimeout(() => {
       this.loading = false;
+      this.deletionReason = '';
     }, 2000);
   }
 
   onCancel() {
     if (this.loading) return;
+    this.deletionReason = '';
     this.closeModal.emit();
   }
 }
