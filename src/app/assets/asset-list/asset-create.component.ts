@@ -142,12 +142,12 @@ export class AssetCreateComponent implements OnInit {
   constructor(
     private assetService: AssetService, 
     private router: Router,
-    private route: ActivatedRoute
+    public route: ActivatedRoute
   ) {}
 
   ngOnInit() {
     // Check if we're duplicating an asset
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params: any) => {
       if (params['duplicate'] && params['sourceId']) {
         this.loadAssetForDuplication(params['sourceId']);
       }
