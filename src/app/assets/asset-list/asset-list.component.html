@@ -170,7 +170,7 @@
       <!-- All Types Dropdown -->
       <div class="relative" (click)="$event.stopPropagation()">
         <button (click)="toggleTypeDropdown()" class="px-5 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[120px] cursor-pointer">
-          <span>{{ selectedType }}</span>
+          <span>{{ selectedType.label }}</span>
           <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
