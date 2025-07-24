@@ -442,7 +442,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/assets', asset.id]);
   }
 
-  archiveSelected() {
+  archiveSelected(archiveReason?: string) {
     const selectedAssets = this.assetList.filter(asset => asset.selected);
     if (selectedAssets.length === 0) {
       this.closeArchiveModal();
@@ -451,8 +451,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     // Get asset IDs for bulk archive
     const assetIds = selectedAssets.map(asset => asset.id);
+    const payload: any = { asset_ids: assetIds };
+    if (archiveReason && archiveReason.trim()) {
+      payload.archive_reason = archiveReason.trim();
+    }
 
-    this.assetService.bulkArchiveAssets(assetIds)
+    this.assetService.bulkArchiveAssets(payload)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -586,7 +590,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   archiveAsset(asset: any) {
-    this.assetService.archiveAsset(asset.id)
+    const archiveReason = prompt('Archive reason (optional):');
+    const payload: any = {};
+    if (archiveReason && archiveReason.trim()) {
+      payload.archive_reason = archiveReason.trim();
+    }
+    
+    this.assetService.archiveAsset(asset.id, payload)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -626,6 +636,49 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
     asset.showMenu = false;
   }
+
+  restoreAsset(asset: any) {
+    if (confirm('Are you sure you want to restore this asset from archive?')) {
+      this.assetService.restoreAsset(asset.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.loadAssets();
+              this.loadAssetStatistics();
+              console.log('Asset restored successfully');
+            } else {
+              this.error = response.message || 'Failed to restore asset';
+            }
+          },
+          error: (error) => {
+            this.error = error.error?.message || 'An error occurred while restoring the asset';
+          }
+        });
+    }
+    asset.showMenu = false;
+  }
+
+  exportToCSV() {
+    this.assetService.exportAssets(this.showingArchived).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `assets-${this.showingArchived ? 'archived' : 'active'}-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        this.showMenu = false;
+      },
+      error: (error) => {
+        console.error('Error exporting assets:', error);
+        this.error = 'Failed to export assets';
+      }
+    });
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     this.showMenu = false;

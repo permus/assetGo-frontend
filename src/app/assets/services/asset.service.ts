@@ -51,14 +51,33 @@ export class AssetService {
     return this.http.delete(`${this.baseUrl}/assets/${id}`, this.getAuthHeaders());
   }
 
+  // Restore asset from archive
+  restoreAsset(id: number | string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/${id}/restore`, {}, this.getAuthHeaders());
+  }
+
+  // Get archive analytics
+  getArchiveAnalytics(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/assets/analytics`, this.getAuthHeaders());
+  }
+
+  // Export assets (CSV)
+  exportAssets(archived: boolean = false): Observable<Blob> {
+    const params = archived ? '?archived=1' : '';
+    return this.http.get(`${this.baseUrl}/assets/export${params}`, {
+      responseType: 'blob',
+      ...this.getAuthHeaders()
+    });
+  }
+
   // Archive asset
-  archiveAsset(id: number | string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/assets/${id}/archive`, {}, this.getAuthHeaders());
+  archiveAsset(id: number | string, data: any = {}): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/${id}/archive`, data, this.getAuthHeaders());
   }
 
   // Bulk archive assets
-  bulkArchiveAssets(assetIds: number[]): Observable<any> {
-    return this.http.post(`${this.baseUrl}/assets/bulk-archive`, { asset_ids: assetIds }, this.getAuthHeaders());
+  bulkArchiveAssets(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/assets/bulk-archive`, data, this.getAuthHeaders());
   }
 
   // Bulk delete assets (permanently delete archived assets)
