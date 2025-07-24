@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -6,6 +6,7 @@ import { AssetService } from '../../services/asset.service';
 import { Location as angularLocation } from '@angular/common';
 import { PdfExportService } from '../../../shared/services/pdf-export.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import flatpickr from 'flatpickr';
 
 @Component({
   selector: 'app-asset-view',
@@ -14,8 +15,9 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
   templateUrl: './asset-view.component.html',
   styleUrl: './asset-view.component.scss'
 })
-export class AssetViewComponent implements OnInit, OnDestroy {
+export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
+  @ViewChildren('dateInput') dateInputs!: QueryList<ElementRef>;
 
   asset: any = null;
   loading = true;
@@ -28,6 +30,9 @@ export class AssetViewComponent implements OnInit, OnDestroy {
   showEditMaintenanceModal = false;
   selectedSchedule: any = null;
   maintenanceForm: FormGroup;
+
+  // Flatpickr instances
+  flatpickrInstances: any[] = [];
 
   // Mock data for demonstration
   mockHealthData = {
@@ -86,9 +91,19 @@ export class AssetViewComponent implements OnInit, OnDestroy {
       });
   }
 
+  ngAfterViewInit() {
+    this.initializeDatePickers();
+  }
+
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    // Cleanup flatpickr instances
+    this.flatpickrInstances.forEach(instance => {
+      if (instance) {
+        instance.destroy();
+      }
+    });
   }
 
   loadAsset(id: string) {
@@ -210,6 +225,10 @@ export class AssetViewComponent implements OnInit, OnDestroy {
       notes: '',
       status: 'Scheduled'
     });
+    // Initialize date pickers after modal opens
+    setTimeout(() => {
+      this.initializeDatePickers();
+    }, 100);
   }
 
   editMaintenanceSchedule(schedule: any) {
@@ -223,6 +242,10 @@ export class AssetViewComponent implements OnInit, OnDestroy {
       notes: schedule.notes,
       status: schedule.status
     });
+    // Initialize date pickers after modal opens
+    setTimeout(() => {
+      this.initializeDatePickers();
+    }, 100);
   }
 
   deleteMaintenanceSchedule(schedule: any) {
@@ -285,6 +308,46 @@ export class AssetViewComponent implements OnInit, OnDestroy {
     this.showEditMaintenanceModal = false;
     this.selectedSchedule = null;
     this.maintenanceForm.reset();
+    // Cleanup flatpickr instances
+    this.flatpickrInstances.forEach(instance => {
+      if (instance) {
+        instance.destroy();
+      }
+    });
+    this.flatpickrInstances = [];
+  }
+
+  private initializeDatePickers() {
+    // Cleanup existing instances
+    this.flatpickrInstances.forEach(instance => {
+      if (instance) {
+        instance.destroy();
+      }
+    });
+    this.flatpickrInstances = [];
+
+    // Initialize new instances
+    setTimeout(() => {
+      if (this.dateInputs) {
+        this.dateInputs.forEach((inputRef, index) => {
+          if (inputRef?.nativeElement) {
+            const instance = flatpickr(inputRef.nativeElement, {
+              dateFormat: 'Y-m-d',
+              allowInput: true,
+              clickOpens: true,
+              onChange: (selectedDates, dateStr) => {
+                // Update form control value
+                const controlName = inputRef.nativeElement.getAttribute('formControlName');
+                if (controlName && this.maintenanceForm.get(controlName)) {
+                  this.maintenanceForm.get(controlName)!.setValue(dateStr);
+                }
+              }
+            });
+            this.flatpickrInstances.push(instance);
+          }
+        });
+      }
+    }, 50);
   }
 
   getScheduleStatusColor(status: string): string {
