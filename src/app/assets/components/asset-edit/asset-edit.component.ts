@@ -141,9 +141,16 @@ export class AssetEditComponent implements OnInit, OnDestroy {
       });
 
       // Set selected dropdowns
-      this.selectedAssetType = this.assetTypes.find(type => type.value === this.asset.type) || null;
-      this.selectedCategory = this.categories.find(cat => cat.id === this.asset.category_id) || null;
-      this.selectedLocation = this.locations.find(loc => loc.id === this.asset.location_id) || null;
+      // Wait for categories and locations to load before setting selections
+      setTimeout(() => {
+        this.selectedAssetType = this.assetTypes.find(type => type.value === this.asset.type) || null;
+        this.selectedCategory = this.categories.find(cat => cat.id === this.asset.category_id) || null;
+        this.selectedLocation = this.locations.find(loc => loc.id === this.asset.location_id) || null;
+        
+        // Mark form as touched to trigger validation
+        this.assetForm.markAllAsTouched();
+        this.assetForm.updateValueAndValidity();
+      }, 100);
     }
   }
 
@@ -154,6 +161,10 @@ export class AssetEditComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success && response.data?.categories) {
             this.categories = response.data.categories;
+            // Re-populate form if asset is already loaded
+            if (this.asset) {
+              this.populateForm();
+            }
           }
         },
         error: (error) => {
@@ -169,6 +180,10 @@ export class AssetEditComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success && response.data) {
             this.locations = response.data.locations || response.data;
+            // Re-populate form if asset is already loaded
+            if (this.asset) {
+              this.populateForm();
+            }
           }
         },
         error: (error) => {
@@ -279,6 +294,6 @@ export class AssetEditComponent implements OnInit, OnDestroy {
   }
 
   isFormValid(): boolean {
-    return this.assetForm.valid;
+    return this.assetForm.valid && this.selectedAssetType !== null && this.selectedCategory !== null;
   }
 }
