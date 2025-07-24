@@ -637,46 +637,33 @@ export class AssetListComponent implements OnInit, OnDestroy {
     asset.showMenu = false;
   }
 
-  restoreAsset(asset: any) {
-    if (confirm('Are you sure you want to restore this asset from archive?')) {
-      this.assetService.restoreAsset(asset.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (response) => {
-            if (response.success) {
-              this.loadAssets();
-              this.loadAssetStatistics();
-              console.log('Asset restored successfully');
-            } else {
-              this.error = response.message || 'Failed to restore asset';
-            }
-          },
-          error: (error) => {
-            this.error = error.error?.message || 'An error occurred while restoring the asset';
-          }
-        });
-    }
-    asset.showMenu = false;
-  }
+  restoreSelected() {
+    const selectedAssets = this.assetList.filter(asset => asset.selected);
+    if (selectedAssets.length === 0) return;
 
-  exportToCSV() {
-    this.assetService.exportAssets(this.showingArchived).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `assets-${this.showingArchived ? 'archived' : 'active'}-${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        this.showMenu = false;
-      },
-      error: (error) => {
-        console.error('Error exporting assets:', error);
-        this.error = 'Failed to export assets';
-      }
-    });
+    if (confirm(`Are you sure you want to restore ${selectedAssets.length} asset(s) from archive?`)) {
+      const restorePromises = selectedAssets.map(asset => 
+        this.assetService.restoreAsset(asset.id).toPromise()
+      );
+
+      Promise.all(restorePromises).then(responses => {
+        const successful = responses.filter(r => r.success).length;
+        const failed = responses.length - successful;
+        
+        if (failed === 0) {
+          console.log(`${successful} assets restored successfully`);
+        } else {
+          this.error = `${successful} assets restored, ${failed} failed`;
+        }
+        
+        this.loadAssets();
+        this.loadAssetStatistics();
+        this.clearSelection();
+      }).catch(error => {
+        this.error = 'An error occurred while restoring assets';
+        console.error('Restore error:', error);
+      });
+    }
   }
 
   @HostListener('document:click', ['$event'])
