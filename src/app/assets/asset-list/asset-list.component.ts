@@ -2,6 +2,9 @@ import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { CurrencyPipe, NgIf, NgFor, DecimalPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AssetService } from '../services/asset.service';
+import { OnInit, OnDestroy } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-asset-list',
@@ -10,8 +13,13 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
-export class AssetListComponent {
-  constructor(private router: Router) {}
+export class AssetListComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private router: Router,
+    private assetService: AssetService
+  ) {}
 
   summary = {
     totalAssets: 26,
@@ -20,6 +28,10 @@ export class AssetListComponent {
     totalValue: 2000000,
     assetHealth: 100
   };
+
+  // Loading states
+  loading = false;
+  error = '';
 
   showMenu = false;
 
@@ -38,60 +50,90 @@ export class AssetListComponent {
   selectedSortDir = 'Z-A';
 
   viewType: 'grid' | 'list' = 'grid';
+  searchQuery = '';
 
-  assetList = [
-    {
-      id: 1,
-      name: 'Dell PowerEdge Server R750 (Copy) (Copy)',
-      code: 'AST-011',
-      type: 'IT Equipment',
-      status: 'Active',
-      location: 'No location',
-      value: 25000,
-      purchaseDate: '2023-06-15',
-      healthScore: 100,
-      selected: true
-    },
-    {
-      id: 2,
-      name: 'Wireless Headset System',
-      code: 'AST-010',
-      type: 'General',
-      status: 'Active',
-      location: 'No location',
-      value: null,
-      purchaseDate: null,
-      healthScore: 100,
-      selected: true
-    },
-    {
-      id: 3,
-      name: 'ytu (Copy)',
-      code: 'AST-009',
-      type: 'General',
-      status: 'Active',
-      location: 'No location',
-      value: null,
-      purchaseDate: null,
-      healthScore: 85,
-      selected: false
-    },
-    {
-      id: 4,
-      name: 'Dell PowerEdge Server R750 (Copy)',
-      code: 'AST-008',
-      type: 'IT Equipment',
-      status: 'Active',
-      location: 'No location',
-      value: 25000,
-      purchaseDate: '2023-06-15',
-      healthScore: 100,
-      selected: false
-    }
-    // Add more mock assets as needed
-  ];
+  assetList: any[] = [];
+  categories: any[] = [];
 
   selectAllAssets = false;
+
+  ngOnInit() {
+    this.loadAssets();
+    this.loadCategories();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadAssets() {
+    this.loading = true;
+    this.error = '';
+
+    this.assetService.getAssets()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.assetList = response.data.assets.map((asset: any) => ({
+              ...asset,
+              selected: false
+            }));
+            this.updateSummary();
+          } else {
+            this.error = response.message || 'Failed to load assets';
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          this.error = error.error?.message || 'An error occurred while loading assets';
+          this.loading = false;
+        }
+      });
+  }
+
+  loadCategories() {
+    this.assetService.getAssetCategories()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.categories = response.data.categories;
+          }
+        },
+        error: (error) => {
+          console.error('Error loading categories:', error);
+        }
+      });
+  }
+
+  updateSummary() {
+    const activeAssets = this.assetList.filter(asset => asset.status === 'Active');
+    const maintenanceAssets = this.assetList.filter(asset => asset.status === 'Maintenance');
+    const totalValue = this.assetList.reduce((sum, asset) => sum + (asset.purchase_price || 0), 0);
+    const avgHealthScore = this.assetList.length > 0 
+      ? Math.round(this.assetList.reduce((sum, asset) => sum + (asset.health_score || 100), 0) / this.assetList.length)
+      : 100;
+
+    this.summary = {
+      totalAssets: this.assetList.length,
+      activeAssets: activeAssets.length,
+      maintenance: maintenanceAssets.length,
+      totalValue: totalValue,
+      assetHealth: avgHealthScore
+    };
+  }
+
+  onSearch() {
+    // Implement search functionality
+    this.loadAssets();
+  }
+
+  applyFilters() {
+    // Implement filter functionality
+    this.loadAssets();
+  }
 
   get selectedCount() {
     return this.assetList.filter(asset => asset.selected).length;
@@ -106,25 +148,30 @@ export class AssetListComponent {
   selectType(type: string) {
     this.selectedType = type;
     this.showTypeDropdown = false;
+    this.applyFilters();
   }
   
   selectStatus(status: string) {
     this.selectedStatus = status;
     this.showStatusDropdown = false;
+    this.applyFilters();
   }
   
   selectSort(sort: string) {
     this.selectedSort = sort;
     this.showSortDropdown = false;
+    this.applyFilters();
   }
   
   selectSortDir(dir: 'A-Z' | 'Z-A') {
     this.selectedSortDir = dir;
     this.showSortDirDropdown = false;
+    this.applyFilters();
   }
 
   toggleSortDir() {
     this.selectedSortDir = this.selectedSortDir === 'A-Z' ? 'Z-A' : 'A-Z';
+    this.applyFilters();
   }
 
   toggleTypeDropdown() {
