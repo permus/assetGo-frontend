@@ -643,24 +643,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   deleteAsset(asset: any) {
-    if (confirm('Are you sure you want to delete this asset? This action cannot be undone.')) {
-      this.assetService.deleteAsset(asset.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (response) => {
-            if (response.success) {
-              this.loadAssets();
-              this.loadAssetStatistics();
-              console.log('Asset deleted successfully');
-            } else {
-              this.error = response.message || 'Failed to delete asset';
-            }
-          },
-          error: (error) => {
-            this.error = error.error?.message || 'An error occurred while deleting the asset';
-          }
-        });
-    }
+    // Set the asset for single delete and open modal
+    this.assetList.forEach(a => a.selected = false); // Clear all selections
+    asset.selected = true; // Select only this asset
+    this.showDeleteConfirmationModal = true;
     asset.showMenu = false;
   }
 
