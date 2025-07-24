@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { AssetService } from '../../services/asset.service';
 import { Location as angularLocation } from '@angular/common';
+import { PdfExportService } from '../../../shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-asset-view',
@@ -51,7 +52,8 @@ export class AssetViewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private assetService: AssetService,
-    private angularLocation: angularLocation
+    private angularLocation: angularLocation,
+    private pdfExportService: PdfExportService
   ) {}
 
   ngOnInit() {
@@ -116,7 +118,9 @@ export class AssetViewComponent implements OnInit, OnDestroy {
   }
 
   exportAsset() {
-    console.log('Export asset');
+    if (this.asset) {
+      this.pdfExportService.exportSingleAssetToPdf(this.asset);
+    }
   }
 
   printAsset() {

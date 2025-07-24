@@ -7,6 +7,7 @@ import { OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ArchiveConfirmationModalComponent } from '../components/archive-confirmation-modal/archive-confirmation-modal.component';
 import { DeleteConfirmationModalComponent } from '../components/delete-confirmation-modal/delete-confirmation-modal.component';
+import { PdfExportService } from '../../shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-asset-list',
@@ -20,7 +21,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private assetService: AssetService
+    private assetService: AssetService,
+    private pdfExportService: PdfExportService
   ) {}
 
   summary = {
@@ -512,6 +514,14 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   goToCreateAsset() {
     this.router.navigate(['assets/create']);
+  }
+
+  exportToPdf() {
+    if (this.assetList.length > 0) {
+      const title = this.showingArchived ? 'Archived Assets Export Report' : 'Asset Export Report';
+      this.pdfExportService.exportAssetsToPdf(this.assetList, title);
+      this.showMenu = false; // Close the dropdown menu
+    }
   }
 
   @HostListener('document:click', ['$event'])
