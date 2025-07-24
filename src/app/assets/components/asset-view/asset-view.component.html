@@ -1,0 +1,465 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white border-b border-gray-200 px-6 py-4">
+    <div class="flex items-center justify-between">
+      <!-- Back Button and Title -->
+      <div class="flex items-center space-x-4">
+        <button
+          (click)="goBack()"
+          class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span class="font-medium">Back to Assets</span>
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-3">
+        <button
+          (click)="exportAsset()"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+          </svg>
+          <span>Export</span>
+        </button>
+
+        <button
+          (click)="printAsset()"
+          class="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+          </svg>
+          <span>Print</span>
+        </button>
+
+        <button
+          (click)="editAsset()"
+          class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          <span>Edit Asset</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Asset Title and Status -->
+    <div *ngIf="asset && !loading" class="mt-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">{{asset.name || 'Unnamed Asset'}}</h1>
+          <div class="flex items-center space-x-4 mt-2">
+            <span class="text-sm text-gray-600">Asset ID: {{asset.asset_id || asset.id}}</span>
+            <span 
+              [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-800'">
+              {{asset.status || 'Active'}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex items-center justify-center py-20">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+        <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Asset</h3>
+      <p class="text-sm text-gray-500">Please wait while we fetch the asset details...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="flex items-center justify-center py-20">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Asset</h3>
+      <p class="text-sm text-gray-500 mb-4">{{error}}</p>
+      <button
+        (click)="goBack()"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        Back to Assets
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="asset && !loading" class="px-6 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Asset Image -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="bg-blue-100 rounded-lg h-64 flex items-center justify-center">
+            <svg class="w-24 h-24 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getAssetTypeIcon()"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Category</h4>
+              <p class="text-gray-900">{{asset.category?.name || 'General'}}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Asset Type</h4>
+              <p class="text-gray-900">{{asset.type || 'Standard Asset'}}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Location</h4>
+              <p class="text-gray-900">{{asset.location?.name || 'Not specified'}}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Department</h4>
+              <p class="text-gray-900">{{asset.department?.name || 'Not specified'}}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Supplier</h4>
+              <p class="text-gray-900">{{asset.supplier || 'Not specified'}}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Description</h4>
+              <p class="text-gray-900">{{asset.description || 'No description available.'}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Specifications -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Technical Specifications</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Manufacturer</h4>
+              <p class="text-gray-900">{{asset.manufacturer || 'Not specified'}}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Model Number</h4>
+              <p class="text-gray-900">{{asset.model || 'Not specified'}}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Serial Number</h4>
+              <p class="text-gray-900">{{asset.serial_number || 'Not specified'}}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Brand</h4>
+              <p class="text-gray-900">{{asset.brand || 'Not specified'}}</p>
+            </div>
+          </div>
+
+          <!-- Warranty Information -->
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="flex items-center space-x-2 mb-4">
+              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              <h3 class="font-medium text-gray-900">Warranty Information</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Status</h4>
+                <p class="text-gray-900">{{asset.warranty_status || 'Unknown'}}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Period</h4>
+                <p class="text-gray-900">{{asset.warranty || 'Not specified'}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Maintenance Schedule -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Maintenance Schedule</h2>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-700">Maintenance Status</span>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                {{mockMaintenanceData.status}}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Last Maintenance</h4>
+                <div class="flex items-center space-x-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  <span class="text-gray-900">{{mockMaintenanceData.lastMaintenance || 'No record'}}</span>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Next Maintenance</h4>
+                <div class="flex items-center space-x-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  <span class="text-gray-900">{{mockMaintenanceData.nextMaintenance || 'Not scheduled'}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Maintenance Interval</h4>
+              <div class="flex items-center space-x-2">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-gray-900">{{mockMaintenanceData.interval}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="space-y-6">
+        <!-- Health & Performance -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Health & Performance</h2>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Health Score</span>
+                <span class="text-sm text-gray-500">Excellent Health</span>
+              </div>
+              <div class="text-2xl font-bold text-gray-900 mb-2">{{mockHealthData.healthScore}}%</div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-green-500 h-2 rounded-full" [style.width.%]="mockHealthData.healthScore"></div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200">
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Performance Trend (Last 4 Months)</h4>
+              <div class="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
+                <div class="text-center">
+                  <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                  </svg>
+                  <p class="text-sm text-gray-500">Performance chart placeholder</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Asset Depreciation -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Asset Depreciation</h2>
+          </div>
+
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Original Value</h4>
+                <p class="text-lg font-semibold text-gray-900">${{mockFinancialData.originalValue | number:'1.0-0'}}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Current Value</h4>
+                <p class="text-lg font-semibold text-blue-600">${{mockFinancialData.currentValue | number:'1.0-0'}}</p>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200">
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Depreciation Timeline</h4>
+              <p class="text-xs text-gray-500 mb-3">(straight-line method)</p>
+              <div class="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
+                <div class="text-center">
+                  <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                  </svg>
+                  <p class="text-sm text-gray-500">Depreciation chart placeholder</p>
+                  <p class="text-xs text-gray-400 mt-1">Red dot indicates current period value</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Information -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Financial Information</h2>
+          </div>
+
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Purchase Cost</h4>
+                <p class="text-lg font-semibold text-gray-900">${{mockFinancialData.purchaseCost | number:'1.0-0'}}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Current Value</h4>
+                <p class="text-lg font-semibold text-gray-900">${{mockFinancialData.currentValue | number:'1.0-0'}}</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Depreciation Method</h4>
+                <p class="text-gray-900">{{mockFinancialData.depreciationMethod}}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Useful Life</h4>
+                <p class="text-gray-900">{{mockFinancialData.usefulLife}} years</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Asset Assistant -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">AI Asset Assistant</h2>
+          </div>
+
+          <div class="space-y-3">
+            <button
+              (click)="generateSmartDescription()"
+              class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              <span>Enhance</span>
+            </button>
+
+            <div class="grid grid-cols-2 gap-3">
+              <button
+                (click)="generateSmartDescription()"
+                class="flex items-center justify-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span class="text-sm">Analyze</span>
+              </button>
+              <button
+                (click)="analyzeAssetImage()"
+                class="flex items-center justify-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span class="text-sm">Maintain</span>
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <button
+                (click)="generateSmartDescription()"
+                class="w-full flex items-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="text-sm">Generate Smart Description</span>
+              </button>
+
+              <button
+                (click)="analyzeAssetImage()"
+                class="w-full flex items-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span class="text-sm">Analyze Asset Image</span>
+              </button>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200">
+              <div class="text-center py-8">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+                <p class="text-sm text-gray-500">No AI enhancements generated yet. Try generating a description or analyzing an image!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity & Transfer History -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Activity & Transfer History</h2>
+          </div>
+
+          <div class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No activity found for this asset</h3>
+            <p class="text-sm text-gray-500">Activity will appear here when transfers, maintenance, or work orders are created.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
