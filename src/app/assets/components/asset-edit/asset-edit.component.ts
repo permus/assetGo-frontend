@@ -224,7 +224,7 @@ export class AssetEditComponent implements OnInit, OnDestroy {
         reader.onload = (e: any) => {
           this.previewImage = e.target.result;
         };
-        reader.readAsDataURL(this.selectedFile);
+        reader.readAsDataURL(this.selectedFile!);
       }
     }
   }
