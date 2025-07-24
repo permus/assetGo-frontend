@@ -176,7 +176,7 @@
           </svg>
         </button>
         <div *ngIf="showTypeDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-          <button *ngFor="let type of typeOptions" (click)="selectType(type)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedType.value === type.value">{{ type.label }}</button>
+          <button *ngFor="let type of typeOptions" (click)="selectType(type.value)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedType.value === type.value">{{ type.label }}</button>
         </div>
       </div>
       <!-- All Status Dropdown -->
@@ -188,7 +188,7 @@
           </svg>
         </button>
         <div *ngIf="showStatusDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-          <button *ngFor="let status of statusOptions" (click)="selectStatus(status)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedStatus.value === status.value">{{ status.label }}</button>
+          <button *ngFor="let status of statusOptions" (click)="selectStatus(status.value)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedStatus.value === status.value">{{ status.label }}</button>
         </div>
       </div>
       <!-- Sort By Dropdown -->
@@ -200,7 +200,7 @@
           </svg>
         </button>
         <div *ngIf="showSortDropdown" class="absolute left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-          <button *ngFor="let sort of sortOptions" (click)="selectSort(sort)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedSort.value === sort.value">{{ sort.label }}</button>
+          <button *ngFor="let sort of sortOptions" (click)="selectSort(sort.value)" class="w-full text-left px-4 py-2 hover:bg-gray-50 cursor-pointer" [class.font-semibold]="selectedSort.value === sort.value">{{ sort.label }}</button>
         </div>
       </div>
       <!-- Sort Direction Button (toggle) -->

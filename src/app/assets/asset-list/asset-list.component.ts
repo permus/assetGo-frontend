@@ -141,7 +141,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     params.page = this.currentFilters.page;
     params.per_page = this.currentFilters.per_page;
 
-    this.assetService.getAssets(params)
+    this.assetService.getAssets(params as any)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -238,22 +238,31 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   selectType(type: any) {
-    this.selectedType = type;
-    this.currentFilters.type = type.value;
+    const selectedOption = this.typeOptions.find(option => option.value === type);
+    if (selectedOption) {
+      this.selectedType = selectedOption;
+      this.currentFilters.type = selectedOption.value;
+    }
     this.showTypeDropdown = false;
     this.applyFilters();
   }
   
   selectStatus(status: any) {
-    this.selectedStatus = status;
-    this.currentFilters.status = status.value;
+    const selectedOption = this.statusOptions.find(option => option.value === status);
+    if (selectedOption) {
+      this.selectedStatus = selectedOption;
+      this.currentFilters.status = selectedOption.value;
+    }
     this.showStatusDropdown = false;
     this.applyFilters();
   }
   
   selectSort(sort: any) {
-    this.selectedSort = sort;
-    this.currentFilters.sort_by = sort.value;
+    const selectedOption = this.sortOptions.find(option => option.value === sort);
+    if (selectedOption) {
+      this.selectedSort = selectedOption;
+      this.currentFilters.sort_by = selectedOption.value;
+    }
     this.showSortDropdown = false;
     this.applyFilters();
   }
