@@ -377,8 +377,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.loading = true;
-    
     // Archive each selected asset using the archive endpoint
     const archivePromises = selectedAssets.map(asset => 
       this.assetService.archiveAsset(asset.id).toPromise()
@@ -394,15 +392,16 @@ export class AssetListComponent implements OnInit, OnDestroy {
           this.loadAssets();
           this.loadAssetStatistics();
           this.clearSelection();
-          this.closeArchiveModal();
         } else {
           this.error = 'Some assets could not be archived';
         }
-        this.loading = false;
+        // Close modal after completion (success or error)
+        this.closeArchiveModal();
       })
       .catch((error) => {
         this.error = error.error?.message || 'An error occurred while archiving assets';
-        this.loading = false;
+        // Close modal even on error
+        this.closeArchiveModal();
       });
   }
 

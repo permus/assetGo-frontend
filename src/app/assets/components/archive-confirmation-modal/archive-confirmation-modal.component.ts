@@ -49,6 +49,11 @@ export class ArchiveConfirmationModalComponent {
   onConfirm() {
     this.loading = true;
     this.confirmArchive.emit();
+    
+    // Stop loading after a short delay to allow the parent component to handle the archive
+    setTimeout(() => {
+      this.loading = false;
+    }, 2000);
   }
 
   onCancel() {
