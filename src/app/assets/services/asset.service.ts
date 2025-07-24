@@ -52,7 +52,7 @@ export class AssetService {
 
   // Asset statistics
   getAssetStatistics(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/assets/summary`, this.getAuthHeaders());
+    return this.http.get(`${this.baseUrl}/assets/statistics`, this.getAuthHeaders());
   }
 
   // Asset category
