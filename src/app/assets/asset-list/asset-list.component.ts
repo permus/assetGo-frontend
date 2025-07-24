@@ -46,6 +46,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
   // Archive modal state
   showArchiveConfirmationModal = false;
   showDeleteConfirmationModal = false;
+  
+  // View state
+  showingArchived = false;
 
   typeOptions = [
     { value: '', label: 'All Types' },
@@ -86,7 +89,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     sort_by: 'name',
     sort_direction: 'desc',
     page: 1,
-    per_page: 20
+    per_page: 20,
+    archived: false
   };
 
   assetList: any[] = [];
@@ -191,6 +195,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
     if (this.currentFilters.sort_direction) {
       params.sort_direction = this.currentFilters.sort_direction;
+    }
+    if (this.currentFilters.archived) {
+      params.archived = this.currentFilters.archived;
     }
     params.page = this.currentFilters.page;
     params.per_page = this.currentFilters.per_page;
@@ -489,6 +496,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.showTypeDropdown = false;
     this.showStatusDropdown = false;
     this.showSortDirDropdown = false;
+  }
+
+  toggleArchivedView() {
+    this.showingArchived = !this.showingArchived;
+    this.currentFilters.archived = this.showingArchived;
+    this.currentFilters.page = 1; // Reset to first page
+    this.clearSelection();
+    this.loadAssets();
+    this.showMenu = false; // Close the dropdown menu
   }
 
   goToCreateAsset() {
