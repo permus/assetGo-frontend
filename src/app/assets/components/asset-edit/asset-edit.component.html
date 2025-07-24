@@ -1,0 +1,533 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="asset-edit-page">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-4 mb-4">
+        <button 
+          type="button" 
+          (click)="goBack()" 
+          class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span class="font-medium">Back to Asset</span>
+        </button>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Edit Asset</h1>
+      <p class="text-gray-600">Update asset information and specifications</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex items-center justify-center py-20">
+      <div class="text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+          <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Asset</h3>
+        <p class="text-sm text-gray-500">Please wait while we fetch the asset details...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading && !asset" class="flex items-center justify-center py-20">
+      <div class="text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Asset</h3>
+        <p class="text-sm text-gray-500 mb-4">{{error}}</p>
+        <button
+          (click)="goBack()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Back to Assets
+        </button>
+      </div>
+    </div>
+
+    <!-- Edit Form -->
+    <form *ngIf="!loading && asset" [formGroup]="assetForm" (ngSubmit)="onSubmit()">
+      <!-- Basic Information -->
+      <div class="section-card">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <h2 class="section-title">Basic Information</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Asset Name <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              formControlName="name"
+              class="input"
+              [class.border-red-300]="assetForm.get('name')?.invalid && assetForm.get('name')?.touched"
+              placeholder="e.g., Main Server Room AC Unit" />
+            <div *ngIf="assetForm.get('name')?.invalid && assetForm.get('name')?.touched" class="text-red-600 text-sm mt-1">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+              Asset name is required and must be at least 2 characters
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Asset ID</label>
+            <div class="flex items-center space-x-3">
+              <input type="text" class="input flex-1" [value]="asset?.asset_id || ('AST-' + asset?.id)" readonly />
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                read-only
+              </span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Unique identifier cannot be changed</p>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <textarea 
+            formControlName="description"
+            class="input resize-none" 
+            rows="3" 
+            placeholder="Brief description of the asset and its purpose..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">Health Score</label>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm text-gray-600">Current Score</span>
+              <span class="text-2xl font-bold text-green-600">{{ assetForm.get('health_score')?.value }}%</span>
+            </div>
+            <input 
+              type="range" 
+              formControlName="health_score"
+              min="0" 
+              max="100" 
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider" />
+            <div class="flex justify-between text-xs text-gray-500 mt-2">
+              <span>Poor (0%)</span>
+              <span>Fair (25%)</span>
+              <span>Good (50%)</span>
+              <span>Very Good (75%)</span>
+              <span>Excellent (100%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Asset Classification -->
+      <div class="section-card">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+          </div>
+          <h2 class="section-title">Asset Classification</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Asset Type <span class="text-red-500">*</span>
+            </label>
+            <!-- Custom Asset Type Dropdown -->
+            <div class="relative" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                (click)="toggleAssetTypeDropdown()"
+                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                [class.border-red-300]="assetForm.get('type')?.invalid && assetForm.get('type')?.touched"
+                [class.border-blue-500]="showAssetTypeDropdown">
+                <div class="flex items-center justify-between">
+                  <span *ngIf="!selectedAssetType" class="text-gray-400">Select asset type</span>
+                  <div *ngIf="selectedAssetType" class="flex items-center space-x-3">
+                    <div class="w-6 h-6 rounded flex items-center justify-center" [style.background-color]="selectedAssetType.color + '20'">
+                      <svg class="w-4 h-4" [style.color]="selectedAssetType.color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path *ngIf="selectedAssetType.icon === 'building-office-2'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V7a2 2 0 012-2h2a2 2 0 012 2v14M13 21V3a2 2 0 012-2h2a2 2 0 012 2v18"></path>
+                        <path *ngIf="selectedAssetType.icon === 'cube'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4a2 2 0 001-1.73z"></path>
+                        <path *ngIf="selectedAssetType.icon === 'cog'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path *ngIf="selectedAssetType.icon === 'car'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13l2-5a2 2 0 012-2h10a2 2 0 012 2l2 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6M5 13h14"></path>
+                      </svg>
+                    </div>
+                    <span class="text-gray-900">{{selectedAssetType.label}}</span>
+                  </div>
+                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showAssetTypeDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <div *ngIf="showAssetTypeDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                <div class="py-1">
+                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select asset type</div>
+                  <button
+                    *ngFor="let type of assetTypes"
+                    type="button"
+                    (click)="selectAssetType(type)"
+                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                    [class.bg-blue-50]="selectedAssetType?.value === type.value"
+                    [class.text-blue-700]="selectedAssetType?.value === type.value">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-8 h-8 rounded-lg flex items-center justify-center" [style.background-color]="type.color + '20'">
+                        <svg class="w-5 h-5" [style.color]="type.color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path *ngIf="type.icon === 'building-office-2'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V7a2 2 0 012-2h2a2 2 0 012 2v14M13 21V3a2 2 0 012-2h2a2 2 0 012 2v18"></path>
+                          <path *ngIf="type.icon === 'cube'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4a2 2 0 001-1.73z"></path>
+                          <path *ngIf="type.icon === 'cog'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                          <path *ngIf="type.icon === 'car'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13l2-5a2 2 0 012-2h10a2 2 0 012 2l2 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6M5 13h14"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="font-medium text-gray-900">{{type.label}}</div>
+                        <div class="text-sm text-gray-500">{{type.description}}</div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Category <span class="text-red-500">*</span>
+            </label>
+            <!-- Custom Category Dropdown -->
+            <div class="relative" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                (click)="toggleCategoryDropdown()"
+                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                [class.border-red-300]="assetForm.get('category_id')?.invalid && assetForm.get('category_id')?.touched"
+                [class.border-blue-500]="showCategoryDropdown">
+                <div class="flex items-center justify-between">
+                  <span *ngIf="!selectedCategory" class="text-gray-400">Select category</span>
+                  <span *ngIf="selectedCategory" class="text-gray-900">{{selectedCategory.name}}</span>
+                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showCategoryDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <div *ngIf="showCategoryDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                <div class="py-1">
+                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select category</div>
+                  <button
+                    *ngFor="let cat of categories"
+                    type="button"
+                    (click)="selectCategory(cat)"
+                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                    [class.bg-blue-50]="selectedCategory?.id === cat.id"
+                    [class.text-blue-700]="selectedCategory?.id === cat.id">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="font-medium text-gray-900">{{cat.name}}</div>
+                        <div *ngIf="cat.description" class="text-sm text-gray-500">{{cat.description}}</div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Details -->
+      <div class="section-card">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <h2 class="section-title">Technical Details</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturer</label>
+            <input 
+              type="text" 
+              formControlName="manufacturer"
+              class="input" 
+              placeholder="e.g., Dell, HP, Toyota" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>
+            <input 
+              type="text" 
+              formControlName="model"
+              class="input" 
+              placeholder="e.g., PowerEdge R730" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Serial Number <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              formControlName="serial_number"
+              class="input"
+              [class.border-red-300]="assetForm.get('serial_number')?.invalid && assetForm.get('serial_number')?.touched"
+              placeholder="e.g., SN123456789" />
+            <div *ngIf="assetForm.get('serial_number')?.invalid && assetForm.get('serial_number')?.touched" class="text-red-600 text-sm mt-1">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+              Serial number is required and must be at least 3 characters
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Information -->
+      <div class="section-card">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+          </div>
+          <h2 class="section-title">Financial Information</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Value (USD)</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500 sm:text-sm">$</span>
+              </div>
+              <input 
+                type="number" 
+                formControlName="purchase_price"
+                class="input pl-7" 
+                placeholder="5,000.00" 
+                step="0.01" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
+            <input 
+              type="date" 
+              formControlName="purchase_date"
+              class="input" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Useful Life (Years)</label>
+            <input 
+              type="number" 
+              formControlName="depreciation"
+              class="input" 
+              placeholder="e.g., 5" 
+              min="1" 
+              max="50" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Warranty Expiration</label>
+            <input 
+              type="date" 
+              formControlName="warranty"
+              class="input" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Location & Assignment -->
+      <div class="section-card">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <h2 class="section-title">Location & Assignment</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+            <!-- Custom Location Dropdown -->
+            <div class="relative" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                (click)="toggleLocationDropdown()"
+                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                [class.border-blue-500]="showLocationDropdown">
+                <div class="flex items-center justify-between">
+                  <span *ngIf="!selectedLocation" class="text-gray-400">Select location</span>
+                  <div *ngIf="selectedLocation" class="flex items-center space-x-3">
+                    <div class="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
+                      <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                    </div>
+                    <span class="text-gray-900">{{selectedLocation.name}}</span>
+                  </div>
+                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <div *ngIf="showLocationDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                <div class="py-1">
+                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select location</div>
+                  <button
+                    *ngFor="let loc of locations"
+                    type="button"
+                    (click)="selectLocation(loc)"
+                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                    [class.bg-blue-50]="selectedLocation?.id === loc.id"
+                    [class.text-blue-700]="selectedLocation?.id === loc.id">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="font-medium text-gray-900">{{loc.name}}</div>
+                        <div *ngIf="loc.type" class="text-sm text-gray-500">{{loc.type.name}}</div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Department ID</label>
+            <input 
+              type="number" 
+              formControlName="department_id"
+              class="input" 
+              placeholder="Enter department ID" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Asset Image -->
+      <div class="section-card">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h2 class="section-title">Asset Image</h2>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Upload New Image</label>
+          <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-gray-400 transition-colors">
+            <div class="space-y-1 text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <div class="flex text-sm text-gray-600">
+                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                  <span>Upload a file</span>
+                  <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*">
+                </label>
+                <p class="pl-1">or drag and drop</p>
+              </div>
+              <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            </div>
+          </div>
+          
+          <!-- Image Preview -->
+          <div *ngIf="previewImage" class="mt-4">
+            <div class="relative inline-block">
+              <img [src]="previewImage" alt="Asset Preview" class="w-32 h-32 object-cover rounded-lg border border-gray-200" />
+              <button 
+                type="button" 
+                (click)="removeImage()" 
+                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <p class="text-green-800 font-medium">{{ successMessage }}</p>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error && asset" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <p class="text-red-800 font-medium">{{ error }}</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+        <button 
+          type="button" 
+          (click)="goBack()" 
+          [disabled]="saving"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+          Cancel
+        </button>
+        
+        <button 
+          type="submit" 
+          [disabled]="saving || !isFormValid()"
+          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
+          <span *ngIf="!saving" class="flex items-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Update Asset</span>
+          </span>
+          <span *ngIf="saving" class="flex items-center space-x-2">
+            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Updating Asset...</span>
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

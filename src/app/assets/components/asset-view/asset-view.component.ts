@@ -114,7 +114,9 @@ export class AssetViewComponent implements OnInit, OnDestroy {
   }
 
   editAsset() {
-    this.router.navigate(['/assets', this.asset.id, 'edit']);
+    if (this.asset) {
+      this.router.navigate(['/assets', this.asset.id, 'edit']);
+    }
   }
 
   exportAsset() {
