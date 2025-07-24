@@ -10,6 +10,8 @@ export class PdfExportService {
   constructor() {}
 
   exportAssetsToPdf(assets: any[], title: string = 'Asset Export Report') {
+    console.log('Exporting assets to PDF:', assets.length, 'assets');
+    
     const doc = new jsPDF();
     
     // Set up the document
@@ -33,13 +35,15 @@ export class PdfExportService {
     
     // Prepare table data
     const tableData = assets.map(asset => [
-      asset.asset_id || asset.id || '',
+      asset.asset_id || `AST-${asset.id}` || '',
       asset.name || '',
       asset.manufacturer || '',
       asset.model || '',
-      asset.status || 'active',
+      asset.status || 'Active',
       asset.location?.name || ''
     ]);
+    
+    console.log('Table data prepared:', tableData);
     
     // Create table
     autoTable(doc, {
@@ -50,6 +54,7 @@ export class PdfExportService {
       styles: {
         fontSize: 9,
         cellPadding: 3,
+        halign: 'left'
       },
       headStyles: {
         fillColor: [41, 128, 185],
@@ -69,8 +74,11 @@ export class PdfExportService {
       },
     });
     
+    console.log('PDF table created, saving file...');
+    
     // Save the PDF
-    const fileName = `asset-export-${currentDate.replace(/\//g, '-')}.pdf`;
+    const fileName = `asset-export-${new Date().toISOString().split('T')[0]}.pdf`;
+    console.log('Saving PDF as:', fileName);
     doc.save(fileName);
   }
 

@@ -521,6 +521,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
       const title = this.showingArchived ? 'Archived Assets Export Report' : 'Asset Export Report';
       this.pdfExportService.exportAssetsToPdf(this.assetList, title);
       this.showMenu = false; // Close the dropdown menu
+    } else {
+      console.log('No assets to export');
     }
   }
 
