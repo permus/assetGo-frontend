@@ -5,11 +5,12 @@ import { Subject, takeUntil } from 'rxjs';
 import { AssetService } from '../../services/asset.service';
 import { Location as angularLocation } from '@angular/common';
 import { PdfExportService } from '../../../shared/services/pdf-export.service';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-asset-view',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './asset-view.component.html',
   styleUrl: './asset-view.component.scss'
 })
@@ -19,6 +20,14 @@ export class AssetViewComponent implements OnInit, OnDestroy {
   asset: any = null;
   loading = true;
   error = '';
+  
+  // Maintenance Schedule
+  maintenanceSchedules: any[] = [];
+  maintenanceLoading = false;
+  showAddMaintenanceModal = false;
+  showEditMaintenanceModal = false;
+  selectedSchedule: any = null;
+  maintenanceForm: FormGroup;
 
   // Mock data for demonstration
   mockHealthData = {
@@ -53,8 +62,18 @@ export class AssetViewComponent implements OnInit, OnDestroy {
     private router: Router,
     private assetService: AssetService,
     private angularLocation: angularLocation,
-    private pdfExportService: PdfExportService
-  ) {}
+    private pdfExportService: PdfExportService,
+    private fb: FormBuilder
+  ) {
+    this.maintenanceForm = this.fb.group({
+      schedule_type: ['', Validators.required],
+      next_due: [''],
+      last_done: [''],
+      frequency: [''],
+      notes: [''],
+      status: ['Scheduled']
+    });
+  }
 
   ngOnInit() {
     this.route.params
@@ -83,6 +102,7 @@ export class AssetViewComponent implements OnInit, OnDestroy {
           if (response.success) {
             this.asset = response.data.asset || response.data;
             this.updateMockData();
+            this.loadMaintenanceSchedules();
           } else {
             this.error = response.message || 'Failed to load asset';
           }
@@ -91,6 +111,26 @@ export class AssetViewComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.error = error.error?.message || 'An error occurred while loading the asset';
           this.loading = false;
+        }
+      });
+  }
+
+  loadMaintenanceSchedules() {
+    if (!this.asset) return;
+    
+    this.maintenanceLoading = true;
+    this.assetService.listMaintenanceSchedules(this.asset.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.maintenanceSchedules = response.data || [];
+          }
+          this.maintenanceLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading maintenance schedules:', error);
+          this.maintenanceLoading = false;
         }
       });
   }
@@ -157,5 +197,112 @@ export class AssetViewComponent implements OnInit, OnDestroy {
 
   analyzeAssetImage() {
     console.log('Analyze asset image');
+  }
+
+  // Maintenance Schedule Methods
+  addMaintenanceSchedule() {
+    this.showAddMaintenanceModal = true;
+    this.maintenanceForm.reset({
+      schedule_type: '',
+      next_due: '',
+      last_done: '',
+      frequency: '',
+      notes: '',
+      status: 'Scheduled'
+    });
+  }
+
+  editMaintenanceSchedule(schedule: any) {
+    this.selectedSchedule = schedule;
+    this.showEditMaintenanceModal = true;
+    this.maintenanceForm.patchValue({
+      schedule_type: schedule.schedule_type,
+      next_due: schedule.next_due,
+      last_done: schedule.last_done,
+      frequency: schedule.frequency,
+      notes: schedule.notes,
+      status: schedule.status
+    });
+  }
+
+  deleteMaintenanceSchedule(schedule: any) {
+    if (confirm('Are you sure you want to delete this maintenance schedule?')) {
+      this.assetService.deleteMaintenanceSchedule(this.asset.id, schedule.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.loadMaintenanceSchedules();
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting maintenance schedule:', error);
+          }
+        });
+    }
+  }
+
+  saveMaintenanceSchedule() {
+    if (this.maintenanceForm.valid && this.asset) {
+      const formData = this.maintenanceForm.value;
+      
+      if (this.selectedSchedule) {
+        // Update existing schedule
+        this.assetService.updateMaintenanceSchedule(this.asset.id, this.selectedSchedule.id, formData)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              if (response.success) {
+                this.loadMaintenanceSchedules();
+                this.closeMaintenanceModals();
+              }
+            },
+            error: (error) => {
+              console.error('Error updating maintenance schedule:', error);
+            }
+          });
+      } else {
+        // Create new schedule
+        this.assetService.addMaintenanceSchedule(this.asset.id, formData)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              if (response.success) {
+                this.loadMaintenanceSchedules();
+                this.closeMaintenanceModals();
+              }
+            },
+            error: (error) => {
+              console.error('Error adding maintenance schedule:', error);
+            }
+          });
+      }
+    }
+  }
+
+  closeMaintenanceModals() {
+    this.showAddMaintenanceModal = false;
+    this.showEditMaintenanceModal = false;
+    this.selectedSchedule = null;
+    this.maintenanceForm.reset();
+  }
+
+  getScheduleStatusColor(status: string): string {
+    const colors: { [key: string]: string } = {
+      'Scheduled': 'blue',
+      'Overdue': 'red',
+      'Completed': 'green',
+      'In Progress': 'yellow'
+    };
+    return colors[status] || 'gray';
+  }
+
+  formatDate(date: string): string {
+    if (!date) return 'Not set';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   }
 }
