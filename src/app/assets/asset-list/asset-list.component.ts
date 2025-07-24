@@ -99,6 +99,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
   categories: any[] = [];
   locations: any[] = [];
   
+  // Asset menu state
+  openAssetMenuId: number | null = null;
+  
   // Pagination
   pagination = {
     current_page: 1,
@@ -210,7 +213,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
           if (response.success) {
             this.assetList = (response.data.assets || response.data).map((asset: any) => ({
               ...asset,
-              selected: false
+              selected: false,
+              showMenu: false
             }));
             
             // Update pagination if available
@@ -536,6 +540,92 @@ export class AssetListComponent implements OnInit, OnDestroy {
     return colors[status] || 'gray';
   }
 
+  // Asset menu methods
+  toggleAssetMenu(assetId: number) {
+    // Close all other menus first
+    this.assetList.forEach(asset => {
+      if (asset.id !== assetId) {
+        asset.showMenu = false;
+      }
+    });
+    
+    // Toggle the clicked asset's menu
+    const asset = this.assetList.find(a => a.id === assetId);
+    if (asset) {
+      asset.showMenu = !asset.showMenu;
+    }
+  }
+
+  editAsset(asset: any) {
+    this.router.navigate(['/assets', asset.id, 'edit']);
+    asset.showMenu = false;
+  }
+
+  duplicateAsset(asset: any) {
+    this.loading = true;
+    const newSerialNumber = this.generateSerialNumber();
+    
+    this.assetService.duplicateAsset(asset.id, { serial_number: newSerialNumber })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadAssets();
+            console.log('Asset duplicated successfully');
+          } else {
+            this.error = response.message || 'Failed to duplicate asset';
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          this.error = error.error?.message || 'An error occurred while duplicating the asset';
+          this.loading = false;
+        }
+      });
+    asset.showMenu = false;
+  }
+
+  archiveAsset(asset: any) {
+    this.assetService.archiveAsset(asset.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadAssets();
+            this.loadAssetStatistics();
+            console.log('Asset archived successfully');
+          } else {
+            this.error = response.message || 'Failed to archive asset';
+          }
+        },
+        error: (error) => {
+          this.error = error.error?.message || 'An error occurred while archiving the asset';
+        }
+      });
+    asset.showMenu = false;
+  }
+
+  deleteAsset(asset: any) {
+    if (confirm('Are you sure you want to delete this asset? This action cannot be undone.')) {
+      this.assetService.deleteAsset(asset.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.loadAssets();
+              this.loadAssetStatistics();
+              console.log('Asset deleted successfully');
+            } else {
+              this.error = response.message || 'Failed to delete asset';
+            }
+          },
+          error: (error) => {
+            this.error = error.error?.message || 'An error occurred while deleting the asset';
+          }
+        });
+    }
+    asset.showMenu = false;
+  }
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     this.showMenu = false;
@@ -543,5 +633,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.showStatusDropdown = false;
     this.showSortDropdown = false;
     this.showSortDirDropdown = false;
+    
+    // Close all asset menus
+    this.assetList.forEach(asset => {
+      asset.showMenu = false;
+    });
   }
 }
