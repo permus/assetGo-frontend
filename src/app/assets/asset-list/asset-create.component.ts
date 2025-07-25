@@ -31,8 +31,8 @@ export class AssetCreateComponent implements OnInit {
   status: string = 'Active';
   tags: number[] = [];
   images: File[] = [];
+  imagePreviewUrls: string[] = [];
   meta: any = {};
-  previewImage: string | null = null;
   isSubmitting = false;
   submitError = '';
   submitSuccess = '';
@@ -61,17 +61,22 @@ export class AssetCreateComponent implements OnInit {
 
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length) {
-      this.images = Array.from(event.target.files);
-      const file = event.target.files[0];
-      if (file) {
+      const newFiles = Array.from(event.target.files) as File[];
+      
+      // Add new files to existing images array
+      this.images = [...this.images, ...newFiles];
+      
+      // Generate preview URLs for new files
+      newFiles.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e: any) => {
-          this.previewImage = e.target.result;
+          this.imagePreviewUrls.push(e.target.result);
         };
         reader.readAsDataURL(file);
-      } else {
-        this.previewImage = null;
-      }
+      });
+      
+      // Clear the input so the same file can be selected again
+      event.target.value = '';
     }
   }
 
@@ -526,9 +531,38 @@ export class AssetCreateComponent implements OnInit {
     );
   }
 
-  removeImage(): void {
-    this.previewImage = null;
+  removeImage(index: number): void {
+    this.images.splice(index, 1);
+    this.imagePreviewUrls.splice(index, 1);
+  }
+
+  removeAllImages(): void {
     this.images = [];
+    this.imagePreviewUrls = [];
+  }
+
+  moveImage(fromIndex: number, toIndex: number): void {
+    if (toIndex >= 0 && toIndex < this.images.length) {
+      // Move file
+      const file = this.images.splice(fromIndex, 1)[0];
+      this.images.splice(toIndex, 0, file);
+      
+      // Move preview URL
+      const previewUrl = this.imagePreviewUrls.splice(fromIndex, 1)[0];
+      this.imagePreviewUrls.splice(toIndex, 0, previewUrl);
+    }
+  }
+
+  moveImageUp(index: number): void {
+    if (index > 0) {
+      this.moveImage(index, index - 1);
+    }
+  }
+
+  moveImageDown(index: number): void {
+    if (index < this.images.length - 1) {
+      this.moveImage(index, index + 1);
+    }
   }
 
   getTodayDate(): string {
