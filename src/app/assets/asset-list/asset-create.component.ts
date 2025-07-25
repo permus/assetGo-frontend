@@ -51,6 +51,7 @@ export class AssetCreateComponent implements OnInit {
   selectedLocation: any | null = null;
   selectedStatus: any | null = null;
   selectedTags: any[] = [];
+  newTagInput: string = '';
 
   // Validation error properties
   nameError: string = '';
@@ -356,6 +357,33 @@ export class AssetCreateComponent implements OnInit {
 
   isTagSelected(tag: any): boolean {
     return this.selectedTags.some(t => t.id === tag.id);
+  }
+
+  onTagInputKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.createNewTag();
+    }
+  }
+
+  createNewTag() {
+    const tagName = this.newTagInput.trim();
+    if (tagName && !this.selectedTags.some(t => t.name.toLowerCase() === tagName.toLowerCase())) {
+      // Create a new tag with a random color
+      const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'indigo', 'gray'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      
+      const newTag = {
+        id: Date.now(), // Temporary ID until saved to backend
+        name: tagName,
+        color: randomColor,
+        isNew: true // Flag to identify newly created tags
+      };
+      
+      this.selectedTags.push(newTag);
+      this.tags = this.selectedTags.map(t => t.id);
+      this.newTagInput = '';
+    }
   }
 
   removeTag(tag: any) {
