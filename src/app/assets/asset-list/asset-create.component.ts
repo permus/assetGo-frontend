@@ -279,23 +279,40 @@ export class AssetCreateComponent implements OnInit {
   validateForm(): boolean {
     let isValid = true;
 
-    if (!this.name || this.name.trim().length < 2) {
-      this.nameError = 'Asset name is required and must be at least 2 characters';
+    if (!this.name || this.name.trim().length === 0) {
+      this.nameError = 'Asset name is required';
+      isValid = false;
+    } else if (this.name.trim().length > 100) {
+      this.nameError = 'Asset name cannot exceed 100 characters';
       isValid = false;
     }
 
-    if (!this.selectedAssetType) {
-      this.assetTypeError = 'Please select an asset type';
+    if (this.description && this.description.length > 500) {
+      this.nameError = 'Description cannot exceed 500 characters';
       isValid = false;
     }
 
-    if (!this.selectedCategory) {
-      this.categoryError = 'Please select a category';
+    if (this.serial_number && this.serial_number.trim().length === 0) {
+      this.serialNumberError = 'Serial number cannot be empty if provided';
       isValid = false;
     }
 
-    if (!this.serial_number || this.serial_number.trim().length < 3) {
-      this.serialNumberError = 'Serial number is required and must be at least 3 characters';
+    if (this.purchase_price !== null && this.purchase_price <= 0) {
+      this.nameError = 'Purchase price must be a positive number';
+      isValid = false;
+    }
+
+    if (this.purchase_date) {
+      const today = new Date();
+      const purchaseDate = new Date(this.purchase_date);
+      if (purchaseDate > today) {
+        this.nameError = 'Purchase date cannot be in the future';
+        isValid = false;
+      }
+    }
+
+    if (this.health_score < 0 || this.health_score > 100) {
+      this.nameError = 'Health score must be between 0 and 100';
       isValid = false;
     }
 
@@ -329,16 +346,22 @@ export class AssetCreateComponent implements OnInit {
   isFormValid(): boolean {
     return !!(
       this.name && 
-      this.name.trim().length >= 2 &&
-      this.selectedAssetType && 
-      this.selectedCategory && 
-      this.serial_number && 
-      this.serial_number.trim().length >= 3
+      this.name.trim().length > 0 &&
+      this.name.trim().length <= 100 &&
+      (!this.description || this.description.length <= 500) &&
+      (!this.serial_number || this.serial_number.trim().length > 0) &&
+      (!this.purchase_price || this.purchase_price > 0) &&
+      this.health_score >= 0 && this.health_score <= 100
     );
   }
 
   removeImage(): void {
     this.previewImage = null;
     this.images = [];
+  }
+
+  getTodayDate(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
   }
 }
