@@ -188,8 +188,6 @@ export class AssetCreateComponent implements OnInit {
     this.depreciation = sourceAsset.depreciation || null;
     this.location_id = sourceAsset.location_id || null;
     this.department_id = sourceAsset.department_id || null;
-    this.user_id = sourceAsset.user_id || null;
-    this.company_id = sourceAsset.company_id || null;
     this.warranty = sourceAsset.warranty || '';
     this.insurance = sourceAsset.insurance || '';
     this.health_score = sourceAsset.health_score || 85;
