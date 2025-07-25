@@ -27,21 +27,27 @@ interface AssetFormData {
 export class AssetCreateComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren('dateInput') dateInputs!: QueryList<ElementRef>;
 
-  assetForm: AssetFormData = {
-    name: '',
-    description: '',
-    serial_number: '',
-    category: '',
-    location: '',
-    purchase_date: '',
-    purchase_price: null,
-    warranty_expiration: '',
-    status: 'active',
-    condition: 'excellent',
-    tags: [],
-    notes: '',
-    images: []
-  };
+  // Form properties for template-driven forms
+  name: string = '';
+  description: string = '';
+  manufacturer: string = '';
+  model: string = '';
+  serial_number: string = '';
+  purchase_price: number | null = null;
+  purchase_date: string = '';
+  depreciation: number | null = null;
+  warranty: string = '';
+  warranty_expiration: string = '';
+  healthScore: number | null = null;
+  department_id: string = '';
+  notes: string = '';
+  newTagInput: string = '';
+  selectedAssetType: string = '';
+  selectedCategory: string = '';
+  selectedLocation: string = '';
+  selectedStatus: string = 'active';
+  selectedTags: string[] = [];
+  images: File[] = [];
 
   categories = [
     'Computer Hardware',
@@ -150,7 +156,7 @@ export class AssetCreateComponent implements OnInit, OnDestroy, AfterViewInit {
   generateSerialNumber(): void {
     const prefix = 'AST';
     const timestamp = Date.now().toString().slice(-6);
-    this.assetForm.serial_number = `${prefix}-${timestamp}`;
+    this.serial_number = `${prefix}-${timestamp}`;
   }
 
   onFileSelected(event: any): void {
