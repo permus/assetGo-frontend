@@ -638,19 +638,14 @@
                 </svg>
               </div>
               
-              <!-- Upload Button -->
-              <div class="mb-4">
-                <label for="file-upload" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all cursor-pointer">
-                  <span>{{isDragOver ? 'Drop files here' : 'Upload files'}}</span>
-                  <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
-                </label>
-              </div>
-              
               <p class="text-sm transition-colors" 
                  [class.text-gray-500]="!isDragOver" 
                  [class.text-blue-600]="isDragOver">
-                {{isDragOver ? 'Release to upload images' : 'PNG, JPG, GIF up to 10MB or drag and drop'}}
+                {{isDragOver ? 'Release to upload images' : 'PNG, JPG, GIF up to 10MB - drag and drop files here'}}
               </p>
+              
+              <!-- Hidden file input for drag and drop -->
+              <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
             </div>
           </div>
           
