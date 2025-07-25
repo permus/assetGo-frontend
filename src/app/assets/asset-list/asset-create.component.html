@@ -669,7 +669,12 @@
               <div *ngFor="let previewUrl of imagePreviewUrls; let i = index" class="relative group">
                 <!-- Image Preview -->
                 <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors">
-                  <img [src]="previewUrl" [alt]="'Asset Image ' + (i + 1)" class="w-full h-full object-cover" />
+                  <img 
+                    [src]="previewUrl" 
+                    [alt]="'Asset Image ' + (i + 1)" 
+                    class="w-full h-full object-cover"
+                    (error)="onImageError($event, i)"
+                    (load)="onImageLoad($event, i)" />
 
                   <!-- Image Overlay -->
                   <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">

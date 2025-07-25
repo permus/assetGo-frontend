@@ -99,10 +99,27 @@ export class AssetCreateComponent implements OnInit {
     this.images = [...this.images, ...files];
 
     // Generate preview URLs for new files
-    files.forEach(file => {
+    files.forEach((file, index) => {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        console.warn('Skipping non-image file:', file.name);
+        return;
+      }
+
+      // Validate file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        console.warn('File too large:', file.name);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.imagePreviewUrls.push(e.target.result);
+        if (e.target && e.target.result) {
+          this.imagePreviewUrls.push(e.target.result);
+        }
+      };
+      reader.onerror = (error) => {
+        console.error('Error reading file:', file.name, error);
       };
       reader.readAsDataURL(file);
     });
@@ -596,5 +613,15 @@ export class AssetCreateComponent implements OnInit {
   getTodayDate(): string {
     const today = new Date();
     return today.toISOString().split('T')[0];
+  }
+
+  onImageError(event: any, index: number) {
+    console.error('Image failed to load at index:', index);
+    // Optionally remove the failed image
+    // this.removeImage(index);
+  }
+
+  onImageLoad(event: any, index: number) {
+    console.log('Image loaded successfully at index:', index);
   }
 }
