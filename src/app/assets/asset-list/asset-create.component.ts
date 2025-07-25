@@ -3,6 +3,11 @@ import { Router } from '@angular/router';
 import { AssetService } from '../services/asset.service';
 import flatpickr from 'flatpickr';
 
+interface AssetTypeOption {
+  value: string;
+  label: string;
+}
+
 interface AssetFormData {
   name: string;
   description: string;
@@ -42,12 +47,20 @@ export class AssetCreateComponent implements OnInit, OnDestroy, AfterViewInit {
   department_id: string = '';
   notes: string = '';
   newTagInput: string = '';
-  selectedAssetType: string = '';
+  selectedAssetType: AssetTypeOption | null = null;
   selectedCategory: string = '';
   selectedLocation: string = '';
   selectedStatus: string = 'active';
   selectedTags: string[] = [];
   images: File[] = [];
+
+  assetTypes: AssetTypeOption[] = [
+    { value: 'hardware', label: 'Hardware' },
+    { value: 'software', label: 'Software' },
+    { value: 'equipment', label: 'Equipment' },
+    { value: 'furniture', label: 'Furniture' },
+    { value: 'vehicle', label: 'Vehicle' }
+  ];
 
   categories = [
     'Computer Hardware',
@@ -307,5 +320,9 @@ export class AssetCreateComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onCancel(): void {
     this.router.navigate(['/assets']);
+  }
+
+  selectAssetType(type: AssetTypeOption): void {
+    this.selectedAssetType = type;
   }
 }
