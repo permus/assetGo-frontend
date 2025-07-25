@@ -56,6 +56,9 @@ export class AssetCreateComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedStatus: string = 'active';
   selectedTags: string[] = [];
   images: File[] = [];
+  assetTypeError: boolean = false;
+  showAssetTypeDropdown: boolean = false;
+  categoryError: boolean = false;
 
   assetTypes: AssetTypeOption[] = [
     { 
