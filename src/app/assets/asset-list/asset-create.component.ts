@@ -34,6 +34,7 @@ export class AssetCreateComponent implements OnInit {
   imagePreviewUrls: string[] = [];
   meta: any = {};
   isSubmitting = false;
+  isDragOver = false;
   submitError = '';
   submitSuccess = '';
   submitFieldErrors: { [key: string]: string[] } = {};
@@ -62,22 +63,49 @@ export class AssetCreateComponent implements OnInit {
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length) {
       const newFiles = Array.from(event.target.files) as File[];
-
-      // Add new files to existing images array
-      this.images = [...this.images, ...newFiles];
-
-      // Generate preview URLs for new files
-      newFiles.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.imagePreviewUrls.push(e.target.result);
-        };
-        reader.readAsDataURL(file);
-      });
-
-      // Clear the input so the same file can be selected again
-      event.target.value = '';
+      this.processFiles(newFiles);
+      event.target.value = ''; // Clear the input
     }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files).filter(file => file.type.startsWith('image/'));
+      if (fileArray.length > 0) {
+        this.processFiles(fileArray);
+      }
+    }
+  }
+
+  private processFiles(files: File[]) {
+    // Add new files to existing images array
+    this.images = [...this.images, ...files];
+
+    // Generate preview URLs for new files
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreviewUrls.push(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   onSubmit() {
