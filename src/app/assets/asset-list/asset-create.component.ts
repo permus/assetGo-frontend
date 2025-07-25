@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AssetService } from '../services/asset.service';
 import flatpickr from 'flatpickr';
@@ -29,6 +31,8 @@ interface AssetFormData {
 
 @Component({
   selector: 'app-asset-create',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './asset-create.component.html',
   styleUrls: ['./asset-create.component.scss']
 })
