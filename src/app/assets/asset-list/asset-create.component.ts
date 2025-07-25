@@ -104,23 +104,42 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private processFiles(files: File[]) {
-    // Add new files to existing images array
-    this.images = [...this.images, ...files];
+    const maxImages = 10;
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const newImages: File[] = [];
+    const newPreviews: string[] = [];
 
-    // Generate preview URLs for new files
-    files.forEach((file) => {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        console.warn('Skipping non-image file:', file.name);
-        return;
+    for (const file of files) {
+      // Skip unsupported file types
+      if (!allowedTypes.includes(file.type)) {
+        console.warn('Invalid file type:', file.name);
+        continue;
       }
 
-      // Validate file size (10MB limit)
+      // Skip files > 10MB
       if (file.size > 10 * 1024 * 1024) {
         console.warn('File too large:', file.name);
-        return;
+        continue;
       }
 
+      // Prevent duplicate files (based on name + size)
+      const isDuplicate = this.images.some(existing =>
+        existing.name === file.name && existing.size === file.size
+      );
+      if (isDuplicate) {
+        console.warn('Duplicate file skipped:', file.name);
+        continue;
+      }
+
+      // Prevent exceeding max image count
+      if (this.images.length + newImages.length >= maxImages) {
+        console.warn('Max image count exceeded:', file.name);
+        break;
+      }
+
+      newImages.push(file);
+
+      // Generate preview
       const reader = new FileReader();
       reader.onload = (e: any) => {
         if (e.target?.result) {
@@ -128,11 +147,15 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       };
       reader.onerror = (error) => {
-        console.error('Error reading file:', file.name, error);
+        console.error('Preview failed for:', file.name, error);
       };
       reader.readAsDataURL(file);
-    });
+    }
+
+    // Append validated files
+    this.images = [...this.images, ...newImages];
   }
+
 
   onSubmit() {
     // Clear previous errors
