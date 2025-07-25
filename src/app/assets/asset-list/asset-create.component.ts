@@ -624,4 +624,10 @@ export class AssetCreateComponent implements OnInit {
   onImageLoad(event: any, index: number) {
     console.log('Image loaded successfully at index:', index);
   }
+
+  onImageError(event: any, index: number) {
+    console.error('Image failed to load at index:', index);
+    // Optionally remove the failed image
+    // this.removeImage(index);
+  }
 }
