@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { HostListener } from '@angular/core';
+import { HostListener, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AssetService } from '../services/asset.service';
 import { Router } from '@angular/router';
 import {NgForOf, NgIf} from '@angular/common';
+import flatpickr from 'flatpickr';
 
 @Component({
   selector: 'app-asset-create',
@@ -13,7 +14,14 @@ import {NgForOf, NgIf} from '@angular/common';
   standalone: true,
   imports: [FormsModule, NgIf, NgForOf]
 })
-export class AssetCreateComponent implements OnInit {
+export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('purchaseDateInput', { static: false }) purchaseDateInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('warrantyDateInput', { static: false }) warrantyDateInput!: ElementRef<HTMLInputElement>;
+
+  // Flatpickr instances
+  private purchaseDatePicker: any;
+  private warrantyDatePicker: any;
+
   // Asset form fields
   name: string = '';
   description: string = '';
@@ -232,6 +240,51 @@ export class AssetCreateComponent implements OnInit {
 
     // Load available tags
     this.loadAvailableTags();
+  }
+
+  ngAfterViewInit() {
+    // Initialize Flatpickr after view is ready
+    setTimeout(() => {
+      this.initializeDatePickers();
+    }, 100);
+  }
+
+  ngOnDestroy() {
+    // Cleanup Flatpickr instances
+    if (this.purchaseDatePicker) {
+      this.purchaseDatePicker.destroy();
+    }
+    if (this.warrantyDatePicker) {
+      this.warrantyDatePicker.destroy();
+    }
+  }
+
+  private initializeDatePickers() {
+    // Initialize Purchase Date Picker
+    if (this.purchaseDateInput?.nativeElement) {
+      this.purchaseDatePicker = flatpickr(this.purchaseDateInput.nativeElement, {
+        dateFormat: 'Y-m-d',
+        allowInput: true,
+        clickOpens: true,
+        maxDate: 'today',
+        onChange: (selectedDates, dateStr) => {
+          this.purchase_date = dateStr;
+        }
+      });
+    }
+
+    // Initialize Warranty Date Picker
+    if (this.warrantyDateInput?.nativeElement) {
+      this.warrantyDatePicker = flatpickr(this.warrantyDateInput.nativeElement, {
+        dateFormat: 'Y-m-d',
+        allowInput: true,
+        clickOpens: true,
+        minDate: 'today',
+        onChange: (selectedDates, dateStr) => {
+          this.warranty = dateStr;
+        }
+      });
+    }
   }
 
   loadAvailableTags() {

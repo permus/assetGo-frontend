@@ -346,6 +346,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
             <input
+              #purchaseDateInput
               type="date"
               class="input"
               [(ngModel)]="purchase_date"
@@ -371,13 +372,13 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Warranty Expiration</label>
             <input
-              type="text"
+              #warrantyDateInput
+              type="date"
               class="input"
               [(ngModel)]="warranty"
               name="warranty"
-              maxlength="255"
-              placeholder="e.g., 2 years, Until 2025-12-31" />
-            <div class="text-xs text-gray-500 mt-1">Optional, max 255 characters</div>
+              placeholder="Select warranty expiration date" />
+            <div class="text-xs text-gray-500 mt-1">Optional warranty expiration date</div>
           </div>
         </div>
       </div>
