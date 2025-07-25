@@ -387,20 +387,11 @@ export class AssetCreateComponent implements OnInit {
   }
 
   isFormValid(): boolean {
+    // Only name is required according to backend validation
     return !!(
       this.name && 
       this.name.trim().length > 0 &&
-      this.name.trim().length <= 100 &&
-      (!this.description || this.description.length <= 500) &&
-      (!this.serial_number || (this.serial_number.trim().length > 0 && this.serial_number.length <= 255)) &&
-      (!this.model || this.model.length <= 255) &&
-      (!this.manufacturer || this.manufacturer.length <= 255) &&
-      (!this.warranty || this.warranty.length <= 255) &&
-      (!this.insurance || this.insurance.length <= 255) &&
-      (!this.status || this.status.length <= 50) &&
-      (!this.purchase_price || this.purchase_price > 0) &&
-      (!this.depreciation || this.depreciation >= 0) &&
-      this.health_score >= 0 && this.health_score <= 100
+      this.name.trim().length <= 100
     );
   }
 
