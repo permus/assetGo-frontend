@@ -63,6 +63,7 @@ export class AssetCreateComponent implements OnInit, OnDestroy, AfterViewInit {
   assetTypeError: boolean = false;
   showAssetTypeDropdown: boolean = false;
   categoryError: boolean = false;
+  serialNumberError: boolean = false;
 
   assetTypes: AssetTypeOption[] = [
     { 
