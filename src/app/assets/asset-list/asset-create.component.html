@@ -628,20 +628,6 @@
                   <span>{{images.length === 0 ? 'Upload files' : 'Add more files'}}</span>
                   <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
                 </label>
-                <p class="pl-1">or drag and drop</p>
-              </div>
-              <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB each</p>
-              <p *ngIf="images.length > 0" class="text-xs text-blue-600 font-medium">{{images.length}} image{{images.length !== 1 ? 's' : ''}} selected</p>
-            </div>
-          </div>
-          <div class="text-xs text-gray-500 mt-2">
-            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            Supported formats: JPEG, PNG, JPG, GIF, SVG. Maximum file size: 5MB per image. You can select multiple images at once.
-          </div>
-          
-          <!-- Image Gallery Preview -->
           <div *ngIf="imagePreviewUrls.length > 0" class="mt-6">
             <div class="flex items-center justify-between mb-4">
               <h4 class="text-sm font-medium text-gray-700">Selected Images ({{imagePreviewUrls.length}})</h4>
@@ -706,7 +692,7 @@
                 <!-- Image Info -->
                 <div class="mt-2 text-center">
                   <p class="text-xs text-gray-600 truncate">{{images[i]?.name}}</p>
-                  <p class="text-xs text-gray-500">{{(images[i]?.size / 1024 / 1024).toFixed(1)}} MB</p>
+                  <p class="text-xs text-gray-500">{{ ((images[i]?.size ?? 0) / 1024 / 1024).toFixed(1) }} MB</p>
                 </div>
               </div>
             </div>
