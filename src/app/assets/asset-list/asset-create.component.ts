@@ -43,9 +43,11 @@ export class AssetCreateComponent implements OnInit {
   showAssetTypeDropdown = false;
   showCategoryDropdown = false;
   showLocationDropdown = false;
+  showStatusDropdown = false;
   selectedAssetType: any | null = null;
   selectedCategory: any | null = null;
   selectedLocation: any | null = null;
+  selectedStatus: any | null = null;
 
   // Validation error properties
   nameError: string = '';
@@ -137,6 +139,14 @@ export class AssetCreateComponent implements OnInit {
   ];
   assetType: string | null = null;
 
+  // Status options
+  statusOptions = [
+    { value: 'Active', label: 'Active', color: 'green', description: 'Asset is operational and in use' },
+    { value: 'Maintenance', label: 'Maintenance', color: 'orange', description: 'Asset is under maintenance or repair' },
+    { value: 'Inactive', label: 'Inactive', color: 'gray', description: 'Asset is not currently in use' },
+    { value: 'Retired', label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service' }
+  ];
+
   constructor(
     private assetService: AssetService, 
     private router: Router,
@@ -144,6 +154,10 @@ export class AssetCreateComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Set default status
+    this.selectedStatus = this.statusOptions[0]; // Default to 'Active'
+    this.status = this.selectedStatus.value;
+    
     // Check if we're duplicating an asset
     this.route.queryParams.subscribe((params: any) => {
       if (params['duplicate'] && params['sourceId']) {
@@ -209,6 +223,11 @@ export class AssetCreateComponent implements OnInit {
         this.selectedLocation = this.locations.find(loc => loc.id === sourceAsset.location_id) || null;
       }
       
+      if (sourceAsset.status) {
+        this.selectedStatus = this.statusOptions.find(status => status.value === sourceAsset.status) || this.statusOptions[0];
+        this.status = this.selectedStatus.value;
+      }
+      
       // Clear validation errors after populating form
       this.clearErrors();
     }, 100);
@@ -240,6 +259,14 @@ export class AssetCreateComponent implements OnInit {
     this.showLocationDropdown = !this.showLocationDropdown;
     this.showAssetTypeDropdown = false;
     this.showCategoryDropdown = false;
+    this.showStatusDropdown = false;
+  }
+
+  toggleStatusDropdown() {
+    this.showStatusDropdown = !this.showStatusDropdown;
+    this.showAssetTypeDropdown = false;
+    this.showCategoryDropdown = false;
+    this.showLocationDropdown = false;
   }
 
   // Selection methods
@@ -263,12 +290,19 @@ export class AssetCreateComponent implements OnInit {
     this.showLocationDropdown = false;
   }
 
+  selectStatus(status: any) {
+    this.selectedStatus = status;
+    this.status = status.value;
+    this.showStatusDropdown = false;
+  }
+
   // Close dropdowns when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     this.showAssetTypeDropdown = false;
     this.showCategoryDropdown = false;
     this.showLocationDropdown = false;
+    this.showStatusDropdown = false;
   }
 
   // Validation methods
