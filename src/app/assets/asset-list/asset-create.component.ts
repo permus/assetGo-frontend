@@ -38,16 +38,19 @@ export class AssetCreateComponent implements OnInit {
   submitSuccess = '';
   submitFieldErrors: { [key: string]: string[] } = {};
   locations: any[] = [];
+  availableTags: any[] = [];
   
   // Dropdown state properties
   showAssetTypeDropdown = false;
   showCategoryDropdown = false;
   showLocationDropdown = false;
   showStatusDropdown = false;
+  showTagsDropdown = false;
   selectedAssetType: any | null = null;
   selectedCategory: any | null = null;
   selectedLocation: any | null = null;
   selectedStatus: any | null = null;
+  selectedTags: any[] = [];
 
   // Validation error properties
   nameError: string = '';
@@ -175,6 +178,31 @@ export class AssetCreateComponent implements OnInit {
         this.locations = res.data.locations || res.data;
       }
     });
+    
+    // Load available tags
+    this.loadAvailableTags();
+  }
+
+  loadAvailableTags() {
+    // For now, using mock data since we don't have the tags endpoint
+    // TODO: Replace with actual API call when available
+    this.availableTags = [
+      { id: 1, name: 'Critical', color: 'red' },
+      { id: 2, name: 'High Priority', color: 'orange' },
+      { id: 3, name: 'Equipment', color: 'blue' },
+      { id: 4, name: 'IT Hardware', color: 'purple' },
+      { id: 5, name: 'Furniture', color: 'green' },
+      { id: 6, name: 'Vehicle', color: 'yellow' },
+      { id: 7, name: 'Safety Equipment', color: 'red' },
+      { id: 8, name: 'Office Supplies', color: 'gray' }
+    ];
+    
+    // Uncomment when tags API is available:
+    // this.assetService.getAssetTags().subscribe(res => {
+    //   if (res.success && res.data) {
+    //     this.availableTags = res.data.tags || res.data;
+    //   }
+    // });
   }
 
   loadAssetForDuplication(sourceId: string) {
@@ -228,6 +256,14 @@ export class AssetCreateComponent implements OnInit {
         this.status = this.selectedStatus.value;
       }
       
+      // Set tags if available
+      if (sourceAsset.tags && Array.isArray(sourceAsset.tags)) {
+        this.selectedTags = sourceAsset.tags.map((tag: any) => {
+          return this.availableTags.find(t => t.id === tag.id) || tag;
+        });
+        this.tags = this.selectedTags.map(tag => tag.id);
+      }
+      
       // Clear validation errors after populating form
       this.clearErrors();
     }, 100);
@@ -267,6 +303,15 @@ export class AssetCreateComponent implements OnInit {
     this.showAssetTypeDropdown = false;
     this.showCategoryDropdown = false;
     this.showLocationDropdown = false;
+    this.showTagsDropdown = false;
+  }
+
+  toggleTagsDropdown() {
+    this.showTagsDropdown = !this.showTagsDropdown;
+    this.showAssetTypeDropdown = false;
+    this.showCategoryDropdown = false;
+    this.showLocationDropdown = false;
+    this.showStatusDropdown = false;
   }
 
   // Selection methods
@@ -296,6 +341,31 @@ export class AssetCreateComponent implements OnInit {
     this.showStatusDropdown = false;
   }
 
+  toggleTag(tag: any) {
+    const index = this.selectedTags.findIndex(t => t.id === tag.id);
+    if (index > -1) {
+      // Remove tag
+      this.selectedTags.splice(index, 1);
+    } else {
+      // Add tag
+      this.selectedTags.push(tag);
+    }
+    // Update tags array for form submission
+    this.tags = this.selectedTags.map(t => t.id);
+  }
+
+  isTagSelected(tag: any): boolean {
+    return this.selectedTags.some(t => t.id === tag.id);
+  }
+
+  removeTag(tag: any) {
+    const index = this.selectedTags.findIndex(t => t.id === tag.id);
+    if (index > -1) {
+      this.selectedTags.splice(index, 1);
+      this.tags = this.selectedTags.map(t => t.id);
+    }
+  }
+
   // Close dropdowns when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
@@ -303,6 +373,7 @@ export class AssetCreateComponent implements OnInit {
     this.showCategoryDropdown = false;
     this.showLocationDropdown = false;
     this.showStatusDropdown = false;
+    this.showTagsDropdown = false;
   }
 
   // Validation methods
