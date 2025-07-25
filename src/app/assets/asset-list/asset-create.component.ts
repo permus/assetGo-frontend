@@ -17,6 +17,7 @@ import flatpickr from 'flatpickr';
 export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('purchaseDateInput', { static: false }) purchaseDateInput!: ElementRef<HTMLInputElement>;
   @ViewChild('warrantyDateInput', { static: false }) warrantyDateInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
 
   // Flatpickr instances
   private purchaseDatePicker: any;
@@ -676,5 +677,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onImageLoad(event: any, index: number) {
     console.log('Image loaded successfully at index:', index);
+  }
+
+  triggerFileInput() {
+    this.fileInput.nativeElement.click();
   }
 }

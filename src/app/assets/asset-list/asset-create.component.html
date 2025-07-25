@@ -627,6 +627,7 @@
             (dragover)="onDragOver($event)"
             (dragleave)="onDragLeave($event)"
             (drop)="onDrop($event)">
+            (click)="triggerFileInput()">
             <div class="space-y-1 text-center">
               <!-- Upload Icon -->
               <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -641,11 +642,11 @@
               <p class="text-sm transition-colors" 
                  [class.text-gray-500]="!isDragOver" 
                  [class.text-blue-600]="isDragOver">
-                {{isDragOver ? 'Release to upload images' : 'PNG, JPG, GIF up to 10MB - drag and drop files here'}}
+                {{isDragOver ? 'Release to upload images' : 'PNG, JPG, GIF up to 10MB - click to browse or drag and drop files here'}}
               </p>
               
               <!-- Hidden file input for drag and drop -->
-              <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
+              <input #fileInput id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
             </div>
           </div>
           
