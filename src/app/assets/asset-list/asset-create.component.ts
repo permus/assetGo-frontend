@@ -108,7 +108,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.images = [...this.images, ...files];
 
     // Generate preview URLs for new files
-    files.forEach((file, index) => {
+    files.forEach((file) => {
       // Validate file type
       if (!file.type.startsWith('image/')) {
         console.warn('Skipping non-image file:', file.name);
@@ -123,8 +123,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        if (e.target && e.target.result) {
-          this.imagePreviewUrls.push(e.target.result);
+        if (e.target?.result) {
+          this.imagePreviewUrls.push(e.target.result as string);
         }
       };
       reader.onerror = (error) => {
@@ -671,12 +671,15 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onImageError(event: any, index: number) {
     console.error('Image failed to load at index:', index);
-    // Optionally remove the failed image
-    // this.removeImage(index);
+    console.error('Image src:', event.target.src);
+    console.error('Image file:', this.images[index]);
+    // Set a placeholder or remove the failed image
+    event.target.style.display = 'none';
   }
 
   onImageLoad(event: any, index: number) {
     console.log('Image loaded successfully at index:', index);
+    console.log('Image dimensions:', event.target.naturalWidth, 'x', event.target.naturalHeight);
   }
 
   triggerFileInput() {

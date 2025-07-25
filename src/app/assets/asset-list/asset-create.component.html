@@ -669,9 +669,10 @@
                   <img 
                     [src]="previewUrl" 
                     [alt]="'Asset Image ' + (i + 1)" 
-                    class="w-full h-full object-cover"
+                    class="w-full h-full object-cover bg-white"
                     (error)="onImageError($event, i)"
-                    (load)="onImageLoad($event, i)" />
+                    (load)="onImageLoad($event, i)"
+                    loading="lazy" />
 
                   <!-- Image Overlay -->
                   <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
