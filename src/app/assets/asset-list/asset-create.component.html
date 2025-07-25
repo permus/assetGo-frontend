@@ -627,9 +627,9 @@
                 <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                   <span>{{images.length === 0 ? 'Upload files' : 'Add more files'}}</span>
                   <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
+                </label>
+              </div>
               <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-            </div>
-          </div>
           
           <div *ngIf="imagePreviewUrls.length > 0" class="mt-6">
           <div class="flex items-center justify-between mb-4">
