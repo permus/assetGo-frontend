@@ -278,11 +278,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         instance.destroy();
       }
     });
-  }
-
-  private initializeFlatpickr() {
-    // Cleanup existing instances
-    this.flatpickrInstances.forEach(instance => {
       if (instance) {
         instance.destroy();
       }
