@@ -627,86 +627,86 @@
                 <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                   <span>{{images.length === 0 ? 'Upload files' : 'Add more files'}}</span>
                   <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
-                </label>
-          <div *ngIf="imagePreviewUrls.length > 0" class="mt-6">
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="text-sm font-medium text-gray-700">Selected Images ({{imagePreviewUrls.length}})</h4>
-              <button 
-                type="button" 
-                (click)="removeAllImages()" 
-                class="text-red-600 hover:text-red-700 text-sm font-medium transition-colors">
-                Remove All
-              </button>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <div *ngFor="let previewUrl of imagePreviewUrls; let i = index" class="relative group">
-                <!-- Image Preview -->
-                <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors">
-                  <img [src]="previewUrl" [alt]="'Asset Image ' + (i + 1)" class="w-full h-full object-cover" />
-                  
-                  <!-- Image Overlay -->
-                  <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-                    <!-- Action Buttons -->
-                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center space-x-2">
-                      <!-- Move Up -->
-                      <button 
-                        *ngIf="i > 0"
-                        type="button" 
-                        (click)="moveImageUp(i)" 
-                        class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                        </svg>
-                      </button>
-                      
-                      <!-- Move Down -->
-                      <button 
-                        *ngIf="i < imagePreviewUrls.length - 1"
-                        type="button" 
-                        (click)="moveImageDown(i)" 
-                        class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <!-- Remove Button -->
-                  <button 
-                    type="button" 
-                    (click)="removeImage(i)" 
-                    class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                  </button>
-                  
-                  <!-- Image Number Badge -->
-                  <div class="absolute top-2 left-2 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium">
-                    {{i + 1}}
+        </div>
+        
+        <div *ngIf="imagePreviewUrls.length > 0" class="mt-6">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="text-sm font-medium text-gray-700">Selected Images ({{imagePreviewUrls.length}})</h4>
+            <button 
+              type="button" 
+              (click)="removeAllImages()" 
+              class="text-red-600 hover:text-red-700 text-sm font-medium transition-colors">
+              Remove All
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div *ngFor="let previewUrl of imagePreviewUrls; let i = index" class="relative group">
+              <!-- Image Preview -->
+              <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors">
+                <img [src]="previewUrl" [alt]="'Asset Image ' + (i + 1)" class="w-full h-full object-cover" />
+                
+                <!-- Image Overlay -->
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+                  <!-- Action Buttons -->
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center space-x-2">
+                    <!-- Move Up -->
+                    <button 
+                      *ngIf="i > 0"
+                      type="button" 
+                      (click)="moveImageUp(i)" 
+                      class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                      </svg>
+                    </button>
+                    
+                    <!-- Move Down -->
+                    <button 
+                      *ngIf="i < imagePreviewUrls.length - 1"
+                      type="button" 
+                      (click)="moveImageDown(i)" 
+                      class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </button>
                   </div>
                 </div>
                 
-                <!-- Image Info -->
-                <div class="mt-2 text-center">
-                  <p class="text-xs text-gray-600 truncate">{{images[i]?.name}}</p>
-                  <p class="text-xs text-gray-500">{{ ((images[i]?.size ?? 0) / 1024 / 1024).toFixed(1) }} MB</p>
+                <!-- Remove Button -->
+                <button 
+                  type="button" 
+                  (click)="removeImage(i)" 
+                  class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+                
+                <!-- Image Number Badge -->
+                <div class="absolute top-2 left-2 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                  {{i + 1}}
                 </div>
               </div>
-            </div>
-            
-            <!-- Gallery Instructions -->
-            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div class="flex items-center space-x-2">
-                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p class="text-blue-800 text-sm">
-                  <strong>Gallery Tips:</strong> Hover over images to reorder them. The first image will be the primary asset image.
-                </p>
+              
+              <!-- Image Info -->
+              <div class="mt-2 text-center">
+                <p class="text-xs text-gray-600 truncate">{{images[i]?.name}}</p>
+                <p class="text-xs text-gray-500">{{ ((images[i]?.size ?? 0) / 1024 / 1024).toFixed(1) }} MB</p>
               </div>
+            </div>
+          </div>
+          
+          <!-- Gallery Instructions -->
+          <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex items-center space-x-2">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <p class="text-blue-800 text-sm">
+                <strong>Gallery Tips:</strong> Hover over images to reorder them. The first image will be the primary asset image.
+              </p>
             </div>
           </div>
         </div>
