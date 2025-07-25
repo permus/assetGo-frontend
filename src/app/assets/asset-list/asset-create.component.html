@@ -346,12 +346,13 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
             <input
-              #purchaseDateInput
-              type="date"
+              #dateInput
+              type="text"
               class="input"
-              [(ngModel)]="purchase_date"
               name="purchase_date"
-              [max]="getTodayDate()" />
+              placeholder="Select purchase date"
+              [(ngModel)]="purchase_date"
+              readonly />
             <div class="text-xs text-gray-500 mt-1">Cannot be in the future</div>
           </div>
         </div>
@@ -372,12 +373,13 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Warranty Expiration</label>
             <input
-              #warrantyDateInput
-              type="date"
+              #dateInput
+              type="text"
               class="input"
-              [(ngModel)]="warranty"
               name="warranty"
-              placeholder="Select warranty expiration date" />
+              placeholder="Select warranty expiration date"
+              [(ngModel)]="warranty"
+              readonly />
             <div class="text-xs text-gray-500 mt-1">Optional warranty expiration date</div>
           </div>
         </div>

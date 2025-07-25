@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HostListener, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { HostListener, AfterViewInit, ViewChild, ElementRef, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AssetService } from '../services/asset.service';
@@ -15,13 +15,11 @@ import flatpickr from 'flatpickr';
   imports: [FormsModule, NgIf, NgForOf]
 })
 export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('purchaseDateInput', { static: false }) purchaseDateInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('warrantyDateInput', { static: false }) warrantyDateInput!: ElementRef<HTMLInputElement>;
+  @ViewChildren('dateInput') dateInputs!: QueryList<ElementRef>;
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
 
   // Flatpickr instances
-  private purchaseDatePicker: any;
-  private warrantyDatePicker: any;
+  flatpickrInstances: any[] = [];
 
   // Asset form fields
   name: string = '';
@@ -269,46 +267,62 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     // Initialize Flatpickr after view is ready
     setTimeout(() => {
-      this.initializeDatePickers();
+      this.initializeFlatpickr();
     }, 100);
   }
 
   ngOnDestroy(): void {
     // Cleanup Flatpickr instances
-    if (this.purchaseDatePicker) {
-      this.purchaseDatePicker.destroy();
-    }
-    if (this.warrantyDatePicker) {
-      this.warrantyDatePicker.destroy();
-    }
+    this.flatpickrInstances.forEach(instance => {
+      if (instance) {
+        instance.destroy();
+      }
+    });
   }
 
-  private initializeDatePickers() {
-    // Initialize Purchase Date Picker
-    if (this.purchaseDateInput?.nativeElement) {
-      this.purchaseDatePicker = flatpickr(this.purchaseDateInput.nativeElement, {
-        dateFormat: 'Y-m-d',
-        allowInput: true,
-        clickOpens: true,
-        maxDate: 'today',
-        onChange: (selectedDates, dateStr) => {
-          this.purchase_date = dateStr;
-        }
-      });
-    }
+  private initializeFlatpickr() {
+    // Cleanup existing instances
+    this.flatpickrInstances.forEach(instance => {
+      if (instance) {
+        instance.destroy();
+      }
+    });
+    this.flatpickrInstances = [];
 
-    // Initialize Warranty Date Picker
-    if (this.warrantyDateInput?.nativeElement) {
-      this.warrantyDatePicker = flatpickr(this.warrantyDateInput.nativeElement, {
-        dateFormat: 'Y-m-d',
-        allowInput: true,
-        clickOpens: true,
-        minDate: 'today',
-        onChange: (selectedDates, dateStr) => {
-          this.warranty = dateStr;
-        }
-      });
-    }
+    // Initialize new instances
+    setTimeout(() => {
+      if (this.dateInputs) {
+        this.dateInputs.forEach((inputRef, index) => {
+          if (inputRef?.nativeElement) {
+            const inputElement = inputRef.nativeElement;
+            const fieldName = inputElement.getAttribute('name');
+            
+            let config: any = {
+              dateFormat: 'Y-m-d',
+              allowInput: true,
+              clickOpens: true,
+              onChange: (selectedDates: Date[], dateStr: string) => {
+                if (fieldName === 'purchase_date') {
+                  this.purchase_date = dateStr;
+                } else if (fieldName === 'warranty') {
+                  this.warranty = dateStr;
+                }
+              }
+            };
+
+            // Set specific constraints based on field
+            if (fieldName === 'purchase_date') {
+              config.maxDate = 'today';
+            } else if (fieldName === 'warranty') {
+              config.minDate = 'today';
+            }
+
+            const instance = flatpickr(inputElement, config);
+            this.flatpickrInstances.push(instance);
+          }
+        });
+      }
+    }, 50);
   }
 
   loadAvailableTags() {
