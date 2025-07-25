@@ -242,14 +242,14 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadAvailableTags();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     // Initialize Flatpickr after view is ready
     setTimeout(() => {
       this.initializeDatePickers();
     }, 100);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     // Cleanup Flatpickr instances
     if (this.purchaseDatePicker) {
       this.purchaseDatePicker.destroy();
