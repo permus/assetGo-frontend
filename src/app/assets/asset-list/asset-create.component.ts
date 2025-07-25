@@ -6,6 +6,9 @@ import flatpickr from 'flatpickr';
 interface AssetTypeOption {
   value: string;
   label: string;
+  icon: string;
+  color: string;
+  description: string;
 }
 
 interface AssetFormData {
@@ -55,11 +58,41 @@ export class AssetCreateComponent implements OnInit, OnDestroy, AfterViewInit {
   images: File[] = [];
 
   assetTypes: AssetTypeOption[] = [
-    { value: 'hardware', label: 'Hardware' },
-    { value: 'software', label: 'Software' },
-    { value: 'equipment', label: 'Equipment' },
-    { value: 'furniture', label: 'Furniture' },
-    { value: 'vehicle', label: 'Vehicle' }
+    { 
+      value: 'hardware', 
+      label: 'Hardware',
+      icon: 'monitor',
+      color: '#3B82F6',
+      description: 'Computer hardware and IT equipment'
+    },
+    { 
+      value: 'software', 
+      label: 'Software',
+      icon: 'code',
+      color: '#10B981',
+      description: 'Software licenses and applications'
+    },
+    { 
+      value: 'equipment', 
+      label: 'Equipment',
+      icon: 'settings',
+      color: '#F59E0B',
+      description: 'Tools and machinery'
+    },
+    { 
+      value: 'furniture', 
+      label: 'Furniture',
+      icon: 'home',
+      color: '#8B5CF6',
+      description: 'Office furniture and fixtures'
+    },
+    { 
+      value: 'vehicle', 
+      label: 'Vehicle',
+      icon: 'truck',
+      color: '#EF4444',
+      description: 'Vehicles and transportation'
+    }
   ];
 
   categories = [
