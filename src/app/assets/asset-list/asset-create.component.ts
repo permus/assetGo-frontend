@@ -279,11 +279,16 @@ export class AssetCreateComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private validateForm(): boolean {
-    const requiredFields = ['name', 'category', 'location', 'serial_number'];
+    const requiredFields = [
+      { field: 'name', value: this.name },
+      { field: 'selectedCategory', value: this.selectedCategory },
+      { field: 'selectedLocation', value: this.selectedLocation },
+      { field: 'serial_number', value: this.serial_number }
+    ];
     
-    for (const field of requiredFields) {
-      if (!(this.assetForm as any)[field]) {
-        alert(`Please fill in the ${field.replace('_', ' ')} field.`);
+    for (const { field, value } of requiredFields) {
+      if (!value) {
+        alert(`Please fill in the ${field.replace('_', ' ').replace('selected', '')} field.`);
         return false;
       }
     }
