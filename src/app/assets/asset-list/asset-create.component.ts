@@ -25,14 +25,13 @@ export class AssetCreateComponent implements OnInit {
   depreciation: number | null = null;
   location_id: number | null = null;
   department_id: number | null = null;
-  user_id: number | null = null;
-  company_id: number | null = null; // Set this from auth or context
   warranty: string = '';
   insurance: string = '';
   health_score: number = 85;
-  status: string = '';
+  status: string = 'Active';
   tags: number[] = [];
   images: File[] = [];
+  meta: any = {};
   previewImage: string | null = null;
   isSubmitting = false;
   submitError = '';
@@ -96,13 +95,12 @@ export class AssetCreateComponent implements OnInit {
       depreciation: this.depreciation !== null ? this.depreciation : null,
       location_id: this.location_id,
       department_id: this.department_id,
-      user_id: this.user_id,
-      company_id: this.company_id,
       warranty: this.warranty,
       insurance: this.insurance,
       health_score: this.health_score,
       status: this.status,
       tags: this.tags,
+      meta: this.meta,
       // images: this.images // skip images for JSON, handle separately if needed
     };
 
@@ -279,6 +277,7 @@ export class AssetCreateComponent implements OnInit {
   validateForm(): boolean {
     let isValid = true;
 
+    // Name validation (required, max 100)
     if (!this.name || this.name.trim().length === 0) {
       this.nameError = 'Asset name is required';
       isValid = false;
@@ -287,32 +286,76 @@ export class AssetCreateComponent implements OnInit {
       isValid = false;
     }
 
+    // Description validation (optional, max 500)
     if (this.description && this.description.length > 500) {
-      this.nameError = 'Description cannot exceed 500 characters';
+      this.submitError = 'Description cannot exceed 500 characters';
       isValid = false;
     }
 
+    // Serial number validation (optional, max 255, cannot be empty if provided)
     if (this.serial_number && this.serial_number.trim().length === 0) {
       this.serialNumberError = 'Serial number cannot be empty if provided';
       isValid = false;
-    }
-
-    if (this.purchase_price !== null && this.purchase_price <= 0) {
-      this.nameError = 'Purchase price must be a positive number';
+    } else if (this.serial_number && this.serial_number.length > 255) {
+      this.serialNumberError = 'Serial number cannot exceed 255 characters';
       isValid = false;
     }
 
+    // Model validation (optional, max 255)
+    if (this.model && this.model.length > 255) {
+      this.submitError = 'Model cannot exceed 255 characters';
+      isValid = false;
+    }
+
+    // Manufacturer validation (optional, max 255)
+    if (this.manufacturer && this.manufacturer.length > 255) {
+      this.submitError = 'Manufacturer cannot exceed 255 characters';
+      isValid = false;
+    }
+
+    // Warranty validation (optional, max 255)
+    if (this.warranty && this.warranty.length > 255) {
+      this.submitError = 'Warranty cannot exceed 255 characters';
+      isValid = false;
+    }
+
+    // Insurance validation (optional, max 255)
+    if (this.insurance && this.insurance.length > 255) {
+      this.submitError = 'Insurance cannot exceed 255 characters';
+      isValid = false;
+    }
+
+    // Status validation (optional, max 50)
+    if (this.status && this.status.length > 50) {
+      this.submitError = 'Status cannot exceed 50 characters';
+      isValid = false;
+    }
+
+    // Purchase price validation (optional, min 0.01 if provided)
+    if (this.purchase_price !== null && this.purchase_price <= 0) {
+      this.submitError = 'Purchase price must be at least 0.01';
+      isValid = false;
+    }
+
+    // Depreciation validation (optional, numeric)
+    if (this.depreciation !== null && this.depreciation < 0) {
+      this.submitError = 'Depreciation cannot be negative';
+      isValid = false;
+    }
+
+    // Purchase date validation (optional, cannot be future)
     if (this.purchase_date) {
       const today = new Date();
       const purchaseDate = new Date(this.purchase_date);
       if (purchaseDate > today) {
-        this.nameError = 'Purchase date cannot be in the future';
+        this.submitError = 'Purchase date cannot be in the future';
         isValid = false;
       }
     }
 
+    // Health score validation (optional, 0-100)
     if (this.health_score < 0 || this.health_score > 100) {
-      this.nameError = 'Health score must be between 0 and 100';
+      this.submitError = 'Health score must be between 0 and 100';
       isValid = false;
     }
 
@@ -349,8 +392,14 @@ export class AssetCreateComponent implements OnInit {
       this.name.trim().length > 0 &&
       this.name.trim().length <= 100 &&
       (!this.description || this.description.length <= 500) &&
-      (!this.serial_number || this.serial_number.trim().length > 0) &&
+      (!this.serial_number || (this.serial_number.trim().length > 0 && this.serial_number.length <= 255)) &&
+      (!this.model || this.model.length <= 255) &&
+      (!this.manufacturer || this.manufacturer.length <= 255) &&
+      (!this.warranty || this.warranty.length <= 255) &&
+      (!this.insurance || this.insurance.length <= 255) &&
+      (!this.status || this.status.length <= 50) &&
       (!this.purchase_price || this.purchase_price > 0) &&
+      (!this.depreciation || this.depreciation >= 0) &&
       this.health_score >= 0 && this.health_score <= 100
     );
   }
