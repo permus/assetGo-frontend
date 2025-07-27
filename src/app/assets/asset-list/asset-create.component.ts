@@ -202,7 +202,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       status: this.status,
       tags: this.selectedTags.map(tag => tag.name),
       meta: this.meta,
-      // images: this.images // skip images for JSON, handle separately if needed
+      images: this.images
     };
 
     this.assetService.createAsset(payload).subscribe({
