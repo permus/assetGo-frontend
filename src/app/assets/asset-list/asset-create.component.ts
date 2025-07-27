@@ -215,12 +215,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   healthScore = 85;
   categories: any[] = [];
   category_id: number | null = null;
-  assetTypes = [
-    { value: 'fixed', label: 'Fixed Asset', icon: 'building-office-2', color: '#2563eb', description: 'Permanent assets like buildings and machinery' },
-    { value: 'semi-fixed', label: 'Semi-Fixed Asset', icon: 'cube', color: '#22c55e', description: 'Assets that can be moved but are typically stationary' },
-    { value: 'mobile', label: 'Mobile Asset', icon: 'cog', color: '#f59e42', description: 'Portable equipment and tools' },
-    { value: 'fleet', label: 'Fleet Asset', icon: 'car', color: '#a855f7', description: 'Vehicles and transportation equipment' }
-  ];
+  assetTypes: any[] = [];
   assetType: string | null = null;
 
   // Status options
@@ -254,6 +249,13 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.categories = res.data.categories;
       }
     });
+    
+    this.assetService.getAssetTypes().subscribe(res => {
+      if (res.success && res.data) {
+        this.assetTypes = res.data;
+      }
+    });
+    
     this.assetService.getLocations().subscribe(res => {
       if (res.success && res.data) {
         this.locations = res.data.locations || res.data;
@@ -459,7 +461,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   // Selection methods
   selectAssetType(type: any) {
     this.selectedAssetType = type;
-    this.assetType = type.value;
+    this.assetType = type.name;
     this.showAssetTypeDropdown = false;
     this.clearErrors();
   }

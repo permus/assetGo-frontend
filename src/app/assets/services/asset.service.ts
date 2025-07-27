@@ -138,4 +138,9 @@ export class AssetService {
   getLocations(): Observable<any> {
     return this.http.get(`${this.baseUrl}/locations`, this.getAuthHeaders());
   }
+
+  // Asset Types
+  getAssetTypes(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/asset-types-list`, this.getAuthHeaders());
+  }
 }
