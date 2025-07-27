@@ -102,15 +102,28 @@
               <span class="text-sm text-gray-600">Current Score</span>
               <span class="text-2xl font-bold" [class.text-red-600]="healthScore < 50" [class.text-green-600]="healthScore >= 50">{{ healthScore }}%</span>
             </div>
+            <!-- Custom Health Score Bar -->
+            <div class="relative w-full h-2 bg-gray-200 rounded-lg mb-3">
+              <div 
+                class="h-2 rounded-lg transition-all duration-300"
+                [class.bg-red-500]="healthScore < 50"
+                [class.bg-green-500]="healthScore >= 50"
+                [style.width.%]="healthScore"></div>
+              <!-- Slider Thumb -->
+              <div 
+                class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow-md cursor-pointer transition-all duration-300"
+                [class.bg-red-500]="healthScore < 50"
+                [class.bg-green-500]="healthScore >= 50"
+                [style.left.%]="healthScore"
+                style="margin-left: -8px;"></div>
+            </div>
             <input
               type="range"
               min="0"
               max="100"
               [(ngModel)]="healthScore"
               name="healthScore"
-              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-              [class.slider-red]="healthScore < 50"
-              [class.slider-green]="healthScore >= 50" />
+              class="w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer slider absolute top-0 left-0 opacity-0" />
             <div class="flex justify-between text-xs text-gray-500 mt-2">
               <span>Poor (0%)</span>
               <span>Fair (25%)</span>

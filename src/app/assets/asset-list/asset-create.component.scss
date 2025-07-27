@@ -169,59 +169,49 @@
 }
 
 // Health Score Slider Styling
-.slider-red::-webkit-slider-thumb {
-  background: #dc2626;
-  border: 2px solid #dc2626;
-}
-
-.slider-red::-moz-range-thumb {
-  background: #dc2626;
-  border: 2px solid #dc2626;
-}
-
-.slider-green::-webkit-slider-thumb {
-  background: #16a34a;
-  border: 2px solid #16a34a;
-}
-
-.slider-green::-moz-range-thumb {
-  background: #16a34a;
-  border: 2px solid #16a34a;
-}
-
-// Base slider styling
 .slider {
   -webkit-appearance: none;
   appearance: none;
-  height: 8px;
-  border-radius: 4px;
-  background: #e5e7eb;
+  background: transparent;
   outline: none;
+  position: relative;
+  z-index: 10;
 }
 
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.slider::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
 }
 
 .slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  width: 0;
+  height: 0;
+  background: transparent;
   border: none;
+  cursor: pointer;
 }
 
-.slider::-moz-range-thumb:hover {
-  transform: scale(1.1);
+// Custom health score bar container
+.health-score-container {
+  position: relative;
+}
+
+// Health score bar styling
+.health-score-bar {
+  transition: all 0.3s ease-in-out;
+}
+
+// Health score thumb styling
+.health-score-thumb {
+  transition: all 0.3s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-50%) scale(1.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
 }
