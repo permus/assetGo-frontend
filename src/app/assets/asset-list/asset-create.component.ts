@@ -763,6 +763,13 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Image dimensions:', event.target.naturalWidth, 'x', event.target.naturalHeight);
   }
 
+  onCategoryIconError(event: any, category: any) {
+    console.warn('Category icon failed to load:', category.name, category.icon);
+    // Mark this category as having an icon error so we show the fallback
+    category.iconError = true;
+    event.target.style.display = 'none';
+  }
+
   triggerFileInput() {
     this.fileInput.nativeElement.click();
   }
