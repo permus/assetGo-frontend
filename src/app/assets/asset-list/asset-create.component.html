@@ -102,28 +102,36 @@
               <span class="text-sm text-gray-600">Current Score</span>
               <span class="text-2xl font-bold" [class.text-red-600]="healthScore < 50" [class.text-green-600]="healthScore >= 50">{{ healthScore }}%</span>
             </div>
-            <!-- Custom Health Score Bar -->
-            <div class="relative w-full h-2 bg-gray-200 rounded-lg mb-3">
+            <!-- Custom Health Score Bar with Working Slider -->
+            <div class="relative w-full h-6 mb-3">
+              <!-- Background Track -->
+              <div class="absolute top-1/2 transform -translate-y-1/2 w-full h-2 bg-gray-200 rounded-lg"></div>
+              
+              <!-- Progress Bar -->
               <div 
-                class="h-2 rounded-lg transition-all duration-300"
+                class="absolute top-1/2 transform -translate-y-1/2 h-2 rounded-lg transition-all duration-300"
                 [class.bg-red-500]="healthScore < 50"
                 [class.bg-green-500]="healthScore >= 50"
                 [style.width.%]="healthScore"></div>
-              <!-- Slider Thumb -->
+              
+              <!-- Interactive Range Input -->
+              <input
+                type="range"
+                min="0"
+                max="100"
+                [(ngModel)]="healthScore"
+                name="healthScore"
+                class="absolute top-1/2 transform -translate-y-1/2 w-full h-6 bg-transparent appearance-none cursor-pointer slider-input" />
+              
+              <!-- Custom Thumb -->
               <div 
-                class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow-md cursor-pointer transition-all duration-300"
+                class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow-md pointer-events-none transition-all duration-300"
                 [class.bg-red-500]="healthScore < 50"
                 [class.bg-green-500]="healthScore >= 50"
                 [style.left.%]="healthScore"
                 style="margin-left: -8px;"></div>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              [(ngModel)]="healthScore"
-              name="healthScore"
-              class="w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer slider absolute top-0 left-0 opacity-0" />
+            
             <div class="flex justify-between text-xs text-gray-500 mt-2">
               <span>Poor (0%)</span>
               <span>Fair (25%)</span>
