@@ -80,6 +80,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedFile: File | null = null;
   images: File[] = [];
   imagePreviewUrls: string[] = [];
+  existingImages: any[] = [];
   isDragOver = false;
 
   // Validation errors
@@ -256,6 +257,11 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         category_id: this.asset.category_id || null,
         tags: this.asset.tags || []
       });
+
+      // Load existing images
+      if (this.asset.images && Array.isArray(this.asset.images)) {
+        this.existingImages = this.asset.images;
+      }
 
       // Set selected dropdowns
       // Wait for categories and locations to load before setting selections
@@ -677,6 +683,14 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   removeAllImages() {
     this.images = [];
     this.imagePreviewUrls = [];
+  }
+
+  removeExistingImage(index: number) {
+    this.existingImages.splice(index, 1);
+  }
+
+  removeAllExistingImages() {
+    this.existingImages = [];
   }
 
   moveImage(fromIndex: number, toIndex: number) {
