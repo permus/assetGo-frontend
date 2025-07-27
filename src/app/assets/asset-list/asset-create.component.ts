@@ -235,7 +235,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     color: string;
     description: string;
     hexColor?: string;
-    hexColor?: string;
     sort_order: number;
   }> = [
     { value: 'Active', label: 'Active', color: 'green', description: 'Asset is operational and in use', sort_order: 1 },
