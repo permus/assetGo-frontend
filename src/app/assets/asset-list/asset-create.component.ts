@@ -187,7 +187,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       name: this.name,
       description: this.description,
       category_id: this.category_id,
-      type: this.assetType,
+      type: this.selectedAssetType?.id || null,
       serial_number: this.serial_number,
       model: this.model,
       manufacturer: this.manufacturer,
@@ -452,7 +452,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       if (sourceAsset.type) {
         this.selectedAssetType = this.assetTypes.find(type => 
-          type.name === sourceAsset.type || type.label === sourceAsset.type
+          type.id === sourceAsset.type
         ) || null;
         this.assetType = sourceAsset.type;
       }
@@ -553,7 +553,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   // Selection methods
   selectAssetType(type: any) {
     this.selectedAssetType = type;
-    this.assetType = type.name || type.label;
+    this.assetType = type.id;
     this.showAssetTypeDropdown = false;
     this.clearErrors();
   }

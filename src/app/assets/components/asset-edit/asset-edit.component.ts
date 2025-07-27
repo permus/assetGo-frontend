@@ -246,7 +246,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       // Wait for categories and locations to load before setting selections
       setTimeout(() => {
         this.selectedAssetType = this.assetTypes.find(type => 
-          type.value === this.asset.type || type.name === this.asset.type || type.label === this.asset.type
+          type.id === this.asset.type
         ) || null;
         this.selectedCategory = this.categories.find(cat => cat.id === this.asset.category_id) || null;
         this.selectedLocation = this.locations.find(loc => loc.id === this.asset.location_id) || null;
@@ -493,7 +493,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectAssetType(type: any) {
     this.selectedAssetType = type;
-    this.assetForm.patchValue({ type: type.value || type.name });
+    this.assetForm.patchValue({ type: type.id });
     this.showAssetTypeDropdown = false;
     this.clearErrors();
   }
