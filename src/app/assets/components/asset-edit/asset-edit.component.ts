@@ -56,12 +56,8 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   newTagInput: string = '';
   
   // Asset types
-  assetTypes = [
-    { value: 'fixed', label: 'Fixed Asset', icon: 'building-office-2', color: '#2563eb', description: 'Permanent assets like buildings and machinery' },
-    { value: 'semi-fixed', label: 'Semi-Fixed Asset', icon: 'cube', color: '#22c55e', description: 'Assets that can be moved but are typically stationary' },
-    { value: 'mobile', label: 'Mobile Asset', icon: 'cog', color: '#f59e42', description: 'Portable equipment and tools' },
-    { value: 'fleet', label: 'Fleet Asset', icon: 'car', color: '#a855f7', description: 'Vehicles and transportation equipment' }
-  ];
+  assetTypes: any[] = [];
+  assetTypesFromAPI: any[] = [];
 
   // Status options
   statusOptions: Array<{
@@ -132,6 +128,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     
+    this.loadAssetTypes();
     this.loadCategories();
     this.loadLocations();
     this.loadDepartments();
@@ -248,7 +245,9 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       // Set selected dropdowns
       // Wait for categories and locations to load before setting selections
       setTimeout(() => {
-        this.selectedAssetType = this.assetTypes.find(type => type.value === this.asset.type) || null;
+        this.selectedAssetType = this.assetTypes.find(type => 
+          type.value === this.asset.type || type.name === this.asset.type || type.label === this.asset.type
+        ) || null;
         this.selectedCategory = this.categories.find(cat => cat.id === this.asset.category_id) || null;
         this.selectedLocation = this.locations.find(loc => loc.id === this.asset.location_id) || null;
         this.selectedDepartment = this.departments.find(dept => dept.id === this.asset.department_id) || null;
@@ -266,6 +265,36 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         this.assetForm.updateValueAndValidity();
       }, 100);
     }
+  }
+
+  loadAssetTypes() {
+    this.assetService.getAssetTypes()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.assetTypesFromAPI = response.data;
+            this.assetTypes = this.assetTypesFromAPI.map(type => ({
+              id: type.id,
+              name: type.name,
+              label: type.name,
+              value: type.name,
+              icon: type.icon,
+              color: this.getColorForType(type.name),
+              description: `${type.name} asset type`,
+              iconError: false
+            }));
+            
+            // Re-populate form if asset is already loaded
+            if (this.asset) {
+              this.populateForm();
+            }
+          }
+        },
+        error: (error) => {
+          console.error('Error loading asset types:', error);
+        }
+      });
   }
 
   loadCategories() {
@@ -383,6 +412,30 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     
     return colorMap[hexColor.toUpperCase()] || 'gray';
   }
+
+  // Helper method to assign colors to asset types
+  getColorForType(typeName: string): string {
+    const colorMap: { [key: string]: string } = {
+      'Fixed Asset': '#2563eb',
+      'Semi-Fixed Asset': '#22c55e', 
+      'Mobile Asset': '#f59e42',
+      'Fleet Asset': '#a855f7',
+      'IT Equipment': '#3b82f6',
+      'Furniture': '#10b981',
+      'Vehicle': '#f59e0b',
+      'Machinery': '#ef4444',
+      'Electronics': '#8b5cf6',
+      'Tools': '#f97316'
+    };
+    
+    return colorMap[typeName] || '#6b7280'; // Default gray color
+  }
+
+  onAssetTypeIconError(event: any, assetType: any) {
+    console.warn('Asset type icon failed to load:', assetType.name, assetType.icon);
+    assetType.iconError = true;
+    event.target.style.display = 'none';
+  }
   // Dropdown methods
   toggleAssetTypeDropdown() {
     this.showAssetTypeDropdown = !this.showAssetTypeDropdown;
@@ -440,7 +493,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectAssetType(type: any) {
     this.selectedAssetType = type;
-    this.assetForm.patchValue({ type: type.value });
+    this.assetForm.patchValue({ type: type.value || type.name });
     this.showAssetTypeDropdown = false;
     this.clearErrors();
   }
