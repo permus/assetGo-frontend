@@ -200,7 +200,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       insurance: this.insurance,
       health_score: this.health_score,
       status: this.status,
-      tags: this.tags,
+      tags: this.selectedTags.map(tag => tag.name),
       meta: this.meta,
       // images: this.images // skip images for JSON, handle separately if needed
     };
@@ -488,7 +488,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedTags = sourceAsset.tags.map((tag: any) => {
           return this.availableTags.find(t => t.id === tag.id) || tag;
         });
-        this.tags = this.selectedTags.map(tag => tag.id);
       }
 
       // Clear validation errors after populating form
@@ -593,8 +592,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       // Add tag
       this.selectedTags.push(tag);
     }
-    // Update tags array for form submission
-    this.tags = this.selectedTags.map(t => t.id);
   }
 
   isTagSelected(tag: any): boolean {
@@ -623,7 +620,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.selectedTags.push(newTag);
-      this.tags = this.selectedTags.map(t => t.id);
       this.newTagInput = '';
     }
   }
@@ -632,7 +628,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     const index = this.selectedTags.findIndex(t => t.id === tag.id);
     if (index > -1) {
       this.selectedTags.splice(index, 1);
-      this.tags = this.selectedTags.map(t => t.id);
     }
   }
 

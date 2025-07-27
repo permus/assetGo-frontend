@@ -478,7 +478,6 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.selectedTags.push(tag);
     }
-    this.assetForm.patchValue({ tags: this.selectedTags.map(t => t.id) });
   }
 
   isTagSelected(tag: any): boolean {
@@ -506,7 +505,6 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       };
 
       this.selectedTags.push(newTag);
-      this.assetForm.patchValue({ tags: this.selectedTags.map(t => t.id) });
       this.newTagInput = '';
     }
   }
@@ -515,7 +513,6 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const index = this.selectedTags.findIndex(t => t.id === tag.id);
     if (index > -1) {
       this.selectedTags.splice(index, 1);
-      this.assetForm.patchValue({ tags: this.selectedTags.map(t => t.id) });
     }
   }
   // File handling
@@ -714,6 +711,9 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.submitSuccess = '';
 
       const formData = this.assetForm.value;
+      
+      // Convert tags to text format
+      formData.tags = this.selectedTags.map(tag => tag.name);
       
       // Convert date formats from display format to Y-m-d format for backend
       if (formData.purchase_date) {
