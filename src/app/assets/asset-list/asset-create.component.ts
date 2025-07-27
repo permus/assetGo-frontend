@@ -314,7 +314,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
             const fieldName = inputElement.getAttribute('name');
             
             let config: any = {
-              dateFormat: 'Y-m-d',
+              dateFormat: 'd M, Y',
               allowInput: true,
               clickOpens: true,
               onChange: (selectedDates: Date[], dateStr: string) => {
