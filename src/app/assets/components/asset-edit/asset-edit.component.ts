@@ -174,11 +174,12 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
               dateFormat: 'd M, Y',
               allowInput: true,
               clickOpens: true,
+             defaultDate: null,
               onChange: (selectedDates: Date[], dateStr: string) => {
                 if (fieldName === 'purchase_date') {
-                  this.assetForm.patchValue({ purchase_date: dateStr });
+                 this.assetForm.get('purchase_date')?.setValue(dateStr);
                 } else if (fieldName === 'warranty') {
-                  this.assetForm.patchValue({ warranty: dateStr });
+                 this.assetForm.get('warranty')?.setValue(dateStr);
                 }
               }
             };
@@ -186,8 +187,18 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
             // Set specific constraints based on field
             if (fieldName === 'purchase_date') {
               config.maxDate = 'today';
+             // Set default date if form has value
+             const purchaseDate = this.assetForm.get('purchase_date')?.value;
+             if (purchaseDate) {
+               config.defaultDate = this.convertDisplayDateToDate(purchaseDate);
+             }
             } else if (fieldName === 'warranty') {
               config.minDate = 'today';
+             // Set default date if form has value
+             const warrantyDate = this.assetForm.get('warranty')?.value;
+             if (warrantyDate) {
+               config.defaultDate = this.convertDisplayDateToDate(warrantyDate);
+             }
             }
 
             const instance = flatpickr(inputElement, config);
@@ -222,18 +233,22 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   populateForm() {
     if (this.asset) {
+     // Convert backend dates to display format for form
+     const purchaseDate = this.asset.purchase_date ? this.convertBackendDateToDisplay(this.asset.purchase_date) : '';
+     const warrantyDate = this.asset.warranty ? this.convertBackendDateToDisplay(this.asset.warranty) : '';
+     
       this.assetForm.patchValue({
         name: this.asset.name || '',
         description: this.asset.description || '',
         serial_number: this.asset.serial_number || '',
         model: this.asset.model || '',
         manufacturer: this.asset.manufacturer || '',
-        purchase_date: this.asset.purchase_date || '',
+       purchase_date: purchaseDate,
         purchase_price: this.asset.purchase_price || null,
         depreciation: this.asset.depreciation || null,
         location_id: this.asset.location_id || null,
         department_id: this.asset.department_id || null,
-        warranty: this.asset.warranty || '',
+       warranty: warrantyDate,
         insurance: this.asset.insurance || '',
         health_score: this.asset.health_score || 85,
         status: this.asset.status || 'Active',
@@ -263,6 +278,11 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         // Mark form as touched to trigger validation
         this.assetForm.markAllAsTouched();
         this.assetForm.updateValueAndValidity();
+       
+       // Reinitialize flatpickr after form is populated
+       setTimeout(() => {
+         this.initializeFlatpickr();
+       }, 100);
       }, 100);
     }
   }
@@ -840,6 +860,46 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch (error) {
       console.error('Date conversion error:', error);
       return dateStr; // Return original if conversion fails
+    }
+  }
+
+  // Helper method to convert backend date format to display format
+  private convertBackendDateToDisplay(dateStr: string): string {
+    if (!dateStr) return '';
+
+    try {
+      // Parse Y-m-d format to Date object
+      const date = new Date(dateStr);
+
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return dateStr; // Return original if parsing fails
+      }
+
+      // Convert to display format "01 Jul, 2025"
+      const options: Intl.DateTimeFormatOptions = {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      };
+
+      return date.toLocaleDateString('en-GB', options).replace(/,/g, ',');
+    } catch (error) {
+      console.error('Date conversion error:', error);
+      return dateStr; // Return original if conversion fails
+    }
+  }
+
+  // Helper method to convert display date string to Date object for flatpickr
+  private convertDisplayDateToDate(dateStr: string): Date | null {
+    if (!dateStr) return null;
+
+    try {
+      const date = new Date(dateStr);
+      return isNaN(date.getTime()) ? null : date;
+    } catch (error) {
+      console.error('Date conversion error:', error);
+      return null;
     }
   }
 }
