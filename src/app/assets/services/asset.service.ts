@@ -151,6 +151,6 @@ export class AssetService {
 
   // Departments
   getDepartments(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/departments/list`, this.getAuthHeaders());
+    return this.http.get(`${this.baseUrl}/departments-list`, this.getAuthHeaders());
   }
 }
