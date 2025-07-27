@@ -171,6 +171,18 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.submitError = '';
     this.submitSuccess = '';
     this.submitFieldErrors = {};
+    
+    // Convert dates to backend format before sending
+    let purchaseDateFormatted = this.purchase_date;
+    let warrantyFormatted = this.warranty;
+    
+    if (this.purchase_date) {
+      purchaseDateFormatted = this.convertDateToBackendFormat(this.purchase_date);
+    }
+    if (this.warranty) {
+      warrantyFormatted = this.convertDateToBackendFormat(this.warranty);
+    }
+    
     const payload: any = {
       name: this.name,
       description: this.description,
@@ -179,12 +191,12 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       serial_number: this.serial_number,
       model: this.model,
       manufacturer: this.manufacturer,
-      purchase_date: this.purchase_date || null,
+      purchase_date: purchaseDateFormatted || null,
       purchase_price: this.purchase_price !== null ? this.purchase_price : null,
       depreciation: this.depreciation !== null ? this.depreciation : null,
       location_id: this.location_id,
       department_id: this.department_id,
-      warranty: this.warranty,
+      warranty: warrantyFormatted,
       insurance: this.insurance,
       health_score: this.health_score,
       status: this.status,
@@ -794,6 +806,31 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   getTodayDate(): string {
     const today = new Date();
     return today.toISOString().split('T')[0];
+  }
+
+  // Helper method to convert date from display format to backend format
+  private convertDateToBackendFormat(dateStr: string): string {
+    if (!dateStr) return '';
+    
+    try {
+      // Parse the display format "01 Jul, 2025" to Date object
+      const date = new Date(dateStr);
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return dateStr; // Return original if parsing fails
+      }
+      
+      // Convert to Y-m-d format
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error('Date conversion error:', error);
+      return dateStr; // Return original if conversion fails
+    }
   }
 
   // Helper method to extract icon name from path

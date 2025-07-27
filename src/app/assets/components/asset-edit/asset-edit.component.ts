@@ -715,6 +715,14 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
       const formData = this.assetForm.value;
       
+      // Convert date formats from display format to Y-m-d format for backend
+      if (formData.purchase_date) {
+        formData.purchase_date = this.convertDateToBackendFormat(formData.purchase_date);
+      }
+      if (formData.warranty) {
+        formData.warranty = this.convertDateToBackendFormat(formData.warranty);
+      }
+      
       this.assetService.updateAsset(this.asset.id, formData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
@@ -761,5 +769,30 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
            !this.assetTypeError &&
            !this.categoryError &&
            !this.serialNumberError;
+  }
+
+  // Helper method to convert date from display format to backend format
+  private convertDateToBackendFormat(dateStr: string): string {
+    if (!dateStr) return '';
+    
+    try {
+      // Parse the display format "01 Jul, 2025" to Date object
+      const date = new Date(dateStr);
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return dateStr; // Return original if parsing fails
+      }
+      
+      // Convert to Y-m-d format
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error('Date conversion error:', error);
+      return dateStr; // Return original if conversion fails
+    }
   }
 }
