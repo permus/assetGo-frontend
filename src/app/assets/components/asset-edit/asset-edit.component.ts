@@ -26,20 +26,20 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // Asset data
   asset: any = null;
   assetForm: FormGroup;
-  
+
   // Loading states
   loading = true;
   saving = false;
   error = '';
   successMessage = '';
-  
+
   // Dropdown data
   categories: any[] = [];
   locations: any[] = [];
   departments: any[] = [];
   availableTags: any[] = [];
   statusOptionsFromAPI: any[] = [];
-  
+
   // Dropdown state
   showAssetTypeDropdown = false;
   showCategoryDropdown = false;
@@ -54,7 +54,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedDepartment: any | null = null;
   selectedTags: any[] = [];
   newTagInput: string = '';
-  
+
   // Asset types
   assetTypes: any[] = [];
   assetTypesFromAPI: any[] = [];
@@ -112,7 +112,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       insurance: [''],
       health_score: [85, [Validators.min(0), Validators.max(100)]],
       status: ['Active'],
-      type: ['', Validators.required],
+      type: [null, Validators.required],
       category_id: [null, Validators.required],
       tags: [[]]
     });
@@ -127,7 +127,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
           this.loadAsset(assetId);
         }
       });
-    
+
     this.loadAssetTypes();
     this.loadCategories();
     this.loadLocations();
@@ -169,7 +169,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
           if (inputRef?.nativeElement) {
             const inputElement = inputRef.nativeElement;
             const fieldName = inputElement.getAttribute('formControlName');
-            
+
             let config: any = {
               dateFormat: 'd M, Y',
               allowInput: true,
@@ -245,21 +245,21 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       // Set selected dropdowns
       // Wait for categories and locations to load before setting selections
       setTimeout(() => {
-        this.selectedAssetType = this.assetTypes.find(type => 
-          type.id === this.asset.type
+        this.selectedAssetType = this.assetTypes.find(type =>
+          type.id == this.asset.type
         ) || null;
         this.selectedCategory = this.categories.find(cat => cat.id === this.asset.category_id) || null;
         this.selectedLocation = this.locations.find(loc => loc.id === this.asset.location_id) || null;
         this.selectedDepartment = this.departments.find(dept => dept.id === this.asset.department_id) || null;
         this.selectedStatus = this.statusOptions.find(status => status.value === this.asset.status) || null;
-        
+
         // Set tags if available
         if (this.asset.tags && Array.isArray(this.asset.tags)) {
           this.selectedTags = this.asset.tags.map((tag: any) => {
             return this.availableTags.find(t => t.id === tag.id) || tag;
           });
         }
-        
+
         // Mark form as touched to trigger validation
         this.assetForm.markAllAsTouched();
         this.assetForm.updateValueAndValidity();
@@ -284,7 +284,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
               description: `${type.name} asset type`,
               iconError: false
             }));
-            
+
             // Re-populate form if asset is already loaded
             if (this.asset) {
               this.populateForm();
@@ -383,9 +383,9 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
               hexColor: status.color,
               sort_order: status.sort_order
             }));
-            
+
             this.statusOptions.sort((a, b) => a.sort_order - b.sort_order);
-            
+
             if (this.asset) {
               this.populateForm();
             }
@@ -409,7 +409,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       '#8B5CF6': 'purple',
       '#F97316': 'orange',
     };
-    
+
     return colorMap[hexColor.toUpperCase()] || 'gray';
   }
 
@@ -417,7 +417,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   getColorForType(typeName: string): string {
     const colorMap: { [key: string]: string } = {
       'Fixed Asset': '#2563eb',
-      'Semi-Fixed Asset': '#22c55e', 
+      'Semi-Fixed Asset': '#22c55e',
       'Mobile Asset': '#f59e42',
       'Fleet Asset': '#a855f7',
       'IT Equipment': '#3b82f6',
@@ -427,7 +427,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       'Electronics': '#8b5cf6',
       'Tools': '#f97316'
     };
-    
+
     return colorMap[typeName] || '#6b7280'; // Default gray color
   }
 
@@ -758,10 +758,10 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.submitSuccess = '';
 
       const formData = this.assetForm.value;
-      
+
       // Convert tags to text format
       formData.tags = this.selectedTags.map(tag => tag.name);
-      
+
       // Convert date formats from display format to Y-m-d format for backend
       if (formData.purchase_date) {
         formData.purchase_date = this.convertDateToBackendFormat(formData.purchase_date);
@@ -769,7 +769,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       if (formData.warranty) {
         formData.warranty = this.convertDateToBackendFormat(formData.warranty);
       }
-      
+
       this.assetService.updateAsset(this.asset.id, formData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
@@ -809,8 +809,8 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   isFormValid(): boolean {
-    return this.assetForm.valid && 
-           this.selectedAssetType !== null && 
+    return this.assetForm.valid &&
+           this.selectedAssetType !== null &&
            this.selectedCategory !== null &&
            !this.nameError &&
            !this.assetTypeError &&
@@ -821,21 +821,21 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // Helper method to convert date from display format to backend format
   private convertDateToBackendFormat(dateStr: string): string {
     if (!dateStr) return '';
-    
+
     try {
       // Parse the display format "01 Jul, 2025" to Date object
       const date = new Date(dateStr);
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return dateStr; // Return original if parsing fails
       }
-      
+
       // Convert to Y-m-d format
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      
+
       return `${year}-${month}-${day}`;
     } catch (error) {
       console.error('Date conversion error:', error);
