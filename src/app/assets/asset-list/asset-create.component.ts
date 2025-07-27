@@ -221,6 +221,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   // Asset types from API
   assetTypesFromAPI: any[] = [];
 
+  // Status options from API
+  statusOptionsFromAPI: any[] = [];
+
   // Status options
   statusOptions = [
     { value: 'Active', label: 'Active', color: 'green', description: 'Asset is operational and in use' },
@@ -236,10 +239,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Set default status
-    this.selectedStatus = this.statusOptions[0]; // Default to 'Active'
-    this.status = this.selectedStatus.value;
-
     // Check if we're duplicating an asset
     this.route.queryParams.subscribe((params: any) => {
       if (params['duplicate'] && params['sourceId']) {
@@ -267,6 +266,32 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
           description: `${type.name} asset type`,
           iconError: false
         }));
+      }
+    });
+    
+    // Load asset statuses from API
+    this.assetService.getAssetStatuses().subscribe(res => {
+      if (res.success && res.data) {
+        this.statusOptionsFromAPI = res.data;
+        // Transform API data to match existing UI structure
+        this.statusOptions = this.statusOptionsFromAPI.map(status => ({
+          id: status.id,
+          value: status.name,
+          label: status.name,
+          color: this.hexToTailwindColor(status.color),
+          description: status.description || `Asset is ${status.name.toLowerCase()}`,
+          hexColor: status.color,
+          sort_order: status.sort_order
+        }));
+        
+        // Sort by sort_order
+        this.statusOptions.sort((a, b) => a.sort_order - b.sort_order);
+        
+        // Set default status to first active status (usually 'Active')
+        if (this.statusOptions.length > 0) {
+          this.selectedStatus = this.statusOptions[0];
+          this.status = this.selectedStatus.value;
+        }
       }
     });
     
@@ -412,7 +437,15 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       if (sourceAsset.status) {
-        this.selectedStatus = this.statusOptions.find(status => status.value === sourceAsset.status) || this.statusOptions[0];
+        this.selectedStatus = this.statusOptions.find(status => status.value === sourceAsset.status) || null;
+        if (this.selectedStatus) {
+          this.status = this.selectedStatus.value;
+        }
+      }
+
+      // Set default status if none selected and options are available
+      if (!this.selectedStatus && this.statusOptions.length > 0) {
+        this.selectedStatus = this.statusOptions[0];
         this.status = this.selectedStatus.value;
       }
 
@@ -749,6 +782,23 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     
     return colorMap[typeName] || '#6b7280'; // Default gray color
+  }
+
+  // Helper method to convert hex colors to Tailwind color names
+  hexToTailwindColor(hexColor: string): string {
+    const colorMap: { [key: string]: string } = {
+      '#10B981': 'green',    // Active
+      '#F59E0B': 'orange',   // Maintenance  
+      '#9CA3AF': 'gray',     // Inactive
+      '#EF4444': 'red',      // Retired
+      '#6B7280': 'gray',     // Archived
+      '#22C55E': 'green',    // Alternative green
+      '#3B82F6': 'blue',     // Alternative blue
+      '#8B5CF6': 'purple',   // Alternative purple
+      '#F97316': 'orange',   // Alternative orange
+    };
+    
+    return colorMap[hexColor.toUpperCase()] || 'gray';
   }
 
   onImageError(event: any, index: number) {

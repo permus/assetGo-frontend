@@ -526,7 +526,7 @@
                 [class.border-blue-500]="showStatusDropdown">
                 <div class="flex items-center justify-between">
                   <div *ngIf="selectedStatus" class="flex items-center space-x-3">
-                    <div [class]="'w-3 h-3 rounded-full bg-' + selectedStatus.color + '-500'"></div>
+                    <div class="w-3 h-3 rounded-full" [style.background-color]="selectedStatus.hexColor || '#6B7280'"></div>
                     <span class="text-gray-900">{{selectedStatus.label}}</span>
                   </div>
                   <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showStatusDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -548,7 +548,7 @@
                     [class.text-blue-700]="selectedStatus?.value === status.value">
                     <div class="flex items-center space-x-3">
                       <div [class]="'w-6 h-6 bg-' + status.color + '-100 rounded-lg flex items-center justify-center'">
-                        <div [class]="'w-3 h-3 rounded-full bg-' + status.color + '-500'"></div>
+                        <div class="w-3 h-3 rounded-full" [style.background-color]="status.hexColor || '#6B7280'"></div>
                       </div>
                       <div>
                         <div class="font-medium text-gray-900">{{status.label}}</div>
