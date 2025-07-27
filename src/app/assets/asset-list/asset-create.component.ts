@@ -257,14 +257,15 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.assetService.getAssetTypes().subscribe(res => {
       if (res.success && res.data) {
         this.assetTypesFromAPI = res.data;
-        // Transform API data to match existing structure
+        // Use API data directly with proper icon URLs
         this.assetTypes = this.assetTypesFromAPI.map(type => ({
           id: type.id,
           name: type.name,
           label: type.name,
-          icon: this.getIconFromPath(type.icon),
+          icon: type.icon, // Use the full icon URL from API
           color: this.getColorForType(type.name),
-          description: `${type.name} asset type`
+          description: `${type.name} asset type`,
+          iconError: false
         }));
       }
     });
@@ -767,6 +768,13 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     console.warn('Category icon failed to load:', category.name, category.icon);
     // Mark this category as having an icon error so we show the fallback
     category.iconError = true;
+    event.target.style.display = 'none';
+  }
+
+  onAssetTypeIconError(event: any, assetType: any) {
+    console.warn('Asset type icon failed to load:', assetType.name, assetType.icon);
+    // Mark this asset type as having an icon error so we show the fallback
+    assetType.iconError = true;
     event.target.style.display = 'none';
   }
 

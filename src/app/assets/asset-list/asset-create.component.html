@@ -171,11 +171,20 @@
                   <span *ngIf="!selectedAssetType" class="text-gray-400">Select asset type</span>
                   <div *ngIf="selectedAssetType" class="flex items-center space-x-3">
                     <div class="w-6 h-6 rounded flex items-center justify-center" [style.background-color]="selectedAssetType.color + '20'">
-                      <svg class="w-4 h-4" [style.color]="selectedAssetType.color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path *ngIf="selectedAssetType.icon === 'building-office-2'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V7a2 2 0 012-2h2a2 2 0 012 2v14M13 21V3a2 2 0 012-2h2a2 2 0 012 2v18"></path>
-                        <path *ngIf="selectedAssetType.icon === 'cube'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4a2 2 0 001-1.73z"></path>
-                        <path *ngIf="selectedAssetType.icon === 'cog'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path *ngIf="selectedAssetType.icon === 'car'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13l2-5a2 2 0 012-2h10a2 2 0 012 2l2 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6M5 13h14"></path>
+                      <img 
+                        *ngIf="selectedAssetType.icon && !selectedAssetType.iconError" 
+                        [src]="selectedAssetType.icon" 
+                        [alt]="selectedAssetType.name || selectedAssetType.label" 
+                        class="w-4 h-4"
+                        (error)="onAssetTypeIconError($event, selectedAssetType)">
+                      <svg 
+                        *ngIf="!selectedAssetType.icon || selectedAssetType.iconError" 
+                        class="w-4 h-4" 
+                        [style.color]="selectedAssetType.color" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                       </svg>
                     </div>
                     <span class="text-gray-900">{{selectedAssetType.label}}</span>
@@ -199,7 +208,20 @@
                     [class.text-blue-700]="selectedAssetType?.id === type.id">
                     <div class="flex items-center space-x-3">
                       <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100">
-                        <img [src]="'assets/icons/' + type.icon + '.svg'" [alt]="type.name" class="w-5 h-5">
+                        <img 
+                          *ngIf="type.icon && !type.iconError" 
+                          [src]="type.icon" 
+                          [alt]="type.name || type.label" 
+                          class="w-5 h-5"
+                          (error)="onAssetTypeIconError($event, type)">
+                        <svg 
+                          *ngIf="!type.icon || type.iconError" 
+                          class="w-5 h-5 text-blue-600" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
                       </div>
                       <div>
                         <div class="font-medium text-gray-900">{{type.label || type.name}}</div>
