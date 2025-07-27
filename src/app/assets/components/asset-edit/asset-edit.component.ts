@@ -700,12 +700,6 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     event.target.style.display = 'none';
   }
 
-  onAssetTypeIconError(event: any, assetType: any) {
-    console.warn('Asset type icon failed to load:', assetType.name, assetType.icon);
-    assetType.iconError = true;
-    event.target.style.display = 'none';
-  }
-
   // Validation methods
   validateForm(): boolean {
     let isValid = true;
