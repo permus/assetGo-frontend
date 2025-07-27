@@ -41,7 +41,15 @@ export class AssetService {
     return this.http.get(`${this.baseUrl}/assets/${id}`, this.getAuthHeaders());
   }
   createAsset(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/assets`, data, this.getAuthHeaders());
+    // For FormData, we need to modify headers to exclude Content-Type
+    const token = this.authService.getToken();
+    const headers: { [header: string]: string } = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    // Don't set Content-Type for FormData - browser will set it automatically with boundary
+    
+    return this.http.post(`${this.baseUrl}/assets`, data, { headers });
   }
   updateAsset(id: number | string, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/assets/${id}`, data, this.getAuthHeaders());

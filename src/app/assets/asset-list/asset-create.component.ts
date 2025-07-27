@@ -183,29 +183,41 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       warrantyFormatted = this.convertDateToBackendFormat(this.warranty);
     }
     
-    const payload: any = {
-      name: this.name,
-      description: this.description,
-      category_id: this.category_id,
-      type: this.selectedAssetType?.id || null,
-      serial_number: this.serial_number,
-      model: this.model,
-      manufacturer: this.manufacturer,
-      purchase_date: purchaseDateFormatted || null,
-      purchase_price: this.purchase_price !== null ? this.purchase_price : null,
-      depreciation: this.depreciation !== null ? this.depreciation : null,
-      location_id: this.location_id,
-      department_id: this.department_id,
-      warranty: warrantyFormatted,
-      insurance: this.insurance,
-      health_score: this.health_score,
-      status: this.status,
-      tags: this.selectedTags.map(tag => tag.name),
-      meta: this.meta,
-      images: this.images
-    };
+    // Create FormData for file upload
+    const formData = new FormData();
+    
+    // Add all form fields
+    formData.append('name', this.name);
+    formData.append('description', this.description);
+    if (this.category_id) formData.append('category_id', this.category_id.toString());
+    if (this.selectedAssetType?.id) formData.append('type', this.selectedAssetType.id.toString());
+    if (this.serial_number) formData.append('serial_number', this.serial_number);
+    if (this.model) formData.append('model', this.model);
+    if (this.manufacturer) formData.append('manufacturer', this.manufacturer);
+    if (purchaseDateFormatted) formData.append('purchase_date', purchaseDateFormatted);
+    if (this.purchase_price !== null) formData.append('purchase_price', this.purchase_price.toString());
+    if (this.depreciation !== null) formData.append('depreciation', this.depreciation.toString());
+    if (this.location_id) formData.append('location_id', this.location_id.toString());
+    if (this.department_id) formData.append('department_id', this.department_id.toString());
+    if (warrantyFormatted) formData.append('warranty', warrantyFormatted);
+    if (this.insurance) formData.append('insurance', this.insurance);
+    formData.append('health_score', this.health_score.toString());
+    formData.append('status', this.status);
+    
+    // Add tags as array
+    this.selectedTags.forEach((tag, index) => {
+      formData.append(`tags[${index}]`, tag.name);
+    });
+    
+    // Add meta data
+    formData.append('meta', JSON.stringify(this.meta));
+    
+    // Add images
+    this.images.forEach((image, index) => {
+      formData.append('images[]', image, image.name);
+    });
 
-    this.assetService.createAsset(payload).subscribe({
+    this.assetService.createAsset(formData).subscribe({
       next: (res) => {
         this.isSubmitting = false;
         if (res.success) {
