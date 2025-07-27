@@ -152,6 +152,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updateMockData() {
     if (this.asset) {
+      // Update financial data with real asset data
       this.mockFinancialData = {
         purchaseCost: this.asset.purchase_price || 0,
         currentValue: this.asset.current_value || this.asset.purchase_price || 0,
@@ -160,7 +161,16 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         originalValue: this.asset.purchase_price || 0
       };
 
+      // Update health data with real asset data
       this.mockHealthData.healthScore = this.asset.health_score || 85;
+      
+      // Update maintenance data with real asset data
+      this.mockMaintenanceData = {
+        status: this.asset.status || 'Active',
+        lastMaintenance: this.asset.last_maintenance_date || null,
+        nextMaintenance: this.asset.next_maintenance_date || null,
+        interval: this.asset.maintenance_interval || 'Every 6 months'
+      };
     }
   }
 
@@ -367,5 +377,50 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       month: 'short',
       day: 'numeric'
     });
+  }
+
+  // Helper methods for displaying asset data
+  getAssetTypeName(typeId: number | string): string {
+    // You can load asset types from API and map them here
+    // For now, return the ID or a default value
+    if (!typeId) return 'Standard Asset';
+    
+    const typeMap: { [key: string]: string } = {
+      '1': 'Fixed Asset',
+      '2': 'Semi-Fixed Asset', 
+      '3': 'Mobile Asset',
+      '4': 'Fleet Asset',
+      '5': 'IT Equipment'
+    };
+    
+    return typeMap[typeId.toString()] || `Type ${typeId}`;
+  }
+
+  getWarrantyStatus(warrantyDate: string): string {
+    if (!warrantyDate) return 'No warranty';
+    
+    const today = new Date();
+    const warranty = new Date(warrantyDate);
+    
+    if (warranty < today) {
+      return 'Expired';
+    } else {
+      const daysLeft = Math.ceil((warranty.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysLeft <= 30) {
+        return `Expires in ${daysLeft} days`;
+      } else {
+        return 'Active';
+      }
+    }
+  }
+
+  onImageError(event: any) {
+    console.warn('Asset image failed to load:', event.target.src);
+    event.target.onerror = null;
+    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMiA5VjEzTTEyIDE3SDE2TTE2IDlIMTJNMTIgOUw4IDEzTDEyIDE3IiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
+  }
+
+  viewFullImage(imageUrl: string) {
+    window.open(imageUrl, '_blank');
   }
 }
