@@ -3,18 +3,20 @@
     <!-- Header -->
     <div class="mb-8">
       <div class="flex items-center space-x-4 mb-4">
-        <button 
-          type="button" 
-          (click)="goBack()" 
+        <button
+          type="button"
+          (click)="goBack()"
           class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
-          <span class="font-medium">Back to Asset</span>
+          <span class="font-medium">Back to Assets</span>
         </button>
       </div>
       <h1 class="text-3xl font-bold text-gray-900 mb-2">Edit Asset</h1>
-      <p class="text-gray-600">Update asset information and specifications</p>
+      <p class="text-gray-600">
+        Update asset information and specifications
+      </p>
     </div>
 
     <!-- Loading State -->
@@ -32,7 +34,7 @@
     </div>
 
     <!-- Error State -->
-    <div *ngIf="error && !loading && !asset" class="flex items-center justify-center py-20">
+    <div *ngIf="error && !loading" class="flex items-center justify-center py-20">
       <div class="text-center">
         <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
           <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,837 +51,848 @@
       </div>
     </div>
 
-    <!-- Edit Form -->
-    <form *ngIf="!loading && asset" [formGroup]="assetForm" (ngSubmit)="onSubmit()">
-      <!-- Basic Information -->
-      <div class="section-card">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-          </div>
-          <h2 class="section-title">Basic Information</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Asset Name <span class="text-red-500">*</span>
-            </label>
-            <input 
-              type="text" 
-              formControlName="name"
-              class="input"
-              [class.border-red-300]="assetForm.get('name')?.invalid && assetForm.get('name')?.touched"
-              placeholder="e.g., Main Server Room AC Unit" />
-            <div *ngIf="assetForm.get('name')?.invalid && assetForm.get('name')?.touched" class="text-red-600 text-sm mt-1">
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+    <!-- Form Content -->
+    <div *ngIf="!loading && !error">
+      <form [formGroup]="assetForm" (ngSubmit)="onSubmit()">
+        <!-- Basic Information -->
+        <div class="section-card">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
               </svg>
-              Asset name is required and must be at least 2 characters
             </div>
+            <h2 class="section-title">Basic Information</h2>
           </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Asset ID</label>
-            <div class="flex items-center space-x-3">
-              <input type="text" class="input flex-1" [value]="asset?.asset_id || ('AST-' + asset?.id)" readonly />
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                read-only
-              </span>
-            </div>
-            <p class="text-xs text-gray-500 mt-1">Unique identifier cannot be changed</p>
-          </div>
-        </div>
 
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-          <textarea 
-            formControlName="description"
-            class="input resize-none" 
-            rows="3" 
-            placeholder="Brief description of the asset and its purpose..."></textarea>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-3">Health Score</label>
-          <div class="bg-gray-50 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-sm text-gray-600">Current Score</span>
-              <span class="text-2xl font-bold" 
-                    [class.text-red-600]="assetForm.get('health_score')?.value < 50" 
-                    [class.text-green-600]="assetForm.get('health_score')?.value >= 50">
-                {{ assetForm.get('health_score')?.value }}%
-              </span>
-            </div>
-            <!-- Custom Health Score Bar with Working Slider -->
-            <div class="relative w-full h-6 mb-3">
-              <!-- Background Track -->
-              <div class="absolute top-1/2 transform -translate-y-1/2 w-full h-2 bg-gray-200 rounded-lg"></div>
-              
-              <!-- Progress Bar -->
-              <div 
-                class="absolute top-1/2 transform -translate-y-1/2 h-2 rounded-lg transition-all duration-300"
-                [class.bg-red-500]="assetForm.get('health_score')?.value < 50"
-                [class.bg-green-500]="assetForm.get('health_score')?.value >= 50"
-                [style.width.%]="assetForm.get('health_score')?.value"></div>
-              
-              <!-- Interactive Range Input -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Asset Name <span class="text-red-500">*</span>
+              </label>
               <input
-                type="range"
+                type="text"
+                class="input"
+                [class.border-red-300]="nameError"
+                placeholder="e.g., Main Server Room AC Unit"
+                formControlName="name" />
+              <div *ngIf="nameError" class="text-red-600 text-sm mt-1">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                {{ nameError }}
+              </div>
+              <div class="text-xs text-gray-500 mt-1">Maximum 100 characters</div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Asset ID</label>
+              <div class="flex items-center space-x-3">
+                <input type="text" class="input flex-1" [value]="asset?.asset_id || asset?.id" readonly />
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  auto-generated
+                </span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Unique identifier automatically assigned</p>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <textarea
+              class="input resize-none"
+              rows="3"
+              placeholder="Brief description of the asset and its purpose..."
+              formControlName="description"
+              maxlength="500"></textarea>
+            <div class="text-xs text-gray-500 mt-1">Maximum 500 characters</div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">Health Score</label>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-sm text-gray-600">Current Score</span>
+                <span class="text-2xl font-bold" [class.text-red-600]="assetForm.get('health_score')?.value < 50" [class.text-green-600]="assetForm.get('health_score')?.value >= 50">{{ assetForm.get('health_score')?.value }}%</span>
+              </div>
+              <!-- Custom Health Score Bar with Working Slider -->
+              <div class="relative w-full h-6 mb-3">
+                <!-- Background Track -->
+                <div class="absolute top-1/2 transform -translate-y-1/2 w-full h-2 bg-gray-200 rounded-lg"></div>
+                
+                <!-- Progress Bar -->
+                <div 
+                  class="absolute top-1/2 transform -translate-y-1/2 h-2 rounded-lg transition-all duration-300"
+                  [class.bg-red-500]="assetForm.get('health_score')?.value < 50"
+                  [class.bg-green-500]="assetForm.get('health_score')?.value >= 50"
+                  [style.width.%]="assetForm.get('health_score')?.value"></div>
+                
+                <!-- Interactive Range Input -->
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  formControlName="health_score"
+                  class="absolute top-1/2 transform -translate-y-1/2 w-full h-6 bg-transparent appearance-none cursor-pointer slider-input" />
+                
+                <!-- Custom Thumb -->
+                <div 
+                  class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow-md pointer-events-none transition-all duration-300"
+                  [class.bg-red-500]="assetForm.get('health_score')?.value < 50"
+                  [class.bg-green-500]="assetForm.get('health_score')?.value >= 50"
+                  [style.left.%]="assetForm.get('health_score')?.value"
+                  style="margin-left: -8px;"></div>
+              </div>
+              
+              <div class="flex justify-between text-xs text-gray-500 mt-2">
+                <span>Poor (0%)</span>
+                <span>Fair (25%)</span>
+                <span>Good (50%)</span>
+                <span>Very Good (75%)</span>
+                <span>Excellent (100%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Asset Classification -->
+        <div class="section-card">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+            </div>
+            <h2 class="section-title">Asset Classification</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Asset Type <span class="text-red-500">*</span>
+              </label>
+              <!-- Custom Asset Type Dropdown -->
+              <div class="relative" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  (click)="toggleAssetTypeDropdown()"
+                  class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                  [class.border-red-300]="assetTypeError"
+                  [class.border-blue-500]="showAssetTypeDropdown">
+                  <div class="flex items-center justify-between">
+                    <span *ngIf="!selectedAssetType" class="text-gray-400">Select asset type</span>
+                    <div *ngIf="selectedAssetType" class="flex items-center space-x-3">
+                      <div class="w-6 h-6 rounded flex items-center justify-center" [style.background-color]="selectedAssetType.color + '20'">
+                        <img 
+                          *ngIf="selectedAssetType.icon && !selectedAssetType.iconError" 
+                          [src]="selectedAssetType.icon" 
+                          [alt]="selectedAssetType.name || selectedAssetType.label" 
+                          class="w-4 h-4"
+                          (error)="onAssetTypeIconError($event, selectedAssetType)">
+                        <svg 
+                          *ngIf="!selectedAssetType.icon || selectedAssetType.iconError" 
+                          class="w-4 h-4" 
+                          [style.color]="selectedAssetType.color" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                      </div>
+                      <span class="text-gray-900">{{selectedAssetType.label}}</span>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showAssetTypeDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div *ngIf="showAssetTypeDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div class="py-1">
+                    <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select asset type</div>
+                    <button
+                      *ngFor="let type of assetTypes"
+                      type="button"
+                      (click)="selectAssetType(type)"
+                      class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                      [class.bg-blue-50]="selectedAssetType?.id === type.id"
+                      [class.text-blue-700]="selectedAssetType?.id === type.id">
+                      <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100">
+                          <img 
+                            *ngIf="type.icon && !type.iconError" 
+                            [src]="type.icon" 
+                            [alt]="type.name || type.label" 
+                            class="w-5 h-5"
+                            (error)="onAssetTypeIconError($event, type)">
+                          <svg 
+                            *ngIf="!type.icon || type.iconError" 
+                            class="w-5 h-5 text-blue-600" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <div class="font-medium text-gray-900">{{type.label || type.name}}</div>
+                          <div class="text-sm text-gray-500">{{type.description}}</div>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="assetTypeError" class="text-red-600 text-sm mt-1">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                {{ assetTypeError }}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Category <span class="text-red-500">*</span>
+              </label>
+              <!-- Custom Category Dropdown -->
+              <div class="relative" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  (click)="toggleCategoryDropdown()"
+                  class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                  [class.border-red-300]="categoryError"
+                  [class.border-blue-500]="showCategoryDropdown">
+                  <div class="flex items-center justify-between">
+                    <span *ngIf="!selectedCategory" class="text-gray-400">Select category</span>
+                    <span *ngIf="selectedCategory" class="text-gray-900">{{selectedCategory.name}}</span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showCategoryDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div *ngIf="showCategoryDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div class="py-1">
+                    <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select category</div>
+                    <button
+                      *ngFor="let cat of categories"
+                      type="button"
+                      (click)="selectCategory(cat)"
+                      class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                      [class.bg-blue-50]="selectedCategory?.id === cat.id"
+                      [class.text-blue-700]="selectedCategory?.id === cat.id">
+                      <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <img 
+                            *ngIf="cat.icon" 
+                            [src]="cat.icon" 
+                            [alt]="cat.name" 
+                            class="w-5 h-5"
+                            (error)="onCategoryIconError($event, cat)">
+                          <svg 
+                            *ngIf="!cat.icon || cat.iconError" 
+                            class="w-5 h-5 text-gray-600" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <div class="font-medium text-gray-900">{{cat.name}}</div>
+                          <div *ngIf="cat.description" class="text-sm text-gray-500">{{cat.description}}</div>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="categoryError" class="text-red-600 text-sm mt-1">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                {{ categoryError }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="section-card">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            <h2 class="section-title">Technical Details</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturer</label>
+              <input
+                type="text"
+                class="input"
+                placeholder="e.g., Dell, HP, Toyota"
+                formControlName="manufacturer"
+                maxlength="255" />
+              <div class="text-xs text-gray-500 mt-1">Maximum 255 characters</div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>
+              <input
+                type="text"
+                class="input"
+                placeholder="e.g., PowerEdge R730"
+                formControlName="model"
+                maxlength="255" />
+              <div class="text-xs text-gray-500 mt-1">Maximum 255 characters</div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Serial Number (Optional)
+              </label>
+              <input
+                type="text"
+                class="input"
+                [class.border-red-300]="serialNumberError"
+                placeholder="e.g., SN123456789"
+                formControlName="serial_number"
+                maxlength="255" />
+              <div *ngIf="serialNumberError" class="text-red-600 text-sm mt-1">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                {{ serialNumberError }}
+              </div>
+              <div class="text-xs text-gray-500 mt-1">Optional, max 255 chars, must be unique within your company if provided</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Information -->
+        <div class="section-card">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              </svg>
+            </div>
+            <h2 class="section-title">Financial Information</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Value (USD)</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500 sm:text-sm">$ </span>
+                </div>
+                <input
+                  type="number"
+                  class="input"
+                  style="padding-left: 24px;"
+                  placeholder="5,000.00"
+                  formControlName="purchase_price"
+                  step="0.01"
+                  min="0.01" />
+              </div>
+              <div class="text-xs text-gray-500 mt-1">Must be a positive number</div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
+              <input
+                #dateInput
+                type="text"
+                class="input"
+                formControlName="purchase_date"
+                placeholder="Select purchase date"
+                readonly />
+              <div class="text-xs text-gray-500 mt-1">Cannot be in the future</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Useful Life (Years)</label>
+              <input
+                type="number"
+                class="input"
+                formControlName="depreciation"
+                placeholder="e.g., 5"
                 min="0"
-                max="100"
-                formControlName="health_score"
-                class="absolute top-1/2 transform -translate-y-1/2 w-full h-6 bg-transparent appearance-none cursor-pointer slider-input" />
-              
-              <!-- Custom Thumb -->
-              <div 
-                class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow-md pointer-events-none transition-all duration-300"
-                [class.bg-red-500]="assetForm.get('health_score')?.value < 50"
-                [class.bg-green-500]="assetForm.get('health_score')?.value >= 50"
-                [style.left.%]="assetForm.get('health_score')?.value"
-                style="margin-left: -8px;"></div>
+                max="50" />
+              <div class="text-xs text-gray-500 mt-1">Optional, useful life in years</div>
             </div>
-            <div class="flex justify-between text-xs text-gray-500 mt-2">
-              <span>Poor (0%)</span>
-              <span>Fair (25%)</span>
-              <span>Good (50%)</span>
-              <span>Very Good (75%)</span>
-              <span>Excellent (100%)</span>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Warranty Expiration</label>
+              <input
+                #dateInput
+                type="text"
+                class="input"
+                formControlName="warranty"
+                placeholder="Select warranty expiration date"
+                readonly />
+              <div class="text-xs text-gray-500 mt-1">Optional warranty expiration date</div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Asset Classification -->
-      <div class="section-card">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-            </svg>
-          </div>
-          <h2 class="section-title">Asset Classification</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Asset Type <span class="text-red-500">*</span>
-            </label>
-            <!-- Custom Asset Type Dropdown -->
-            <div class="relative" (click)="$event.stopPropagation()">
-              <button
-                type="button"
-                (click)="toggleAssetTypeDropdown()"
-                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
-                [class.border-red-300]="assetTypeError"
-                [class.border-blue-500]="showAssetTypeDropdown">
-                <div class="flex items-center justify-between">
-                  <span *ngIf="!selectedAssetType" class="text-gray-400">Select asset type</span>
-                  <div *ngIf="selectedAssetType" class="flex items-center space-x-3">
-                    <div class="w-6 h-6 rounded flex items-center justify-center" [style.background-color]="selectedAssetType.color + '20'">
-                      <img 
-                        *ngIf="selectedAssetType.icon && !selectedAssetType.iconError" 
-                        [src]="selectedAssetType.icon" 
-                        [alt]="selectedAssetType.name || selectedAssetType.label" 
-                        class="w-4 h-4"
-                        (error)="onAssetTypeIconError($event, selectedAssetType)">
-                      <svg 
-                        *ngIf="!selectedAssetType.icon || selectedAssetType.iconError" 
-                        class="w-4 h-4" 
-                        [style.color]="selectedAssetType.color" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24">
-                        <path *ngIf="selectedAssetType.icon === 'building-office-2'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V7a2 2 0 012-2h2a2 2 0 012 2v14M13 21V3a2 2 0 012-2h2a2 2 0 012 2v18"></path>
-                        <path *ngIf="selectedAssetType.icon === 'cube'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4a2 2 0 001-1.73z"></path>
-                        <path *ngIf="selectedAssetType.icon === 'cog'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path *ngIf="selectedAssetType.icon === 'car'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13l2-5a2 2 0 012-2h10a2 2 0 012 2l2 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6M5 13h14"></path>
-                      </svg>
-                    </div>
-                    <span class="text-gray-900">{{selectedAssetType.label}}</span>
-                  </div>
-                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showAssetTypeDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </button>
-              
-              <!-- Dropdown Menu -->
-              <div *ngIf="showAssetTypeDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-                <div class="py-1">
-                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select asset type</div>
-                  <button
-                    *ngFor="let type of assetTypes"
-                    type="button"
-                    (click)="selectAssetType(type)"
-                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
-                    [class.bg-blue-50]="selectedAssetType?.value === type.value"
-                    [class.text-blue-700]="selectedAssetType?.value === type.value">
-                    <div class="flex items-center space-x-3">
-                      <div class="w-8 h-8 rounded-lg flex items-center justify-center" [style.background-color]="type.color + '20'">
-                        <img 
-                          *ngIf="type.icon && !type.iconError" 
-                          [src]="type.icon" 
-                          [alt]="type.name || type.label" 
-                          class="w-5 h-5"
-                          (error)="onAssetTypeIconError($event, type)">
-                        <svg 
-                          *ngIf="!type.icon || type.iconError" 
-                          class="w-5 h-5" 
-                          [style.color]="type.color" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24">
-                          <path *ngIf="type.icon === 'building-office-2'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V7a2 2 0 012-2h2a2 2 0 012 2v14M13 21V3a2 2 0 012-2h2a2 2 0 012 2v18"></path>
-                          <path *ngIf="type.icon === 'cube'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4a2 2 0 001-1.73z"></path>
-                          <path *ngIf="type.icon === 'cog'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                          <path *ngIf="type.icon === 'car'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13l2-5a2 2 0 012-2h10a2 2 0 012 2l2 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6M5 13h14"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <div class="font-medium text-gray-900">{{type.label}}</div>
-                        <div class="text-sm text-gray-500">{{type.description}}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="assetTypeError" class="text-red-600 text-sm mt-1">
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        <!-- Location & Assignment -->
+        <div class="section-card">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
-              {{ assetTypeError }}
             </div>
+            <h2 class="section-title">Location & Assignment</h2>
           </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Category <span class="text-red-500">*</span>
-            </label>
-            <!-- Custom Category Dropdown -->
-            <div class="relative" (click)="$event.stopPropagation()">
-              <button
-                type="button"
-                (click)="toggleCategoryDropdown()"
-                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
-                [class.border-red-300]="categoryError"
-                [class.border-blue-500]="showCategoryDropdown">
-                <div class="flex items-center justify-between">
-                  <span *ngIf="!selectedCategory" class="text-gray-400">Select category</span>
-                  <span *ngIf="selectedCategory" class="text-gray-900">{{selectedCategory.name}}</span>
-                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showCategoryDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </button>
-              
-              <!-- Dropdown Menu -->
-              <div *ngIf="showCategoryDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-                <div class="py-1">
-                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select category</div>
-                  <button
-                    *ngFor="let cat of categories"
-                    type="button"
-                    (click)="selectCategory(cat)"
-                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
-                    [class.bg-blue-50]="selectedCategory?.id === cat.id"
-                    [class.text-blue-700]="selectedCategory?.id === cat.id">
-                    <div class="flex items-center space-x-3">
-                      <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <img 
-                          *ngIf="cat.icon && !cat.iconError" 
-                          [src]="cat.icon" 
-                          [alt]="cat.name" 
-                          class="w-5 h-5"
-                          (error)="onCategoryIconError($event, cat)">
-                        <svg 
-                          *ngIf="!cat.icon || cat.iconError" 
-                          class="w-5 h-5 text-gray-600" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <div class="font-medium text-gray-900">{{cat.name}}</div>
-                        <div *ngIf="cat.description" class="text-sm text-gray-500">{{cat.description}}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="categoryError" class="text-red-600 text-sm mt-1">
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-              </svg>
-              {{ categoryError }}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Technical Details -->
-      <div class="section-card">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-          </div>
-          <h2 class="section-title">Technical Details</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturer</label>
-            <input 
-              type="text" 
-              formControlName="manufacturer"
-              class="input" 
-              placeholder="e.g., Dell, HP, Toyota" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>
-            <input 
-              type="text" 
-              formControlName="model"
-              class="input" 
-              placeholder="e.g., PowerEdge R730" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Serial Number
-            </label>
-            <input 
-              type="text" 
-              formControlName="serial_number"
-              class="input"
-              [class.border-red-300]="serialNumberError"
-              placeholder="e.g., SN123456789" />
-            <div *ngIf="serialNumberError" class="text-red-600 text-sm mt-1">
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-              </svg>
-              {{ serialNumberError }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Financial Information -->
-      <div class="section-card">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-            </svg>
-          </div>
-          <h2 class="section-title">Financial Information</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Value (USD)</label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500 sm:text-sm">$</span>
-              </div>
-              <input 
-                type="number" 
-                formControlName="purchase_price"
-                class="input" 
-                style="padding-left: 24px;"
-                placeholder="5,000.00" 
-                step="0.01" />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
-            <input 
-              #dateInput
-              type="text" 
-              formControlName="purchase_date"
-              class="input"
-              placeholder="Select purchase date"
-              readonly />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Useful Life (Years)</label>
-            <input 
-              type="number" 
-              formControlName="depreciation"
-              class="input" 
-              placeholder="e.g., 5" 
-              min="1" 
-              max="50" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Warranty Expiration</label>
-            <input 
-              #dateInput
-              type="text" 
-              formControlName="warranty"
-              class="input"
-              placeholder="Select warranty expiration date"
-              readonly />
-          </div>
-        </div>
-      </div>
-
-      <!-- Location & Assignment -->
-      <div class="section-card">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-          </div>
-          <h2 class="section-title">Location & Assignment</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-            <!-- Custom Location Dropdown -->
-            <div class="relative" (click)="$event.stopPropagation()">
-              <button
-                type="button"
-                (click)="toggleLocationDropdown()"
-                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
-                [class.border-blue-500]="showLocationDropdown">
-                <div class="flex items-center justify-between">
-                  <span *ngIf="!selectedLocation" class="text-gray-400">Select location</span>
-                  <div *ngIf="selectedLocation" class="flex items-center space-x-3">
-                    <div class="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
-                      <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      </svg>
-                    </div>
-                    <span class="text-gray-900">{{selectedLocation.name}}</span>
-                  </div>
-                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </button>
-              
-              <!-- Dropdown Menu -->
-              <div *ngIf="showLocationDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-                <div class="py-1">
-                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select location</div>
-                  <button
-                    *ngFor="let loc of locations"
-                    type="button"
-                    (click)="selectLocation(loc)"
-                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
-                    [class.bg-blue-50]="selectedLocation?.id === loc.id"
-                    [class.text-blue-700]="selectedLocation?.id === loc.id">
-                    <div class="flex items-center space-x-3">
-                      <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <!-- Custom Location Dropdown -->
+              <div class="relative" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  (click)="toggleLocationDropdown()"
+                  class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                  [class.border-blue-500]="showLocationDropdown">
+                  <div class="flex items-center justify-between">
+                    <span *ngIf="!selectedLocation" class="text-gray-400">Select location</span>
+                    <div *ngIf="selectedLocation" class="flex items-center space-x-3">
+                      <div class="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
                       </div>
-                      <div>
-                        <div class="font-medium text-gray-900">{{loc.name}}</div>
-                        <div *ngIf="loc.type" class="text-sm text-gray-500">{{loc.type.name}}</div>
-                      </div>
+                      <span class="text-gray-900">{{selectedLocation.name}}</span>
                     </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-            <!-- Custom Department Dropdown -->
-            <div class="relative" (click)="$event.stopPropagation()">
-              <button
-                type="button"
-                (click)="toggleDepartmentDropdown()"
-                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
-                [class.border-blue-500]="showDepartmentDropdown">
-                <div class="flex items-center justify-between">
-                  <span *ngIf="!selectedDepartment" class="text-gray-400">Select department</span>
-                  <div *ngIf="selectedDepartment" class="flex items-center space-x-3">
-                    <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
-                      <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                      </svg>
-                    </div>
-                    <span class="text-gray-900">{{selectedDepartment.name}}</span>
-                  </div>
-                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showDepartmentDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </button>
-
-              <!-- Dropdown Menu -->
-              <div *ngIf="showDepartmentDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-                <div class="py-1">
-                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select department</div>
-                  <button
-                    *ngFor="let dept of departments"
-                    type="button"
-                    (click)="selectDepartment(dept)"
-                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
-                    [class.bg-blue-50]="selectedDepartment?.id === dept.id"
-                    [class.text-blue-700]="selectedDepartment?.id === dept.id">
-                    <div class="flex items-center space-x-3">
-                      <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <div class="font-medium text-gray-900">{{dept.name}}</div>
-                        <div *ngIf="dept.description" class="text-sm text-gray-500">{{dept.description}}</div>
-                        <div *ngIf="dept.code" class="text-xs text-gray-400">Code: {{dept.code}}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <!-- Custom Status Dropdown -->
-            <div class="relative" (click)="$event.stopPropagation()">
-              <button
-                type="button"
-                (click)="toggleStatusDropdown()"
-                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
-                [class.border-blue-500]="showStatusDropdown">
-                <div class="flex items-center justify-between">
-                  <div *ngIf="selectedStatus" class="flex items-center space-x-3">
-                    <div class="w-3 h-3 rounded-full" [style.background-color]="selectedStatus.hexColor || '#6B7280'"></div>
-                    <span class="text-gray-900">{{selectedStatus.label}}</span>
-                  </div>
-                  <span *ngIf="!selectedStatus" class="text-gray-400">Select status</span>
-                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showStatusDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </button>
-
-              <!-- Dropdown Menu -->
-              <div *ngIf="showStatusDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-                <div class="py-1">
-                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select status</div>
-                  <button
-                    *ngFor="let status of statusOptions"
-                    type="button"
-                    (click)="selectStatus(status)"
-                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
-                    [class.bg-blue-50]="selectedStatus?.value === status.value"
-                    [class.text-blue-700]="selectedStatus?.value === status.value">
-                    <div class="flex items-center space-x-3">
-                      <div [class]="'w-6 h-6 bg-' + status.color + '-100 rounded-lg flex items-center justify-center'">
-                        <div class="w-3 h-3 rounded-full" [style.background-color]="status.hexColor || '#6B7280'"></div>
-                      </div>
-                      <div>
-                        <div class="font-medium text-gray-900">{{status.label}}</div>
-                        <div class="text-sm text-gray-500">{{status.description}}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
-            <!-- Selected Tags Display -->
-            <div *ngIf="selectedTags.length > 0" class="mb-3">
-              <div class="flex flex-wrap gap-2">
-                <span *ngFor="let tag of selectedTags"
-                      [class]="'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-' + tag.color + '-100 text-' + tag.color + '-800'">
-                  {{tag.name}}
-                  <button
-                    type="button"
-                    (click)="removeTag(tag)"
-                    class="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-black hover:bg-opacity-20 transition-colors">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                  </button>
-                </span>
-              </div>
-            </div>
-
-            <!-- Tags Dropdown -->
-            <div class="relative" (click)="$event.stopPropagation()">
-              <button
-                type="button"
-                (click)="toggleTagsDropdown()"
-                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
-                [class.border-blue-500]="showTagsDropdown">
-                <div class="flex items-center justify-between">
-                  <span class="text-gray-400">
-                    {{selectedTags.length === 0 ? 'Select tags' : 'Add more tags'}}
-                  </span>
-                  <div class="flex items-center space-x-2">
-                    <span *ngIf="selectedTags.length > 0" class="text-sm text-gray-500">
-                      {{selectedTags.length}} selected
-                    </span>
-                    <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showTagsDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                   </div>
-                </div>
-              </button>
+                </button>
 
-              <!-- Dropdown Menu -->
-              <div *ngIf="showTagsDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-                <div class="py-1">
-                  <!-- Add New Tag Input -->
-                  <div class="px-3 py-2 border-b border-gray-100">
-                    <div class="relative">
-                      <input
-                        type="text"
-                        [(ngModel)]="newTagInput"
-                        name="newTagInput"
-                        (keydown)="onTagInputKeydown($event)"
-                        placeholder="Type to create new tag..."
-                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        (click)="$event.stopPropagation()">
-                      <div class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
-                        Press Enter
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select tags</div>
-                  <button
-                    *ngFor="let tag of availableTags"
-                    type="button"
-                    (click)="toggleTag(tag)"
-                    class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
-                    [class.bg-blue-50]="isTagSelected(tag)">
-                    <div class="flex items-center justify-between">
+                <!-- Dropdown Menu -->
+                <div *ngIf="showLocationDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div class="py-1">
+                    <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select location</div>
+                    <button
+                      *ngFor="let loc of locations"
+                      type="button"
+                      (click)="selectLocation(loc)"
+                      class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                      [class.bg-blue-50]="selectedLocation?.id === loc.id"
+                      [class.text-blue-700]="selectedLocation?.id === loc.id">
                       <div class="flex items-center space-x-3">
-                        <div [class]="'w-6 h-6 bg-' + tag.color + '-100 rounded-full flex items-center justify-center'">
-                          <div [class]="'w-3 h-3 rounded-full bg-' + tag.color + '-500'"></div>
+                        <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                          <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                          </svg>
                         </div>
-                        <span class="font-medium text-gray-900">{{tag.name}}</span>
+                        <div>
+                          <div class="font-medium text-gray-900">{{loc.name}}</div>
+                          <div *ngIf="loc.type" class="text-sm text-gray-500">{{loc.type.name}}</div>
+                        </div>
                       </div>
-                      <div *ngIf="isTagSelected(tag)" class="text-blue-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </button>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Asset Image -->
-      <div class="section-card">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <h2 class="section-title">Asset Images</h2>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Upload Images</label>
-          <div
-            (click)="triggerFileInput()"
-            class="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-dashed rounded-lg transition-all duration-200 cursor-pointer"
-            [class.border-gray-300]="!isDragOver"
-            [class.border-blue-500]="isDragOver"
-            [class.bg-blue-50]="isDragOver"
-            [class.hover:border-blue-400]="!isDragOver"
-            (dragover)="onDragOver($event)"
-            (dragleave)="onDragLeave($event)"
-            (drop)="onDrop($event)">
-            <div class="space-y-1 text-center">
-              <!-- Upload Icon -->
-              <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 transition-colors"
-                     [class.text-gray-400]="!isDragOver"
-                     [class.text-blue-500]="isDragOver"
-                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-              </div>
-
-              <p class="text-sm transition-colors"
-                 [class.text-gray-500]="!isDragOver"
-                 [class.text-blue-600]="isDragOver">
-                {{isDragOver ? 'Release to upload images' : 'PNG, JPG, GIF up to 10MB - click to browse or drag and drop files here'}}
-              </p>
-
-              <!-- Hidden file input for drag and drop -->
-              <input #fileInput id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
-            </div>
-          </div>
-          
-          <!-- Image Gallery -->
-          <div *ngIf="imagePreviewUrls.length > 0" class="mt-6">
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="text-sm font-medium text-gray-700">Selected Images ({{imagePreviewUrls.length}})</h4>
-              <button
-                type="button"
-                (click)="removeAllImages()"
-                class="text-red-600 hover:text-red-700 text-sm font-medium transition-colors">
-                Remove All
-              </button>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <div *ngFor="let previewUrl of imagePreviewUrls; let i = index" class="relative group">
-                <!-- Image Preview -->
-                <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors">
-                  <img
-                    [src]="previewUrl"
-                    [alt]="'Asset Image ' + (i + 1)"
-                    class="w-full h-full object-cover bg-white"
-                    (error)="onImageError($event, i)"
-                    (load)="onImageLoad($event, i)"
-                    loading="lazy" />
-
-                  <!-- Image Overlay -->
-                  <div class="absolute inset-0 bg-black opacity-50 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-                    <!-- Action Buttons -->
-                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center space-x-2">
-                      <!-- Move Up -->
-                      <button
-                        *ngIf="i > 0"
-                        type="button"
-                        (click)="moveImageUp(i)"
-                        class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Department ID</label>
+              <!-- Custom Department Dropdown -->
+              <div class="relative" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  (click)="toggleDepartmentDropdown()"
+                  class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                  [class.border-blue-500]="showDepartmentDropdown">
+                  <div class="flex items-center justify-between">
+                    <span *ngIf="!selectedDepartment" class="text-gray-400">Select department</span>
+                    <div *ngIf="selectedDepartment" class="flex items-center space-x-3">
+                      <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
+                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
-                      </button>
-
-                      <!-- Move Down -->
-                      <button
-                        *ngIf="i < imagePreviewUrls.length - 1"
-                        type="button"
-                        (click)="moveImageDown(i)"
-                        class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                      </button>
+                      </div>
+                      <span class="text-gray-900">{{selectedDepartment.name}}</span>
                     </div>
-                  </div>
-
-                  <!-- Remove Button -->
-                  <button
-                    type="button"
-                    (click)="removeImage(i)"
-                    class="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showDepartmentDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
-                  </button>
+                  </div>
+                </button>
 
-                  <!-- Image Number Badge -->
-                  <div class="absolute top-2 left-2 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium">
-                    {{i + 1}}
+                <!-- Dropdown Menu -->
+                <div *ngIf="showDepartmentDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div class="py-1">
+                    <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select department</div>
+                    <button
+                      *ngFor="let dept of departments"
+                      type="button"
+                      (click)="selectDepartment(dept)"
+                      class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                      [class.bg-blue-50]="selectedDepartment?.id === dept.id"
+                      [class.text-blue-700]="selectedDepartment?.id === dept.id">
+                      <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <div class="font-medium text-gray-900">{{dept.name}}</div>
+                          <div *ngIf="dept.description" class="text-sm text-gray-500">{{dept.description}}</div>
+                          <div *ngIf="dept.code" class="text-xs text-gray-400">Code: {{dept.code}}</div>
+                        </div>
+                      </div>
+                    </button>
                   </div>
                 </div>
-
-                <!-- Image Info -->
-                <div class="mt-2 text-center">
-                  <p class="text-xs text-gray-600 truncate">{{images[i]?.name || 'Image ' + (i + 1)}}</p>
-                  <p class="text-xs text-gray-500">{{ images[i] ? ((images[i].size ?? 0) / 1024 / 1024).toFixed(1) + ' MB' : '' }}</p>
-                </div>
               </div>
+              <div class="text-xs text-gray-500 mt-1">Optional department assignment</div>
             </div>
 
-            <!-- Gallery Instructions -->
-            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div class="flex items-center space-x-2">
-                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <!-- Custom Status Dropdown -->
+              <div class="relative" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  (click)="toggleStatusDropdown()"
+                  class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                  [class.border-blue-500]="showStatusDropdown">
+                  <div class="flex items-center justify-between">
+                    <div *ngIf="selectedStatus" class="flex items-center space-x-3">
+                      <div class="w-3 h-3 rounded-full" [style.background-color]="selectedStatus.hexColor || '#6B7280'"></div>
+                      <span class="text-gray-900">{{selectedStatus.label}}</span>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showStatusDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div *ngIf="showStatusDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <div class="py-1">
+                    <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select status</div>
+                    <button
+                      *ngFor="let status of statusOptions"
+                      type="button"
+                      (click)="selectStatus(status)"
+                      class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                      [class.bg-blue-50]="selectedStatus?.value === status.value"
+                      [class.text-blue-700]="selectedStatus?.value === status.value">
+                      <div class="flex items-center space-x-3">
+                        <div [class]="'w-6 h-6 bg-' + status.color + '-100 rounded-lg flex items-center justify-center'">
+                          <div class="w-3 h-3 rounded-full" [style.background-color]="status.hexColor || '#6B7280'"></div>
+                        </div>
+                        <div>
+                          <div class="font-medium text-gray-900">{{status.label}}</div>
+                          <div class="text-sm text-gray-500">{{status.description}}</div>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="text-xs text-gray-500 mt-1">Current operational status of the asset</div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+              <!-- Selected Tags Display -->
+              <div *ngIf="selectedTags.length > 0" class="mb-3">
+                <div class="flex flex-wrap gap-2">
+                  <span *ngFor="let tag of selectedTags"
+                        [class]="'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-' + tag.color + '-100 text-' + tag.color + '-800'">
+                    {{tag.name}}
+                    <button
+                      type="button"
+                      (click)="removeTag(tag)"
+                      class="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-black hover:bg-opacity-20 transition-colors">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    </button>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Tags Dropdown -->
+              <div class="relative" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  (click)="toggleTagsDropdown()"
+                  class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                  [class.border-blue-500]="showTagsDropdown">
+                  <div class="flex items-center justify-between">
+                    <span class="text-gray-400">
+                      {{selectedTags.length === 0 ? 'Select tags' : 'Add more tags'}}
+                    </span>
+                    <div class="flex items-center space-x-2">
+                      <span *ngIf="selectedTags.length > 0" class="text-sm text-gray-500">
+                        {{selectedTags.length}} selected
+                      </span>
+                      <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showTagsDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div *ngIf="showTagsDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div class="py-1">
+                    <!-- Add New Tag Input -->
+                    <div class="px-3 py-2 border-b border-gray-100">
+                      <div class="relative">
+                        <input
+                          type="text"
+                          [(ngModel)]="newTagInput"
+                          [ngModelOptions]="{standalone: true}"
+                          (keydown)="onTagInputKeydown($event)"
+                          placeholder="Type to create new tag..."
+                          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          (click)="$event.stopPropagation()">
+                        <div class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+                          Press Enter
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select tags</div>
+                    <button
+                      *ngFor="let tag of availableTags"
+                      type="button"
+                      (click)="toggleTag(tag)"
+                      class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                      [class.bg-blue-50]="isTagSelected(tag)">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                          <div [class]="'w-6 h-6 bg-' + tag.color + '-100 rounded-full flex items-center justify-center'">
+                            <div [class]="'w-3 h-3 rounded-full bg-' + tag.color + '-500'"></div>
+                          </div>
+                          <span class="font-medium text-gray-900">{{tag.name}}</span>
+                        </div>
+                        <div *ngIf="isTagSelected(tag)" class="text-blue-600">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="text-xs text-gray-500 mt-1">
+                <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <p class="text-blue-800 text-sm">
-                  <strong>Gallery Tips:</strong> Hover over images to reorder them. The first image will be the primary asset image.
-                </p>
+                Select existing tags or type to create new ones. Press Enter to add custom tags.
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Success Message -->
-      <div *ngIf="submitSuccess" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-        <div class="flex items-center space-x-2">
-          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          <p class="text-green-800 font-medium">{{ submitSuccess }}</p>
+        <!-- Asset Image -->
+        <div class="section-card">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <h2 class="section-title">Asset Image</h2>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
+            <div
+              (click)="triggerFileInput()"
+              class="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-dashed rounded-lg transition-all duration-200"
+              [class.border-gray-300]="!isDragOver"
+              [class.border-blue-500]="isDragOver"
+              [class.bg-blue-50]="isDragOver"
+              [class.hover:border-blue-400]="!isDragOver"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDrop($event)">
+              <div class="space-y-1 text-center">
+                <!-- Upload Icon -->
+                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 transition-colors"
+                       [class.text-gray-400]="!isDragOver"
+                       [class.text-blue-500]="isDragOver"
+                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                </div>
+
+                <p class="text-sm transition-colors"
+                   [class.text-gray-500]="!isDragOver"
+                   [class.text-blue-600]="isDragOver">
+                  {{isDragOver ? 'Release to upload images' : 'PNG, JPG, GIF up to 10MB - click to browse or drag and drop files here'}}
+                </p>
+
+                <!-- Hidden file input for drag and drop -->
+                <input #fileInput id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*" multiple>
+              </div>
+            </div>
+
+            <!-- Image Gallery -->
+            <div *ngIf="imagePreviewUrls.length > 0" class="mt-6">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-sm font-medium text-gray-700">Selected Images ({{imagePreviewUrls.length}})</h4>
+                <button
+                  type="button"
+                  (click)="removeAllImages()"
+                  class="text-red-600 hover:text-red-700 text-sm font-medium transition-colors">
+                  Remove All
+                </button>
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div *ngFor="let previewUrl of imagePreviewUrls; let i = index" class="relative group">
+                  <!-- Image Preview -->
+                  <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors">
+                    <img
+                      [src]="previewUrl"
+                      [alt]="'Asset Image ' + (i + 1)"
+                      class="w-full h-full object-cover bg-white"
+                      (error)="onImageError($event, i)"
+                      (load)="onImageLoad($event, i)"
+                      loading="lazy" />
+
+                    <!-- Image Overlay -->
+                    <div class="absolute inset-0 bg-black opacity-50 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+                      <!-- Action Buttons -->
+                      <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center space-x-2">
+                        <!-- Move Up -->
+                        <button
+                          *ngIf="i > 0"
+                          type="button"
+                          (click)="moveImageUp(i)"
+                          class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                          </svg>
+                        </button>
+
+                        <!-- Move Down -->
+                        <button
+                          *ngIf="i < imagePreviewUrls.length - 1"
+                          type="button"
+                          (click)="moveImageDown(i)"
+                          class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Remove Button -->
+                    <button
+                      type="button"
+                      (click)="removeImage(i)"
+                      class="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    </button>
+
+                    <!-- Image Number Badge -->
+                    <div class="absolute top-2 left-2 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                      {{i + 1}}
+                    </div>
+                  </div>
+
+                  <!-- Image Info -->
+                  <div class="mt-2 text-center">
+                    <p class="text-xs text-gray-600 truncate">{{images[i]?.name}}</p>
+                    <p class="text-xs text-gray-500">{{ ((images[i]?.size ?? 0) / 1024 / 1024).toFixed(1) }} MB</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gallery Instructions -->
+              <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-center space-x-2">
+                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <p class="text-blue-800 text-sm">
+                    <strong>Gallery Tips:</strong> Hover over images to reorder them. The first image will be the primary asset image.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Error Message -->
-      <div *ngIf="submitError" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-        <div class="flex items-center space-x-2">
-          <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-          </svg>
-          <p class="text-red-800 font-medium">{{ submitError }}</p>
+        <!-- Global Error Message -->
+        <div *ngIf="submitError" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <p class="text-red-800 font-medium">{{ submitError }}</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Actions -->
-      <div class="flex items-center justify-between pt-6 border-t border-gray-200">
-        <button 
-          type="button" 
-          (click)="goBack()" 
-          [disabled]="saving"
-          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-          Cancel
-        </button>
-        
-        <button 
-          type="submit" 
-          [disabled]="saving || !isFormValid()"
-          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
-          <span *ngIf="!saving" class="flex items-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Success Message -->
+        <div *ngIf="submitSuccess" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
-            <span>Update Asset</span>
-          </span>
-          <span *ngIf="saving" class="flex items-center space-x-2">
-            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Updating Asset...</span>
-          </span>
-        </button>
-      </div>
-    </form>
+            <p class="text-green-800 font-medium">{{ submitSuccess }}</p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+          <button
+            type="button"
+            (click)="goBack()"
+            [disabled]="saving"
+            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            [disabled]="saving || !isFormValid()"
+            class="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
+            <span *ngIf="!saving" class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span>Update Asset</span>
+            </span>
+            <span *ngIf="saving" class="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Updating Asset...</span>
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
