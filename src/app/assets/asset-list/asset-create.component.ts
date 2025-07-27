@@ -235,26 +235,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // Convert images to base64
-  private convertImagesToBase64(): Promise<string[]> {
-    return Promise.all(
-      this.images.map((file) => {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            if (reader.result) {
-              resolve(reader.result as string);
-            } else {
-              reject(new Error('Failed to read file'));
-            }
-          };
-          reader.onerror = () => reject(reader.error);
-          reader.readAsDataURL(file);
-        });
-      })
-    );
-  }
-
   healthScore = 85;
   categories: any[] = [];
   category_id: number | null = null;
