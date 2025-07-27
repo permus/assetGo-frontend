@@ -218,6 +218,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   assetTypes: any[] = [];
   assetType: string | null = null;
 
+  // Asset types from API
+  assetTypesFromAPI: any[] = [];
+
   // Status options
   statusOptions = [
     { value: 'Active', label: 'Active', color: 'green', description: 'Asset is operational and in use' },
@@ -250,9 +253,19 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     
+    // Load asset types from API
     this.assetService.getAssetTypes().subscribe(res => {
       if (res.success && res.data) {
-        this.assetTypes = res.data;
+        this.assetTypesFromAPI = res.data;
+        // Transform API data to match existing structure
+        this.assetTypes = this.assetTypesFromAPI.map(type => ({
+          id: type.id,
+          name: type.name,
+          label: type.name,
+          icon: this.getIconFromPath(type.icon),
+          color: this.getColorForType(type.name),
+          description: `${type.name} asset type`
+        }));
       }
     });
     
@@ -382,7 +395,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     // Set dropdowns after data loads
     setTimeout(() => {
       if (sourceAsset.type) {
-        this.selectedAssetType = this.assetTypes.find(type => type.name === sourceAsset.type) || null;
+        this.selectedAssetType = this.assetTypes.find(type => 
+          type.name === sourceAsset.type || type.label === sourceAsset.type
+        ) || null;
         this.assetType = sourceAsset.type;
       }
 
@@ -461,7 +476,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   // Selection methods
   selectAssetType(type: any) {
     this.selectedAssetType = type;
-    this.assetType = type.name;
+    this.assetType = type.name || type.label;
     this.showAssetTypeDropdown = false;
     this.clearErrors();
   }
@@ -706,6 +721,33 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   getTodayDate(): string {
     const today = new Date();
     return today.toISOString().split('T')[0];
+  }
+
+  // Helper method to extract icon name from path
+  getIconFromPath(iconPath: string): string {
+    if (!iconPath) return 'cube';
+    
+    // Extract filename without extension from path like "assets/icons/car.svg"
+    const filename = iconPath.split('/').pop() || '';
+    return filename.replace('.svg', '') || 'cube';
+  }
+
+  // Helper method to assign colors to asset types
+  getColorForType(typeName: string): string {
+    const colorMap: { [key: string]: string } = {
+      'Fixed Asset': '#2563eb',
+      'Semi-Fixed Asset': '#22c55e', 
+      'Mobile Asset': '#f59e42',
+      'Fleet Asset': '#a855f7',
+      'IT Equipment': '#3b82f6',
+      'Furniture': '#10b981',
+      'Vehicle': '#f59e0b',
+      'Machinery': '#ef4444',
+      'Electronics': '#8b5cf6',
+      'Tools': '#f97316'
+    };
+    
+    return colorMap[typeName] || '#6b7280'; // Default gray color
   }
 
   onImageError(event: any, index: number) {

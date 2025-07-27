@@ -195,15 +195,15 @@
                     type="button"
                     (click)="selectAssetType(type)"
                     class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
-                    [class.bg-blue-50]="selectedAssetType?.name === type.name"
-                    [class.text-blue-700]="selectedAssetType?.name === type.name">
+                    [class.bg-blue-50]="selectedAssetType?.id === type.id"
+                    [class.text-blue-700]="selectedAssetType?.id === type.id">
                     <div class="flex items-center space-x-3">
                       <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100">
-                        <img [src]="type.icon" [alt]="type.name" class="w-5 h-5">
+                        <img [src]="'assets/icons/' + type.icon + '.svg'" [alt]="type.name" class="w-5 h-5">
                       </div>
                       <div>
-                        <div class="font-medium text-gray-900">{{type.name}}</div>
-                        <div class="text-sm text-gray-500">Asset Type</div>
+                        <div class="font-medium text-gray-900">{{type.label || type.name}}</div>
+                        <div class="text-sm text-gray-500">{{type.description}}</div>
                       </div>
                     </div>
                   </button>
