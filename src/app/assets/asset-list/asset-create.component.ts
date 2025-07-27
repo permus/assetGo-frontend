@@ -47,6 +47,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   submitFieldErrors: { [key: string]: string[] } = {};
   locations: any[] = [];
   availableTags: any[] = [];
+  departments: any[] = [];
 
   // Dropdown state properties
   showAssetTypeDropdown = false;
@@ -54,10 +55,12 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   showLocationDropdown = false;
   showStatusDropdown = false;
   showTagsDropdown = false;
+  showDepartmentDropdown = false;
   selectedAssetType: any | null = null;
   selectedCategory: any | null = null;
   selectedLocation: any | null = null;
   selectedStatus: any | null = null;
+  selectedDepartment: any | null = null;
   selectedTags: any[] = [];
   newTagInput: string = '';
 
@@ -310,6 +313,13 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    // Load departments from API
+    this.assetService.getDepartments().subscribe(res => {
+      if (res.success && res.data) {
+        this.departments = res.data;
+      }
+    });
+
     // Load available tags
     this.loadAvailableTags();
   }
@@ -445,6 +455,10 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedLocation = this.locations.find(loc => loc.id === sourceAsset.location_id) || null;
       }
 
+      if (sourceAsset.department_id) {
+        this.selectedDepartment = this.departments.find(dept => dept.id === sourceAsset.department_id) || null;
+      }
+
       if (sourceAsset.status) {
         this.selectedStatus = this.statusOptions.find(status => status.value === sourceAsset.status) || null;
         if (this.selectedStatus) {
@@ -514,6 +528,16 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showCategoryDropdown = false;
     this.showLocationDropdown = false;
     this.showStatusDropdown = false;
+    this.showDepartmentDropdown = false;
+  }
+
+  toggleDepartmentDropdown() {
+    this.showDepartmentDropdown = !this.showDepartmentDropdown;
+    this.showAssetTypeDropdown = false;
+    this.showCategoryDropdown = false;
+    this.showLocationDropdown = false;
+    this.showStatusDropdown = false;
+    this.showTagsDropdown = false;
   }
 
   // Selection methods
@@ -541,6 +565,12 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedStatus = status;
     this.status = status.value;
     this.showStatusDropdown = false;
+  }
+
+  selectDepartment(department: any) {
+    this.selectedDepartment = department;
+    this.department_id = department.id;
+    this.showDepartmentDropdown = false;
   }
 
   toggleTag(tag: any) {
@@ -603,6 +633,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showLocationDropdown = false;
     this.showStatusDropdown = false;
     this.showTagsDropdown = false;
+    this.showDepartmentDropdown = false;
   }
 
   // Validation methods

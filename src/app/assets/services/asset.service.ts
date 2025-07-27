@@ -148,4 +148,9 @@ export class AssetService {
   getAssetStatuses(): Observable<any> {
     return this.http.get(`${this.baseUrl}/asset-statuses-list`, this.getAuthHeaders());
   }
+
+  // Departments
+  getDepartments(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/departments/list`, this.getAuthHeaders());
+  }
 }
