@@ -382,7 +382,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     // Set dropdowns after data loads
     setTimeout(() => {
       if (sourceAsset.type) {
-        this.selectedAssetType = this.assetTypes.find(type => type.value === sourceAsset.type) || null;
+        this.selectedAssetType = this.assetTypes.find(type => type.name === sourceAsset.type) || null;
         this.assetType = sourceAsset.type;
       }
 
