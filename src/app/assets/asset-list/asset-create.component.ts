@@ -232,6 +232,22 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     { value: 'Retired', label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service' }
   ];
 
+  // Status options with proper typing
+  statusOptions: Array<{
+    id?: number;
+    value: string;
+    label: string;
+    color: string;
+    description: string;
+    hexColor?: string;
+    sort_order: number;
+  }> = [
+    { value: 'Active', label: 'Active', color: 'green', description: 'Asset is operational and in use', sort_order: 1 },
+    { value: 'Maintenance', label: 'Maintenance', color: 'orange', description: 'Asset is under maintenance or repair', sort_order: 2 },
+    { value: 'Inactive', label: 'Inactive', color: 'gray', description: 'Asset is not currently in use', sort_order: 3 },
+    { value: 'Retired', label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service', sort_order: 4 }
+  ];
+
   constructor(
     private assetService: AssetService,
     private router: Router,
@@ -785,7 +801,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Helper method to convert hex colors to Tailwind color names
-  hexToTailwindColor(hexColor: string): string {
+  private hexToTailwindColor(hexColor: string): string {
     const colorMap: { [key: string]: string } = {
       '#10B981': 'green',    // Active
       '#F59E0B': 'orange',   // Maintenance  
