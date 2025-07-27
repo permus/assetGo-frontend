@@ -224,14 +224,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   // Status options from API
   statusOptionsFromAPI: any[] = [];
 
-  // Status options
-  statusOptions = [
-    { value: 'Active', label: 'Active', color: 'green', description: 'Asset is operational and in use' },
-    { value: 'Maintenance', label: 'Maintenance', color: 'orange', description: 'Asset is under maintenance or repair' },
-    { value: 'Inactive', label: 'Inactive', color: 'gray', description: 'Asset is not currently in use' },
-    { value: 'Retired', label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service' }
-  ];
-
   // Status options with proper typing
   statusOptions: Array<{
     id?: number;
@@ -239,6 +231,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     label: string;
     color: string;
     description: string;
+    hexColor?: string;
     hexColor?: string;
     sort_order: number;
   }> = [
