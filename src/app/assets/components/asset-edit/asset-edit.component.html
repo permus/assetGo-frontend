@@ -753,18 +753,70 @@
             </div>
 
             <!-- Image Gallery -->
-            <div *ngIf="imagePreviewUrls.length > 0" class="mt-6">
+            <div *ngIf="existingImages.length > 0 || imagePreviewUrls.length > 0" class="mt-6">
               <div class="flex items-center justify-between mb-4">
-                <h4 class="text-sm font-medium text-gray-700">Selected Images ({{imagePreviewUrls.length}})</h4>
+                <h4 class="text-sm font-medium text-gray-700">Asset Images ({{existingImages.length + imagePreviewUrls.length}})</h4>
                 <button
                   type="button"
-                  (click)="removeAllImages()"
+                  (click)="removeAllImages(); removeAllExistingImages()"
                   class="text-red-600 hover:text-red-700 text-sm font-medium transition-colors">
                   Remove All
                 </button>
               </div>
 
               <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Existing Images -->
+                <div *ngFor="let existingImage of existingImages; let i = index" class="relative group">
+                  <!-- Image Preview -->
+                  <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors">
+                    <img
+                      [src]="existingImage.image_url"
+                      [alt]="'Existing Asset Image ' + (i + 1)"
+                      class="w-full h-full object-cover bg-white"
+                      (error)="onImageError($event, i)"
+                      loading="lazy" />
+
+                    <!-- Image Overlay -->
+                    <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-all duration-200 flex items-center justify-center">
+                      <!-- Action Buttons -->
+                      <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center space-x-2">
+                        <!-- View Full Size -->
+                        <button
+                          type="button"
+                          (click)="viewFullImage(existingImage.image_url)"
+                          class="w-8 h-8 bg-white bg-opacity-90 text-gray-700 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all shadow-sm">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Remove Button -->
+                    <button
+                      type="button"
+                      (click)="removeExistingImage(i)"
+                      class="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    </button>
+
+                    <!-- Existing Image Badge -->
+                    <div class="absolute top-2 left-2 px-2 py-1 bg-green-600 text-white rounded text-xs font-medium">
+                      Existing
+                    </div>
+                  </div>
+
+                  <!-- Image Info -->
+                  <div class="mt-2 text-center">
+                    <p class="text-xs text-gray-600 truncate">{{existingImage.image_path.split('/').pop()}}</p>
+                    <p class="text-xs text-gray-500">Existing Image</p>
+                  </div>
+                </div>
+
+                <!-- New Images -->
                 <div *ngFor="let previewUrl of imagePreviewUrls; let i = index" class="relative group">
                   <!-- Image Preview -->
                   <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors">
@@ -772,8 +824,8 @@
                       [src]="previewUrl"
                       [alt]="'Asset Image ' + (i + 1)"
                       class="w-full h-full object-cover bg-white"
-                      (error)="onImageError($event, i)"
-                      (load)="onImageLoad($event, i)"
+                      (error)="onImageError($event, existingImages.length + i)"
+                      (load)="onImageLoad($event, existingImages.length + i)"
                       loading="lazy" />
 
                     <!-- Image Overlay -->
@@ -815,8 +867,8 @@
                     </button>
 
                     <!-- Image Number Badge -->
-                    <div class="absolute top-2 left-2 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium">
-                      {{i + 1}}
+                    <div class="absolute top-2 left-2 px-2 py-1 bg-blue-600 text-white rounded text-xs font-medium">
+                      New
                     </div>
                   </div>
 
@@ -835,7 +887,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                   <p class="text-blue-800 text-sm">
-                    <strong>Gallery Tips:</strong> Hover over images to reorder them. The first image will be the primary asset image.
+                    <strong>Gallery Tips:</strong> Existing images are preserved. New images can be reordered. Green badges indicate existing images, blue badges indicate new uploads.
                   </p>
                 </div>
               </div>

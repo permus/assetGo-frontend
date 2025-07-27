@@ -728,6 +728,10 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Image loaded successfully at index:', index);
   }
 
+  viewFullImage(imageUrl: string) {
+    window.open(imageUrl, '_blank');
+  }
+
   onCategoryIconError(event: any, category: any) {
     console.warn('Category icon failed to load:', category.name, category.icon);
     category.iconError = true;
