@@ -183,59 +183,55 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       warrantyFormatted = this.convertDateToBackendFormat(this.warranty);
     }
     
-    // Create FormData for file upload
-    const formData = new FormData();
-    
-    // Add all form fields
-    formData.append('name', this.name);
-    formData.append('description', this.description);
-    if (this.category_id) formData.append('category_id', this.category_id.toString());
-    if (this.selectedAssetType?.id) formData.append('type', this.selectedAssetType.id.toString());
-    if (this.serial_number) formData.append('serial_number', this.serial_number);
-    if (this.model) formData.append('model', this.model);
-    if (this.manufacturer) formData.append('manufacturer', this.manufacturer);
-    if (purchaseDateFormatted) formData.append('purchase_date', purchaseDateFormatted);
-    if (this.purchase_price !== null) formData.append('purchase_price', this.purchase_price.toString());
-    if (this.depreciation !== null) formData.append('depreciation', this.depreciation.toString());
-    if (this.location_id) formData.append('location_id', this.location_id.toString());
-    if (this.department_id) formData.append('department_id', this.department_id.toString());
-    if (warrantyFormatted) formData.append('warranty', warrantyFormatted);
-    if (this.insurance) formData.append('insurance', this.insurance);
-    formData.append('health_score', this.health_score.toString());
-    formData.append('status', this.status);
-    
-    // Add tags as array
-    this.selectedTags.forEach((tag, index) => {
-      formData.append(`tags[${index}]`, tag.name);
-    });
-    
-    // Add meta data
-    formData.append('meta', JSON.stringify(this.meta));
-    
-    // Add images
-    this.images.forEach((image, index) => {
-      formData.append('images[]', image, image.name);
-    });
+    // Convert images to base64
+    this.convertImagesToBase64().then((base64Images) => {
+      // Create payload object
+      const payload = {
+        name: this.name,
+        description: this.description,
+        category_id: this.category_id,
+        type: this.selectedAssetType?.id || null,
+        serial_number: this.serial_number,
+        model: this.model,
+        manufacturer: this.manufacturer,
+        purchase_date: purchaseDateFormatted,
+        purchase_price: this.purchase_price,
+        depreciation: this.depreciation,
+        location_id: this.location_id,
+        department_id: this.department_id,
+        warranty: warrantyFormatted,
+        insurance: this.insurance,
+        health_score: this.health_score,
+        status: this.status,
+        tags: this.selectedTags.map(tag => tag.name),
+        meta: this.meta,
+        images: base64Images
+      };
 
-    this.assetService.createAsset(formData).subscribe({
-      next: (res) => {
-        this.isSubmitting = false;
-        if (res.success) {
-          this.submitSuccess = 'Asset created successfully!';
-          // Navigate back after 2 seconds
-          setTimeout(() => {
-            this.router.navigate(['/assets']);
-          }, 2000);
-        } else {
-          this.submitError = res.message || 'Failed to create asset.';
-          this.handleFieldErrors(res.errors || {});
+      this.assetService.createAsset(payload).subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          if (res.success) {
+            this.submitSuccess = 'Asset created successfully!';
+            // Navigate back after 2 seconds
+            setTimeout(() => {
+              this.router.navigate(['/assets']);
+            }, 2000);
+          } else {
+            this.submitError = res.message || 'Failed to create asset.';
+            this.handleFieldErrors(res.errors || {});
+          }
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          this.submitError = err.error?.message || 'Failed to create asset.';
+          this.handleFieldErrors(err.error?.errors || err.errors || {});
         }
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        this.submitError = err.error?.message || 'Failed to create asset.';
-        this.handleFieldErrors(err.error?.errors || err.errors || {});
-      }
+      });
+    }).catch((error) => {
+      this.isSubmitting = false;
+      this.submitError = 'Failed to process images. Please try again.';
+      console.error('Image conversion error:', error);
     });
   }
 
@@ -897,6 +893,25 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Image dimensions:', event.target.naturalWidth, 'x', event.target.naturalHeight);
   }
 
+  // Convert images to base64
+  private convertImagesToBase64(): Promise<string[]> {
+    return Promise.all(
+      this.images.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (reader.result) {
+              resolve(reader.result as string);
+            } else {
+              reject(new Error('Failed to read file'));
+            }
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+      })
+    );
+  }
   onCategoryIconError(event: any, category: any) {
     console.warn('Category icon failed to load:', category.name, category.icon);
     // Mark this category as having an icon error so we show the fallback
