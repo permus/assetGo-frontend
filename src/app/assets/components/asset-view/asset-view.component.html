@@ -1,8 +1,32 @@
+<!-- Enhanced Asset View Page -->
 <div class="min-h-screen bg-gray-50">
-  <!-- Header -->
+  <!-- Header with Breadcrumb -->
   <div class="bg-white border-b border-gray-200 px-6 py-4">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2">
+        <li>
+          <a routerLink="/assets" class="text-gray-500 hover:text-gray-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <span class="sr-only">Assets</span>
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-4 h-4 text-gray-400 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <span class="text-gray-900 text-sm font-medium">{{asset?.name || 'Asset Details'}}</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Header Actions -->
     <div class="flex items-center justify-between">
-      <!-- Back Button and Title -->
+      <!-- Back Button and Navigation -->
       <div class="flex items-center space-x-4">
         <button
           (click)="goBack()"
@@ -12,13 +36,37 @@
           </svg>
           <span class="font-medium">Back to Assets</span>
         </button>
+        
+        <!-- Previous/Next Navigation -->
+        <div class="flex items-center space-x-2 border-l border-gray-200 pl-4">
+          <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <span class="text-sm text-gray-500">Asset 4 of 24</span>
+          <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Quick Actions Toolbar -->
       <div class="flex items-center space-x-3">
         <button
+          (click)="copyAssetId()"
+          class="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          <span>Copy ID</span>
+        </button>
+
+        <button
           (click)="exportAsset()"
-          class="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+          class="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
           </svg>
@@ -27,7 +75,7 @@
 
         <button
           (click)="printAsset()"
-          class="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+          class="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
           </svg>
@@ -43,18 +91,51 @@
           <span>Edit Asset</span>
         </button>
       </div>
+    </div>
 
     <!-- Asset Title and Status -->
-    <div *ngIf="asset && !loading" class="mt-4">
+    <div *ngIf="asset && !loading" class="mt-6">
       <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">{{asset.name || 'Unnamed Asset'}}</h1>
-          <div class="flex items-center space-x-4 mt-2">
-            <span class="text-sm text-gray-600">Asset ID: {{asset.asset_id || asset.id}}</span>
+        <div class="flex-1">
+          <div class="flex items-center space-x-4">
+            <h1 class="text-3xl font-bold text-gray-900">{{asset.name || 'Unnamed Asset'}}</h1>
             <span 
-              [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-800'">
+              [class]="'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-800'">
               {{asset.status || 'Active'}}
             </span>
+          </div>
+          <div class="flex items-center space-x-6 mt-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-sm text-gray-600">Asset ID:</span>
+              <span class="font-mono text-sm text-gray-900">{{asset.asset_id || asset.id}}</span>
+              <button
+                (click)="copyAssetId()"
+                class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-sm text-gray-600">Type:</span>
+              <span class="text-sm text-gray-900">{{getAssetTypeName(asset.type)}}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-sm text-gray-600">Location:</span>
+              <a href="#" class="text-sm text-blue-600 hover:text-blue-700">{{asset.location?.name || 'Not specified'}}</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- QR Code Display -->
+        <div class="flex items-center space-x-4">
+          <div class="text-center">
+            <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+              </svg>
+            </div>
+            <span class="text-xs text-gray-500">QR Code</span>
           </div>
         </div>
       </div>
@@ -95,469 +176,630 @@
 
   <!-- Main Content -->
   <div *ngIf="asset && !loading" class="px-6 py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Left Column -->
-      <div class="space-y-6">
-        <!-- Asset Image -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <!-- Asset Images Gallery -->
+    <!-- Section Navigation -->
+    <div class="mb-6">
+      <nav class="flex space-x-8">
+        <a href="#overview" class="text-blue-600 border-b-2 border-blue-600 pb-2 text-sm font-medium">Overview</a>
+        <a href="#technical" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Technical</a>
+        <a href="#financial" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Financial</a>
+        <a href="#maintenance" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Maintenance</a>
+        <a href="#performance" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Performance</a>
+        <a href="#activity" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Activity</a>
+      </nav>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column (2/3 width) -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Image Gallery/Carousel -->
+        <div id="overview" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">Asset Images</h2>
+            <span class="text-sm text-gray-500">{{asset.images?.length || 0}} image{{(asset.images?.length || 0) !== 1 ? 's' : ''}}</span>
+          </div>
+
           <div *ngIf="asset.images && asset.images.length > 0; else noImageTemplate">
             <!-- Main Image Display -->
-            <div class="bg-gray-100 rounded-lg h-64 flex items-center justify-center overflow-hidden mb-4">
+            <div class="bg-gray-100 rounded-lg h-80 flex items-center justify-center overflow-hidden mb-4 relative">
               <img 
-                [src]="asset.images[0].image_url" 
+                [src]="selectedImageUrl || asset.images[0].image_url" 
                 [alt]="asset.name"
-                class="max-w-full max-h-full object-contain"
+                class="max-w-full max-h-full object-contain cursor-pointer"
+                (click)="viewFullImage(selectedImageUrl || asset.images[0].image_url)"
                 (error)="onImageError($event)">
+              
+              <!-- Image Navigation -->
+              <div *ngIf="asset.images.length > 1" class="absolute inset-x-4 top-1/2 transform -translate-y-1/2 flex justify-between">
+                <button
+                  (click)="previousImage()"
+                  class="w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </button>
+                <button
+                  (click)="nextImage()"
+                  class="w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Image Counter -->
+              <div *ngIf="asset.images.length > 1" class="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+                {{currentImageIndex + 1}} / {{asset.images.length}}
+              </div>
             </div>
             
-            <!-- Image Thumbnails (if multiple images) -->
-            <div *ngIf="asset.images.length > 1" class="grid grid-cols-4 gap-2">
-              <div *ngFor="let image of asset.images.slice(1, 5)" 
-                   class="aspect-square bg-gray-100 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-                   (click)="viewFullImage(image.image_url)">
+            <!-- Image Thumbnails -->
+            <div *ngIf="asset.images.length > 1" class="grid grid-cols-6 gap-2">
+              <div *ngFor="let image of asset.images; let i = index" 
+                   class="aspect-square bg-gray-100 rounded overflow-hidden cursor-pointer border-2 transition-all"
+                   [class.border-blue-500]="i === currentImageIndex"
+                   [class.border-transparent]="i !== currentImageIndex"
+                   (click)="selectImage(i)">
                 <img 
                   [src]="image.image_url" 
                   [alt]="asset.name"
                   class="w-full h-full object-cover"
                   (error)="onImageError($event)">
               </div>
-              
-              <!-- More images indicator -->
-              <div *ngIf="asset.images.length > 5" 
-                   class="aspect-square bg-gray-200 rounded flex items-center justify-center text-gray-600 text-sm font-medium">
-                +{{asset.images.length - 5}}
-              </div>
             </div>
           </div>
           
           <!-- No Image Template -->
           <ng-template #noImageTemplate>
-            <div class="bg-blue-100 rounded-lg h-64 flex items-center justify-center">
-              <svg class="w-24 h-24 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getAssetTypeIcon()"></path>
-              </svg>
+            <div class="bg-blue-100 rounded-lg h-80 flex items-center justify-center">
+              <div class="text-center">
+                <svg class="w-24 h-24 text-blue-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getAssetTypeIcon()"></path>
+                </svg>
+                <p class="text-gray-600">No images available</p>
+              </div>
             </div>
           </ng-template>
-          </div>
         </div>
 
-        <!-- Basic Information -->
+        <!-- Basic Information Card -->
         <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          <div class="flex items-center space-x-2 mb-6">
+            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
               </svg>
             </div>
-            <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>
+            <h2 class="text-xl font-semibold text-gray-900">Basic Information</h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Category</h4>
-              <p class="text-gray-900">{{asset.category?.name || 'General'}}</p>
-            </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Asset Type</h4>
-              <p class="text-gray-900">{{getAssetTypeName(asset.type) || 'Standard Asset'}}</p>
-            </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Location</h4>
-              <p class="text-gray-900">{{asset.location?.name || 'Not specified'}}</p>
-            </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Department</h4>
-              <p class="text-gray-900">{{asset.department?.name || 'Not specified'}}</p>
-            </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Purchase Date</h4>
-              <p class="text-gray-900">{{asset.purchase_date ? (asset.purchase_date | date:'mediumDate') : 'Not specified'}}</p>
-            </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Description</h4>
-              <p class="text-gray-900">{{asset.description || 'No description available.'}}</p>
-            </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Tags</h4>
-              <div *ngIf="asset.tags && asset.tags.length > 0; else noTagsTemplate" class="flex flex-wrap gap-2">
-                <span *ngFor="let tag of asset.tags" 
-                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {{tag.name}}
-                </span>
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Category</h4>
+                <div class="flex items-center space-x-2">
+                  <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                  </div>
+                  <span class="text-gray-900">{{asset.category?.name || 'General'}}</span>
+                </div>
               </div>
-              <ng-template #noTagsTemplate>
-                <p class="text-gray-900">No tags assigned</p>
-              </ng-template>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Asset Type</h4>
+                <span class="text-gray-900">{{getAssetTypeName(asset.type)}}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Location</h4>
+                <a href="#" class="text-blue-600 hover:text-blue-700 transition-colors">
+                  {{asset.location?.name || 'Not specified'}}
+                </a>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Department</h4>
+                <span class="text-gray-900">{{asset.department?.name || 'Not specified'}}</span>
+              </div>
             </div>
+
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Purchase Date</h4>
+                <span class="text-gray-900">{{asset.purchase_date ? (asset.purchase_date | date:'mediumDate') : 'Not specified'}}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Created</h4>
+                <span class="text-gray-900">{{asset.created_at | date:'mediumDate'}}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Last Modified</h4>
+                <span class="text-gray-900">{{asset.updated_at | date:'mediumDate'}}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Asset ID</h4>
+                <div class="flex items-center space-x-2">
+                  <span class="font-mono text-gray-900">{{asset.asset_id || asset.id}}</span>
+                  <button
+                    (click)="copyAssetId()"
+                    class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h4 class="text-sm font-medium text-gray-700 mb-2">Description</h4>
+            <div class="relative">
+              <p class="text-gray-900 leading-relaxed" 
+                 [class.line-clamp-3]="!descriptionExpanded && (asset.description?.length || 0) > 200">
+                {{asset.description || 'No description available.'}}
+              </p>
+              <button
+                *ngIf="(asset.description?.length || 0) > 200"
+                (click)="descriptionExpanded = !descriptionExpanded"
+                class="mt-2 text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors">
+                {{descriptionExpanded ? 'Show less' : 'Show more'}}
+              </button>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Tags</h4>
+            <div *ngIf="asset.tags && asset.tags.length > 0; else noTagsTemplate" class="flex flex-wrap gap-2">
+              <span *ngFor="let tag of asset.tags" 
+                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                {{tag.name}}
+              </span>
+            </div>
+            <ng-template #noTagsTemplate>
+              <p class="text-gray-500 text-sm">No tags assigned</p>
+            </ng-template>
           </div>
         </div>
 
-      </div>
-
-      <!-- Right Column -->
-      <div class="space-y-6 mt-5">
         <!-- Technical Specifications -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div id="technical" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-6">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
             </div>
-            <h2 class="text-lg font-semibold text-gray-900">Technical Specifications</h2>
+            <h2 class="text-xl font-semibold text-gray-900">Technical Specifications</h2>
           </div>
 
-          <div class="space-y-4">
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Manufacturer</h4>
-              <p class="text-gray-900">{{asset.manufacturer || 'Not specified'}}</p>
+          <!-- Basic Technical Info -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Manufacturer</h4>
+                <span class="text-gray-900">{{asset.manufacturer || 'Not specified'}}</span>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Model Number</h4>
+                <span class="text-gray-900">{{asset.model || 'Not specified'}}</span>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Serial Number</h4>
+                <div class="flex items-center space-x-2">
+                  <span class="font-mono text-gray-900">{{asset.serial_number || 'Not specified'}}</span>
+                  <button
+                    *ngIf="asset.serial_number"
+                    (click)="copySerialNumber()"
+                    class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Model Number</h4>
-              <p class="text-gray-900">{{asset.model || 'Not specified'}}</p>
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Brand</h4>
+                <span class="text-gray-900">{{asset.brand || 'Not specified'}}</span>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Part Number</h4>
+                <span class="text-gray-900">{{asset.part_number || 'Not specified'}}</span>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">SKU</h4>
+                <span class="text-gray-900">{{asset.sku || 'Not specified'}}</span>
+              </div>
             </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Serial Number</h4>
-              <p class="text-gray-900">{{asset.serial_number || 'Not specified'}}</p>
-            </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Brand</h4>
-              <p class="text-gray-900">{{asset.brand || 'Not specified'}}</p>
-            </div>
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Insurance</h4>
-              <p class="text-gray-900">{{asset.insurance || 'Not specified'}}</p>
+          </div>
+
+          <!-- Technical Specifications (Key-Value Pairs) -->
+          <div *ngIf="asset.specifications && asset.specifications.length > 0" class="pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Detailed Specifications</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div *ngFor="let spec of asset.specifications" class="bg-gray-50 rounded-lg p-4">
+                <div class="flex justify-between items-start">
+                  <span class="text-sm font-medium text-gray-700">{{spec.key}}</span>
+                  <span class="text-sm text-gray-900 text-right">{{spec.value}} {{spec.unit}}</span>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Warranty Information -->
-          <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mt-6">
-            <div class="flex items-center space-x-2 mb-4">
-              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-              </svg>
-              <h3 class="font-medium text-gray-900">Warranty Information</h3>
-            </div>
-            <div class="space-y-4">
+          <div class="pt-6 border-t border-gray-200 mt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Warranty Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Warranty Expiration</h4>
-                <p class="text-gray-900">{{asset.warranty ? (asset.warranty | date:'mediumDate') : 'Not specified'}}</p>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Warranty Expiration</h4>
+                <span class="text-gray-900">{{asset.warranty ? (asset.warranty | date:'mediumDate') : 'Not specified'}}</span>
               </div>
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Warranty Status</h4>
-                <p class="text-gray-900">{{getWarrantyStatus(asset.warranty)}}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Maintenance Schedule -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <h2 class="text-lg font-semibold text-gray-900">Maintenance Schedules</h2>
-            <button
-              (click)="addMaintenanceSchedule()"
-              class="ml-auto flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              <span>Add Schedule</span>
-            </button>
-          </div>
-
-          <!-- Loading State -->
-          <div *ngIf="maintenanceLoading" class="text-center py-8">
-            <div class="inline-flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-full mb-4">
-              <svg class="animate-spin w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </div>
-            <p class="text-sm text-gray-500">Loading maintenance schedules...</p>
-          </div>
-
-          <!-- Maintenance Schedules List -->
-          <div *ngIf="!maintenanceLoading && maintenanceSchedules.length > 0" class="space-y-4">
-            <div *ngFor="let schedule of maintenanceSchedules" 
-                 class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center space-x-3">
-                  <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 class="font-medium text-gray-900">{{schedule.schedule_type}}</h4>
-                    <p class="text-sm text-gray-500">{{schedule.frequency || 'No frequency set'}}</p>
-                  </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <span 
-                    [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getScheduleStatusColor(schedule.status || 'Scheduled') + '-100 text-' + getScheduleStatusColor(schedule.status || 'Scheduled') + '-800'">
-                    {{schedule.status || 'Scheduled'}}
-                  </span>
-                  <button
-                    (click)="editMaintenanceSchedule(schedule)"
-                    class="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                  </button>
-                  <button
-                    (click)="deleteMaintenanceSchedule(schedule)"
-                    class="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              
-              <div class="space-y-2 text-sm">
-                <div>
-                  <span class="text-gray-600">Next Due:</span>
-                  <span class="ml-2 font-medium text-gray-900">{{formatDate(schedule.next_due)}}</span>
-                </div>
-                <div>
-                  <span class="text-gray-600">Last Done:</span>
-                  <span class="ml-2 font-medium text-gray-900">{{formatDate(schedule.last_done)}}</span>
-                </div>
-              </div>
-              
-              <div *ngIf="schedule.notes" class="mt-3 pt-3 border-t border-gray-200">
-                <p class="text-sm text-gray-600">{{schedule.notes}}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Empty State -->
-          <div *ngIf="!maintenanceLoading && maintenanceSchedules.length === 0" class="text-center py-8">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">No Maintenance Schedules</h3>
-            <p class="text-gray-600 mb-4">Create maintenance schedules to track asset upkeep.</p>
-            <button
-              (click)="addMaintenanceSchedule()"
-              class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
-              Add First Schedule
-            </button>
-          </div>
-        </div>
-
-        <!-- Health & Performance -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-              </svg>
-            </div>
-            <h2 class="text-lg font-semibold text-gray-900">Health & Performance</h2>
-          </div>
-
-          <div class="space-y-4">
-            <div>
-              <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-medium text-gray-700">Health Score</span>
-                <span class="text-sm text-gray-500">Excellent Health</span>
-              </div>
-              <div class="text-2xl font-bold text-gray-900 mb-2">{{mockHealthData.healthScore}}%</div>
-              <div class="w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-green-500 h-2 rounded-full" [style.width.%]="mockHealthData.healthScore"></div>
-              </div>
-            </div>
-
-            <div class="pt-4 border-t border-gray-200">
-              <h4 class="text-sm font-medium text-gray-700 mb-3">Performance Trend (Last 4 Months)</h4>
-              <div class="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
-                <div class="text-center">
-                  <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                  </svg>
-                  <p class="text-sm text-gray-500">Performance chart placeholder</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Asset Depreciation -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-              </svg>
-            </div>
-            <h2 class="text-lg font-semibold text-gray-900">Asset Depreciation</h2>
-          </div>
-
-          <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Original Value</h4>
-                <p class="text-lg font-semibold text-gray-900">${{mockFinancialData.originalValue | number:'1.0-0'}}</p>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Current Value</h4>
-                <p class="text-lg font-semibold text-blue-600">${{mockFinancialData.currentValue | number:'1.0-0'}}</p>
-              </div>
-            </div>
-
-            <div class="pt-4 border-t border-gray-200">
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Depreciation Timeline</h4>
-              <p class="text-xs text-gray-500 mb-3">(straight-line method)</p>
-              <div class="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
-                <div class="text-center">
-                  <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                  </svg>
-                  <p class="text-sm text-gray-500">Depreciation chart placeholder</p>
-                  <p class="text-xs text-gray-400 mt-1">Red dot indicates current period value</p>
-                </div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Warranty Status</h4>
+                <span [class]="getWarrantyStatusClass(asset.warranty)">{{getWarrantyStatus(asset.warranty)}}</span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Financial Information -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div id="financial" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-6">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
               </svg>
             </div>
-            <h2 class="text-lg font-semibold text-gray-900">Financial Information</h2>
+            <h2 class="text-xl font-semibold text-gray-900">Financial Information</h2>
           </div>
 
-          <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Purchase Cost</h4>
-                <p class="text-lg font-semibold text-gray-900">${{mockFinancialData.purchaseCost | number:'1.0-0'}}</p>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Current Value</h4>
-                <p class="text-lg font-semibold text-gray-900">${{mockFinancialData.currentValue | number:'1.0-0'}}</p>
-              </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div class="bg-blue-50 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-blue-700 mb-1">Purchase Price</h4>
+              <p class="text-2xl font-bold text-blue-900">${{(asset.purchase_price || 0) | number:'1.0-0'}}</p>
             </div>
+            <div class="bg-green-50 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-green-700 mb-1">Current Value</h4>
+              <p class="text-2xl font-bold text-green-900">${{(asset.current_value || asset.purchase_price || 0) | number:'1.0-0'}}</p>
+            </div>
+            <div class="bg-orange-50 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-orange-700 mb-1">Depreciation</h4>
+              <p class="text-2xl font-bold text-orange-900">${{calculateDepreciation() | number:'1.0-0'}}</p>
+            </div>
+            <div class="bg-purple-50 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-purple-700 mb-1">Insurance Value</h4>
+              <p class="text-2xl font-bold text-purple-900">${{(asset.insurance_value || asset.purchase_price || 0) | number:'1.0-0'}}</p>
+            </div>
+          </div>
 
-            <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
               <div>
                 <h4 class="text-sm font-medium text-gray-700 mb-1">Depreciation Method</h4>
-                <p class="text-gray-900">{{mockFinancialData.depreciationMethod}}</p>
+                <span class="text-gray-900">{{asset.depreciation_method || 'Straight Line'}}</span>
               </div>
               <div>
                 <h4 class="text-sm font-medium text-gray-700 mb-1">Useful Life</h4>
-                <p class="text-gray-900">{{mockFinancialData.usefulLife}} years</p>
+                <span class="text-gray-900">{{asset.depreciation || 10}} years</span>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Depreciation Rate</h4>
+                <span class="text-gray-900">{{calculateDepreciationRate()}}% per year</span>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Total Cost of Ownership</h4>
+                <span class="text-gray-900">${{calculateTotalCostOfOwnership() | number:'1.0-0'}}</span>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">ROI</h4>
+                <span class="text-gray-900">{{calculateROI()}}%</span>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Market Value Estimate</h4>
+                <span class="text-gray-900">${{(asset.market_value || asset.current_value || asset.purchase_price || 0) | number:'1.0-0'}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Depreciation Chart Placeholder -->
+          <div class="pt-6 border-t border-gray-200 mt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Value History</h3>
+            <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+              <div class="text-center">
+                <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+                <p class="text-sm text-gray-500">Depreciation timeline chart</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- AI Asset Assistant -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        <!-- Activity Timeline -->
+        <div id="activity" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-6">
+            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <h2 class="text-lg font-semibold text-gray-900">AI Asset Assistant</h2>
+            <h2 class="text-xl font-semibold text-gray-900">Activity Timeline</h2>
           </div>
 
-          <div class="space-y-3">
-            <button
-              (click)="generateSmartDescription()"
-              class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
-              <span>Enhance</span>
-            </button>
+          <!-- Activity Items -->
+          <div class="space-y-6">
+            <!-- Status Change History -->
+            <div class="flex items-start space-x-4">
+              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-medium text-gray-900">Asset Created</h4>
+                  <span class="text-sm text-gray-500">{{asset.created_at | date:'medium'}}</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">Asset was added to the system</p>
+              </div>
+            </div>
 
-            <div class="grid grid-cols-2 gap-3">
-              <button
-                (click)="generateSmartDescription()"
-                class="flex items-center justify-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Location Change Tracking -->
+            <div *ngIf="asset.updated_at !== asset.created_at" class="flex items-start space-x-4">
+              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-medium text-gray-900">Asset Updated</h4>
+                  <span class="text-sm text-gray-500">{{asset.updated_at | date:'medium'}}</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">Asset information was modified</p>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="text-center py-8 border-t border-gray-200">
+              <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900 mb-2">More activity coming soon</h3>
+              <p class="text-sm text-gray-500">Maintenance records, transfers, and work orders will appear here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (1/3 width) -->
+      <div class="space-y-6">
+        <!-- Health & Performance Dashboard -->
+        <div id="performance" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-6">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Health & Performance</h2>
+          </div>
+
+          <!-- Health Score -->
+          <div class="mb-6">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-700">Overall Health Score</span>
+              <span class="text-sm text-gray-500">Excellent</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-900 mb-3">{{asset.health_score || 85}}%</div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+              <div class="bg-green-500 h-3 rounded-full transition-all duration-500" [style.width.%]="asset.health_score || 85"></div>
+            </div>
+          </div>
+
+          <!-- Performance Metrics -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Utilization Rate</span>
+              <span class="text-sm font-medium text-gray-900">{{asset.utilization_rate || 75}}%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Reliability Score</span>
+              <span class="text-sm font-medium text-gray-900">{{asset.reliability_score || 92}}%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Efficiency Rating</span>
+              <span class="text-sm font-medium text-gray-900">{{asset.efficiency_rating || 88}}%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Downtime (Last 30 days)</span>
+              <span class="text-sm font-medium text-gray-900">{{asset.downtime_hours || 2}} hours</span>
+            </div>
+          </div>
+
+          <!-- Performance Chart Placeholder -->
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Performance Trend</h4>
+            <div class="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
+              <div class="text-center">
+                <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
-                <span class="text-sm">Analyze</span>
-              </button>
-              <button
-                (click)="analyzeAssetImage()"
-                class="flex items-center justify-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                <span class="text-sm">Maintain</span>
-              </button>
-            </div>
-
-            <div class="space-y-2">
-              <button
-                (click)="generateSmartDescription()"
-                class="w-full flex items-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-left">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <span class="text-sm">Generate Smart Description</span>
-              </button>
-
-              <button
-                (click)="analyzeAssetImage()"
-                class="w-full flex items-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-left">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                <span class="text-sm">Analyze Asset Image</span>
-              </button>
-            </div>
-
-            <div class="pt-4 border-t border-gray-200">
-              <div class="text-center py-8">
-                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                  </svg>
-                </div>
-                <p class="text-sm text-gray-500">No AI enhancements generated yet. Try generating a description or analyzing an image!</p>
+                <p class="text-xs text-gray-500">Performance chart</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Activity & Transfer History -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
+        <!-- Maintenance Schedule -->
+        <div id="maintenance" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h2 class="text-lg font-semibold text-gray-900">Maintenance</h2>
             </div>
-            <h2 class="text-lg font-semibold text-gray-900">Activity & Transfer History</h2>
+            <button
+              (click)="addMaintenanceSchedule()"
+              class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span>Add</span>
+            </button>
           </div>
 
-          <div class="text-center py-12">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          <!-- Maintenance Overview -->
+          <div class="space-y-4 mb-6">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Last Maintenance</span>
+              <span class="text-sm font-medium text-gray-900">{{asset.last_maintenance_date ? (asset.last_maintenance_date | date:'mediumDate') : 'Never'}}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Next Due</span>
+              <span class="text-sm font-medium text-gray-900">{{asset.next_maintenance_date ? (asset.next_maintenance_date | date:'mediumDate') : 'Not scheduled'}}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Maintenance Frequency</span>
+              <span class="text-sm font-medium text-gray-900">{{asset.maintenance_frequency || 'Every 6 months'}}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Total Maintenance Cost</span>
+              <span class="text-sm font-medium text-gray-900">${{(asset.total_maintenance_cost || 0) | number:'1.0-0'}}</span>
+            </div>
+          </div>
+
+          <!-- Maintenance Schedules List -->
+          <div *ngIf="maintenanceSchedules.length > 0; else noMaintenanceTemplate" class="space-y-3">
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Upcoming Schedules</h4>
+            <div *ngFor="let schedule of maintenanceSchedules.slice(0, 3)" 
+                 class="bg-gray-50 rounded-lg p-3">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-medium text-gray-900 text-sm">{{schedule.schedule_type}}</span>
+                <span 
+                  [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getScheduleStatusColor(schedule.status || 'Scheduled') + '-100 text-' + getScheduleStatusColor(schedule.status || 'Scheduled') + '-800'">
+                  {{schedule.status || 'Scheduled'}}
+                </span>
+              </div>
+              <div class="text-xs text-gray-600">
+                Due: {{formatDate(schedule.next_due)}}
+              </div>
+            </div>
+            <button
+              *ngIf="maintenanceSchedules.length > 3"
+              class="w-full text-center text-blue-600 hover:text-blue-700 text-sm font-medium py-2">
+              View all {{maintenanceSchedules.length}} schedules
+            </button>
+          </div>
+
+          <ng-template #noMaintenanceTemplate>
+            <div class="text-center py-6">
+              <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <p class="text-sm text-gray-500 mb-3">No maintenance schedules</p>
+              <button
+                (click)="addMaintenanceSchedule()"
+                class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                Create first schedule
+              </button>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Related Assets -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-6">
+            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
               </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">No activity found for this asset</h3>
-            <p class="text-sm text-gray-500">Activity will appear here when transfers, maintenance, or work orders are created.</p>
+            <h2 class="text-lg font-semibold text-gray-900">Related Assets</h2>
+          </div>
+
+          <!-- Related Assets List -->
+          <div class="space-y-3">
+            <!-- Same Location -->
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Same Location</h4>
+              <div class="text-center py-4">
+                <p class="text-sm text-gray-500">No other assets in this location</p>
+              </div>
+            </div>
+
+            <!-- Same Category -->
+            <div class="pt-4 border-t border-gray-200">
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Same Category</h4>
+              <div class="text-center py-4">
+                <p class="text-sm text-gray-500">No other assets in this category</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <div class="space-y-3">
+            <button
+              (click)="createWorkOrder()"
+              class="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Create Work Order</div>
+                <div class="text-sm text-gray-500">Schedule maintenance or repair</div>
+              </div>
+            </button>
+
+            <button
+              (click)="transferAsset()"
+              class="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Transfer Asset</div>
+                <div class="text-sm text-gray-500">Move to different location</div>
+              </div>
+            </button>
+
+            <button
+              (click)="duplicateAsset()"
+              class="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
+              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Duplicate Asset</div>
+                <div class="text-sm text-gray-500">Create similar asset</div>
+              </div>
+            </button>
           </div>
         </div>
       </div>

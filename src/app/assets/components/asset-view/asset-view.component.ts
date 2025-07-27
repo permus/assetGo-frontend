@@ -23,6 +23,13 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   loading = true;
   error = '';
   
+  // Image gallery state
+  currentImageIndex = 0;
+  selectedImageUrl: string | null = null;
+  
+  // UI state
+  descriptionExpanded = false;
+  
   // Maintenance Schedule
   maintenanceSchedules: any[] = [];
   maintenanceLoading = false;
@@ -171,6 +178,12 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         nextMaintenance: this.asset.next_maintenance_date || null,
         interval: this.asset.maintenance_interval || 'Every 6 months'
       };
+      
+      // Initialize image gallery
+      if (this.asset.images && this.asset.images.length > 0) {
+        this.selectedImageUrl = this.asset.images[0].image_url;
+        this.currentImageIndex = 0;
+      }
     }
   }
 
@@ -411,6 +424,109 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       } else {
         return 'Active';
       }
+    }
+  }
+
+  getWarrantyStatusClass(warrantyDate: string): string {
+    const status = this.getWarrantyStatus(warrantyDate);
+    if (status === 'Expired') return 'text-red-600 font-medium';
+    if (status.includes('Expires in')) return 'text-orange-600 font-medium';
+    if (status === 'Active') return 'text-green-600 font-medium';
+    return 'text-gray-500';
+  }
+
+  // Image gallery methods
+  selectImage(index: number) {
+    if (this.asset.images && index >= 0 && index < this.asset.images.length) {
+      this.currentImageIndex = index;
+      this.selectedImageUrl = this.asset.images[index].image_url;
+    }
+  }
+
+  previousImage() {
+    if (this.asset.images && this.asset.images.length > 1) {
+      const newIndex = this.currentImageIndex > 0 ? this.currentImageIndex - 1 : this.asset.images.length - 1;
+      this.selectImage(newIndex);
+    }
+  }
+
+  nextImage() {
+    if (this.asset.images && this.asset.images.length > 1) {
+      const newIndex = this.currentImageIndex < this.asset.images.length - 1 ? this.currentImageIndex + 1 : 0;
+      this.selectImage(newIndex);
+    }
+  }
+
+  // Copy to clipboard methods
+  copyAssetId() {
+    const assetId = this.asset?.asset_id || this.asset?.id;
+    if (assetId) {
+      navigator.clipboard.writeText(assetId.toString()).then(() => {
+        console.log('Asset ID copied to clipboard');
+        // You could show a toast notification here
+      }).catch(err => {
+        console.error('Failed to copy asset ID:', err);
+      });
+    }
+  }
+
+  copySerialNumber() {
+    if (this.asset?.serial_number) {
+      navigator.clipboard.writeText(this.asset.serial_number).then(() => {
+        console.log('Serial number copied to clipboard');
+        // You could show a toast notification here
+      }).catch(err => {
+        console.error('Failed to copy serial number:', err);
+      });
+    }
+  }
+
+  // Financial calculation methods
+  calculateDepreciation(): number {
+    if (!this.asset?.purchase_price) return 0;
+    const currentValue = this.asset.current_value || this.asset.purchase_price;
+    return this.asset.purchase_price - currentValue;
+  }
+
+  calculateDepreciationRate(): number {
+    const usefulLife = this.asset?.depreciation || 10;
+    return Math.round((1 / usefulLife) * 100);
+  }
+
+  calculateTotalCostOfOwnership(): number {
+    const purchasePrice = this.asset?.purchase_price || 0;
+    const maintenanceCost = this.asset?.total_maintenance_cost || 0;
+    const operatingCost = this.asset?.operating_cost || 0;
+    return purchasePrice + maintenanceCost + operatingCost;
+  }
+
+  calculateROI(): number {
+    // Simple ROI calculation - would need more data for accurate calculation
+    const totalCost = this.calculateTotalCostOfOwnership();
+    const currentValue = this.asset?.current_value || this.asset?.purchase_price || 0;
+    if (totalCost === 0) return 0;
+    return Math.round(((currentValue - totalCost) / totalCost) * 100);
+  }
+
+  // Quick action methods
+  createWorkOrder() {
+    console.log('Create work order for asset:', this.asset?.id);
+    // TODO: Implement work order creation
+  }
+
+  transferAsset() {
+    console.log('Transfer asset:', this.asset?.id);
+    // TODO: Implement asset transfer
+  }
+
+  duplicateAsset() {
+    if (this.asset) {
+      this.router.navigate(['/assets/create'], {
+        queryParams: {
+          duplicate: true,
+          sourceId: this.asset.id
+        }
+      });
     }
   }
 
