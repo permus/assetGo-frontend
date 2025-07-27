@@ -184,7 +184,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     
     // Convert images to base64
-    this.convertImagesToBase64().then((base64Images) => {
+    this.convertImagesToBase64().then((base64Images: string[]) => {
       // Create payload object
       const payload = {
         name: this.name,
@@ -233,6 +233,26 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       this.submitError = 'Failed to process images. Please try again.';
       console.error('Image conversion error:', error);
     });
+  }
+
+  // Convert images to base64
+  private convertImagesToBase64(): Promise<string[]> {
+    return Promise.all(
+      this.images.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (reader.result) {
+              resolve(reader.result as string);
+            } else {
+              reject(new Error('Failed to read file'));
+            }
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+      })
+    );
   }
 
   healthScore = 85;
