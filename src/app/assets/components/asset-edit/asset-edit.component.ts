@@ -81,6 +81,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   images: File[] = [];
   imagePreviewUrls: string[] = [];
   existingImages: any[] = [];
+  removedImageIds: number[] = [];
   isDragOver = false;
 
   // Validation errors
@@ -686,10 +687,20 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   removeExistingImage(index: number) {
+    const removedImage = this.existingImages[index];
+    if (removedImage && removedImage.id) {
+      this.removedImageIds.push(removedImage.id);
+    }
     this.existingImages.splice(index, 1);
   }
 
   removeAllExistingImages() {
+    // Add all existing image IDs to removal list
+    this.existingImages.forEach(img => {
+      if (img && img.id) {
+        this.removedImageIds.push(img.id);
+      }
+    });
     this.existingImages = [];
   }
 
@@ -834,8 +845,13 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         // Add images to form data
         formData.images = base64Images;
         
-        // Add existing images that should be kept
+        // Add existing images that should be kept (only send IDs)
         formData.existing_images = this.existingImages.map(img => img.id || img.image_url);
+        
+        // Add removed image IDs for backend deletion
+        if (this.removedImageIds.length > 0) {
+          formData.remove_image_ids = this.removedImageIds;
+        }
 
         this.assetService.updateAsset(this.asset.id, formData)
           .pipe(takeUntil(this.destroy$))
