@@ -460,9 +460,11 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       if (sourceAsset.type) {
         this.selectedAssetType = this.assetTypes.find(type => 
-          type.id === sourceAsset.type
+          type.id == sourceAsset.type || type.id === parseInt(sourceAsset.type)
         ) || null;
-        this.assetType = sourceAsset.type;
+        if (this.selectedAssetType) {
+          this.assetType = this.selectedAssetType.id;
+        }
       }
 
       if (sourceAsset.category_id) {
@@ -500,7 +502,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Clear validation errors after populating form
       this.clearErrors();
-    }, 100);
+    }, 500); // Increased timeout to ensure asset types are loaded
 
     // Clear unique fields - these will be auto-generated or user-entered
     this.serial_number = ''; // Must be unique - user needs to enter new one
