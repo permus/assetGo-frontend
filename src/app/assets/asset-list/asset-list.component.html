@@ -368,6 +368,7 @@
             <!-- Dropdown Menu -->
             <div *ngIf="asset.showMenu" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
               <button
+               *ngIf="!showingArchived"
                 (click)="viewAsset(asset)"
                 class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -378,6 +379,7 @@
               </button>
 
               <button
+               *ngIf="!showingArchived"
                 (click)="editAsset(asset)"
                 class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -387,6 +389,7 @@
               </button>
 
               <button
+               *ngIf="!showingArchived"
                 (click)="duplicateAsset(asset)"
                 class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
