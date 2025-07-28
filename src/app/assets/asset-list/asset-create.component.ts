@@ -968,29 +968,14 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   private duplicateImages(sourceImages: any[]) {
     sourceImages.forEach((image, index) => {
       if (image.image_url) {
-        // Fetch the image and convert to File object
-        fetch(image.image_url)
-          .then(response => response.blob())
-          .then(blob => {
-            // Create a File object from the blob
-            const fileName = `duplicated-image-${index + 1}.jpg`;
-            const file = new File([blob], fileName, { type: blob.type || 'image/jpeg' });
-            
-            // Add to images array
-            this.images.push(file);
-            
-            // Create preview URL
-            const reader = new FileReader();
-            reader.onload = (e: any) => {
-              if (e.target?.result) {
-                this.imagePreviewUrls.push(e.target.result as string);
-              }
-            };
-            reader.readAsDataURL(file);
-          })
-          .catch(error => {
-            console.warn('Failed to duplicate image:', image.image_url, error);
-          });
+        // For duplication, just show the existing image URLs as previews
+        // Users can upload new images if needed
+        this.imagePreviewUrls.push(image.image_url);
+        
+        // Create a placeholder file object to maintain array consistency
+        const fileName = `existing-image-${index + 1}.jpg`;
+        const placeholderFile = new File([''], fileName, { type: 'image/jpeg' });
+        this.images.push(placeholderFile);
       }
     });
   }
