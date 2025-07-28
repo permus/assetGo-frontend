@@ -837,7 +837,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Helper method to convert backend date format to display format
-  private convertBackendDateToDisplay(dateStr: string): string {
+  convertBackendDateToDisplay(dateStr: string): string {
     if (!dateStr) return '';
 
     try {
