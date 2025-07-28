@@ -113,7 +113,7 @@
             <div class="bg-gray-50 rounded-lg p-4">
               <div class="flex items-center justify-between mb-3">
                 <span class="text-sm text-gray-600">Current Score</span>
-                <span class="text-2xl font-bold" [class.text-red-600]="assetForm.get('health_score')?.value < 50" [class.text-green-600]="assetForm.get('health_score')?.value >= 50">{{ assetForm.get('health_score')?.value }}%</span>
+                <span class="text-2xl font-bold" [class.text-red-600]="(assetForm.get('health_score')?.value || 85) < 50" [class.text-green-600]="(assetForm.get('health_score')?.value || 85) >= 50">{{ assetForm.get('health_score')?.value || 85 }}%</span>
               </div>
               <!-- Custom Health Score Bar with Working Slider -->
               <div class="relative w-full h-6 mb-3">
@@ -123,9 +123,9 @@
                 <!-- Progress Bar -->
                 <div
                   class="absolute top-1/2 transform -translate-y-1/2 h-2 rounded-lg transition-all duration-300"
-                  [class.bg-red-500]="assetForm.get('health_score')?.value < 50"
-                  [class.bg-green-500]="assetForm.get('health_score')?.value >= 50"
-                  [style.width.%]="assetForm.get('health_score')?.value"></div>
+                  [class.bg-red-500]="(assetForm.get('health_score')?.value || 85) < 50"
+                  [class.bg-green-500]="(assetForm.get('health_score')?.value || 85) >= 50"
+                  [style.width.%]="assetForm.get('health_score')?.value || 85"></div>
 
                 <!-- Interactive Range Input -->
                 <input
@@ -138,9 +138,9 @@
                 <!-- Custom Thumb -->
                 <div
                   class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow-md pointer-events-none transition-all duration-300"
-                  [class.bg-red-500]="assetForm.get('health_score')?.value < 50"
-                  [class.bg-green-500]="assetForm.get('health_score')?.value >= 50"
-                  [style.left.%]="assetForm.get('health_score')?.value"
+                  [class.bg-red-500]="(assetForm.get('health_score')?.value || 85) < 50"
+                  [class.bg-green-500]="(assetForm.get('health_score')?.value || 85) >= 50"
+                  [style.left.%]="assetForm.get('health_score')?.value || 85"
                   style="margin-left: -8px;"></div>
               </div>
 
