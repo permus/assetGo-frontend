@@ -446,12 +446,12 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.description = sourceAsset.description || '';
     this.model = sourceAsset.model || '';
     this.manufacturer = sourceAsset.manufacturer || '';
-    this.purchase_date = sourceAsset.purchase_date || '';
+    this.purchase_date = sourceAsset.purchase_date ? this.convertBackendDateToDisplay(sourceAsset.purchase_date) : '';
     this.purchase_price = sourceAsset.purchase_price || null;
     this.depreciation = sourceAsset.depreciation || null;
     this.location_id = sourceAsset.location_id || null;
     this.department_id = sourceAsset.department_id || null;
-    this.warranty = sourceAsset.warranty || '';
+    this.warranty = sourceAsset.warranty ? this.convertBackendDateToDisplay(sourceAsset.warranty) : '';
     this.insurance = sourceAsset.insurance || '';
     this.health_score = sourceAsset.health_score || 85;
     this.status = sourceAsset.status || 'Active';
@@ -830,6 +830,33 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       const day = String(date.getDate()).padStart(2, '0');
       
       return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error('Date conversion error:', error);
+      return dateStr; // Return original if conversion fails
+    }
+  }
+
+  // Helper method to convert backend date format to display format
+  private convertBackendDateToDisplay(dateStr: string): string {
+    if (!dateStr) return '';
+
+    try {
+      // Parse Y-m-d format or ISO format to Date object
+      const date = new Date(dateStr);
+
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return dateStr; // Return original if parsing fails
+      }
+
+      // Convert to display format "01 Jul, 2025"
+      const options: Intl.DateTimeFormatOptions = {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      };
+
+      return date.toLocaleDateString('en-GB', options).replace(/,/g, ',');
     } catch (error) {
       console.error('Date conversion error:', error);
       return dateStr; // Return original if conversion fails
