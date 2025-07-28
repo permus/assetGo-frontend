@@ -733,6 +733,26 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     window.open(imageUrl, '_blank');
   }
 
+  // Convert images to base64
+  private convertImagesToBase64(): Promise<string[]> {
+    return Promise.all(
+      this.images.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (reader.result) {
+              resolve(reader.result as string);
+            } else {
+              reject(new Error('Failed to read file'));
+            }
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+      })
+    );
+  }
+
   onCategoryIconError(event: any, category: any) {
     console.warn('Category icon failed to load:', category.name, category.icon);
     category.iconError = true;
@@ -796,39 +816,52 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.submitError = '';
       this.submitSuccess = '';
 
-      const formData = this.assetForm.value;
+      // Convert images to base64 before sending
+      this.convertImagesToBase64().then((base64Images: string[]) => {
+        const formData = this.assetForm.value;
 
-      // Convert tags to text format
-      formData.tags = this.selectedTags.map(tag => tag.name);
+        // Convert tags to text format
+        formData.tags = this.selectedTags.map(tag => tag.name);
 
-      // Convert date formats from display format to Y-m-d format for backend
-      if (formData.purchase_date) {
-        formData.purchase_date = this.convertDateToBackendFormat(formData.purchase_date);
-      }
-      if (formData.warranty) {
-        formData.warranty = this.convertDateToBackendFormat(formData.warranty);
-      }
+        // Convert date formats from display format to Y-m-d format for backend
+        if (formData.purchase_date) {
+          formData.purchase_date = this.convertDateToBackendFormat(formData.purchase_date);
+        }
+        if (formData.warranty) {
+          formData.warranty = this.convertDateToBackendFormat(formData.warranty);
+        }
 
-      this.assetService.updateAsset(this.asset.id, formData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (response) => {
-            if (response.success) {
-              this.submitSuccess = 'Asset updated successfully!';
-              // Navigate back to asset view after 2 seconds
-              setTimeout(() => {
-                this.router.navigate(['/assets', this.asset.id]);
-              }, 2000);
-            } else {
-              this.submitError = response.message || 'Failed to update asset';
+        // Add images to form data
+        formData.images = base64Images;
+        
+        // Add existing images that should be kept
+        formData.existing_images = this.existingImages.map(img => img.id || img.image_url);
+
+        this.assetService.updateAsset(this.asset.id, formData)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              if (response.success) {
+                this.submitSuccess = 'Asset updated successfully!';
+                // Navigate back to asset view after 2 seconds
+                setTimeout(() => {
+                  this.router.navigate(['/assets', this.asset.id]);
+                }, 2000);
+              } else {
+                this.submitError = response.message || 'Failed to update asset';
+              }
+              this.saving = false;
+            },
+            error: (error) => {
+              this.submitError = error.error?.message || 'An error occurred while updating the asset';
+              this.saving = false;
             }
-            this.saving = false;
-          },
-          error: (error) => {
-            this.submitError = error.error?.message || 'An error occurred while updating the asset';
-            this.saving = false;
-          }
-        });
+          });
+      }).catch((error) => {
+        this.saving = false;
+        this.submitError = 'Failed to process images. Please try again.';
+        console.error('Image conversion error:', error);
+      });
     }
   }
 
