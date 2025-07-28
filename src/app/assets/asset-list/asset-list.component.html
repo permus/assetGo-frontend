@@ -441,7 +441,10 @@
         <div>
           <div
             class="font-semibold text-lg text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
-            (click)="viewAsset(asset)">
+            [class.cursor-pointer]="!showingArchived"
+            [class.hover:text-blue-600]="!showingArchived"
+            [class.cursor-default]="showingArchived"
+            (click)="!showingArchived && viewAsset(asset)">
             {{ asset.name || 'Unnamed Asset' }}
           </div>
           <div class="text-sm text-gray-500 mb-1">{{ asset.asset_id || asset.id }} • {{ asset.type || 'General' }}</div>
