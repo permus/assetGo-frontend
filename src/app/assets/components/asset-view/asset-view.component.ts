@@ -29,6 +29,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   
   // UI state
   descriptionExpanded = false;
+  showActionsDropdown = false;
   
   // Maintenance Schedule
   maintenanceSchedules: any[] = [];
