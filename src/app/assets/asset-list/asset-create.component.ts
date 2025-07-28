@@ -201,7 +201,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         department_id: this.department_id,
         warranty: warrantyFormatted,
         insurance: this.insurance,
-        health_score: this.health_score,
+        health_score: this.healthScore,
         status: this.status,
         tags: this.selectedTags.map(tag => tag.name),
         meta: this.meta,
