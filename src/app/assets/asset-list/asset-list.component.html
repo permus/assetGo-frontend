@@ -354,6 +354,7 @@
         </div>
         <div class="absolute right-4 top-4 flex items-center space-x-2">
           <span *ngIf="asset.status === 'Active'" class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Active</span>
+          <span *ngIf="asset.status !== 'Active'" [class]="'bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-700 text-xs font-semibold px-3 py-1 rounded-full'">{{asset.status}}</span>
           <div class="relative" (click)="$event.stopPropagation()">
             <button
               (click)="toggleAssetMenu(asset.id)"
