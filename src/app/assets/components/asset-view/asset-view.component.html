@@ -1,32 +1,9 @@
-<!-- Enhanced Asset View Page -->
+<!-- Asset View Page -->
 <div class="min-h-screen bg-gray-50">
-  <!-- Header with Breadcrumb -->
+  <!-- Header -->
   <div class="bg-white border-b border-gray-200 px-6 py-4">
-    <!-- Breadcrumb Navigation -->
-    <nav class="flex mb-4" aria-label="Breadcrumb">
-      <ol class="flex items-center space-x-2">
-        <li>
-          <a routerLink="/assets" class="text-gray-500 hover:text-gray-700 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-            </svg>
-            <span class="sr-only">Assets</span>
-          </a>
-        </li>
-        <li>
-          <div class="flex items-center">
-            <svg class="w-4 h-4 text-gray-400 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-            <span class="text-gray-900 text-sm font-medium">{{asset?.name || 'Asset Details'}}</span>
-          </div>
-        </li>
-      </ol>
-    </nav>
-
-    <!-- Header Actions -->
     <div class="flex items-center justify-between">
-      <!-- Back Button and Navigation -->
+      <!-- Back Button and Breadcrumb -->
       <div class="flex items-center space-x-4">
         <button
           (click)="goBack()"
@@ -37,31 +14,31 @@
           <span class="font-medium">Back to Assets</span>
         </button>
         
-        <!-- Previous/Next Navigation -->
-        <div class="flex items-center space-x-2 border-l border-gray-200 pl-4">
-          <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-          </button>
-          <span class="text-sm text-gray-500">Asset 4 of 24</span>
-          <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
-        </div>
+        <!-- Breadcrumb -->
+        <nav class="flex" aria-label="Breadcrumb">
+          <ol class="flex items-center space-x-2">
+            <li>
+              <a href="/assets" class="text-gray-500 hover:text-gray-700 transition-colors">Assets</a>
+            </li>
+            <li>
+              <svg class="w-4 h-4 text-gray-400 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </li>
+            <li class="text-gray-900 font-medium">{{asset?.name || 'Asset Details'}}</li>
+          </ol>
+        </nav>
       </div>
 
-      <!-- Quick Actions Toolbar -->
+      <!-- Quick Actions -->
       <div class="flex items-center space-x-3">
         <button
-          (click)="copyAssetId()"
+          (click)="printAsset()"
           class="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
           </svg>
-          <span>Copy ID</span>
+          <span>Print</span>
         </button>
 
         <button
@@ -74,15 +51,6 @@
         </button>
 
         <button
-          (click)="printAsset()"
-          class="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-          </svg>
-          <span>Print</span>
-        </button>
-
-        <button
           (click)="editAsset()"
           class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,54 +58,6 @@
           </svg>
           <span>Edit Asset</span>
         </button>
-      </div>
-    </div>
-
-    <!-- Asset Title and Status -->
-    <div *ngIf="asset && !loading" class="mt-6">
-      <div class="flex items-center justify-between">
-        <div class="flex-1">
-          <div class="flex items-center space-x-4">
-            <h1 class="text-3xl font-bold text-gray-900">{{asset.name || 'Unnamed Asset'}}</h1>
-            <span 
-              [class]="'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-800'">
-              {{asset.status || 'Active'}}
-            </span>
-          </div>
-          <div class="flex items-center space-x-6 mt-3">
-            <div class="flex items-center space-x-2">
-              <span class="text-sm text-gray-600">Asset ID:</span>
-              <span class="font-mono text-sm text-gray-900">{{asset.asset_id || asset.id}}</span>
-              <button
-                (click)="copyAssetId()"
-                class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-              </button>
-            </div>
-            <div class="flex items-center space-x-2">
-              <span class="text-sm text-gray-600">Type:</span>
-              <span class="text-sm text-gray-900">{{getAssetTypeName(asset.type)}}</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <span class="text-sm text-gray-600">Location:</span>
-              <a href="#" class="text-sm text-blue-600 hover:text-blue-700">{{asset.location?.name || 'Not specified'}}</a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- QR Code Display -->
-        <div class="flex items-center space-x-4">
-          <div class="text-center">
-            <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
-              </svg>
-            </div>
-            <span class="text-xs text-gray-500">QR Code</span>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -176,226 +96,246 @@
 
   <!-- Main Content -->
   <div *ngIf="asset && !loading" class="px-6 py-6">
-    <!-- Section Navigation -->
-    <div class="mb-6">
-      <nav class="flex space-x-8">
-        <a href="#overview" class="text-blue-600 border-b-2 border-blue-600 pb-2 text-sm font-medium">Overview</a>
-        <a href="#technical" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Technical</a>
-        <a href="#financial" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Financial</a>
-        <a href="#maintenance" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Maintenance</a>
-        <a href="#performance" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Performance</a>
-        <a href="#activity" class="text-gray-500 hover:text-gray-700 pb-2 text-sm font-medium transition-colors">Activity</a>
-      </nav>
+    <!-- Asset Header -->
+    <div class="bg-white rounded-lg p-6 mb-6 shadow-sm border border-gray-200">
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getAssetTypeIcon()"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{asset.name}}</h1>
+            <div class="flex items-center space-x-4">
+              <span
+                [class]="'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-' + getStatusColor(asset.status) + '-100 text-' + getStatusColor(asset.status) + '-800'">
+                {{asset.status}}
+              </span>
+              <span class="text-gray-500">{{getAssetTypeName(asset.type)}}</span>
+              <span class="text-gray-500">•</span>
+              <span class="text-gray-500">{{asset.category?.name || 'General'}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Asset ID with Copy -->
+        <div class="text-right">
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="text-sm text-gray-500">Asset ID:</span>
+            <button
+              (click)="copyAssetId()"
+              class="flex items-center space-x-1 px-2 py-1 text-sm font-mono bg-gray-100 rounded hover:bg-gray-200 transition-colors">
+              <span>{{asset.asset_id || asset.id}}</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </button>
+          </div>
+          <div *ngIf="asset.serial_number" class="flex items-center space-x-2">
+            <span class="text-sm text-gray-500">Serial:</span>
+            <button
+              (click)="copySerialNumber()"
+              class="flex items-center space-x-1 px-2 py-1 text-sm font-mono bg-gray-100 rounded hover:bg-gray-200 transition-colors">
+              <span>{{asset.serial_number}}</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Toolbar -->
+      <div class="flex items-center space-x-3 pt-4 border-t border-gray-200">
+        <button
+          (click)="createWorkOrder()"
+          class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+          <span>Create Work Order</span>
+        </button>
+
+        <button
+          (click)="transferAsset()"
+          class="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+          </svg>
+          <span>Transfer Asset</span>
+        </button>
+
+        <button
+          (click)="duplicateAsset()"
+          class="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          <span>Duplicate</span>
+        </button>
+      </div>
     </div>
 
+    <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left Column (2/3 width) -->
+      <!-- Left Column -->
       <div class="lg:col-span-2 space-y-6">
-        <!-- Image Gallery/Carousel -->
-        <div id="overview" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between mb-4">
+        <!-- Image Gallery -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
             <h2 class="text-lg font-semibold text-gray-900">Asset Images</h2>
-            <span class="text-sm text-gray-500">{{asset.images?.length || 0}} image{{(asset.images?.length || 0) !== 1 ? 's' : ''}}</span>
           </div>
 
-          <div *ngIf="asset.images && asset.images.length > 0; else noImageTemplate">
+          <div *ngIf="asset.images && asset.images.length > 0; else noImages">
             <!-- Main Image Display -->
-            <div class="bg-gray-100 rounded-lg h-80 flex items-center justify-center overflow-hidden mb-4 relative">
-              <img 
-                [src]="selectedImageUrl || asset.images[0].image_url" 
-                [alt]="asset.name"
-                class="max-w-full max-h-full object-contain cursor-pointer"
-                (click)="viewFullImage(selectedImageUrl || asset.images[0].image_url)"
-                (error)="onImageError($event)">
-              
-              <!-- Image Navigation -->
-              <div *ngIf="asset.images.length > 1" class="absolute inset-x-4 top-1/2 transform -translate-y-1/2 flex justify-between">
+            <div class="mb-4">
+              <div class="relative bg-gray-100 rounded-lg overflow-hidden" style="height: 400px;">
+                <img
+                  [src]="selectedImageUrl || asset.images[0].image_url"
+                  [alt]="asset.name"
+                  class="w-full h-full object-contain bg-white cursor-pointer"
+                  (click)="viewFullImage(selectedImageUrl || asset.images[0].image_url)"
+                  (error)="onImageError($event)">
+                
+                <!-- Navigation Arrows -->
                 <button
+                  *ngIf="asset.images.length > 1"
                   (click)="previousImage()"
-                  class="w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">
+                  class="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                   </svg>
                 </button>
+                
                 <button
+                  *ngIf="asset.images.length > 1"
                   (click)="nextImage()"
-                  class="w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">
+                  class="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                   </svg>
                 </button>
-              </div>
 
-              <!-- Image Counter -->
-              <div *ngIf="asset.images.length > 1" class="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                {{currentImageIndex + 1}} / {{asset.images.length}}
+                <!-- Image Counter -->
+                <div class="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+                  {{currentImageIndex + 1}} / {{asset.images.length}}
+                </div>
               </div>
             </div>
-            
-            <!-- Image Thumbnails -->
+
+            <!-- Thumbnail Gallery -->
             <div *ngIf="asset.images.length > 1" class="grid grid-cols-6 gap-2">
-              <div *ngFor="let image of asset.images; let i = index" 
-                   class="aspect-square bg-gray-100 rounded overflow-hidden cursor-pointer border-2 transition-all"
-                   [class.border-blue-500]="i === currentImageIndex"
-                   [class.border-transparent]="i !== currentImageIndex"
-                   (click)="selectImage(i)">
-                <img 
-                  [src]="image.image_url" 
-                  [alt]="asset.name"
+              <div
+                *ngFor="let image of asset.images; let i = index"
+                (click)="selectImage(i)"
+                class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 transition-all"
+                [class.border-blue-500]="i === currentImageIndex"
+                [class.border-gray-200]="i !== currentImageIndex">
+                <img
+                  [src]="image.image_url"
+                  [alt]="'Asset image ' + (i + 1)"
                   class="w-full h-full object-cover"
                   (error)="onImageError($event)">
               </div>
             </div>
           </div>
-          
-          <!-- No Image Template -->
-          <ng-template #noImageTemplate>
-            <div class="bg-blue-100 rounded-lg h-80 flex items-center justify-center">
-              <div class="text-center">
-                <svg class="w-24 h-24 text-blue-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getAssetTypeIcon()"></path>
-                </svg>
-                <p class="text-gray-600">No images available</p>
-              </div>
+
+          <ng-template #noImages>
+            <div class="text-center py-12 bg-gray-50 rounded-lg">
+              <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <h3 class="text-lg font-medium text-gray-900 mb-2">No Images Available</h3>
+              <p class="text-gray-600">No images have been uploaded for this asset.</p>
             </div>
           </ng-template>
         </div>
 
-        <!-- Basic Information Card -->
+        <!-- Basic Information -->
         <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-6">
-            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-              </svg>
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Description</h4>
+              <div class="relative">
+                <p class="text-gray-600 leading-relaxed" [class.line-clamp-3]="!descriptionExpanded">
+                  {{asset.description || 'No description available'}}
+                </p>
+                <button
+                  *ngIf="asset.description && asset.description.length > 150"
+                  (click)="descriptionExpanded = !descriptionExpanded"
+                  class="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2">
+                  {{descriptionExpanded ? 'Show Less' : 'Show More'}}
+                </button>
+              </div>
             </div>
-            <h2 class="text-xl font-semibold text-gray-900">Basic Information</h2>
+
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Location</h4>
+                <div class="flex items-center space-x-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <span class="text-gray-900">{{asset.location?.name || 'No location assigned'}}</span>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Department</h4>
+                <span class="text-gray-900">{{asset.department?.name || 'Not assigned'}}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Created</h4>
+                <span class="text-gray-900">{{asset.created_at | date:'MMM d, y'}}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Last Modified</h4>
+                <span class="text-gray-900">{{asset.updated_at | date:'MMM d, y'}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Specifications -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Technical Specifications</h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Category</h4>
-                <div class="flex items-center space-x-2">
-                  <div class="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
-                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                    </svg>
-                  </div>
-                  <span class="text-gray-900">{{asset.category?.name || 'General'}}</span>
-                </div>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Asset Type</h4>
-                <span class="text-gray-900">{{getAssetTypeName(asset.type)}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Location</h4>
-                <a href="#" class="text-blue-600 hover:text-blue-700 transition-colors">
-                  {{asset.location?.name || 'Not specified'}}
-                </a>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Department</h4>
-                <span class="text-gray-900">{{asset.department?.name || 'Not specified'}}</span>
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Purchase Date</h4>
-                <span class="text-gray-900">{{asset.purchase_date ? (asset.purchase_date | date:'mediumDate') : 'Not specified'}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Created</h4>
-                <span class="text-gray-900">{{asset.created_at | date:'mediumDate'}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Last Modified</h4>
-                <span class="text-gray-900">{{asset.updated_at | date:'mediumDate'}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Asset ID</h4>
-                <div class="flex items-center space-x-2">
-                  <span class="font-mono text-gray-900">{{asset.asset_id || asset.id}}</span>
-                  <button
-                    (click)="copyAssetId()"
-                    class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <div class="mt-6 pt-6 border-t border-gray-200">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Description</h4>
-            <div class="relative">
-              <p class="text-gray-900 leading-relaxed" 
-                 [class.line-clamp-3]="!descriptionExpanded && (asset.description?.length || 0) > 200">
-                {{asset.description || 'No description available.'}}
-              </p>
-              <button
-                *ngIf="(asset.description?.length || 0) > 200"
-                (click)="descriptionExpanded = !descriptionExpanded"
-                class="mt-2 text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors">
-                {{descriptionExpanded ? 'Show less' : 'Show more'}}
-              </button>
-            </div>
-          </div>
-
-          <!-- Tags -->
-          <div class="mt-6 pt-6 border-t border-gray-200">
-            <h4 class="text-sm font-medium text-gray-700 mb-3">Tags</h4>
-            <div *ngIf="asset.tags && asset.tags.length > 0; else noTagsTemplate" class="flex flex-wrap gap-2">
-              <span *ngFor="let tag of asset.tags" 
-                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                {{tag.name}}
-              </span>
-            </div>
-            <ng-template #noTagsTemplate>
-              <p class="text-gray-500 text-sm">No tags assigned</p>
-            </ng-template>
-          </div>
-        </div>
-
-        <!-- Technical Specifications -->
-        <div id="technical" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-6">
-            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-            </div>
-            <h2 class="text-xl font-semibold text-gray-900">Technical Specifications</h2>
-          </div>
-
-          <!-- Basic Technical Info -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div class="space-y-4">
-              <div>
                 <h4 class="text-sm font-medium text-gray-700 mb-1">Manufacturer</h4>
                 <span class="text-gray-900">{{asset.manufacturer || 'Not specified'}}</span>
               </div>
+
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Model Number</h4>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Model</h4>
                 <span class="text-gray-900">{{asset.model || 'Not specified'}}</span>
               </div>
-              <div>
+
+              <div *ngIf="asset.serial_number">
                 <h4 class="text-sm font-medium text-gray-700 mb-1">Serial Number</h4>
                 <div class="flex items-center space-x-2">
-                  <span class="font-mono text-gray-900">{{asset.serial_number || 'Not specified'}}</span>
+                  <span class="text-gray-900 font-mono">{{asset.serial_number}}</span>
                   <button
-                    *ngIf="asset.serial_number"
                     (click)="copySerialNumber()"
                     class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -404,414 +344,492 @@
                   </button>
                 </div>
               </div>
-            </div>
-            <div class="space-y-4">
+
               <div>
                 <h4 class="text-sm font-medium text-gray-700 mb-1">Brand</h4>
                 <span class="text-gray-900">{{asset.brand || 'Not specified'}}</span>
               </div>
+            </div>
+
+            <div class="space-y-4">
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Part Number</h4>
-                <span class="text-gray-900">{{asset.part_number || 'Not specified'}}</span>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Dimensions</h4>
+                <span class="text-gray-900">{{asset.dimensions || 'Not specified'}}</span>
               </div>
+
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">SKU</h4>
-                <span class="text-gray-900">{{asset.sku || 'Not specified'}}</span>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Weight</h4>
+                <span class="text-gray-900">{{asset.weight || 'Not specified'}}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Power Requirements</h4>
+                <span class="text-gray-900">{{asset.power_requirements || 'Not specified'}}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Operating Conditions</h4>
+                <span class="text-gray-900">{{asset.operating_conditions || 'Standard conditions'}}</span>
               </div>
             </div>
           </div>
 
-          <!-- Technical Specifications (Key-Value Pairs) -->
-          <div *ngIf="asset.specifications && asset.specifications.length > 0" class="pt-6 border-t border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Detailed Specifications</h3>
+          <!-- Additional Specifications -->
+          <div *ngIf="asset.specifications" class="mt-6 pt-6 border-t border-gray-200">
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Additional Specifications</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div *ngFor="let spec of asset.specifications" class="bg-gray-50 rounded-lg p-4">
-                <div class="flex justify-between items-start">
-                  <span class="text-sm font-medium text-gray-700">{{spec.key}}</span>
-                  <span class="text-sm text-gray-900 text-right">{{spec.value}} {{spec.unit}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Warranty Information -->
-          <div class="pt-6 border-t border-gray-200 mt-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Warranty Information</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Warranty Expiration</h4>
-                <span class="text-gray-900">{{asset.warranty ? (asset.warranty | date:'mediumDate') : 'Not specified'}}</span>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Warranty Status</h4>
-                <span [class]="getWarrantyStatusClass(asset.warranty)">{{getWarrantyStatus(asset.warranty)}}</span>
+              <div *ngFor="let spec of asset.specifications | keyvalue" class="flex justify-between">
+                <span class="text-sm text-gray-600">{{spec.key}}:</span>
+                <span class="text-sm text-gray-900 font-medium">{{spec.value}}</span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Financial Information -->
-        <div id="financial" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-6">
-            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-              </svg>
-            </div>
-            <h2 class="text-xl font-semibold text-gray-900">Financial Information</h2>
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Financial Information</h2>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <div class="bg-blue-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-blue-700 mb-1">Purchase Price</h4>
-              <p class="text-2xl font-bold text-blue-900">${{(asset.purchase_price || 0) | number:'1.0-0'}}</p>
-            </div>
-            <div class="bg-green-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-green-700 mb-1">Current Value</h4>
-              <p class="text-2xl font-bold text-green-900">${{(asset.current_value || asset.purchase_price || 0) | number:'1.0-0'}}</p>
-            </div>
-            <div class="bg-orange-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-orange-700 mb-1">Depreciation</h4>
-              <p class="text-2xl font-bold text-orange-900">${{calculateDepreciation() | number:'1.0-0'}}</p>
-            </div>
-            <div class="bg-purple-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-purple-700 mb-1">Insurance Value</h4>
-              <p class="text-2xl font-bold text-purple-900">${{(asset.insurance_value || asset.purchase_price || 0) | number:'1.0-0'}}</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Purchase Information -->
             <div class="space-y-4">
+              <h4 class="text-sm font-medium text-gray-700 border-b border-gray-200 pb-2">Purchase Details</h4>
+              
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Depreciation Method</h4>
-                <span class="text-gray-900">{{asset.depreciation_method || 'Straight Line'}}</span>
+                <span class="text-sm text-gray-600">Purchase Price</span>
+                <div class="text-lg font-semibold text-gray-900">
+                  {{mockFinancialData.purchaseCost | currency:'USD':'symbol':'1.2-2'}}
+                </div>
               </div>
+
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Useful Life</h4>
-                <span class="text-gray-900">{{asset.depreciation || 10}} years</span>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Depreciation Rate</h4>
-                <span class="text-gray-900">{{calculateDepreciationRate()}}% per year</span>
+                <span class="text-sm text-gray-600">Purchase Date</span>
+                <div class="text-sm text-gray-900">{{asset.purchase_date | date:'MMM d, y'}}</div>
               </div>
             </div>
+
+            <!-- Current Value -->
             <div class="space-y-4">
+              <h4 class="text-sm font-medium text-gray-700 border-b border-gray-200 pb-2">Current Value</h4>
+              
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Total Cost of Ownership</h4>
-                <span class="text-gray-900">${{calculateTotalCostOfOwnership() | number:'1.0-0'}}</span>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">ROI</h4>
-                <span class="text-gray-900">{{calculateROI()}}%</span>
-              </div>
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Market Value Estimate</h4>
-                <span class="text-gray-900">${{(asset.market_value || asset.current_value || asset.purchase_price || 0) | number:'1.0-0'}}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Depreciation Chart Placeholder -->
-          <div class="pt-6 border-t border-gray-200 mt-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Value History</h3>
-            <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <div class="text-center">
-                <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                </svg>
-                <p class="text-sm text-gray-500">Depreciation timeline chart</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Activity Timeline -->
-        <div id="activity" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-6">
-            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <h2 class="text-xl font-semibold text-gray-900">Activity Timeline</h2>
-          </div>
-
-          <!-- Activity Items -->
-          <div class="space-y-6">
-            <!-- Status Change History -->
-            <div class="flex items-start space-x-4">
-              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
-                  <h4 class="font-medium text-gray-900">Asset Created</h4>
-                  <span class="text-sm text-gray-500">{{asset.created_at | date:'medium'}}</span>
+                <span class="text-sm text-gray-600">Book Value</span>
+                <div class="text-lg font-semibold text-gray-900">
+                  {{mockFinancialData.currentValue | currency:'USD':'symbol':'1.2-2'}}
                 </div>
-                <p class="text-sm text-gray-600 mt-1">Asset was added to the system</p>
+              </div>
+
+              <div>
+                <span class="text-sm text-gray-600">Market Value</span>
+                <div class="text-sm text-gray-900">{{mockFinancialData.currentValue * 0.95 | currency:'USD':'symbol':'1.2-2'}}</div>
               </div>
             </div>
 
-            <!-- Location Change Tracking -->
-            <div *ngIf="asset.updated_at !== asset.created_at" class="flex items-start space-x-4">
-              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
+            <!-- Depreciation -->
+            <div class="space-y-4">
+              <h4 class="text-sm font-medium text-gray-700 border-b border-gray-200 pb-2">Depreciation</h4>
+              
+              <div>
+                <span class="text-sm text-gray-600">Method</span>
+                <div class="text-sm text-gray-900">{{mockFinancialData.depreciationMethod}}</div>
               </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
-                  <h4 class="font-medium text-gray-900">Asset Updated</h4>
-                  <span class="text-sm text-gray-500">{{asset.updated_at | date:'medium'}}</span>
+
+              <div>
+                <span class="text-sm text-gray-600">Useful Life</span>
+                <div class="text-sm text-gray-900">{{mockFinancialData.usefulLife}} years</div>
+              </div>
+
+              <div>
+                <span class="text-sm text-gray-600">Annual Rate</span>
+                <div class="text-sm text-gray-900">{{calculateDepreciationRate()}}%</div>
+              </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="space-y-4">
+              <h4 class="text-sm font-medium text-gray-700 border-b border-gray-200 pb-2">Performance</h4>
+              
+              <div>
+                <span class="text-sm text-gray-600">Total Cost of Ownership</span>
+                <div class="text-lg font-semibold text-gray-900">
+                  {{calculateTotalCostOfOwnership() | currency:'USD':'symbol':'1.2-2'}}
                 </div>
-                <p class="text-sm text-gray-600 mt-1">Asset information was modified</p>
+              </div>
+
+              <div>
+                <span class="text-sm text-gray-600">ROI</span>
+                <div class="text-sm text-gray-900" [class.text-green-600]="calculateROI() > 0" [class.text-red-600]="calculateROI() < 0">
+                  {{calculateROI()}}%
+                </div>
               </div>
             </div>
-
-            <!-- Empty State -->
-            <div class="text-center py-8 border-t border-gray-200">
-              <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h3 class="text-lg font-medium text-gray-900 mb-2">More activity coming soon</h3>
-              <p class="text-sm text-gray-500">Maintenance records, transfers, and work orders will appear here.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column (1/3 width) -->
-      <div class="space-y-6">
-        <!-- Health & Performance Dashboard -->
-        <div id="performance" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-6">
-            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-              </svg>
-            </div>
-            <h2 class="text-lg font-semibold text-gray-900">Health & Performance</h2>
           </div>
 
-          <!-- Health Score -->
-          <div class="mb-6">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-sm font-medium text-gray-700">Overall Health Score</span>
-              <span class="text-sm text-gray-500">Excellent</span>
-            </div>
-            <div class="text-3xl font-bold text-gray-900 mb-3">{{asset.health_score || 85}}%</div>
-            <div class="w-full bg-gray-200 rounded-full h-3">
-              <div class="bg-green-500 h-3 rounded-full transition-all duration-500" [style.width.%]="asset.health_score || 85"></div>
-            </div>
-          </div>
-
-          <!-- Performance Metrics -->
-          <div class="space-y-4">
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Utilization Rate</span>
-              <span class="text-sm font-medium text-gray-900">{{asset.utilization_rate || 75}}%</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Reliability Score</span>
-              <span class="text-sm font-medium text-gray-900">{{asset.reliability_score || 92}}%</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Efficiency Rating</span>
-              <span class="text-sm font-medium text-gray-900">{{asset.efficiency_rating || 88}}%</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Downtime (Last 30 days)</span>
-              <span class="text-sm font-medium text-gray-900">{{asset.downtime_hours || 2}} hours</span>
-            </div>
-          </div>
-
-          <!-- Performance Chart Placeholder -->
+          <!-- Warranty Information -->
           <div class="mt-6 pt-6 border-t border-gray-200">
-            <h4 class="text-sm font-medium text-gray-700 mb-3">Performance Trend</h4>
-            <div class="h-32 bg-gray-50 rounded-lg flex items-center justify-center">
-              <div class="text-center">
-                <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Warranty & Insurance</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <span class="text-sm text-gray-600">Warranty Status</span>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span [class]="getWarrantyStatusClass(asset.warranty)">
+                    {{getWarrantyStatus(asset.warranty)}}
+                  </span>
+                  <span *ngIf="asset.warranty" class="text-sm text-gray-500">
+                    (Expires: {{asset.warranty | date:'MMM d, y'}})
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-sm text-gray-600">Insurance Value</span>
+                <div class="text-sm text-gray-900">{{asset.insurance_value || 'Not specified'}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health & Performance Dashboard -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Health & Performance Dashboard</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Health Score -->
+            <div class="text-center">
+              <div class="relative w-32 h-32 mx-auto mb-4">
+                <svg class="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                  <path class="text-gray-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                  <path class="text-green-600" stroke="currentColor" stroke-width="3" fill="none" [attr.stroke-dasharray]="mockHealthData.healthScore + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
                 </svg>
-                <p class="text-xs text-gray-500">Performance chart</p>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900">{{mockHealthData.healthScore}}%</div>
+                    <div class="text-xs text-gray-500">Health Score</div>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Performance</span>
+                  <span class="font-medium text-green-600">Excellent</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Reliability</span>
+                  <span class="font-medium text-green-600">High</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-600">Efficiency</span>
+                  <span class="font-medium text-green-600">Optimal</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="space-y-4">
+              <h4 class="text-sm font-medium text-gray-700">Performance Metrics</h4>
+              
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-gray-600">Utilization Rate</span>
+                  <span class="font-medium">87%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-blue-600 h-2 rounded-full" style="width: 87%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-gray-600">Uptime</span>
+                  <span class="font-medium">99.2%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 99.2%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-gray-600">Maintenance Frequency</span>
+                  <span class="font-medium">Low</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 25%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trend Analysis -->
+            <div class="space-y-4">
+              <h4 class="text-sm font-medium text-gray-700">Trend Analysis</h4>
+              
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Performance Trend</span>
+                  <div class="flex items-center space-x-1 text-green-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Improving</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Cost Efficiency</span>
+                  <div class="flex items-center space-x-1 text-green-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Optimal</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Maintenance Needs</span>
+                  <div class="flex items-center space-x-1 text-yellow-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Stable</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Predictive Alerts -->
+              <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                <div class="flex items-center space-x-2">
+                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="text-sm font-medium text-blue-800">Predictive Maintenance</span>
+                </div>
+                <p class="text-sm text-blue-700 mt-1">Next maintenance recommended in 45 days based on usage patterns.</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Maintenance Schedule -->
-        <div id="maintenance" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between mb-6">
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h2 class="text-lg font-semibold text-gray-900">Maintenance</h2>
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <h2 class="text-lg font-semibold text-gray-900">Maintenance Schedule</h2>
             </div>
             <button
               (click)="addMaintenanceSchedule()"
-              class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm">
+              class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
-              <span>Add</span>
+              <span>Add Schedule</span>
             </button>
           </div>
 
           <!-- Maintenance Overview -->
-          <div class="space-y-4 mb-6">
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Last Maintenance</span>
-              <span class="text-sm font-medium text-gray-900">{{asset.last_maintenance_date ? (asset.last_maintenance_date | date:'mediumDate') : 'Never'}}</span>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-green-50 rounded-lg p-4">
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                  <div class="text-sm text-green-600">Last Maintenance</div>
+                  <div class="font-semibold text-green-800">{{mockMaintenanceData.lastMaintenance || 'Not recorded'}}</div>
+                </div>
+              </div>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Next Due</span>
-              <span class="text-sm font-medium text-gray-900">{{asset.next_maintenance_date ? (asset.next_maintenance_date | date:'mediumDate') : 'Not scheduled'}}</span>
+
+            <div class="bg-blue-50 rounded-lg p-4">
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                  <div class="text-sm text-blue-600">Next Due</div>
+                  <div class="font-semibold text-blue-800">{{mockMaintenanceData.nextMaintenance || 'Not scheduled'}}</div>
+                </div>
+              </div>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Maintenance Frequency</span>
-              <span class="text-sm font-medium text-gray-900">{{asset.maintenance_frequency || 'Every 6 months'}}</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Total Maintenance Cost</span>
-              <span class="text-sm font-medium text-gray-900">${{(asset.total_maintenance_cost || 0) | number:'1.0-0'}}</span>
+
+            <div class="bg-purple-50 rounded-lg p-4">
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <div>
+                  <div class="text-sm text-purple-600">Frequency</div>
+                  <div class="font-semibold text-purple-800">{{mockMaintenanceData.interval}}</div>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Maintenance Schedules List -->
-          <div *ngIf="maintenanceSchedules.length > 0; else noMaintenanceTemplate" class="space-y-3">
-            <h4 class="text-sm font-medium text-gray-700 mb-3">Upcoming Schedules</h4>
-            <div *ngFor="let schedule of maintenanceSchedules.slice(0, 3)" 
-                 class="bg-gray-50 rounded-lg p-3">
-              <div class="flex items-center justify-between mb-2">
-                <span class="font-medium text-gray-900 text-sm">{{schedule.schedule_type}}</span>
-                <span 
-                  [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getScheduleStatusColor(schedule.status || 'Scheduled') + '-100 text-' + getScheduleStatusColor(schedule.status || 'Scheduled') + '-800'">
-                  {{schedule.status || 'Scheduled'}}
-                </span>
-              </div>
-              <div class="text-xs text-gray-600">
-                Due: {{formatDate(schedule.next_due)}}
-              </div>
+          <div *ngIf="maintenanceLoading" class="text-center py-8">
+            <div class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
+              <svg class="animate-spin w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
             </div>
-            <button
-              *ngIf="maintenanceSchedules.length > 3"
-              class="w-full text-center text-blue-600 hover:text-blue-700 text-sm font-medium py-2">
-              View all {{maintenanceSchedules.length}} schedules
-            </button>
+            <p class="text-sm text-gray-500 mt-2">Loading maintenance schedules...</p>
           </div>
 
-          <ng-template #noMaintenanceTemplate>
-            <div class="text-center py-6">
-              <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+          <div *ngIf="!maintenanceLoading && maintenanceSchedules.length > 0" class="space-y-4">
+            <div *ngFor="let schedule of maintenanceSchedules" class="border border-gray-200 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">{{schedule.schedule_type}}</h4>
+                <div class="flex items-center space-x-2">
+                  <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getScheduleStatusColor(schedule.status) + '-100 text-' + getScheduleStatusColor(schedule.status) + '-800'">
+                    {{schedule.status}}
+                  </span>
+                  <button
+                    (click)="editMaintenanceSchedule(schedule)"
+                    class="p-1 text-gray-400 hover:text-blue-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  <button
+                    (click)="deleteMaintenanceSchedule(schedule)"
+                    class="p-1 text-gray-400 hover:text-red-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <p class="text-sm text-gray-500 mb-3">No maintenance schedules</p>
-              <button
-                (click)="addMaintenanceSchedule()"
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                Create first schedule
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span class="text-gray-600">Next Due:</span>
+                  <span class="ml-2 text-gray-900">{{formatDate(schedule.next_due)}}</span>
+                </div>
+                <div>
+                  <span class="text-gray-600">Frequency:</span>
+                  <span class="ml-2 text-gray-900">{{schedule.frequency || 'Not specified'}}</span>
+                </div>
+              </div>
+              <div *ngIf="schedule.notes" class="mt-2 text-sm text-gray-600">
+                {{schedule.notes}}
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!maintenanceLoading && maintenanceSchedules.length === 0" class="text-center py-8">
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Maintenance Schedules</h3>
+            <p class="text-gray-600 mb-4">Create maintenance schedules to track asset upkeep.</p>
+            <button
+              (click)="addMaintenanceSchedule()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Add First Schedule
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="space-y-6">
+        <!-- QR Code -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Asset QR Code</h2>
+          </div>
+
+          <div class="text-center">
+            <div class="w-32 h-32 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+              <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+              </svg>
+            </div>
+            <h4 class="font-medium text-gray-900 mb-2">{{asset.name}}</h4>
+            <p class="text-sm text-gray-600 mb-4">{{asset.asset_id || asset.id}}</p>
+            <div class="space-y-2">
+              <button class="w-full px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                Download QR Code
+              </button>
+              <button class="w-full px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                Print Label
               </button>
             </div>
-          </ng-template>
+          </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+          </div>
+
+          <div class="space-y-4">
+            <div *ngFor="let activity of mockActivities" class="flex items-start space-x-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-900">{{activity.title}}</h4>
+                <p class="text-sm text-gray-600">{{activity.description}}</p>
+                <p class="text-xs text-gray-500 mt-1">{{activity.time}}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-6">
+            <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+              View Full Activity History
+            </button>
+          </div>
         </div>
 
         <!-- Related Assets -->
         <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-6">
-            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-              </svg>
-            </div>
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+            </svg>
             <h2 class="text-lg font-semibold text-gray-900">Related Assets</h2>
           </div>
 
-          <!-- Related Assets List -->
-          <div class="space-y-3">
-            <!-- Same Location -->
-            <div>
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Same Location</h4>
-              <div class="text-center py-4">
-                <p class="text-sm text-gray-500">No other assets in this location</p>
-              </div>
-            </div>
-
-            <!-- Same Category -->
-            <div class="pt-4 border-t border-gray-200">
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Same Category</h4>
-              <div class="text-center py-4">
-                <p class="text-sm text-gray-500">No other assets in this category</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div class="space-y-3">
-            <button
-              (click)="createWorkOrder()"
-              class="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-              </div>
-              <div>
-                <div class="font-medium text-gray-900">Create Work Order</div>
-                <div class="text-sm text-gray-500">Schedule maintenance or repair</div>
-              </div>
-            </button>
-
-            <button
-              (click)="transferAsset()"
-              class="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                </svg>
-              </div>
-              <div>
-                <div class="font-medium text-gray-900">Transfer Asset</div>
-                <div class="text-sm text-gray-500">Move to different location</div>
-              </div>
-            </button>
-
-            <button
-              (click)="duplicateAsset()"
-              class="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-              </div>
-              <div>
-                <div class="font-medium text-gray-900">Duplicate Asset</div>
-                <div class="text-sm text-gray-500">Create similar asset</div>
-              </div>
-            </button>
+          <div class="text-center py-8">
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Related Assets</h3>
+            <p class="text-gray-600">No related assets found for this item.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Add Maintenance Schedule Modal -->
-  <div *ngIf="showAddMaintenanceModal" 
-       class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+  <!-- Maintenance Schedule Modals -->
+  <!-- Add Maintenance Modal -->
+  <div *ngIf="showAddMaintenanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900">Add Maintenance Schedule</h3>
         <button
           (click)="closeMaintenanceModals()"
@@ -822,57 +840,48 @@
         </button>
       </div>
 
-      <!-- Modal Content -->
-      <form [formGroup]="maintenanceForm" (ngSubmit)="saveMaintenanceSchedule()" class="p-6">
+      <form [formGroup]="maintenanceForm" (ngSubmit)="saveMaintenanceSchedule()">
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Type *</label>
-            <input
-              type="text"
-              formControlName="schedule_type"
-              placeholder="e.g., Preventive Maintenance, Inspection"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Type</label>
+            <select formControlName="schedule_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select type</option>
+              <option value="Preventive">Preventive Maintenance</option>
+              <option value="Inspection">Inspection</option>
+              <option value="Calibration">Calibration</option>
+              <option value="Cleaning">Cleaning</option>
+            </select>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Next Due</label>
-              <input
-                type="text"
-                #dateInput
-                formControlName="next_due"
-                placeholder="Select date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Last Done</label>
-              <input
-                type="text"
-                #dateInput
-                formControlName="last_done"
-                placeholder="Select date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Next Due Date</label>
+            <input
+              #dateInput
+              type="text"
+              formControlName="next_due"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Select date">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Last Done Date</label>
+            <input
+              #dateInput
+              type="text"
+              formControlName="last_done"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Select date">
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>
-            <input
-              type="text"
-              formControlName="frequency"
-              placeholder="e.g., Every 6 months, Quarterly"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select
-              formControlName="status"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option value="Scheduled">Scheduled</option>
-              <option value="Overdue">Overdue</option>
-              <option value="Completed">Completed</option>
-              <option value="In Progress">In Progress</option>
+            <select formControlName="frequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select frequency</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Semi-Annual">Semi-Annual</option>
+              <option value="Annual">Annual</option>
             </select>
           </div>
 
@@ -881,36 +890,33 @@
             <textarea
               formControlName="notes"
               rows="3"
-              placeholder="Additional notes or instructions"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Additional notes..."></textarea>
           </div>
         </div>
 
-        <!-- Modal Footer -->
-        <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
+        <div class="flex items-center justify-end space-x-3 mt-6">
           <button
             type="button"
             (click)="closeMaintenanceModals()"
-            class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors">
+            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
             Cancel
           </button>
           <button
             type="submit"
             [disabled]="maintenanceForm.invalid"
-            class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-            Add Schedule
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">
+            Save Schedule
           </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Edit Maintenance Schedule Modal -->
-  <div *ngIf="showEditMaintenanceModal" 
-       class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+  <!-- Edit Maintenance Modal -->
+  <div *ngIf="showEditMaintenanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg max-w-md w-full p-6">
+      <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900">Edit Maintenance Schedule</h3>
         <button
           (click)="closeMaintenanceModals()"
@@ -921,57 +927,58 @@
         </button>
       </div>
 
-      <!-- Modal Content -->
-      <form [formGroup]="maintenanceForm" (ngSubmit)="saveMaintenanceSchedule()" class="p-6">
+      <form [formGroup]="maintenanceForm" (ngSubmit)="saveMaintenanceSchedule()">
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Type *</label>
-            <input
-              type="text"
-              formControlName="schedule_type"
-              placeholder="e.g., Preventive Maintenance, Inspection"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Type</label>
+            <select formControlName="schedule_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select type</option>
+              <option value="Preventive">Preventive Maintenance</option>
+              <option value="Inspection">Inspection</option>
+              <option value="Calibration">Calibration</option>
+              <option value="Cleaning">Cleaning</option>
+            </select>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Next Due</label>
-              <input
-                type="text"
-                #dateInput
-                formControlName="next_due"
-                placeholder="Select date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Last Done</label>
-              <input
-                type="text"
-                #dateInput
-                formControlName="last_done"
-                placeholder="Select date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Next Due Date</label>
+            <input
+              #dateInput
+              type="text"
+              formControlName="next_due"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Select date">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Last Done Date</label>
+            <input
+              #dateInput
+              type="text"
+              formControlName="last_done"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Select date">
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>
-            <input
-              type="text"
-              formControlName="frequency"
-              placeholder="e.g., Every 6 months, Quarterly"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <select formControlName="frequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select frequency</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Semi-Annual">Semi-Annual</option>
+              <option value="Annual">Annual</option>
+            </select>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select
-              formControlName="status"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <select formControlName="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="Scheduled">Scheduled</option>
-              <option value="Overdue">Overdue</option>
-              <option value="Completed">Completed</option>
               <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Overdue">Overdue</option>
             </select>
           </div>
 
@@ -980,23 +987,22 @@
             <textarea
               formControlName="notes"
               rows="3"
-              placeholder="Additional notes or instructions"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Additional notes..."></textarea>
           </div>
         </div>
 
-        <!-- Modal Footer -->
-        <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
+        <div class="flex items-center justify-end space-x-3 mt-6">
           <button
             type="button"
             (click)="closeMaintenanceModals()"
-            class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors">
+            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
             Cancel
           </button>
           <button
             type="submit"
             [disabled]="maintenanceForm.invalid"
-            class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">
             Update Schedule
           </button>
         </div>

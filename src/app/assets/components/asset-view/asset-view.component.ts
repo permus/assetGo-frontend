@@ -85,6 +85,28 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       notes: [''],
       status: ['Scheduled']
     });
+
+    // Initialize mock activities
+    this.mockActivities = [
+      {
+        title: 'Asset Created',
+        description: 'Asset was added to the system',
+        time: '2 days ago',
+        type: 'creation'
+      },
+      {
+        title: 'Status Updated',
+        description: 'Status changed from Inactive to Active',
+        time: '1 day ago',
+        type: 'status_change'
+      },
+      {
+        title: 'Location Changed',
+        description: 'Moved to new location',
+        time: '6 hours ago',
+        type: 'location_change'
+      }
+    ];
   }
 
   ngOnInit() {
@@ -409,6 +431,87 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     return typeMap[typeId.toString()] || `Type ${typeId}`;
   }
 
+  // Navigation methods
+  navigateToPrevious() {
+    // TODO: Implement navigation to previous asset
+    console.log('Navigate to previous asset');
+  }
+
+  navigateToNext() {
+    // TODO: Implement navigation to next asset
+    console.log('Navigate to next asset');
+  }
+
+  // Related assets methods
+  loadRelatedAssets() {
+    // TODO: Load assets with similar category, location, or manufacturer
+    console.log('Load related assets');
+  }
+
+  // Activity timeline methods
+  loadActivityHistory() {
+    // TODO: Load full activity history from API
+    console.log('Load activity history');
+  }
+
+  // Performance tracking methods
+  loadPerformanceMetrics() {
+    // TODO: Load real performance data from API
+    console.log('Load performance metrics');
+  }
+
+  // Document management methods
+  uploadDocument() {
+    // TODO: Implement document upload
+    console.log('Upload document');
+  }
+
+  downloadDocument(documentId: string) {
+    // TODO: Implement document download
+    console.log('Download document:', documentId);
+  }
+
+  // Comparison methods
+  compareWithSimilar() {
+    // TODO: Compare with similar assets
+    console.log('Compare with similar assets');
+  }
+
+  // Deep linking methods
+  scrollToSection(sectionId: string) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  // Export methods
+  exportFinancialData() {
+    // TODO: Export financial data to Excel/CSV
+    console.log('Export financial data');
+  }
+
+  exportMaintenanceHistory() {
+    // TODO: Export maintenance history
+    console.log('Export maintenance history');
+  }
+
+  // Predictive maintenance methods
+  generateMaintenanceRecommendations() {
+    // TODO: Generate AI-powered maintenance recommendations
+    console.log('Generate maintenance recommendations');
+  }
+
+  // Cost tracking methods
+  addMaintenanceCost() {
+    // TODO: Add maintenance cost entry
+    console.log('Add maintenance cost');
+  }
+
+  viewCostHistory() {
+    // TODO: View detailed cost history
+    console.log('View cost history');
+  }
   getWarrantyStatus(warrantyDate: string): string {
     if (!warrantyDate) return 'No warranty';
     
