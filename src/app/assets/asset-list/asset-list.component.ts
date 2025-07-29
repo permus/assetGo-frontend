@@ -102,6 +102,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
   assetList: any[] = [];
   categories: any[] = [];
   locations: any[] = [];
+  assetTypes: any[] = [];
+  showAssetTypeDropdown = false;
+  selectedAssetType: any | null = null;
+  assetStatuses: any[] = [];
+  showAssetStatusDropdown = false;
+  selectedAssetStatus: any | null = null;
   
   // Asset menu state
   openAssetMenuId: number | null = null;
@@ -123,6 +129,28 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.loadAssets();
     this.loadCategories();
     this.loadLocations();
+    this.assetService.getAssetTypes().subscribe(res => {
+      if (res.success && res.data) {
+        this.assetTypes = [{ id: '', name: 'All Types', label: 'All Types', icon: null }, ...res.data.map((type: any) => ({
+          id: type.id,
+          name: type.name,
+          label: type.name,
+          icon: type.icon || null
+        }))];
+        this.selectedAssetType = this.assetTypes[0];
+      }
+    });
+    this.assetService.getAssetStatuses().subscribe(res => {
+      if (res.success && res.data) {
+        this.assetStatuses = [{ id: '', name: 'All Statuses', label: 'All Statuses', color: null }, ...res.data.map((status: any) => ({
+          id: status.id,
+          name: status.name,
+          label: status.name,
+          color: status.color || null
+        }))];
+        this.selectedAssetStatus = this.assetStatuses[0];
+      }
+    });
   }
 
   loadAssetStatistics() {
@@ -680,6 +708,27 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.selectedAssetForRestore = asset;
     this.showRestoreConfirmationModal = true;
     asset.showMenu = false;
+  }
+
+  toggleAssetTypeDropdown() {
+    this.showAssetTypeDropdown = !this.showAssetTypeDropdown;
+    this.showStatusDropdown = false;
+    this.showSortDropdown = false;
+    this.showSortDirDropdown = false;
+  }
+  selectAssetType(type: any) {
+    this.selectedAssetType = type;
+    this.currentFilters.type = type.id;
+    this.showAssetTypeDropdown = false;
+    this.applyFilters();
+  }
+
+  toggleAssetStatusDropdown() {
+    this.showAssetStatusDropdown = !this.showAssetStatusDropdown;
+  }
+  selectAssetStatus(status: any) {
+    this.selectedAssetStatus = status;
+    // Optionally, trigger filtering here
   }
 
   @HostListener('document:click', ['$event'])
