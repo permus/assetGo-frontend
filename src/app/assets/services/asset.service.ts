@@ -153,4 +153,13 @@ export class AssetService {
   getDepartments(): Observable<any> {
     return this.http.get(`${this.baseUrl}/departments-list`, this.getAuthHeaders());
   }
+
+  // Fetch possible parent assets
+  getPossibleParents(assetId?: number | string): Observable<any> {
+    let url = `${this.baseUrl}/assets/possible-parents`;
+    if (assetId) {
+      url += `/${assetId}`;
+    }
+    return this.http.get(url, this.getAuthHeaders());
+  }
 }

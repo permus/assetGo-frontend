@@ -440,6 +440,11 @@
       <!-- Card Body -->
       <div class="flex-1 flex flex-col justify-between p-6 pt-4">
         <div>
+          <div *ngIf="asset.parent" class="mb-2">
+            <a [routerLink]="['/assets', asset.parent.id]" class="text-blue-600 hover:underline text-xs">
+              Parent: {{ asset.parent.name }} ({{ asset.parent.asset_id }})
+            </a>
+          </div>
           <div
             class="font-semibold text-lg text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
             [class.cursor-pointer]="!showingArchived"
@@ -476,7 +481,7 @@
             <span class="text-xs font-semibold text-gray-700">{{ asset.health_score || 100 }}%</span>
           </div>
           <div class="w-full h-2 bg-gray-200 rounded-full">
-            <div class="h-2 rounded-full bg-green-500" [style.width.%]="asset.health_score || 100"></div>
+            <div class="h-2 rounded-full" [ngClass]="(asset.health_score || 100) < 50 ? 'bg-red-500' : 'bg-green-500'" [style.width.%]="asset.health_score || 100"></div>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { CurrencyPipe, NgIf, NgFor, DecimalPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, NgIf, NgFor, DecimalPipe, DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AssetService } from '../services/asset.service';
 import { OnInit, OnDestroy } from '@angular/core';
@@ -9,11 +9,12 @@ import { ArchiveConfirmationModalComponent } from '../components/archive-confirm
 import { DeleteConfirmationModalComponent } from '../components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { RestoreConfirmationModalComponent } from '../components/restore-confirmation-modal/restore-confirmation-modal.component';
 import { PdfExportService } from '../../shared/services/pdf-export.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })

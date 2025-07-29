@@ -47,6 +47,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   showStatusDropdown = false;
   showTagsDropdown = false;
   showDepartmentDropdown = false;
+  showParentDropdown = false;
   selectedAssetType: any | null = null;
   selectedCategory: any | null = null;
   selectedLocation: any | null = null;
@@ -92,6 +93,8 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   submitError: string = '';
   submitSuccess: string = '';
 
+  possibleParents: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -110,6 +113,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       depreciation: [null],
       location_id: [null],
       department_id: [null],
+      parent_id: [null],
       warranty: [''],
       insurance: [''],
       health_score: [85, [Validators.min(0), Validators.max(100)]],
@@ -127,6 +131,11 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         const assetId = params['id'];
         if (assetId) {
           this.loadAsset(assetId);
+          this.assetService.getPossibleParents(assetId).subscribe(res => {
+            if (res.success && res.data?.possible_parents) {
+              this.possibleParents = res.data.possible_parents;
+            }
+          });
         }
       });
 
@@ -256,7 +265,8 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         status: this.asset.status || 'Active',
         type: this.asset.type || '',
         category_id: this.asset.category_id || null,
-        tags: this.asset.tags || []
+        tags: this.asset.tags || [],
+        parent_id: this.asset.parent_id || null
       });
 
       // Load existing images
@@ -853,6 +863,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
           formData.remove_image_ids = this.removedImageIds;
         }
 
+        // parent_id is already included in formData
         this.assetService.updateAsset(this.asset.id, formData)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
@@ -904,6 +915,10 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
            !this.assetTypeError &&
            !this.categoryError &&
            !this.serialNumberError;
+  }
+
+  getSelectedParent() {
+    return this.possibleParents.find(p => p.id === this.assetForm.get('parent_id')?.value);
   }
 
   // Helper method to convert date from display format to backend format

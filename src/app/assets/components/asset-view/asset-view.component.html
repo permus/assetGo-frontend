@@ -303,6 +303,12 @@
                 <h4 class="text-sm font-medium text-gray-700 mb-1">Last Modified</h4>
                 <span class="text-gray-900">{{asset.updated_at | date:'MMM d, y'}}</span>
               </div>
+              <div *ngIf="asset.parent">
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Parent Asset</h4>
+                <a [routerLink]="['/assets', asset.parent.id]" class="text-blue-600 hover:underline cursor-pointer">
+                  {{asset.parent.name}} ({{asset.parent.asset_id}})
+                </a>
+              </div>
             </div>
           </div>
         </div>

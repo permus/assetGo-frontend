@@ -48,6 +48,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   locations: any[] = [];
   availableTags: any[] = [];
   departments: any[] = [];
+  possibleParents: any[] = [];
+  parent_id: number | null = null;
 
   // Dropdown state properties
   showAssetTypeDropdown = false;
@@ -56,6 +58,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   showStatusDropdown = false;
   showTagsDropdown = false;
   showDepartmentDropdown = false;
+  showParentDropdown = false;
   selectedAssetType: any | null = null;
   selectedCategory: any | null = null;
   selectedLocation: any | null = null;
@@ -199,9 +202,10 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         depreciation: this.depreciation,
         location_id: this.location_id,
         department_id: this.department_id,
+        parent_id: this.parent_id,
         warranty: warrantyFormatted,
         insurance: this.insurance,
-        health_score: this.healthScore,
+        health_score: this.health_score,
         status: this.status,
         tags: this.selectedTags.map(tag => tag.name),
         meta: this.meta,
@@ -336,6 +340,12 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.assetService.getDepartments().subscribe(res => {
       if (res.success && res.data) {
         this.departments = res.data;
+      }
+    });
+
+    this.assetService.getAssets({ per_page: 1000 }).subscribe(res => {
+      if (res.success && res.data?.assets) {
+        this.possibleParents = res.data.assets;
       }
     });
 
@@ -978,5 +988,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.images.push(placeholderFile);
       }
     });
+  }
+
+  getSelectedParent() {
+    return this.possibleParents.find(p => p.id === this.parent_id);
   }
 }
