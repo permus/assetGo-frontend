@@ -1,0 +1,135 @@
+<div class="fixed inset-0 bg-[#000000bf] flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900">Smart Asset Import</h2>
+          <p class="text-sm text-gray-500">Import assets with intelligent field mapping and conflict resolution</p>
+        </div>
+      </div>
+      <button
+        (click)="resetImport()"
+        class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Step Indicators -->
+    <div class="px-6 py-4 bg-gray-50">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div
+            *ngFor="let step of steps; let i = index"
+            class="flex items-center cursor-pointer"
+            (click)="goToStep(step.id)">
+
+            <!-- Step Circle -->
+            <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors"
+                 [ngClass]="{
+                   'bg-blue-600 border-blue-600 text-white': step.isActive,
+                   'bg-green-500 border-green-500 text-white': step.isCompleted,
+                   'bg-white border-gray-300 text-gray-400': !step.isActive && !step.isCompleted
+                 }">
+              <span *ngIf="step.isCompleted" class="text-sm">✓</span>
+              <span *ngIf="!step.isCompleted" class="text-sm font-medium">{{ step.id }}</span>
+            </div>
+
+            <!-- Step Info -->
+            <div class="ml-3">
+              <div class="text-sm font-medium"
+                   [ngClass]="{
+                     'text-blue-600': step.isActive,
+                     'text-green-600': step.isCompleted,
+                     'text-gray-500': !step.isActive && !step.isCompleted
+                   }">
+                {{ step.title }}
+              </div>
+              <div class="text-xs text-gray-400">{{ step.description }}</div>
+            </div>
+
+            <!-- Connector Line -->
+            <div *ngIf="i < steps.length - 1"
+                 class="w-12 h-0.5 mx-4 transition-colors"
+                 [ngClass]="{
+                   'bg-blue-600': step.isCompleted,
+                   'bg-gray-300': !step.isCompleted
+                 }">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step Content -->
+    <div class="p-6 overflow-y-auto max-h-[60vh]">
+      <!-- Step 1: Upload -->
+      <div *ngIf="currentStep === 1">
+        <app-upload-step
+          (fileUploaded)="onFileUploaded($event)">
+        </app-upload-step>
+      </div>
+
+      <!-- Step 2: Analyze -->
+      <div *ngIf="currentStep === 2">
+        <app-analyze-step
+          [fileId]="importData.fileId"
+          [file]="importData.file"
+          (analysisComplete)="onAnalysisComplete($event)">
+        </app-analyze-step>
+      </div>
+
+      <!-- Step 3: Map Fields -->
+      <div *ngIf="currentStep === 3">
+        <app-field-mapping-step
+          [fileId]="importData.fileId"
+          [analysis]="importData.analysis"
+          (mappingComplete)="onMappingComplete($event)">
+        </app-field-mapping-step>
+      </div>
+
+      <!-- Step 4: Resolve Conflicts -->
+      <div *ngIf="currentStep === 4">
+        <app-conflict-resolution-step
+          [fileId]="importData.fileId"
+          [mappings]="importData.mappings"
+          (conflictsResolved)="onConflictsResolved($event)">
+        </app-conflict-resolution-step>
+      </div>
+
+      <!-- Step 5: Import -->
+      <div *ngIf="currentStep === 5">
+        <app-import-execution-step
+          [fileId]="importData.fileId"
+          (importComplete)="onImportComplete($event)">
+        </app-import-execution-step>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
+      <button
+        *ngIf="currentStep > 1"
+        (click)="previousStep()"
+        class="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+        Previous
+      </button>
+      <div *ngIf="currentStep === 1" class="w-20"></div>
+
+      <div class="flex items-center space-x-3">
+        <button
+          (click)="resetImport()"
+          class="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

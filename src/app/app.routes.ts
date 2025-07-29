@@ -28,5 +28,9 @@ export const routes: Routes = [
       }
     ]
   },
+  // Template download routes
+  { path: 'templates/asset-import', redirectTo: '/assets/asset-import-template.csv' },
+  { path: 'templates/asset-import.csv', redirectTo: '/assets/asset-import-template.csv' },
+  { path: 'templates/asset-import.xlsx', redirectTo: '/assets/asset-import-template.xlsx' },
   { path: '**', redirectTo: '' }
 ];

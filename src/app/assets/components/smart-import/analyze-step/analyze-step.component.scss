@@ -1,0 +1,27 @@
+.analyze-step {
+  .analysis-progress {
+    transition: width 0.3s ease;
+  }
+  
+  .field-card {
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .confidence-badge {
+    transition: all 0.2s ease;
+  }
+  
+  .preview-table {
+    th, td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+  }
+} 

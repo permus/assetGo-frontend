@@ -10,11 +10,12 @@ import { DeleteConfirmationModalComponent } from '../components/delete-confirmat
 import { RestoreConfirmationModalComponent } from '../components/restore-confirmation-modal/restore-confirmation-modal.component';
 import { PdfExportService } from '../../shared/services/pdf-export.service';
 import { RouterModule } from '@angular/router';
+import { SmartImportComponent } from '../components/smart-import/smart-import.component';
 
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule, SmartImportComponent],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
@@ -40,6 +41,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   error = '';
 
   showMenu = false;
+  showImportModal = false;
 
   // Filter dropdowns
   showTypeDropdown = false;
@@ -733,16 +735,26 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    this.showMenu = false;
-    this.showTypeDropdown = false;
-    this.showStatusDropdown = false;
-    this.showSortDropdown = false;
-    this.showSortDirDropdown = false;
-    
-    // Close all asset menus
-    this.assetList.forEach(asset => {
-      asset.showMenu = false;
-    });
+    const target = event.target as HTMLElement;
+    if (!target.closest('.menu-container')) {
+      this.showMenu = false;
+    }
+  }
+
+  // Import modal methods
+  openImportModal(): void {
+    this.showImportModal = true;
+  }
+
+  closeImportModal(): void {
+    this.showImportModal = false;
+  }
+
+  onImportComplete(data: any): void {
+    this.closeImportModal();
+    // Reload assets after successful import
+    this.loadAssets();
+    this.loadAssetStatistics();
   }
 
 }

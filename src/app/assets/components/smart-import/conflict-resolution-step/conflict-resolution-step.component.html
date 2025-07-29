@@ -1,0 +1,169 @@
+<div class="conflict-resolution-step">
+  <!-- Header -->
+  <div class="mb-6">
+    <div class="flex items-center space-x-3 mb-2">
+      <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+      </svg>
+      <h3 class="text-xl font-semibold text-gray-900">Import Conflicts Detected</h3>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isDetectingConflicts" class="text-center py-8">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+    <p class="text-sm text-gray-500 mt-2">Detecting conflicts...</p>
+  </div>
+
+  <!-- Conflict Resolution Content -->
+  <div *ngIf="!isDetectingConflicts" class="space-y-6">
+    <!-- Import Summary -->
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+      <h4 class="text-lg font-medium text-gray-900 mb-3">Import Summary</h4>
+      <div class="grid grid-cols-4 gap-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-900">{{ importSummary.totalRows }}</div>
+          <div class="text-sm text-gray-500">Total Rows</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-600">{{ importSummary.validRows }}</div>
+          <div class="text-sm text-gray-500">Valid Rows</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-orange-600">{{ importSummary.conflicts }}</div>
+          <div class="text-sm text-gray-500">Conflicts</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-red-600">{{ importSummary.errors }}</div>
+          <div class="text-sm text-gray-500">Errors</div>
+        </div>
+      </div>
+      <div class="mt-3 flex justify-end">
+        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+          {{ getTotalConflictCount() }} Issues
+        </span>
+      </div>
+    </div>
+
+    <!-- Conflict Type Tabs -->
+    <div class="bg-white border border-gray-200 rounded-lg">
+      <div class="border-b border-gray-200">
+        <nav class="flex space-x-8 px-6">
+          <button 
+            *ngFor="let tab of ['Asset IDs', 'Statuses', 'Categories', 'Data Quality']"
+            (click)="activeTab = tab"
+            class="py-4 px-1 border-b-2 font-medium text-sm transition-colors"
+            [ngClass]="{
+              'border-blue-500 text-blue-600': activeTab === tab,
+              'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== tab
+            }">
+            {{ tab }}
+            <span *ngIf="getConflictCount(tab) > 0" 
+                  class="ml-2 px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
+              {{ getConflictCount(tab) }}
+            </span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="p-6">
+        <div *ngIf="getConflictsByType(activeTab).length === 0" class="text-center py-8">
+          <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-gray-500">No {{ activeTab }} conflicts found</p>
+        </div>
+
+        <div *ngIf="getConflictsByType(activeTab).length > 0">
+          <p class="text-sm text-gray-600 mb-4">
+            Resolve {{ activeTab }} conflicts by choosing how to handle duplicates:
+          </p>
+          
+          <div class="space-y-4">
+            <div *ngFor="let conflict of getConflictsByType(activeTab)" 
+                 class="border rounded-lg p-4"
+                 [ngClass]="getSeverityClass(conflict.severity)">
+              <div class="flex items-start space-x-3">
+                <svg class="w-5 h-5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSeverityIcon(conflict.severity)"></path>
+                </svg>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <h5 class="text-sm font-medium">
+                      Row {{ conflict.row }} - {{ conflict.field }}
+                    </h5>
+                    <span class="px-2 py-1 text-xs rounded-full"
+                          [ngClass]="{
+                            'bg-red-100 text-red-800': conflict.severity === 'error',
+                            'bg-yellow-100 text-yellow-800': conflict.severity === 'warning'
+                          }">
+                      {{ conflict.severity }}
+                    </span>
+                  </div>
+                  <p class="text-sm mt-1">{{ conflict.message }}</p>
+                  
+                  <!-- Suggested Fix -->
+                  <div *ngIf="conflict.suggestedFix" class="mt-3">
+                    <button 
+                      (click)="applySuggestedFix(conflict)"
+                      class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                      Suggested fix: {{ conflict.suggestedFix }}
+                    </button>
+                  </div>
+
+                  <!-- Resolution Options -->
+                  <div class="mt-3 space-y-2">
+                    <label class="flex items-center">
+                      <input type="radio" 
+                             name="resolution_{{ conflict.row }}" 
+                             value="skip"
+                             (change)="resolveConflict(conflict, 'skip')"
+                             class="mr-2">
+                      <span class="text-sm">Skip this row</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="radio" 
+                             name="resolution_{{ conflict.row }}" 
+                             value="overwrite"
+                             (change)="resolveConflict(conflict, 'overwrite')"
+                             class="mr-2">
+                      <span class="text-sm">Overwrite existing</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="radio" 
+                             name="resolution_{{ conflict.row }}" 
+                             value="create_new"
+                             (change)="resolveConflict(conflict, 'create_new')"
+                             class="mr-2">
+                      <span class="text-sm">Create new record</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex items-center justify-between pt-6">
+    <button 
+      (click)="cancelImport()"
+      class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+      Cancel Import
+    </button>
+    
+    <button 
+      (click)="proceedWithImport()"
+      [disabled]="getTotalConflictCount() === 0"
+      class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      Proceed with Import
+    </button>
+  </div>
+</div> 
