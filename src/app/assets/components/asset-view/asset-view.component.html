@@ -1027,4 +1027,12 @@
       </form>
     </div>
   </div>
+
+  <!-- Transfer Asset Modal -->
+  <app-transfer-asset-modal
+    [isOpen]="showTransferModal"
+    [asset]="asset"
+    (closeModal)="onTransferModalClose()"
+    (transferComplete)="onTransferComplete($event)"
+  ></app-transfer-asset-modal>
 </div>

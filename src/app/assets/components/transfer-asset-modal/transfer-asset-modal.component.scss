@@ -1,0 +1,132 @@
+// Transfer Asset Modal Styles
+.transfer-asset-modal {
+  // Modal backdrop
+  .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  // Modal content
+  .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  // Form elements
+  .form-select,
+  .form-input,
+  .form-textarea {
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    &:disabled {
+      background-color: #f9fafb;
+      cursor: not-allowed;
+    }
+  }
+
+  // Enhanced dropdown styling
+  select {
+    background-image: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    
+    &::-ms-expand {
+      display: none;
+    }
+    
+    option {
+      padding: 8px 12px;
+      background-color: white;
+      color: #374151;
+      
+      &:hover {
+        background-color: #f3f4f6;
+      }
+      
+      &:disabled {
+        color: #9ca3af;
+        background-color: #f9fafb;
+      }
+    }
+  }
+
+  // Flatpickr customization
+  .flatpickr-calendar {
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e5e7eb;
+    
+    .flatpickr-day {
+      border-radius: 4px;
+      
+      &.selected {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+      }
+      
+      &:hover {
+        background-color: #f3f4f6;
+      }
+    }
+  }
+
+  // Transfer arrow animation
+  .transfer-arrow {
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+
+  // Loading spinner
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  // Error message
+  .error-message {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 640px) {
+    .modal-content {
+      margin: 1rem;
+      max-width: calc(100vw - 2rem);
+    }
+  }
+} 

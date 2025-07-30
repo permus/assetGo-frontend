@@ -135,8 +135,9 @@ export class AssetService {
   }
 
   // Location list
-  getLocations(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/locations`, this.getAuthHeaders());
+  getLocations(page: number = 1, perPage: number = 1000, sortBy: string = 'created', sortDirection: string = 'desc'): Observable<any> {
+    const params = `?page=${page}&per_page=${perPage}&sort_by=${sortBy}&sort_direction=${sortDirection}`;
+    return this.http.get(`${this.baseUrl}/locations${params}`, this.getAuthHeaders());
   }
 
   // Asset Types
@@ -150,8 +151,9 @@ export class AssetService {
   }
 
   // Departments
-  getDepartments(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/departments-list`, this.getAuthHeaders());
+  getDepartments(page: number = 1, perPage: number = 1000, sortBy: string = 'created', sortDirection: string = 'desc'): Observable<any> {
+    const params = `?page=${page}&per_page=${perPage}&sort_by=${sortBy}&sort_direction=${sortDirection}`;
+    return this.http.get(`${this.baseUrl}/departments-list${params}`, this.getAuthHeaders());
   }
 
   // Fetch possible parent assets

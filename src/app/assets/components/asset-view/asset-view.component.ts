@@ -7,11 +7,12 @@ import { Location as angularLocation } from '@angular/common';
 import { PdfExportService } from '../../../shared/services/pdf-export.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import flatpickr from 'flatpickr';
+import { TransferAssetModalComponent } from '../transfer-asset-modal/transfer-asset-modal.component';
 
 @Component({
   selector: 'app-asset-view',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, TransferAssetModalComponent],
   templateUrl: './asset-view.component.html',
   styleUrl: './asset-view.component.scss'
 })
@@ -30,6 +31,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   // UI state
   descriptionExpanded = false;
   showActionsDropdown = false;
+  showTransferModal = false;
   
   // Maintenance Schedule
   maintenanceSchedules: any[] = [];
@@ -619,8 +621,20 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   transferAsset() {
-    console.log('Transfer asset:', this.asset?.id);
-    // TODO: Implement asset transfer
+    this.showTransferModal = true;
+  }
+
+  onTransferComplete(response: any) {
+    console.log('Transfer completed:', response);
+    // Reload asset data to reflect the transfer
+    if (this.asset?.id) {
+      this.loadAsset(this.asset.id.toString());
+    }
+    // You could show a success message here
+  }
+
+  onTransferModalClose() {
+    this.showTransferModal = false;
   }
 
   duplicateAsset() {

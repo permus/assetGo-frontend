@@ -1,0 +1,257 @@
+<div
+  *ngIf="isOpen"
+  class="fixed inset-0 z-50 overflow-y-auto"
+  (click)="onModalClick($event)"
+  [@backdropAnimation]
+>
+  <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+    <div class="fixed inset-0 transition-opacity z-0  bg-[#00000085]"></div>
+
+    <!-- Modal panel -->
+    <div
+      class="inline-block w-full max-w-2xl z-1 p-6 my-8 relative overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl"
+      (click)="$event.stopPropagation()"
+      [@modalAnimation]
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-900">
+          Transfer Asset: {{ asset?.name || 'Unknown Asset' }}
+        </h3>
+        <button
+          (click)="onCancel()"
+          class="text-gray-400 hover:text-gray-600 transition-colors"
+          [disabled]="loading"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Current Asset Information -->
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <p class="text-sm text-gray-500">Current Location</p>
+          <p class="text-sm font-medium text-gray-900">{{ getCurrentLocationName() }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Current Department</p>
+          <p class="text-sm font-medium text-gray-900">{{ getCurrentDepartmentName() }}</p>
+        </div>
+      </div>
+
+      <!-- Transfer Arrow -->
+      <div class="flex justify-center mb-6">
+        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Transfer Form -->
+      <form (ngSubmit)="onTransfer()" class="space-y-4">
+        <!-- New Location Dropdown -->
+        <div class="relative" (click)="$event.stopPropagation()">
+          <label class="block text-sm font-medium text-gray-700 mb-2">New Location</label>
+          <button
+            type="button"
+            (click)="showLocationDropdown = !showLocationDropdown"
+            class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+            [class.border-blue-500]="showLocationDropdown">
+            <div class="flex items-center justify-between">
+              <span *ngIf="!transferData.new_location_id" class="text-gray-400">No location assigned</span>
+              <span *ngIf="transferData.new_location_id" class="text-gray-900">
+                {{ getLocationNameById(transferData.new_location_id) }}
+              </span>
+              <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div *ngIf="showLocationDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+            <div class="py-1">
+              <button
+                type="button"
+                (click)="transferData.new_location_id = null; showLocationDropdown = false"
+                class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                [class.bg-blue-50]="!transferData.new_location_id">
+                No location assigned
+              </button>
+              <button
+                *ngFor="let location of locations"
+                type="button"
+                (click)="transferData.new_location_id = location.id; showLocationDropdown = false"
+                class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                [class.bg-blue-50]="transferData.new_location_id === location.id"
+                [disabled]="location.id === asset?.location_id">
+                {{ location.name }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Department Dropdown -->
+        <div class="relative" (click)="$event.stopPropagation()">
+          <label class="block text-sm font-medium text-gray-700 mb-2">New Department</label>
+          <button
+            type="button"
+            (click)="showDepartmentDropdown = !showDepartmentDropdown"
+            class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+            [class.border-blue-500]="showDepartmentDropdown">
+            <div class="flex items-center justify-between">
+              <span *ngIf="!transferData.new_department_id" class="text-gray-400">Select new department (optional)</span>
+              <span *ngIf="transferData.new_department_id" class="text-gray-900">
+                {{ getDepartmentNameById(transferData.new_department_id) }}
+              </span>
+              <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showDepartmentDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div *ngIf="showDepartmentDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+            <div class="py-1">
+              <button
+                type="button"
+                (click)="transferData.new_department_id = null; showDepartmentDropdown = false"
+                class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                [class.bg-blue-50]="!transferData.new_department_id">
+                Select new department (optional)
+              </button>
+              <button
+                *ngFor="let department of departments"
+                type="button"
+                (click)="transferData.new_department_id = department.id; showDepartmentDropdown = false"
+                class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                [class.bg-blue-50]="transferData.new_department_id === department.id">
+                {{ department.name }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transfer Reason Dropdown -->
+        <div class="relative" (click)="$event.stopPropagation()">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Transfer Reason *</label>
+          <button
+            type="button"
+            (click)="showReasonDropdown = !showReasonDropdown"
+            class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+            [class.border-blue-500]="showReasonDropdown">
+            <div class="flex items-center justify-between">
+              <span *ngIf="!transferData.transfer_reason" class="text-gray-400">Select reason</span>
+              <span *ngIf="transferData.transfer_reason" class="text-gray-900">
+                {{ transferData.transfer_reason }}
+              </span>
+              <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showReasonDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div *ngIf="showReasonDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+            <div class="py-1">
+              <button
+                type="button"
+                (click)="transferData.transfer_reason = ''; showReasonDropdown = false"
+                class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                [class.bg-blue-50]="!transferData.transfer_reason">
+                Select reason
+              </button>
+              <button
+                *ngFor="let reason of transferReasons"
+                type="button"
+                (click)="transferData.transfer_reason = reason; showReasonDropdown = false"
+                class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                [class.bg-blue-50]="transferData.transfer_reason === reason">
+                {{ reason }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transfer Date -->
+        <div>
+          <label for="transfer_date" class="block text-sm font-medium text-gray-700 mb-2">
+            Transfer Date *
+          </label>
+          <div class="relative">
+            <input
+              #dateInput
+              type="text"
+              id="transfer_date"
+              [(ngModel)]="transferData.transfer_date"
+              name="transfer_date"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer"
+              placeholder="Select date"
+              [disabled]="loading"
+              required
+              readonly
+            />
+            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div>
+          <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+            Additional Notes
+          </label>
+          <textarea
+            id="notes"
+            [(ngModel)]="transferData.notes"
+            name="notes"
+            rows="3"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white resize-none"
+            placeholder="Enter any additional notes about this transfer..."
+            [disabled]="loading"
+          ></textarea>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-700">{{ error }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 pt-6">
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            [disabled]="loading"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="loading"
+          >
+            <span *ngIf="!loading">Create Transfer</span>
+            <span *ngIf="loading" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creating Transfer...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
