@@ -32,6 +32,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   descriptionExpanded = false;
   showActionsDropdown = false;
   showTransferModal = false;
+  showActivityHistoryModal = false;
   
   // Maintenance Schedule
   maintenanceSchedules: any[] = [];
@@ -71,6 +72,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   };
 
   mockActivities: any[] = [];
+  fullActivityHistory: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -652,6 +654,100 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     console.warn('Asset image failed to load:', event.target.src);
     event.target.onerror = null;
     event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMiA5VjEzTTEyIDE3SDE2TTE2IDlIMTJNMTIgOUw4IDEzTDEyIDE3IiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
+  }
+
+  onCategoryIconError(event: any, category: any) {
+    if (category) {
+      category.iconError = true;
+    }
+  }
+
+  downloadQRCode() {
+    if (this.asset?.asset_id) {
+      // Generate QR code and download
+      console.log('Downloading QR code for asset:', this.asset.asset_id);
+      // TODO: Implement QR code generation and download
+      // This would typically involve generating a QR code image and triggering a download
+    }
+  }
+
+  showFullActivityHistory() {
+    this.loadFullActivityHistory();
+    this.showActivityHistoryModal = true;
+  }
+
+  closeActivityHistoryModal() {
+    this.showActivityHistoryModal = false;
+  }
+
+  loadFullActivityHistory() {
+    // Mock full activity history data
+    this.fullActivityHistory = [
+      {
+        title: 'Asset Created',
+        description: 'Asset was added to the system',
+        time: '2 days ago',
+        type: 'creation',
+        user: 'John Doe',
+        details: 'Asset ID: AST-001, Category: Equipment'
+      },
+      {
+        title: 'Status Updated',
+        description: 'Status changed from Inactive to Active',
+        time: '1 day ago',
+        type: 'status_change',
+        user: 'Jane Smith',
+        details: 'Previous status: Inactive, New status: Active'
+      },
+      {
+        title: 'Location Changed',
+        description: 'Moved to new location',
+        time: '6 hours ago',
+        type: 'location_change',
+        user: 'Mike Johnson',
+        details: 'From: Storage Room A, To: Main Floor'
+      },
+      {
+        title: 'Maintenance Scheduled',
+        description: 'Preventive maintenance scheduled',
+        time: '4 hours ago',
+        type: 'maintenance',
+        user: 'Sarah Wilson',
+        details: 'Next maintenance: 30 days, Type: Preventive'
+      },
+      {
+        title: 'Document Uploaded',
+        description: 'User manual uploaded',
+        time: '2 hours ago',
+        type: 'document',
+        user: 'Alex Brown',
+        details: 'File: user_manual.pdf, Size: 2.5MB'
+      },
+      {
+        title: 'Transfer Requested',
+        description: 'Asset transfer to new department requested',
+        time: '1 hour ago',
+        type: 'transfer',
+        user: 'Lisa Davis',
+        details: 'From: IT Department, To: Operations Department'
+      },
+      {
+        title: 'Warranty Updated',
+        description: 'Warranty information updated',
+        time: '30 minutes ago',
+        type: 'warranty',
+        user: 'Tom Miller',
+        details: 'Warranty extended until Dec 2025'
+      },
+      {
+        title: 'Asset Tagged',
+        description: 'Asset tagged with new labels',
+        time: '15 minutes ago',
+        type: 'tagging',
+        user: 'Chris Lee',
+        details: 'Tags added: High Priority, Critical Equipment'
+      }
+    ];
   }
 
   viewFullImage(imageUrl: string) {
