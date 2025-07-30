@@ -1,29 +1,25 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AssetImportService, ImportConflict } from '../../../services/asset-import.service';
+import { FormsModule } from '@angular/forms';
+import { AssetImportService, ImportConflict, ConflictResolution } from '../../../services/asset-import.service';
 
 @Component({
   selector: 'app-conflict-resolution-step',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './conflict-resolution-step.component.html',
   styleUrls: ['./conflict-resolution-step.component.scss']
 })
 export class ConflictResolutionStepComponent implements OnInit {
   @Input() fileId: string | null = null;
-  @Input() mappings: any[] = [];
-  @Output() conflictsResolved = new EventEmitter<any>();
+  @Output() conflictsResolved = new EventEmitter<{ conflicts: { [group: string]: ImportConflict[] }, resolutions: ConflictResolution[] }>();
 
-  conflicts: ImportConflict[] = [];
-  importSummary: any = {
-    totalRows: 0,
-    validRows: 0,
-    conflicts: 0,
-    errors: 0
-  };
-  activeTab: string = 'Asset IDs';
-  isDetectingConflicts = false;
-  resolutions: any[] = [];
+  isLoading = false;
+  isResolving = false;
+  conflicts: { [group: string]: ImportConflict[] } = {};
+  resolutions: ConflictResolution[] = [];
+  errors: string[] = [];
+  activeTab: string = '';
 
   constructor(private assetImportService: AssetImportService) {}
 
@@ -36,103 +32,246 @@ export class ConflictResolutionStepComponent implements OnInit {
   private detectConflicts(): void {
     if (!this.fileId) return;
 
-    this.isDetectingConflicts = true;
+    this.isLoading = true;
     this.assetImportService.detectConflicts(this.fileId).subscribe({
       next: (response) => {
-        this.isDetectingConflicts = false;
-        this.conflicts = response.data.conflicts || [];
-        this.importSummary = response.data.summary || {
-          totalRows: 0,
-          validRows: 0,
-          conflicts: this.conflicts.length,
-          errors: 0
-        };
+        this.isLoading = false;
+        this.conflicts = this.convertBackendConflictsToFrontend(response.conflicts || {});
+        
+        // Set active tab to first conflict group
+        const conflictGroups = Object.keys(this.conflicts);
+        if (conflictGroups.length > 0) {
+          this.activeTab = conflictGroups[0];
+        }
+        
+        // Initialize resolutions
+        this.initializeResolutions();
       },
       error: (error) => {
-        this.isDetectingConflicts = false;
-        console.error('Error detecting conflicts:', error);
+        this.isLoading = false;
+        this.errors = ['Failed to detect conflicts. Please try again.'];
+        console.error('Conflict detection error:', error);
       }
     });
   }
 
-  getConflictsByType(type: string): ImportConflict[] {
-    return this.conflicts.filter(conflict => conflict.type === type);
+  private convertBackendConflictsToFrontend(backendConflicts: { [group: string]: any[] }): { [group: string]: ImportConflict[] } {
+    const frontendConflicts: { [group: string]: ImportConflict[] } = {};
+    
+    for (const [group, conflicts] of Object.entries(backendConflicts)) {
+      frontendConflicts[group] = conflicts.map(conflict => ({
+        type: this.getConflictTypeFromGroup(group),
+        row: conflict.row,
+        field: this.getFieldFromGroup(group),
+        message: conflict.issue,
+        severity: this.getSeverityFromGroup(group),
+        value: conflict.value
+      }));
+    }
+    
+    return frontendConflicts;
   }
 
-  getConflictCount(type: string): number {
-    return this.getConflictsByType(type).length;
-  }
-
-  getTotalConflictCount(): number {
-    return this.conflicts.length;
-  }
-
-  getSeverityClass(severity: string): string {
-    switch (severity) {
-      case 'error':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'warning':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+  private getConflictTypeFromGroup(group: string): 'duplicate' | 'missing_location' | 'invalid_status' | 'missing_required' | 'data_quality' {
+    switch (group) {
+      case 'Asset IDs':
+      case 'Serial Numbers':
+        return 'duplicate';
+      case 'Locations':
+        return 'missing_location';
+      case 'Statuses':
+        return 'invalid_status';
+      case 'Data Quality':
+        return 'missing_required';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'data_quality';
     }
   }
 
-  getSeverityIcon(severity: string): string {
-    switch (severity) {
-      case 'error':
-        return 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
-      case 'warning':
-        return 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z';
+  private getFieldFromGroup(group: string): string {
+    switch (group) {
+      case 'Asset IDs':
+        return 'asset_id';
+      case 'Serial Numbers':
+        return 'serial_number';
+      case 'Locations':
+        return 'location';
+      case 'Statuses':
+        return 'status';
+      case 'Data Quality':
+        return 'name';
       default:
-        return 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+        return 'unknown';
     }
   }
 
-  applySuggestedFix(conflict: ImportConflict): void {
-    // In a real implementation, this would apply the suggested fix
-    console.log('Applying suggested fix for:', conflict);
+  private getSeverityFromGroup(group: string): 'error' | 'warning' {
+    switch (group) {
+      case 'Asset IDs':
+      case 'Serial Numbers':
+      case 'Data Quality':
+        return 'error';
+      case 'Locations':
+      case 'Statuses':
+        return 'warning';
+      default:
+        return 'warning';
+    }
   }
 
-  resolveConflict(conflict: ImportConflict, resolution: string): void {
-    const existingResolution = this.resolutions.find(r => r.conflictId === conflict.row);
+  private convertBackendResolutionsToFrontend(backendResolutions: { [group: string]: any[] }): ConflictResolution[] {
+    const frontendResolutions: ConflictResolution[] = [];
+    
+    Object.values(backendResolutions).flat().forEach(resolution => {
+      frontendResolutions.push({
+        row: resolution.row,
+        field: resolution.field,
+        action: resolution.action,
+        value: resolution.value
+      });
+    });
+    
+    return frontendResolutions;
+  }
+
+  private initializeResolutions(): void {
+    this.resolutions = [];
+    Object.values(this.conflicts).flat().forEach(conflict => {
+      this.resolutions.push({
+        row: conflict.row,
+        field: conflict.field,
+        action: 'skip',
+        value: conflict.value
+      });
+    });
+  }
+
+  setResolution(conflict: ImportConflict, action: 'skip' | 'update' | 'create' | 'ignore', value?: any): void {
+    const existingResolution = this.resolutions.find(r => r.row === conflict.row && r.field === conflict.field);
+    
     if (existingResolution) {
-      existingResolution.resolution = resolution;
+      existingResolution.action = action;
+      if (value !== undefined) {
+        existingResolution.value = value;
+      }
     } else {
       this.resolutions.push({
-        conflictId: conflict.row,
-        type: conflict.type,
+        row: conflict.row,
         field: conflict.field,
-        resolution: resolution
+        action: action,
+        value: value
       });
     }
   }
 
-  proceedWithImport(): void {
-    if (this.fileId) {
-      this.assetImportService.resolveConflicts(this.fileId, this.resolutions).subscribe({
-        next: (response) => {
-          this.conflictsResolved.emit({
-            conflicts: this.conflicts,
-            resolutions: this.resolutions,
-            success: true
-          });
-        },
-        error: (error) => {
-          console.error('Error resolving conflicts:', error);
-        }
+  onResolutionValueChange(conflict: ImportConflict, event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.setResolution(conflict, 'update', target.value);
+  }
+
+  getResolution(conflict: ImportConflict): ConflictResolution | undefined {
+    return this.resolutions.find(r => r.row === conflict.row && r.field === conflict.field);
+  }
+
+  resolveAllConflicts(): void {
+    if (!this.fileId) return;
+
+    this.isResolving = true;
+    
+    // Convert resolutions to backend format
+    const backendResolutions: { [group: string]: any[] } = {};
+    Object.entries(this.conflicts).forEach(([group, conflicts]) => {
+      backendResolutions[group] = conflicts.map(conflict => {
+        const resolution = this.getResolution(conflict);
+        return {
+          row: conflict.row,
+          field: conflict.field,
+          action: resolution?.action || 'skip',
+          value: resolution?.value || conflict.value
+        };
       });
-    } else {
-      this.conflictsResolved.emit({
-        conflicts: this.conflicts,
-        resolutions: this.resolutions,
-        success: true
-      });
+    });
+
+    this.assetImportService.resolveConflicts(this.fileId, backendResolutions).subscribe({
+      next: (response) => {
+        this.isResolving = false;
+        // Convert response back to frontend format
+        this.resolutions = this.convertBackendResolutionsToFrontend(response.data.resolutions);
+        this.conflictsResolved.emit({
+          conflicts: this.conflicts,
+          resolutions: this.resolutions
+        });
+      },
+      error: (error) => {
+        this.isResolving = false;
+        this.errors = ['Failed to resolve conflicts. Please try again.'];
+        console.error('Conflict resolution error:', error);
+      }
+    });
+  }
+
+  getConflictSeverityClass(severity: string): string {
+    return this.assetImportService.getConflictSeverityClass(severity);
+  }
+
+  getConflictTypeLabel(type: string): string {
+    switch (type) {
+      case 'duplicate':
+        return 'Duplicate Asset';
+      case 'missing_location':
+        return 'Missing Location';
+      case 'invalid_status':
+        return 'Invalid Status';
+      case 'missing_required':
+        return 'Missing Required Field';
+      case 'data_quality':
+        return 'Data Quality Issue';
+      default:
+        return type;
     }
   }
 
-  cancelImport(): void {
-    // Handle import cancellation
-    console.log('Import cancelled');
+  getConflictGroups(): string[] {
+    return Object.keys(this.conflicts);
+  }
+
+  getConflictsByGroup(group: string): ImportConflict[] {
+    return this.conflicts[group] || [];
+  }
+
+  getTotalConflicts(): number {
+    return Object.values(this.conflicts).flat().length;
+  }
+
+  getResolvedConflicts(): number {
+    return this.resolutions.filter(r => r.action !== 'skip').length;
+  }
+
+  getConflictsBySeverity(severity: 'error' | 'warning'): ImportConflict[] {
+    return Object.values(this.conflicts).flat().filter(c => c.severity === severity);
+  }
+
+  hasErrors(): boolean {
+    return this.getConflictsBySeverity('error').length > 0;
+  }
+
+  hasWarnings(): boolean {
+    return this.getConflictsBySeverity('warning').length > 0;
+  }
+
+  canProceed(): boolean {
+    // Can proceed if all errors are resolved or skipped
+    const errorConflicts = this.getConflictsBySeverity('error');
+    const errorResolutions = this.resolutions.filter(r => {
+      const conflict = errorConflicts.find(c => c.row === r.row && c.field === r.field);
+      return conflict && r.action !== 'skip';
+    });
+    
+    return errorResolutions.length === errorConflicts.length;
+  }
+
+  getConflictGroupSeverityClass(group: string): string {
+    const conflicts = this.getConflictsByGroup(group);
+    return conflicts.some(c => c.severity === 'error') ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800';
   }
 } 

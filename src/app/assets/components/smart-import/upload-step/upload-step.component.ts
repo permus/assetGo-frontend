@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AssetImportService } from '../../../services/asset-import.service';
+import { AssetImportService, ImportSession } from '../../../services/asset-import.service';
 
 @Component({
   selector: 'app-upload-step',
@@ -10,13 +10,14 @@ import { AssetImportService } from '../../../services/asset-import.service';
   styleUrls: ['./upload-step.component.scss']
 })
 export class UploadStepComponent {
-  @Output() fileUploaded = new EventEmitter<any>();
+  @Output() fileUploaded = new EventEmitter<{ fileId: string; file: File; session: ImportSession }>();
 
   isDragOver = false;
   isUploading = false;
   uploadProgress = 0;
   selectedFile: File | null = null;
   validationErrors: string[] = [];
+  uploadSession: ImportSession | null = null;
 
   constructor(private assetImportService: AssetImportService) {}
 
@@ -54,6 +55,7 @@ export class UploadStepComponent {
   private handleFile(file: File): void {
     this.selectedFile = file;
     this.validationErrors = [];
+    this.uploadSession = null;
 
     // Validate file
     const validation = this.assetImportService.validateFile(file);
@@ -73,8 +75,8 @@ export class UploadStepComponent {
     // Simulate upload progress
     const progressInterval = setInterval(() => {
       this.uploadProgress += Math.random() * 20;
-      if (this.uploadProgress >= 100) {
-        this.uploadProgress = 100;
+      if (this.uploadProgress >= 90) {
+        this.uploadProgress = 90;
         clearInterval(progressInterval);
       }
     }, 200);
@@ -84,10 +86,13 @@ export class UploadStepComponent {
         clearInterval(progressInterval);
         this.uploadProgress = 100;
         this.isUploading = false;
-        
+
+        this.uploadSession = response.data;
+
         this.fileUploaded.emit({
           fileId: response.data.file_id,
-          file: file
+          file: file,
+          session: response.data
         });
       },
       error: (error) => {
@@ -118,10 +123,13 @@ export class UploadStepComponent {
   }
 
   formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return this.assetImportService.formatFileSize(bytes);
   }
-} 
+
+  clearSelection(): void {
+    this.selectedFile = null;
+    this.validationErrors = [];
+    this.uploadSession = null;
+    this.uploadProgress = 0;
+  }
+}

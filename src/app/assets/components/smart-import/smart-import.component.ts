@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AssetImportService, ImportStep } from '../../services/asset-import.service';
+import { AssetImportService, ImportStep, ImportSession, AnalysisResult, FieldMapping, ImportConflict, ConflictResolution, ImportResult } from '../../services/asset-import.service';
 import { UploadStepComponent } from './upload-step/upload-step.component';
 import { AnalyzeStepComponent } from './analyze-step/analyze-step.component';
 import { FieldMappingStepComponent } from './field-mapping-step/field-mapping-step.component';
@@ -33,13 +33,26 @@ export class SmartImportComponent implements OnInit {
     { id: 5, title: 'Import', description: 'Import assets to system', isActive: false, isCompleted: false }
   ];
 
-  importData: any = {
+  importData: {
+    fileId: string | null;
+    file: File | null;
+    session: ImportSession | null;
+    analysis: AnalysisResult | null;
+    mappings: FieldMapping[];
+    userOverrides: any;
+    conflicts: { [group: string]: ImportConflict[] };
+    resolutions: ConflictResolution[];
+    result: ImportResult | null;
+  } = {
     fileId: null,
     file: null,
+    session: null,
     analysis: null,
     mappings: [],
-    conflicts: [],
-    importId: null
+    userOverrides: {},
+    conflicts: {},
+    resolutions: [],
+    result: null
   };
 
   constructor(private assetImportService: AssetImportService) {}
@@ -55,29 +68,32 @@ export class SmartImportComponent implements OnInit {
     });
   }
 
-  onFileUploaded(data: any): void {
+  onFileUploaded(data: { fileId: string; file: File; session: ImportSession }): void {
     this.importData.fileId = data.fileId;
     this.importData.file = data.file;
+    this.importData.session = data.session;
     this.nextStep();
   }
 
-  onAnalysisComplete(data: any): void {
-    this.importData.analysis = data;
+  onAnalysisComplete(analysis: AnalysisResult): void {
+    this.importData.analysis = analysis;
     this.nextStep();
   }
 
-  onMappingComplete(data: any): void {
+  onMappingComplete(data: { mappings: FieldMapping[]; userOverrides: any }): void {
     this.importData.mappings = data.mappings;
+    this.importData.userOverrides = data.userOverrides;
     this.nextStep();
   }
 
-  onConflictsResolved(data: any): void {
+  onConflictsResolved(data: { conflicts: { [group: string]: ImportConflict[] }; resolutions: ConflictResolution[] }): void {
     this.importData.conflicts = data.conflicts;
+    this.importData.resolutions = data.resolutions;
     this.nextStep();
   }
 
-  onImportComplete(data: any): void {
-    this.importData.importId = data.importId;
+  onImportComplete(data: { importId: string; result: ImportResult }): void {
+    this.importData.result = data.result;
     // Handle import completion
     console.log('Import completed:', data);
   }
@@ -97,8 +113,11 @@ export class SmartImportComponent implements OnInit {
   }
 
   goToStep(stepId: number): void {
-    this.currentStep = stepId;
-    this.updateStepStatus();
+    // Only allow navigation to completed steps or the next step
+    if (stepId <= this.currentStep || stepId === this.currentStep + 1) {
+      this.currentStep = stepId;
+      this.updateStepStatus();
+    }
   }
 
   resetImport(): void {
@@ -106,11 +125,62 @@ export class SmartImportComponent implements OnInit {
     this.importData = {
       fileId: null,
       file: null,
+      session: null,
       analysis: null,
       mappings: [],
-      conflicts: [],
-      importId: null
+      userOverrides: {},
+      conflicts: {},
+      resolutions: [],
+      result: null
     };
     this.updateStepStatus();
+  }
+
+  canNavigateToStep(stepId: number): boolean {
+    // Can navigate to completed steps or the next step
+    return stepId <= this.currentStep || stepId === this.currentStep + 1;
+  }
+
+  getStepStatus(stepId: number): string {
+    if (stepId < this.currentStep) {
+      return 'completed';
+    } else if (stepId === this.currentStep) {
+      return 'active';
+    } else {
+      return 'pending';
+    }
+  }
+
+  getStepIcon(stepId: number): string {
+    const status = this.getStepStatus(stepId);
+    switch (status) {
+      case 'completed':
+        return '✓';
+      case 'active':
+        return '●';
+      default:
+        return stepId.toString();
+    }
+  }
+
+  getStepClass(stepId: number): string {
+    const status = this.getStepStatus(stepId);
+    switch (status) {
+      case 'completed':
+        return 'bg-green-500 text-white';
+      case 'active':
+        return 'bg-blue-500 text-white';
+      default:
+        return 'bg-gray-300 text-gray-600';
+    }
+  }
+
+  downloadErrorReport(): void {
+    if (this.importData.result?.error_report_url) {
+      const link = document.createElement('a');
+      link.href = this.importData.result.error_report_url;
+      link.download = 'import-error-report.csv';
+      link.click();
+    }
   }
 } 

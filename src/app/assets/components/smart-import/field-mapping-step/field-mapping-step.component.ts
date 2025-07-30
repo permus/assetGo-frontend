@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AssetImportService, FieldMapping } from '../../../services/asset-import.service';
+import { AssetImportService, FieldMapping, AnalysisResult } from '../../../services/asset-import.service';
 
 @Component({
   selector: 'app-field-mapping-step',
@@ -12,14 +12,15 @@ import { AssetImportService, FieldMapping } from '../../../services/asset-import
 })
 export class FieldMappingStepComponent implements OnInit {
   @Input() fileId: string | null = null;
-  @Input() analysis: any = null;
-  @Output() mappingComplete = new EventEmitter<any>();
+  @Input() analysis: AnalysisResult | null = null;
+  @Output() mappingComplete = new EventEmitter<{ mappings: FieldMapping[], userOverrides: any }>();
 
+  isLoading = false;
+  isSaving = false;
+  mappings: FieldMapping[] = [];
+  userOverrides: any = {};
   systemFields: any[] = [];
-  fieldMappings: FieldMapping[] = [];
-  isMappingLoading = false;
-  showPreview = false;
-  previewData: any[] = [];
+  errors: string[] = [];
 
   constructor(private assetImportService: AssetImportService) {}
 
@@ -33,17 +34,22 @@ export class FieldMappingStepComponent implements OnInit {
   private loadFieldMappings(): void {
     if (!this.fileId) return;
 
-    this.isMappingLoading = true;
+    this.isLoading = true;
     this.assetImportService.getFieldMappings(this.fileId).subscribe({
       next: (response) => {
-        this.isMappingLoading = false;
-        this.fieldMappings = response.data.mappings || [];
-        this.autoMapFields();
+        this.isLoading = false;
+        this.mappings = this.convertMappingSuggestionsToFieldMappings(response.data.mappings || {});
+        this.userOverrides = response.data.user_overrides || {};
+        
+        // If no mappings exist, create them from analysis
+        if (this.mappings.length === 0 && this.analysis) {
+          this.mappings = this.convertMappingSuggestionsToFieldMappings(this.analysis.mapping_suggestions);
+        }
       },
       error: (error) => {
-        this.isMappingLoading = false;
-        console.error('Error loading field mappings:', error);
-        this.autoMapFields();
+        this.isLoading = false;
+        this.errors = ['Failed to load field mappings. Please try again.'];
+        console.error('Field mapping error:', error);
       }
     });
   }
@@ -51,136 +57,163 @@ export class FieldMappingStepComponent implements OnInit {
   private loadSystemFields(): void {
     this.assetImportService.getSystemFields().subscribe({
       next: (response) => {
-        this.systemFields = response.data.fields || [];
+        // Convert string array to object array with value, label, and required properties
+        this.systemFields = (response.data || []).map(field => ({
+          value: field,
+          label: this.getFieldLabel(field),
+          required: this.isRequiredField(field)
+        }));
       },
       error: (error) => {
-        console.error('Error loading system fields:', error);
+        console.error('System fields error:', error);
+        // Use default system fields if API fails
+        this.systemFields = [
+          { value: 'name', label: 'Asset Name', required: true },
+          { value: 'asset_id', label: 'Asset ID', required: true },
+          { value: 'serial_number', label: 'Serial Number', required: false },
+          { value: 'category', label: 'Category', required: true },
+          { value: 'type', label: 'Type', required: false },
+          { value: 'location', label: 'Location', required: true },
+          { value: 'department', label: 'Department', required: false },
+          { value: 'status', label: 'Status', required: false },
+          { value: 'purchase_date', label: 'Purchase Date', required: false },
+          { value: 'purchase_price', label: 'Purchase Price', required: false },
+          { value: 'description', label: 'Description', required: false },
+          { value: 'tags', label: 'Tags', required: false }
+        ];
       }
     });
   }
 
-  private autoMapFields(): void {
-    if (!this.analysis?.detected_fields) return;
-
-    this.fieldMappings = this.analysis.detected_fields.map((field: any) => {
-      const existingMapping = this.fieldMappings.find(m => m.columnName === field.name);
-      if (existingMapping) return existingMapping;
-
-      // Auto-map based on field name similarity
-      const systemField = this.findBestMatch(field.name);
-      
-      return {
-        columnName: field.name,
-        systemField: systemField?.name || '',
-        confidence: this.calculateConfidence(field.name, systemField),
-        confidenceReason: this.getConfidenceReason(field.name, systemField),
-        isRequired: this.isRequiredField(systemField?.name),
-        isMapped: !!systemField
-      };
-    });
+  private getFieldLabel(field: string): string {
+    const labels: { [key: string]: string } = {
+      'name': 'Asset Name',
+      'asset_id': 'Asset ID',
+      'serial_number': 'Serial Number',
+      'category': 'Category',
+      'type': 'Type',
+      'location': 'Location',
+      'department': 'Department',
+      'status': 'Status',
+      'purchase_date': 'Purchase Date',
+      'purchase_price': 'Purchase Price',
+      'description': 'Description',
+      'tags': 'Tags',
+      'model': 'Model',
+      'manufacturer': 'Manufacturer'
+    };
+    return labels[field] || field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 
-  private findBestMatch(columnName: string): any {
-    const normalizedColumn = columnName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    
-    // Exact matches
-    const exactMatch = this.systemFields.find(field => 
-      field.name.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedColumn
-    );
-    if (exactMatch) return exactMatch;
-
-    // Partial matches
-    const partialMatches = this.systemFields.filter(field => 
-      field.name.toLowerCase().includes(normalizedColumn) || 
-      normalizedColumn.includes(field.name.toLowerCase())
-    );
-    
-    return partialMatches.length > 0 ? partialMatches[0] : null;
-  }
-
-  private calculateConfidence(columnName: string, systemField: any): 'High' | 'Medium' | 'Low' {
-    if (!systemField) return 'Low';
-    
-    const normalizedColumn = columnName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const normalizedField = systemField.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-    
-    if (normalizedColumn === normalizedField) return 'High';
-    if (normalizedColumn.includes(normalizedField) || normalizedField.includes(normalizedColumn)) return 'Medium';
-    return 'Low';
-  }
-
-  private getConfidenceReason(columnName: string, systemField: any): string {
-    if (!systemField) return 'No match found';
-    
-    const normalizedColumn = columnName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const normalizedField = systemField.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-    
-    if (normalizedColumn === normalizedField) return `Exact match with '${systemField.name}'`;
-    if (normalizedColumn.includes(normalizedField)) return `Contains keyword '${systemField.name}'`;
-    if (normalizedField.includes(normalizedColumn)) return `Similar to '${systemField.name}'`;
-    return 'Partial match';
-  }
-
-  private isRequiredField(fieldName: string): boolean {
-    const requiredFields = ['Asset Name', 'Asset ID', 'Category', 'Location'];
-    return requiredFields.includes(fieldName);
-  }
-
-  autoMap(): void {
-    this.autoMapFields();
-  }
-
-  clearAll(): void {
-    this.fieldMappings.forEach(mapping => {
-      mapping.systemField = '';
-      mapping.isMapped = false;
-    });
-  }
-
-  onFieldMappingChange(mapping: FieldMapping): void {
-    mapping.isMapped = !!mapping.systemField;
-  }
-
-  getMappedFieldsCount(): number {
-    return this.fieldMappings.filter(m => m.isMapped).length;
-  }
-
-  getAutoDetectedCount(): number {
-    return this.fieldMappings.filter(m => m.confidence === 'High').length;
-  }
-
-  getConfidenceClass(confidence: string): string {
-    switch (confidence) {
-      case 'High':
-        return 'bg-green-100 text-green-800';
-      case 'Medium':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Low':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+  updateMapping(index: number, systemField: string): void {
+    if (index >= 0 && index < this.mappings.length) {
+      this.mappings[index].systemField = systemField;
+      this.mappings[index].isMapped = systemField !== '';
     }
   }
 
-  showDataPreview(): void {
-    this.showPreview = !this.showPreview;
-    // In a real implementation, you would fetch preview data from the backend
-    this.previewData = this.analysis?.preview_data || [];
+  onMappingChange(index: number, event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.updateMapping(index, target.value);
+  }
+
+  private convertMappingSuggestionsToFieldMappings(mappingSuggestions: { [key: string]: string }): FieldMapping[] {
+    const fieldMappings: FieldMapping[] = [];
+    
+    for (const [columnName, systemField] of Object.entries(mappingSuggestions)) {
+      fieldMappings.push({
+        columnName,
+        systemField: systemField || '',
+        confidence: this.getConfidenceLevel(systemField),
+        confidenceReason: systemField ? 'Auto-detected' : 'No match found',
+        isRequired: this.isRequiredField(systemField),
+        isMapped: !!systemField
+      });
+    }
+    
+    return fieldMappings;
+  }
+
+  private getConfidenceLevel(systemField: string): 'High' | 'Medium' | 'Low' {
+    if (!systemField) return 'Low';
+    // Simple heuristic: high confidence for common fields, medium for others
+    const highConfidenceFields = ['name', 'serial_number', 'location', 'category'];
+    const mediumConfidenceFields = ['description', 'model', 'manufacturer', 'status'];
+    
+    if (highConfidenceFields.includes(systemField)) return 'High';
+    if (mediumConfidenceFields.includes(systemField)) return 'Medium';
+    return 'Low';
+  }
+
+  private isRequiredField(systemField: string): boolean {
+    const requiredFields = ['name', 'location', 'category'];
+    return requiredFields.includes(systemField);
+  }
+
+  toggleMapping(index: number): void {
+    if (index >= 0 && index < this.mappings.length) {
+      this.mappings[index].isMapped = !this.mappings[index].isMapped;
+      if (!this.mappings[index].isMapped) {
+        this.mappings[index].systemField = '';
+      }
+    }
   }
 
   saveMappings(): void {
     if (!this.fileId) return;
 
-    this.assetImportService.updateFieldMappings(this.fileId, this.fieldMappings).subscribe({
+    this.isSaving = true;
+    
+    // Convert FieldMapping[] back to the format backend expects
+    const backendMappings: { [key: string]: string } = {};
+    this.mappings.forEach(mapping => {
+      if (mapping.isMapped && mapping.systemField) {
+        backendMappings[mapping.columnName] = mapping.systemField;
+      }
+    });
+
+    this.assetImportService.saveFieldMappings(this.fileId, backendMappings, this.userOverrides).subscribe({
       next: (response) => {
+        this.isSaving = false;
+        // Convert response back to FieldMapping[] format for the component
+        this.mappings = this.convertMappingSuggestionsToFieldMappings(response.data.mappings);
+        this.userOverrides = response.data.user_overrides;
         this.mappingComplete.emit({
-          mappings: this.fieldMappings,
-          success: true
+          mappings: this.mappings,
+          userOverrides: this.userOverrides
         });
       },
       error: (error) => {
-        console.error('Error saving mappings:', error);
+        this.isSaving = false;
+        this.errors = ['Failed to save field mappings. Please try again.'];
+        console.error('Save mapping error:', error);
       }
     });
+  }
+
+  getFieldConfidenceClass(confidence: string): string {
+    return this.assetImportService.getConfidenceClass(confidence);
+  }
+
+  getRequiredFieldClass(isRequired: boolean): string {
+    return isRequired ? 'text-red-600 font-semibold' : 'text-gray-600';
+  }
+
+  getMappedFieldsCount(): number {
+    return this.mappings.filter(mapping => mapping.isMapped).length;
+  }
+
+  getRequiredFieldsCount(): number {
+    return this.mappings.filter(mapping => mapping.isRequired).length;
+  }
+
+  getMappedRequiredFieldsCount(): number {
+    return this.mappings.filter(mapping => mapping.isRequired && mapping.isMapped).length;
+  }
+
+  isMappingValid(): boolean {
+    const requiredMappings = this.mappings.filter(mapping => mapping.isRequired);
+    const mappedRequired = requiredMappings.filter(mapping => mapping.isMapped);
+    return mappedRequired.length === requiredMappings.length;
   }
 } 

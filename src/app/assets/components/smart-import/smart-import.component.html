@@ -1,133 +1,210 @@
-<div class="fixed inset-0 bg-[#000000bf] flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="flex items-center justify-between p-6 border-b border-gray-200">
-      <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-          </svg>
-        </div>
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-xl font-semibold text-gray-900">Smart Asset Import</h2>
-          <p class="text-sm text-gray-500">Import assets with intelligent field mapping and conflict resolution</p>
+          <h1 class="text-3xl font-bold text-gray-900">Smart Asset Import</h1>
+          <p class="mt-2 text-gray-600">Import your assets efficiently with intelligent field mapping and conflict resolution</p>
         </div>
+        <button 
+          (click)="resetImport()" 
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Start Over
+        </button>
       </div>
-      <button
-        (click)="resetImport()"
-        class="text-gray-400 hover:text-gray-600 transition-colors">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
     </div>
 
-    <!-- Step Indicators -->
-    <div class="px-6 py-4 bg-gray-50">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-          <div
-            *ngFor="let step of steps; let i = index"
-            class="flex items-center cursor-pointer"
-            (click)="goToStep(step.id)">
-
-            <!-- Step Circle -->
-            <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors"
-                 [ngClass]="{
-                   'bg-blue-600 border-blue-600 text-white': step.isActive,
-                   'bg-green-500 border-green-500 text-white': step.isCompleted,
-                   'bg-white border-gray-300 text-gray-400': !step.isActive && !step.isCompleted
-                 }">
-              <span *ngIf="step.isCompleted" class="text-sm">✓</span>
-              <span *ngIf="!step.isCompleted" class="text-sm font-medium">{{ step.id }}</span>
-            </div>
-
-            <!-- Step Info -->
-            <div class="ml-3">
-              <div class="text-sm font-medium"
-                   [ngClass]="{
-                     'text-blue-600': step.isActive,
-                     'text-green-600': step.isCompleted,
-                     'text-gray-500': !step.isActive && !step.isCompleted
-                   }">
-                {{ step.title }}
+    <!-- Progress Steps -->
+    <div class="mb-8">
+      <nav aria-label="Progress">
+        <ol class="flex items-center justify-center space-x-8">
+          <li *ngFor="let step of steps" class="flex items-center">
+            <button
+              (click)="goToStep(step.id)"
+              [disabled]="!canNavigateToStep(step.id)"
+              class="flex items-center space-x-3 focus:outline-none"
+              [class.opacity-50]="!canNavigateToStep(step.id)"
+              [class.cursor-pointer]="canNavigateToStep(step.id)"
+              [class.cursor-not-allowed]="!canNavigateToStep(step.id)"
+            >
+              <span 
+                class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+                [ngClass]="getStepClass(step.id)"
+              >
+                {{ getStepIcon(step.id) }}
+              </span>
+              <div class="text-left">
+                <p class="text-sm font-medium" [ngClass]="step.isActive ? 'text-blue-600' : step.isCompleted ? 'text-green-600' : 'text-gray-500'">
+                  {{ step.title }}
+                </p>
+                <p class="text-xs text-gray-400">{{ step.description }}</p>
               </div>
-              <div class="text-xs text-gray-400">{{ step.description }}</div>
-            </div>
+            </button>
+            
+            <!-- Connector line -->
+            <div *ngIf="step.id < steps.length" class="w-16 h-0.5 bg-gray-300 ml-8"></div>
+          </li>
+        </ol>
+      </nav>
+    </div>
 
-            <!-- Connector Line -->
-            <div *ngIf="i < steps.length - 1"
-                 class="w-12 h-0.5 mx-4 transition-colors"
-                 [ngClass]="{
-                   'bg-blue-600': step.isCompleted,
-                   'bg-gray-300': !step.isCompleted
-                 }">
+    <!-- Step Content -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <!-- Step 1: Upload -->
+      <div *ngIf="currentStep === 1" class="p-6">
+        <app-upload-step (fileUploaded)="onFileUploaded($event)"></app-upload-step>
+      </div>
+
+      <!-- Step 2: Analyze -->
+      <div *ngIf="currentStep === 2" class="p-6">
+        <app-analyze-step 
+          [fileId]="importData.fileId" 
+          [file]="importData.file"
+          (analysisComplete)="onAnalysisComplete($event)"
+        ></app-analyze-step>
+      </div>
+
+      <!-- Step 3: Field Mapping -->
+      <div *ngIf="currentStep === 3" class="p-6">
+        <app-field-mapping-step 
+          [fileId]="importData.fileId"
+          [analysis]="importData.analysis"
+          (mappingComplete)="onMappingComplete($event)"
+        ></app-field-mapping-step>
+      </div>
+
+      <!-- Step 4: Conflict Resolution -->
+      <div *ngIf="currentStep === 4" class="p-6">
+        <app-conflict-resolution-step 
+          [fileId]="importData.fileId"
+          (conflictsResolved)="onConflictsResolved($event)"
+        ></app-conflict-resolution-step>
+      </div>
+
+      <!-- Step 5: Import Execution -->
+      <div *ngIf="currentStep === 5" class="p-6">
+        <app-import-execution-step 
+          [fileId]="importData.fileId"
+          (importComplete)="onImportComplete($event)"
+        ></app-import-execution-step>
+      </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="mt-8 flex justify-between">
+      <button
+        *ngIf="currentStep > 1"
+        (click)="previousStep()"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Previous
+      </button>
+      <div *ngIf="currentStep === 1"></div>
+
+      <button
+        *ngIf="currentStep < 5"
+        (click)="nextStep()"
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        Next
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+      <div *ngIf="currentStep === 5"></div>
+    </div>
+
+    <!-- Import Summary (shown after completion) -->
+    <div *ngIf="importData.result" class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Import Summary</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-green-50 p-4 rounded-lg">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-green-800">Imported</p>
+              <p class="text-2xl font-bold text-green-900">{{ importData.result.imported }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-yellow-50 p-4 rounded-lg">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-yellow-800">Skipped</p>
+              <p class="text-2xl font-bold text-yellow-900">{{ importData.result.skipped }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-red-50 p-4 rounded-lg">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-red-800">Errors</p>
+              <p class="text-2xl font-bold text-red-900">{{ importData.result.errors }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-blue-800">Success Rate</p>
+              <p class="text-2xl font-bold text-blue-900">
+                {{ (importData.result.imported / (importData.result.imported + importData.result.skipped + importData.result.errors) * 100) | number:'1.0-0' }}%
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Step Content -->
-    <div class="p-6 overflow-y-auto max-h-[60vh]">
-      <!-- Step 1: Upload -->
-      <div *ngIf="currentStep === 1">
-        <app-upload-step
-          (fileUploaded)="onFileUploaded($event)">
-        </app-upload-step>
-      </div>
-
-      <!-- Step 2: Analyze -->
-      <div *ngIf="currentStep === 2">
-        <app-analyze-step
-          [fileId]="importData.fileId"
-          [file]="importData.file"
-          (analysisComplete)="onAnalysisComplete($event)">
-        </app-analyze-step>
-      </div>
-
-      <!-- Step 3: Map Fields -->
-      <div *ngIf="currentStep === 3">
-        <app-field-mapping-step
-          [fileId]="importData.fileId"
-          [analysis]="importData.analysis"
-          (mappingComplete)="onMappingComplete($event)">
-        </app-field-mapping-step>
-      </div>
-
-      <!-- Step 4: Resolve Conflicts -->
-      <div *ngIf="currentStep === 4">
-        <app-conflict-resolution-step
-          [fileId]="importData.fileId"
-          [mappings]="importData.mappings"
-          (conflictsResolved)="onConflictsResolved($event)">
-        </app-conflict-resolution-step>
-      </div>
-
-      <!-- Step 5: Import -->
-      <div *ngIf="currentStep === 5">
-        <app-import-execution-step
-          [fileId]="importData.fileId"
-          (importComplete)="onImportComplete($event)">
-        </app-import-execution-step>
-      </div>
-    </div>
-
-    <!-- Footer Actions -->
-    <div class="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
-      <button
-        *ngIf="currentStep > 1"
-        (click)="previousStep()"
-        class="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-        Previous
-      </button>
-      <div *ngIf="currentStep === 1" class="w-20"></div>
-
-      <div class="flex items-center space-x-3">
+      
+      <div class="mt-6 flex space-x-4">
         <button
-          (click)="resetImport()"
-          class="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-          Cancel
+          routerLink="/assets"
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          View Assets
+        </button>
+        
+        <button
+          *ngIf="importData.result.error_report_url"
+          (click)="downloadErrorReport()"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Download Error Report
         </button>
       </div>
     </div>
