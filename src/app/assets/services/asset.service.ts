@@ -109,7 +109,7 @@ export class AssetService {
     return this.http.post(`${this.baseUrl}/assets/${id}/duplicate`, data, this.getAuthHeaders());
   }
   bulkImportAssets(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/assets/import/bulk`, data, this.getAuthHeaders());
+    return this.http.post(`${this.baseUrl}/assets/import-bulk-json`, data, this.getAuthHeaders());
   }
   transferAsset(id: number | string, data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/assets/${id}/transfer`, data, this.getAuthHeaders());
