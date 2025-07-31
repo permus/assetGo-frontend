@@ -177,4 +177,23 @@ export class AssetService {
     }
     return this.http.get(url, this.getAuthHeaders());
   }
+
+  // Public methods (no authentication required)
+  getAssetPublic(id: number | string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/assets/${id}/public`);
+  }
+
+  getActivityHistoryPublic(assetId: number | string, params: any = {}): Observable<any> {
+    let queryParams = '';
+    const paramKeys = Object.keys(params);
+    if (paramKeys.length > 0) {
+      const queryArray = paramKeys
+        .filter(key => params[key] !== '' && params[key] !== null && params[key] !== undefined)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+      if (queryArray.length > 0) {
+        queryParams = '?' + queryArray.join('&');
+      }
+    }
+    return this.http.get(`${this.baseUrl}/assets/${assetId}/activity-history/public${queryParams}`);
+  }
 }

@@ -912,4 +912,18 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     
     return colorMap[action] || 'bg-gray-100 text-gray-600';
   }
+
+  sharePublicUrl() {
+    if (this.asset?.id) {
+      const publicUrl = `${window.location.origin}/public/asset/${this.asset.id}`;
+      navigator.clipboard.writeText(publicUrl).then(() => {
+        // Could add a toast notification here
+        console.log('Public URL copied to clipboard:', publicUrl);
+        alert('Public URL copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy URL:', err);
+        alert('Failed to copy URL to clipboard');
+      });
+    }
+  }
 }

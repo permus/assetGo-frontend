@@ -9,6 +9,11 @@ export const routes: Routes = [
     path: '',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
+  // Public asset view route (no authentication required)
+  {
+    path: 'public/asset/:id',
+    loadComponent: () => import('./assets/components/public-asset-view/public-asset-view.component').then(m => m.PublicAssetViewComponent)
+  },
   {
     path: '',
     component: LayoutComponent,
