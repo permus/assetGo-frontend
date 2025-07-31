@@ -8,6 +8,7 @@ import { PdfExportService } from '../../../shared/services/pdf-export.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import { TransferAssetModalComponent } from '../transfer-asset-modal/transfer-asset-modal.component';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-asset-view',
@@ -93,6 +94,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   };
   activityHistoryPagination: any = null;
 
+  // QR Code state
+  qrCodeDataUrl: string | null = null;
+  qrCodeLoading = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -154,6 +159,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
             this.updateMockData();
             this.loadMaintenanceSchedules();
             this.loadActivityHistory();
+            // Generate QR code after asset is loaded
+            this.generateQRCode();
           } else {
             this.error = response.message || 'Failed to load asset';
           }
@@ -692,12 +699,64 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   downloadQRCode() {
-    if (this.asset?.asset_id) {
-      // Generate QR code and download
-      console.log('Downloading QR code for asset:', this.asset.asset_id);
-      // TODO: Implement QR code generation and download
-      // This would typically involve generating a QR code image and triggering a download
+    if (this.qrCodeDataUrl) {
+      const link = document.createElement('a');
+      link.href = this.qrCodeDataUrl;
+      link.download = `asset-${this.asset.id}-qr.png`;
+      link.click();
+    } else if (this.asset?.qr_code_url) {
+      // Fallback to server-generated QR code
+      const link = document.createElement('a');
+      link.href = this.asset.qr_code_url;
+      link.download = `asset-${this.asset.id}-qr.png`;
+      link.click();
+    } else {
+      // Generate QR code on demand
+      this.generateQRCode();
     }
+  }
+
+  generateQRCode() {
+    if (!this.asset) return;
+    
+    this.qrCodeLoading = true;
+    const publicUrl = `${window.location.origin}/public/asset/${this.asset.id}`;
+    
+    QRCode.toDataURL(publicUrl, {
+      width: 300,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    }).then((dataUrl) => {
+      this.qrCodeDataUrl = dataUrl;
+      this.qrCodeLoading = false;
+      // Auto-download after generation
+      // this.downloadQRCode();
+    }).catch((error) => {
+      console.error('Error generating QR code:', error);
+      this.qrCodeLoading = false;
+    });
+  }
+
+  copyQRCodeUrl() {
+    if (this.asset?.qr_code_url) {
+      navigator.clipboard.writeText(this.asset.qr_code_url).then(() => {
+        console.log('QR code URL copied to clipboard');
+      });
+    }
+  }
+
+  copyPublicUrl() {
+    const publicUrl = `${window.location.origin}/public/asset/${this.asset.id}`;
+    navigator.clipboard.writeText(publicUrl).then(() => {
+      console.log('Public URL copied to clipboard');
+    });
+  }
+
+  get windowLocation(): string {
+    return window.location.origin;
   }
 
   showFullActivityHistory() {

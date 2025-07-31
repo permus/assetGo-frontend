@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: 'list', component: AssetListComponent },
   { path: 'create', component: AssetCreateComponent },
   { path: 'import', component: SmartImportComponent },
-  { path: ':id', component: AssetViewComponent },
+  { path: 'preview/:id', component: AssetViewComponent },
   { path: ':id/edit', component: AssetEditComponent }
 ];
 

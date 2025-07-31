@@ -872,7 +872,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.submitSuccess = 'Asset updated successfully!';
                 // Navigate back to asset view after 2 seconds
                 setTimeout(() => {
-                  this.router.navigate(['/assets', this.asset.id]);
+                  this.router.navigate(['/assets/preview', this.asset.id]);
                 }, 2000);
               } else {
                 this.submitError = response.message || 'Failed to update asset';

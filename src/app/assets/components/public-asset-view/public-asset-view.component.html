@@ -167,15 +167,66 @@
             </div>
 
             <!-- QR Code -->
-            <div *ngIf="asset.qr_code">
+            <div class="col-span-full">
               <label class="block text-sm font-medium text-gray-700 mb-2">QR Code</label>
-              <div class="flex items-center space-x-2">
-                <img [src]="asset.qr_code" alt="QR Code" class="w-8 h-8">
-                <button 
-                  (click)="downloadQRCode()"
-                  class="text-blue-600 hover:text-blue-700 text-sm">
-                  Download
-                </button>
+              <div class="flex items-center space-x-4">
+                <!-- Generated QR Code -->
+                <div *ngIf="qrCodeDataUrl" class="flex flex-col items-center space-y-2">
+                  <img [src]="qrCodeDataUrl" alt="QR Code" class="w-32 h-32 border border-gray-200 rounded-lg">
+                  <div class="flex space-x-2">
+                    <button 
+                      (click)="downloadQRCode()"
+                      class="text-blue-600 hover:text-blue-700 text-sm">
+                      Download
+                    </button>
+                    <button 
+                      (click)="copyPublicUrl()"
+                      class="text-blue-600 hover:text-blue-700 text-sm">
+                      Copy URL
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Server QR Code (fallback) -->
+                <div *ngIf="!qrCodeDataUrl && asset.qr_code_url" class="flex flex-col items-center space-y-2">
+                  <img [src]="asset.qr_code_url" alt="QR Code" class="w-32 h-32 border border-gray-200 rounded-lg">
+                  <div class="flex space-x-2">
+                    <button 
+                      (click)="downloadQRCode()"
+                      class="text-blue-600 hover:text-blue-700 text-sm">
+                      Download
+                    </button>
+                    <button 
+                      (click)="copyQRCodeUrl()"
+                      class="text-blue-600 hover:text-blue-700 text-sm">
+                      Copy URL
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Loading state -->
+                <div *ngIf="qrCodeLoading" class="flex flex-col items-center space-y-2">
+                  <div class="w-32 h-32 border border-gray-200 rounded-lg flex items-center justify-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                  <span class="text-sm text-gray-500">Generating QR Code...</span>
+                </div>
+                
+                <!-- Error state -->
+                <div *ngIf="!qrCodeDataUrl && !asset.qr_code_url && !qrCodeLoading" class="flex flex-col items-center space-y-2">
+                  <div class="w-32 h-32 border border-gray-200 rounded-lg flex items-center justify-center bg-gray-50">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <span class="text-sm text-gray-500">QR Code not available</span>
+                </div>
+              </div>
+              
+              <!-- QR Code Information -->
+              <div class="mt-3 text-xs text-gray-500">
+                <p>Scan this QR code to access this asset's public page</p>
+                <p *ngIf="asset.id" class="mt-1">Public URL: {{ windowLocation }}/public/asset/{{ asset.id }}</p>
               </div>
             </div>
           </div>

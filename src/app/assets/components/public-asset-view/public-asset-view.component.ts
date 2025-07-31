@@ -5,6 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { AssetService } from '../../services/asset.service';
 import { Location as angularLocation } from '@angular/common';
 import { PdfExportService } from '../../../shared/services/pdf-export.service';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-public-asset-view',
@@ -28,6 +29,9 @@ export class PublicAssetViewComponent implements OnInit, OnDestroy, AfterViewIni
   // UI state
   descriptionExpanded = false;
   
+  // QR Code state
+  qrCodeDataUrl: string | null = null;
+  qrCodeLoading = false;
 
 
   constructor(
@@ -64,6 +68,8 @@ export class PublicAssetViewComponent implements OnInit, OnDestroy, AfterViewIni
       next: (response) => {
         this.asset = response.data;
         this.loading = false;
+        // Generate QR code after asset is loaded
+        this.generateQRCode();
       },
       error: (error) => {
         console.error('Error loading asset:', error);
@@ -71,6 +77,62 @@ export class PublicAssetViewComponent implements OnInit, OnDestroy, AfterViewIni
         this.loading = false;
       }
     });
+  }
+
+  generateQRCode() {
+    if (!this.asset) return;
+    
+    this.qrCodeLoading = true;
+    const publicUrl = `${window.location.origin}/public/asset/${this.asset.id}`;
+    
+    QRCode.toDataURL(publicUrl, {
+      width: 300,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    }).then((dataUrl) => {
+      this.qrCodeDataUrl = dataUrl;
+      this.qrCodeLoading = false;
+    }).catch((error) => {
+      console.error('Error generating QR code:', error);
+      this.qrCodeLoading = false;
+    });
+  }
+
+  downloadQRCode() {
+    if (this.qrCodeDataUrl) {
+      const link = document.createElement('a');
+      link.href = this.qrCodeDataUrl;
+      link.download = `asset-${this.asset.id}-qr.png`;
+      link.click();
+    } else if (this.asset?.qr_code_url) {
+      // Fallback to server-generated QR code
+      const link = document.createElement('a');
+      link.href = this.asset.qr_code_url;
+      link.download = `asset-${this.asset.id}-qr.png`;
+      link.click();
+    }
+  }
+
+  copyQRCodeUrl() {
+    if (this.asset?.qr_code_url) {
+      navigator.clipboard.writeText(this.asset.qr_code_url).then(() => {
+        console.log('QR code URL copied to clipboard');
+      });
+    }
+  }
+
+  copyPublicUrl() {
+    const publicUrl = `${window.location.origin}/public/asset/${this.asset.id}`;
+    navigator.clipboard.writeText(publicUrl).then(() => {
+      console.log('Public URL copied to clipboard');
+    });
+  }
+
+  get windowLocation(): string {
+    return window.location.origin;
   }
 
 
@@ -147,15 +209,6 @@ export class PublicAssetViewComponent implements OnInit, OnDestroy, AfterViewIni
 
   onCategoryIconError(event: any, category: any) {
     event.target.src = '/assets/icons/cube.svg';
-  }
-
-  downloadQRCode() {
-    if (this.asset?.qr_code) {
-      const link = document.createElement('a');
-      link.href = this.asset.qr_code;
-      link.download = `asset-${this.asset.id}-qr.png`;
-      link.click();
-    }
   }
 
 

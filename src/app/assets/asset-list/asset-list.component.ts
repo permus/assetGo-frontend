@@ -10,6 +10,7 @@ import { DeleteConfirmationModalComponent } from '../components/delete-confirmat
 import { RestoreConfirmationModalComponent } from '../components/restore-confirmation-modal/restore-confirmation-modal.component';
 import { PdfExportService } from '../../shared/services/pdf-export.service';
 import { RouterModule } from '@angular/router';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-asset-list',
@@ -497,7 +498,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   viewAsset(asset: any) {
-    this.router.navigate(['/assets', asset.id]);
+    this.router.navigate(['/assets/preview', asset.id]);
   }
 
   archiveSelected(archiveReason?: string) {
@@ -739,6 +740,45 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
+  // QR Code functionality
+  generateQRCodeForAsset(asset: any) {
+    const publicUrl = `${window.location.origin}/public/asset/${asset.id}`;
+    
+    QRCode.toDataURL(publicUrl, {
+      width: 300,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    }).then((dataUrl) => {
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `asset-${asset.id}-qr.png`;
+      link.click();
+    }).catch((error) => {
+      console.error('Error generating QR code:', error);
+    });
+  }
 
+  generateQRCodeForSelectedAssets() {
+    const selectedAssets = this.assetList.filter(asset => asset.selected);
+    
+    if (selectedAssets.length === 0) {
+      console.log('No assets selected');
+      return;
+    }
 
+    // Generate QR codes for each selected asset
+    selectedAssets.forEach(asset => {
+      this.generateQRCodeForAsset(asset);
+    });
+  }
+
+  copyPublicUrl(asset: any) {
+    const publicUrl = `${window.location.origin}/public/asset/${asset.id}`;
+    navigator.clipboard.writeText(publicUrl).then(() => {
+      console.log('Public URL copied to clipboard');
+    });
+  }
 }
