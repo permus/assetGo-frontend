@@ -426,7 +426,7 @@ export class SmartImportComponent {
   closeModal(): void {
     this.importComplete.emit();
     this.reset();
-    this.router.navigate(['/assets']);
+    this.router.navigate(['/assets/list']);
   }
 
   /**

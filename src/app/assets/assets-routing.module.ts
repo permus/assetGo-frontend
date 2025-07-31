@@ -7,7 +7,7 @@ import { AssetEditComponent } from './components/asset-edit/asset-edit.component
 import { SmartImportComponent } from './components/smart-import/smart-import.component';
 
 const routes: Routes = [
-  { path: '', component: AssetListComponent },
+  { path: 'list', component: AssetListComponent },
   { path: 'create', component: AssetCreateComponent },
   { path: 'import', component: SmartImportComponent },
   { path: ':id', component: AssetViewComponent },

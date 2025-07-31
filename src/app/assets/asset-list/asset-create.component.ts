@@ -219,7 +219,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
             this.submitSuccess = 'Asset created successfully!';
             // Navigate back after 2 seconds
             setTimeout(() => {
-              this.router.navigate(['/assets']);
+              this.router.navigate(['/assets/list']);
             }, 2000);
           } else {
             this.submitError = res.message || 'Failed to create asset.';
@@ -526,7 +526,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/assets']);
+    this.router.navigate(['/assets/list']);
   }
 
   // Dropdown toggle methods
