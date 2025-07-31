@@ -130,8 +130,21 @@ export class AssetService {
   }
 
   // Activity history
-  getActivityHistory(assetId: number | string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/assets/${assetId}/activity-history`, this.getAuthHeaders());
+  getActivityHistory(assetId: number | string, params: any = {}): Observable<any> {
+    let queryParams = '';
+    const paramKeys = Object.keys(params);
+    
+    if (paramKeys.length > 0) {
+      const queryArray = paramKeys
+        .filter(key => params[key] !== '' && params[key] !== null && params[key] !== undefined)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+      
+      if (queryArray.length > 0) {
+        queryParams = '?' + queryArray.join('&');
+      }
+    }
+    
+    return this.http.get(`${this.baseUrl}/assets/${assetId}/activity-history${queryParams}`, this.getAuthHeaders());
   }
 
   // Location list

@@ -71,8 +71,27 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     interval: 'Every 6 months'
   };
 
-  mockActivities: any[] = [];
+  // Activity history
+  activities: any[] = [];
   fullActivityHistory: any[] = [];
+  activityLoading = false;
+  activityHistoryLoading = false;
+  activityError = '';
+  activityHistoryError = '';
+  
+  // Activity history pagination and filters
+  activityHistoryParams: { [key: string]: any } = {
+    page: 1,
+    per_page: 15,
+    sort_by: 'created_at',
+    sort_dir: 'desc',
+    search: '',
+    action: '',
+    user_id: '',
+    date_from: '',
+    date_to: ''
+  };
+  activityHistoryPagination: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -91,27 +110,9 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       status: ['Scheduled']
     });
 
-    // Initialize mock activities
-    this.mockActivities = [
-      {
-        title: 'Asset Created',
-        description: 'Asset was added to the system',
-        time: '2 days ago',
-        type: 'creation'
-      },
-      {
-        title: 'Status Updated',
-        description: 'Status changed from Inactive to Active',
-        time: '1 day ago',
-        type: 'status_change'
-      },
-      {
-        title: 'Location Changed',
-        description: 'Moved to new location',
-        time: '6 hours ago',
-        type: 'location_change'
-      }
-    ];
+    // Initialize activity history
+    this.activities = [];
+    this.fullActivityHistory = [];
   }
 
   ngOnInit() {
@@ -152,6 +153,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
             this.asset = response.data.asset || response.data;
             this.updateMockData();
             this.loadMaintenanceSchedules();
+            this.loadActivityHistory();
           } else {
             this.error = response.message || 'Failed to load asset';
           }
@@ -455,8 +457,35 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Activity timeline methods
   loadActivityHistory() {
-    // TODO: Load full activity history from API
-    console.log('Load activity history');
+    if (!this.asset?.id) return;
+    
+    this.activityLoading = true;
+    this.activityError = '';
+    
+    // Load recent activities (first 5)
+    const params = {
+      page: 1,
+      per_page: 5,
+      sort_by: 'created_at',
+      sort_dir: 'desc'
+    };
+    
+    this.assetService.getActivityHistory(this.asset.id, params)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.activities = response.data.data || [];
+          } else {
+            this.activityError = response.message || 'Failed to load activity history';
+          }
+          this.activityLoading = false;
+        },
+        error: (error) => {
+          this.activityError = error.error?.message || 'An error occurred while loading activity history';
+          this.activityLoading = false;
+        }
+      });
   }
 
   // Performance tracking methods
@@ -678,79 +707,209 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   closeActivityHistoryModal() {
     this.showActivityHistoryModal = false;
+    // Reset pagination and filters when closing modal
+    this.activityHistoryParams = {
+      page: 1,
+      per_page: 15,
+      sort_by: 'created_at',
+      sort_dir: 'desc',
+      search: '',
+      action: '',
+      user_id: '',
+      date_from: '',
+      date_to: ''
+    };
+    this.activityHistoryPagination = null;
+  }
+
+  // Activity history pagination and filtering methods
+  onActivityHistoryPageChange(page: number) {
+    this.activityHistoryParams['page'] = page;
+    this.loadFullActivityHistory();
+  }
+
+  onActivityHistorySearch(search: string) {
+    this.activityHistoryParams['search'] = search;
+    this.activityHistoryParams['page'] = 1; // Reset to first page
+    this.loadFullActivityHistory();
+  }
+
+  onActivityHistoryFilter(filterType: string, value: string) {
+    this.activityHistoryParams[filterType] = value;
+    this.activityHistoryParams['page'] = 1; // Reset to first page
+    this.loadFullActivityHistory();
+  }
+
+  onActivityHistorySort(sortBy: string, sortDir: string) {
+    this.activityHistoryParams['sort_by'] = sortBy;
+    this.activityHistoryParams['sort_dir'] = sortDir;
+    this.loadFullActivityHistory();
+  }
+
+  clearActivityHistoryFilters() {
+    this.activityHistoryParams = {
+      page: 1,
+      per_page: 15,
+      sort_by: 'created_at',
+      sort_dir: 'desc',
+      search: '',
+      action: '',
+      user_id: '',
+      date_from: '',
+      date_to: ''
+    };
+    this.loadFullActivityHistory();
   }
 
   loadFullActivityHistory() {
-    // Mock full activity history data
-    this.fullActivityHistory = [
-      {
-        title: 'Asset Created',
-        description: 'Asset was added to the system',
-        time: '2 days ago',
-        type: 'creation',
-        user: 'John Doe',
-        details: 'Asset ID: AST-001, Category: Equipment'
-      },
-      {
-        title: 'Status Updated',
-        description: 'Status changed from Inactive to Active',
-        time: '1 day ago',
-        type: 'status_change',
-        user: 'Jane Smith',
-        details: 'Previous status: Inactive, New status: Active'
-      },
-      {
-        title: 'Location Changed',
-        description: 'Moved to new location',
-        time: '6 hours ago',
-        type: 'location_change',
-        user: 'Mike Johnson',
-        details: 'From: Storage Room A, To: Main Floor'
-      },
-      {
-        title: 'Maintenance Scheduled',
-        description: 'Preventive maintenance scheduled',
-        time: '4 hours ago',
-        type: 'maintenance',
-        user: 'Sarah Wilson',
-        details: 'Next maintenance: 30 days, Type: Preventive'
-      },
-      {
-        title: 'Document Uploaded',
-        description: 'User manual uploaded',
-        time: '2 hours ago',
-        type: 'document',
-        user: 'Alex Brown',
-        details: 'File: user_manual.pdf, Size: 2.5MB'
-      },
-      {
-        title: 'Transfer Requested',
-        description: 'Asset transfer to new department requested',
-        time: '1 hour ago',
-        type: 'transfer',
-        user: 'Lisa Davis',
-        details: 'From: IT Department, To: Operations Department'
-      },
-      {
-        title: 'Warranty Updated',
-        description: 'Warranty information updated',
-        time: '30 minutes ago',
-        type: 'warranty',
-        user: 'Tom Miller',
-        details: 'Warranty extended until Dec 2025'
-      },
-      {
-        title: 'Asset Tagged',
-        description: 'Asset tagged with new labels',
-        time: '15 minutes ago',
-        type: 'tagging',
-        user: 'Chris Lee',
-        details: 'Tags added: High Priority, Critical Equipment'
-      }
-    ];
+    if (!this.asset?.id) return;
+    
+    this.activityHistoryLoading = true;
+    this.activityHistoryError = '';
+    
+    this.assetService.getActivityHistory(this.asset.id, this.activityHistoryParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.fullActivityHistory = response.data.data || [];
+            this.activityHistoryPagination = response.data;
+          } else {
+            this.activityHistoryError = response.message || 'Failed to load full activity history';
+          }
+          this.activityHistoryLoading = false;
+        },
+        error: (error) => {
+          this.activityHistoryError = error.error?.message || 'An error occurred while loading full activity history';
+          this.activityHistoryLoading = false;
+        }
+      });
   }
 
   viewFullImage(imageUrl: string) {
     window.open(imageUrl, '_blank');
+  }
+
+  // Helper methods for activity history data formatting
+  formatActivityBeforeAfter(before: any, after: any): string {
+    if (!before && !after) return '';
+    
+    let changes: string[] = [];
+    
+    if (before && after) {
+      // Compare before and after to show what changed
+      const beforeKeys = Object.keys(before);
+      const afterKeys = Object.keys(after);
+      
+      for (const key of afterKeys) {
+        if (before[key] !== after[key]) {
+          const fieldName = this.getFieldDisplayName(key);
+          if (fieldName) {
+            changes.push(`${fieldName}: ${this.formatFieldValue(before[key])} → ${this.formatFieldValue(after[key])}`);
+          }
+        }
+      }
+    } else if (after) {
+      // New record - show key fields
+      const keyFields = ['name', 'type', 'status', 'location_id', 'department_id', 'purchase_price'];
+      for (const key of keyFields) {
+        if (after[key] !== undefined && after[key] !== null) {
+          const fieldName = this.getFieldDisplayName(key);
+          if (fieldName) {
+            changes.push(`${fieldName}: ${this.formatFieldValue(after[key])}`);
+          }
+        }
+      }
+    } else if (before) {
+      // Deleted record - show what was deleted
+      const keyFields = ['name', 'type', 'status'];
+      for (const key of keyFields) {
+        if (before[key] !== undefined && before[key] !== null) {
+          const fieldName = this.getFieldDisplayName(key);
+          if (fieldName) {
+            changes.push(`${fieldName}: ${this.formatFieldValue(before[key])} (deleted)`);
+          }
+        }
+      }
+    }
+    
+    return changes.length > 0 ? changes.join(', ') : '';
+  }
+
+  getFieldDisplayName(fieldKey: string): string {
+    const fieldMap: { [key: string]: string } = {
+      'name': 'Asset Name',
+      'type': 'Type',
+      'model': 'Model',
+      'status': 'Status',
+      'description': 'Description',
+      'location_id': 'Location',
+      'department_id': 'Department',
+      'purchase_price': 'Purchase Price',
+      'purchase_date': 'Purchase Date',
+      'serial_number': 'Serial Number',
+      'asset_id': 'Asset ID',
+      'warranty': 'Warranty',
+      'insurance': 'Insurance',
+      'depreciation': 'Depreciation',
+      'health_score': 'Health Score',
+      'manufacturer': 'Manufacturer',
+      'category_id': 'Category'
+    };
+    
+    return fieldMap[fieldKey] || fieldKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+
+  formatFieldValue(value: any): string {
+    if (value === null || value === undefined) return 'N/A';
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    if (typeof value === 'number') {
+      // Format currency for price fields
+      if (value.toString().includes('.')) {
+        return `$${value.toFixed(2)}`;
+      }
+      return value.toString();
+    }
+    if (typeof value === 'string') {
+      // Check if it's a date
+      if (value.match(/^\d{4}-\d{2}-\d{2}/)) {
+        return new Date(value).toLocaleDateString();
+      }
+      return value;
+    }
+    return JSON.stringify(value);
+  }
+
+  getUserDisplayName(user: any): string {
+    if (!user) return 'System';
+    if (user.name) return user.name;
+    if (user.email) return user.email.split('@')[0]; // Use email prefix as fallback
+    return 'Unknown User';
+  }
+
+  getActivityIcon(action: string): string {
+    const iconMap: { [key: string]: string } = {
+      'created': 'M12 6v6m0 0v6m0-6h6m-6 0H6',
+      'updated': 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+      'deleted': 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
+      'transferred': 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
+      'maintenance': 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
+      'imported': 'M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10'
+    };
+    
+    return iconMap[action] || 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z';
+  }
+
+  getActivityColor(action: string): string {
+    const colorMap: { [key: string]: string } = {
+      'created': 'bg-green-100 text-green-600',
+      'updated': 'bg-blue-100 text-blue-600',
+      'deleted': 'bg-red-100 text-red-600',
+      'transferred': 'bg-purple-100 text-purple-600',
+      'maintenance': 'bg-orange-100 text-orange-600',
+      'imported': 'bg-indigo-100 text-indigo-600'
+    };
+    
+    return colorMap[action] || 'bg-gray-100 text-gray-600';
   }
 }
