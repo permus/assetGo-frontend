@@ -53,18 +53,7 @@
             </svg>
             <span>Smart Import</span>
           </button>
-          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
-            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-            </svg>
-            <span>Export QR Codes</span>
-          </button>
-          <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-left transition-colors cursor-pointer">
-            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8M8 12h8m-8-4h8"></path>
-            </svg>
-            <span>Print Report</span>
-          </button>
+
           <div class="border-t border-gray-100 my-2"></div>
           <button class="w-full flex items-center space-x-3 px-4 py-2 hover:bg-orange-50 text-left transition-colors cursor-pointer text-orange-600">
             <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -428,8 +417,8 @@
           <input type="checkbox" class="asset-card-checkbox" [(ngModel)]="asset.selected" />
         </div>
         <div class="absolute right-4 top-4 flex items-center space-x-2">
-          <span *ngIf="asset.status === 'Active'" class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Active</span>
-          <span *ngIf="asset.status !== 'Active'" [class]="'bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-700 text-xs font-semibold px-3 py-1 rounded-full'">{{asset.status}}</span>
+          <span *ngIf="asset.asset_status?.name === 'Active'" class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Active</span>
+          <span *ngIf="asset.asset_status?.name !== 'Active'" [class]="'bg-' + getStatusColor(asset.asset_status?.name || asset.status || 'Active') + '-100 text-' + getStatusColor(asset.asset_status?.name || asset.status || 'Active') + '-700 text-xs font-semibold px-3 py-1 rounded-full'">{{asset.asset_status?.name || asset.status}}</span>
           <div class="relative" (click)="$event.stopPropagation()">
             <button
               (click)="toggleAssetMenu(asset.id)"
@@ -656,8 +645,8 @@
           <!-- Status -->
           <div class="col-span-1">
             <span
-              [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getStatusColor(asset.status || 'Active') + '-100 text-' + getStatusColor(asset.status || 'Active') + '-800'">
-              {{asset.status || 'Active'}}
+              [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getStatusColor(asset.asset_status?.name || asset.status || 'Active') + '-100 text-' + getStatusColor(asset.asset_status?.name || asset.status || 'Active') + '-800'">
+              {{asset.asset_status?.name || asset.status || 'Active'}}
             </span>
           </div>
 

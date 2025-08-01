@@ -31,7 +31,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   summary = {
     totalAssets: 0,
     activeAssets: 0,
-    maintenance: 0,
+    maintenance:0,
     totalValue: 0,
     assetHealth: 0
   };
@@ -729,7 +729,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
   selectAssetStatus(status: any) {
     this.selectedAssetStatus = status;
-    // Optionally, trigger filtering here
+    this.currentFilters.status = status.id;
+    this.showAssetStatusDropdown = false;
+    this.applyFilters();
   }
 
   @HostListener('document:click', ['$event'])

@@ -63,17 +63,17 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // Status options
   statusOptions: Array<{
     id?: number;
-    value: string;
+    value: number; // Changed from string to number
     label: string;
     color: string;
     description: string;
     hexColor?: string;
     sort_order: number;
   }> = [
-    { value: 'Active', label: 'Active', color: 'green', description: 'Asset is operational and in use', sort_order: 1 },
-    { value: 'Maintenance', label: 'Maintenance', color: 'orange', description: 'Asset is under maintenance or repair', sort_order: 2 },
-    { value: 'Inactive', label: 'Inactive', color: 'gray', description: 'Asset is not currently in use', sort_order: 3 },
-    { value: 'Retired', label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service', sort_order: 4 }
+    { value: 1, label: 'Active', color: 'green', description: 'Asset is operational and in use', sort_order: 1 },
+    { value: 2, label: 'Maintenance', color: 'orange', description: 'Asset is under maintenance or repair', sort_order: 2 },
+    { value: 3, label: 'Inactive', color: 'gray', description: 'Asset is not currently in use', sort_order: 3 },
+    { value: 4, label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service', sort_order: 4 }
   ];
 
   // Image handling
@@ -117,7 +117,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       warranty: [''],
       insurance: [''],
       health_score: [85, [Validators.min(0), Validators.max(100)]],
-      status: ['Active'],
+      status: [null],
       type: [null, Validators.required],
       category_id: [null, Validators.required],
       tags: [[]]
@@ -262,7 +262,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
        warranty: warrantyDate,
         insurance: this.asset.insurance || '',
         health_score: this.asset.health_score || 85,
-        status: this.asset.status || 'Active',
+        status: this.asset.status || null, // Keep as is - could be ID or string, will be handled below
         type: this.asset.type || '',
         category_id: this.asset.category_id || null,
         tags: this.asset.tags || [],
@@ -283,7 +283,16 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedCategory = this.categories.find(cat => cat.id === this.asset.category_id) || null;
         this.selectedLocation = this.locations.find(loc => loc.id === this.asset.location_id) || null;
         this.selectedDepartment = this.departments.find(dept => dept.id === this.asset.department_id) || null;
-        this.selectedStatus = this.statusOptions.find(status => status.value === this.asset.status) || null;
+        this.selectedStatus = this.statusOptions.find(status => 
+          status.value === this.asset.status || 
+          status.label === this.asset.status ||
+          status.id === this.asset.status
+        ) || null;
+
+        // If status is found, update the form with the numerical ID
+        if (this.selectedStatus) {
+          this.assetForm.patchValue({ status: this.selectedStatus.value });
+        }
 
         // Set tags if available
         if (this.asset.tags && Array.isArray(this.asset.tags)) {
@@ -413,7 +422,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
             this.statusOptionsFromAPI = response.data;
             this.statusOptions = this.statusOptionsFromAPI.map(status => ({
               id: status.id,
-              value: status.name,
+              value: status.id, // Use numerical ID instead of string name
               label: status.name,
               color: this.hexToTailwindColor(status.color),
               description: status.description || `Asset is ${status.name.toLowerCase()}`,
@@ -550,7 +559,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectStatus(status: any) {
     this.selectedStatus = status;
-    this.assetForm.patchValue({ status: status.value });
+    this.assetForm.patchValue({ status: status.value }); // This will now be the numerical ID
     this.showStatusDropdown = false;
   }
 

@@ -35,7 +35,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   warranty: string = '';
   insurance: string = '';
   health_score: number = 85;
-  status: string = 'Active';
+  status: number | null = null;
   tags: number[] = [];
   images: File[] = [];
   imagePreviewUrls: string[] = [];
@@ -254,17 +254,17 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   // Status options with proper typing
   statusOptions: Array<{
     id?: number;
-    value: string;
+    value: number; // Changed from string to number
     label: string;
     color: string;
     description: string;
     hexColor?: string;
     sort_order: number;
   }> = [
-    { value: 'Active', label: 'Active', color: 'green', description: 'Asset is operational and in use', sort_order: 1 },
-    { value: 'Maintenance', label: 'Maintenance', color: 'orange', description: 'Asset is under maintenance or repair', sort_order: 2 },
-    { value: 'Inactive', label: 'Inactive', color: 'gray', description: 'Asset is not currently in use', sort_order: 3 },
-    { value: 'Retired', label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service', sort_order: 4 }
+    { value: 1, label: 'Active', color: 'green', description: 'Asset is operational and in use', sort_order: 1 },
+    { value: 2, label: 'Maintenance', color: 'orange', description: 'Asset is under maintenance or repair', sort_order: 2 },
+    { value: 3, label: 'Inactive', color: 'gray', description: 'Asset is not currently in use', sort_order: 3 },
+    { value: 4, label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service', sort_order: 4 }
   ];
 
   constructor(
@@ -311,7 +311,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         // Transform API data to match existing UI structure
         this.statusOptions = this.statusOptionsFromAPI.map(status => ({
           id: status.id,
-          value: status.name,
+          value: status.id, // Use numerical ID instead of string name
           label: status.name,
           color: this.hexToTailwindColor(status.color),
           description: status.description || `Asset is ${status.name.toLowerCase()}`,
@@ -325,7 +325,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         // Set default status to first active status (usually 'Active')
         if (this.statusOptions.length > 0) {
           this.selectedStatus = this.statusOptions[0];
-          this.status = this.selectedStatus.value;
+          this.status = this.selectedStatus.value; // This will now be the numerical ID
         }
       }
     });
@@ -491,9 +491,14 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       if (sourceAsset.status) {
-        this.selectedStatus = this.statusOptions.find(status => status.value === sourceAsset.status) || null;
+        // Handle both cases: status could be a string name or numerical ID
+        this.selectedStatus = this.statusOptions.find(status => 
+          status.value === sourceAsset.status || 
+          status.label === sourceAsset.status ||
+          status.id === sourceAsset.status
+        ) || null;
         if (this.selectedStatus) {
-          this.status = this.selectedStatus.value;
+          this.status = this.selectedStatus.value; // Use the numerical ID
         }
       }
 
@@ -598,7 +603,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
   selectStatus(status: any) {
     this.selectedStatus = status;
-    this.status = status.value;
+    this.status = status.value; // This will now be the numerical ID
     this.showStatusDropdown = false;
   }
 
@@ -716,12 +721,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     // Insurance validation (optional, max 255)
     if (this.insurance && this.insurance.length > 255) {
       this.submitError = 'Insurance cannot exceed 255 characters';
-      isValid = false;
-    }
-
-    // Status validation (optional, max 50)
-    if (this.status && this.status.length > 50) {
-      this.submitError = 'Status cannot exceed 50 characters';
       isValid = false;
     }
 

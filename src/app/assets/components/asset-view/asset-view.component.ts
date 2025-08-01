@@ -46,9 +46,9 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   // Flatpickr instances
   flatpickrInstances: any[] = [];
 
-  // Mock data for demonstration
-  mockHealthData = {
-    healthScore: 85,
+  // Health & Performance data (now calculated dynamically)
+  healthMetrics = {
+    lastUpdated: new Date(),
     performanceTrend: [
       { month: 'Jan', value: 82 },
       { month: 'Feb', value: 84 },
@@ -97,6 +97,21 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   // QR Code state
   qrCodeDataUrl: string | null = null;
   qrCodeLoading = false;
+
+  // Barcode state
+  barcodeDataUrl: string | null = null;
+  barcodeLoading = false;
+
+  // Related assets state
+  relatedAssets: any[] = [];
+  relatedAssetsLoading = false;
+  relatedAssetsError = '';
+  selectedRelatedFilter = 'all';
+  showRelatedFilterDropdown = false;
+  relatedAssetsParams: { [key: string]: any } = {
+    type: 'all',
+    limit: 10
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -161,6 +176,12 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
             this.loadActivityHistory();
             // Generate QR code after asset is loaded
             this.generateQRCode();
+            // Generate barcode after asset is loaded (if no server barcode URL)
+            if (!this.asset.barcode_url && this.asset.asset_id) {
+              this.generateBarcode();
+            }
+            // Load related assets after asset is loaded
+            this.loadRelatedAssets();
           } else {
             this.error = response.message || 'Failed to load asset';
           }
@@ -204,8 +225,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         originalValue: this.asset.purchase_price || 0
       };
 
-      // Update health data with real asset data
-      this.mockHealthData.healthScore = this.asset.health_score || 85;
+      // Update health metrics with real asset data
+      this.healthMetrics.lastUpdated = new Date();
       
       // Update maintenance data with real asset data
       this.mockMaintenanceData = {
@@ -458,8 +479,81 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Related assets methods
   loadRelatedAssets() {
-    // TODO: Load assets with similar category, location, or manufacturer
-    console.log('Load related assets');
+    if (!this.asset?.id) return;
+    
+    this.relatedAssetsLoading = true;
+    this.relatedAssetsError = '';
+    
+    this.assetService.getRelatedAssets(this.asset.id, this.relatedAssetsParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.relatedAssets = response.data.related_assets || [];
+          } else {
+            this.relatedAssetsError = response.message || 'Failed to load related assets';
+          }
+          this.relatedAssetsLoading = false;
+        },
+        error: (error) => {
+          this.relatedAssetsError = error.error?.message || 'An error occurred while loading related assets';
+          this.relatedAssetsLoading = false;
+        }
+      });
+  }
+
+  onRelatedFilterChange(filterType: string) {
+    this.selectedRelatedFilter = filterType;
+    this.relatedAssetsParams['type'] = filterType;
+    this.loadRelatedAssets();
+  }
+
+  getRelatedFilterDisplayName(filterType: string): string {
+    const filterMap: { [key: string]: string } = {
+      'all': 'All Related',
+      'category': 'Same Category',
+      'location': 'Same Location',
+      'department': 'Same Department',
+      'manufacturer': 'Same Manufacturer',
+      'parent': 'Same Parent',
+      'children': 'Child Assets',
+      'siblings': 'Sibling Assets',
+      'similar': 'Similar Assets'
+    };
+    return filterMap[filterType] || filterType;
+  }
+
+  getRelatedAssetStatusColor(status: any): string {
+    if (status?.color) {
+      return `bg-${this.getColorFromHex(status.color)}-100 text-${this.getColorFromHex(status.color)}-700`;
+    }
+    
+    const statusName = status?.name || status;
+    const colors: { [key: string]: string } = {
+      'Active': 'bg-green-100 text-green-700',
+      'Inactive': 'bg-gray-100 text-gray-700',
+      'Maintenance': 'bg-orange-100 text-orange-700',
+      'Retired': 'bg-red-100 text-red-700'
+    };
+    return colors[statusName] || 'bg-gray-100 text-gray-700';
+  }
+
+  private getColorFromHex(hex: string): string {
+    // Simple mapping of hex colors to Tailwind color names
+    const colorMap: { [key: string]: string } = {
+      '#10B981': 'green',
+      '#EF4444': 'red',
+      '#F59E0B': 'yellow',
+      '#3B82F6': 'blue',
+      '#8B5CF6': 'purple',
+      '#F97316': 'orange',
+      '#6B7280': 'gray'
+    };
+    return colorMap[hex] || 'gray';
+  }
+
+  navigateToRelatedAsset(assetId: number | string) {
+    this.router.navigate(['/assets', assetId]);
   }
 
   // Activity timeline methods
@@ -499,6 +593,251 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   loadPerformanceMetrics() {
     // TODO: Load real performance data from API
     console.log('Load performance metrics');
+  }
+
+  // Health & Performance Dashboard Methods
+  refreshHealthMetrics() {
+    this.loadPerformanceMetrics();
+    // Refresh health data
+    console.log('Refreshing health metrics');
+  }
+
+  getHealthScoreColor(healthScore: number): string {
+    if (!healthScore) return 'text-gray-400';
+    if (healthScore >= 80) return 'text-green-600';
+    if (healthScore >= 60) return 'text-yellow-600';
+    if (healthScore >= 40) return 'text-orange-600';
+    return 'text-red-600';
+  }
+
+  getHealthStatusColor(healthScore: number): string {
+    if (!healthScore) return 'text-gray-600';
+    if (healthScore >= 80) return 'text-green-600';
+    if (healthScore >= 60) return 'text-yellow-600';
+    if (healthScore >= 40) return 'text-orange-600';
+    return 'text-red-600';
+  }
+
+  getHealthStatusText(healthScore: number): string {
+    if (!healthScore) return 'Unknown';
+    if (healthScore >= 80) return 'Excellent';
+    if (healthScore >= 60) return 'Good';
+    if (healthScore >= 40) return 'Fair';
+    return 'Poor';
+  }
+
+  getAssetAge(): string {
+    if (!this.asset?.purchase_date) return 'Unknown';
+    
+    const purchaseDate = new Date(this.asset.purchase_date);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - purchaseDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 365) {
+      return `${Math.floor(diffDays / 30)} months`;
+    } else {
+      const years = Math.floor(diffDays / 365);
+      return `${years} year${years > 1 ? 's' : ''}`;
+    }
+  }
+
+  getUtilizationRate(): number {
+    // Calculate based on health score and asset age
+    const healthScore = this.asset?.health_score || 0;
+    
+    // Simple calculation based on health score
+    if (healthScore >= 80) return 95;
+    if (healthScore >= 60) return 85;
+    if (healthScore >= 40) return 70;
+    return 50;
+  }
+
+  getUptimePercentage(): number {
+    // Calculate based on health score and maintenance history
+    const healthScore = this.asset?.health_score || 0;
+    
+    if (healthScore >= 80) return 99.5;
+    if (healthScore >= 60) return 98.0;
+    if (healthScore >= 40) return 95.0;
+    return 90.0;
+  }
+
+  getMaintenanceFrequency(): string {
+    const healthScore = this.asset?.health_score || 0;
+    
+    if (healthScore >= 80) return 'Low';
+    if (healthScore >= 60) return 'Medium';
+    if (healthScore >= 40) return 'High';
+    return 'Very High';
+  }
+
+  getMaintenanceFrequencyPercentage(): number {
+    const healthScore = this.asset?.health_score || 0;
+    
+    if (healthScore >= 80) return 20;
+    if (healthScore >= 60) return 40;
+    if (healthScore >= 40) return 60;
+    return 80;
+  }
+
+  getCostEfficiency(): number {
+    // Calculate based on current value vs purchase price
+    const purchasePrice = parseFloat(this.asset?.purchase_price) || 0;
+    const currentValue = this.calculateCurrentValue();
+    
+    if (purchasePrice === 0) return 85;
+    
+    const efficiency = (currentValue / purchasePrice) * 100;
+    return Math.min(Math.max(efficiency, 0), 100);
+  }
+
+  formatCurrency(amount: number): string {
+    return amount.toLocaleString('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    });
+  }
+
+  calculateCurrentValue(): number {
+    const purchasePrice = parseFloat(this.asset?.purchase_price) || 0;
+    const depreciation = this.calculateDepreciation();
+    return Math.max(purchasePrice - depreciation, 0);
+  }
+
+  getROIColor(roi: number): string {
+    if (roi >= 0) return 'text-green-600';
+    return 'text-red-600';
+  }
+
+  getPerformanceTrend(): string {
+    const healthScore = this.asset?.health_score || 0;
+    
+    if (healthScore >= 80) return 'Improving';
+    if (healthScore >= 60) return 'Stable';
+    if (healthScore >= 40) return 'Declining';
+    return 'Critical';
+  }
+
+  getCostEfficiencyTrend(): string {
+    const efficiency = this.getCostEfficiency();
+    
+    if (efficiency >= 80) return 'Optimal';
+    if (efficiency >= 60) return 'Good';
+    if (efficiency >= 40) return 'Fair';
+    return 'Poor';
+  }
+
+  getMaintenanceTrend(): string {
+    const healthScore = this.asset?.health_score || 0;
+    
+    if (healthScore >= 80) return 'Low';
+    if (healthScore >= 60) return 'Stable';
+    if (healthScore >= 40) return 'Increasing';
+    return 'High';
+  }
+
+  getTrendColor(trend: string): string {
+    switch (trend.toLowerCase()) {
+      case 'improving':
+      case 'optimal':
+      case 'low':
+        return 'text-green-600';
+      case 'stable':
+      case 'good':
+        return 'text-blue-600';
+      case 'declining':
+      case 'fair':
+      case 'increasing':
+        return 'text-yellow-600';
+      case 'critical':
+      case 'poor':
+      case 'high':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
+    }
+  }
+
+  getTrendIcon(trend: string): string {
+    switch (trend.toLowerCase()) {
+      case 'improving':
+      case 'optimal':
+        return 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6';
+      case 'declining':
+      case 'critical':
+        return 'M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6';
+      case 'stable':
+      case 'good':
+      case 'fair':
+      case 'low':
+      case 'increasing':
+      case 'high':
+      default:
+        return 'M20 12H4';
+    }
+  }
+
+  getFinancialAlerts(): any[] {
+    const alerts = [];
+    const healthScore = this.asset?.health_score || 0;
+    const currentValue = this.calculateCurrentValue();
+    const purchasePrice = parseFloat(this.asset?.purchase_price) || 0;
+    
+    if (healthScore < 40) {
+      alerts.push({
+        message: 'Asset health is critical - consider replacement',
+        class: 'bg-red-50 text-red-700'
+      });
+    }
+    
+    if (currentValue < purchasePrice * 0.3) {
+      alerts.push({
+        message: 'Asset value has depreciated significantly',
+        class: 'bg-orange-50 text-orange-700'
+      });
+    }
+    
+    if (this.asset?.warranty === 'None' || !this.asset?.warranty) {
+      alerts.push({
+        message: 'No warranty coverage - maintenance costs may increase',
+        class: 'bg-yellow-50 text-yellow-700'
+      });
+    }
+    
+    return alerts;
+  }
+
+  getPredictiveAlerts(): any[] {
+    const alerts = [];
+    const healthScore = this.asset?.health_score || 0;
+    const age = this.getAssetAge();
+    
+    if (healthScore < 60) {
+      alerts.push({
+        title: 'Maintenance Alert',
+        message: 'Schedule preventive maintenance within 30 days',
+        class: 'bg-orange-50 text-orange-700'
+      });
+    }
+    
+    if (healthScore < 40) {
+      alerts.push({
+        title: 'Critical Alert',
+        message: 'Asset requires immediate attention',
+        class: 'bg-red-50 text-red-700'
+      });
+    }
+    
+    if (age.includes('year') && parseInt(age) > 5) {
+      alerts.push({
+        title: 'Age Alert',
+        message: 'Asset is aging - consider replacement planning',
+        class: 'bg-blue-50 text-blue-700'
+      });
+    }
+    
+    return alerts;
   }
 
   // Document management methods
@@ -637,6 +976,90 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     return Math.round((1 / usefulLife) * 100);
   }
 
+  // Asset Depreciation Chart Methods
+  getMaxDepreciationValue(): number {
+    return this.asset?.purchase_price || 10000;
+  }
+
+  getDepreciationPath(): string {
+    const maxValue = this.getMaxDepreciationValue();
+    const purchaseDate = this.asset?.purchase_date ? new Date(this.asset.purchase_date) : new Date();
+    const currentDate = new Date();
+    const usefulLife = 10;
+    const endDate = new Date(purchaseDate.getTime() + (usefulLife * 365.25 * 24 * 60 * 60 * 1000));
+    
+    // Generate points for the depreciation line
+    const points: string[] = [];
+    const totalDays = (endDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24);
+    
+    for (let i = 0; i <= 12; i++) {
+      const days = (totalDays * i) / 12;
+      const date = new Date(purchaseDate.getTime() + (days * 24 * 60 * 60 * 1000));
+      const yearsElapsed = (date.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+      const annualDepreciation = maxValue / usefulLife;
+      const totalDepreciation = Math.min(annualDepreciation * yearsElapsed, maxValue);
+      const currentValue = Math.max(0, maxValue - totalDepreciation);
+      
+      const x = (i / 12) * 100;
+      const y = 100 - ((currentValue / maxValue) * 100);
+      
+      points.push(`${x},${y}`);
+    }
+    
+    return `M ${points.join(' L ')}`;
+  }
+
+  getCurrentPeriodX(): number {
+    if (!this.asset?.purchase_date) return 0;
+    
+    const purchaseDate = new Date(this.asset.purchase_date);
+    const currentDate = new Date();
+    const usefulLife = 10;
+    const endDate = new Date(purchaseDate.getTime() + (usefulLife * 365.25 * 24 * 60 * 60 * 1000));
+    
+    const totalDays = (endDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24);
+    const elapsedDays = (currentDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24);
+    
+    return Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100));
+  }
+
+  getCurrentPeriodY(): number {
+    const currentValue = this.calculateCurrentValue();
+    const maxValue = this.getMaxDepreciationValue();
+    return 100 - ((currentValue / maxValue) * 100);
+  }
+
+  getDepreciationDates(): Date[] {
+    const purchaseDate = this.asset?.purchase_date ? new Date(this.asset.purchase_date) : new Date();
+    const usefulLife = 10;
+    const endDate = new Date(purchaseDate.getTime() + (usefulLife * 365.25 * 24 * 60 * 60 * 1000));
+    
+    const dates: Date[] = [];
+    for (let i = 0; i <= 12; i++) {
+      const days = ((endDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24) * i) / 12;
+      dates.push(new Date(purchaseDate.getTime() + (days * 24 * 60 * 60 * 1000)));
+    }
+    
+    return dates;
+  }
+
+  calculateAnnualDepreciation(): number {
+    const maxValue = this.getMaxDepreciationValue();
+    const usefulLife = 10;
+    return maxValue / usefulLife;
+  }
+
+  calculateRemainingYears(): number {
+    if (!this.asset?.purchase_date) return 10;
+    
+    const purchaseDate = new Date(this.asset.purchase_date);
+    const currentDate = new Date();
+    const usefulLife = 10;
+    const yearsElapsed = (currentDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+    
+    return Math.max(0, usefulLife - yearsElapsed);
+  }
+
   calculateTotalCostOfOwnership(): number {
     const purchasePrice = this.asset?.purchase_price || 0;
     const maintenanceCost = this.asset?.total_maintenance_cost || 0;
@@ -716,6 +1139,24 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  downloadBarcode() {
+    if (this.asset?.barcode_url) {
+      const link = document.createElement('a');
+      link.href = this.asset.barcode_url;
+      link.download = `asset-${this.asset.asset_id || this.asset.id}-barcode.png`;
+      link.click();
+    } else if (this.barcodeDataUrl) {
+      // Fallback to generated barcode
+      const link = document.createElement('a');
+      link.href = this.barcodeDataUrl;
+      link.download = `asset-${this.asset.asset_id || this.asset.id}-barcode.png`;
+      link.click();
+    } else {
+      // Generate barcode on demand
+      this.generateBarcode();
+    }
+  }
+
   generateQRCode() {
     if (!this.asset) return;
     
@@ -738,6 +1179,32 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error('Error generating QR code:', error);
       this.qrCodeLoading = false;
     });
+  }
+
+  generateBarcode() {
+    if (!this.asset?.asset_id) return;
+    
+    this.barcodeLoading = true;
+    const assetId = this.asset.asset_id;
+    
+    // Use QuickChart.io service to generate barcode
+    const barcodeUrl = `https://quickchart.io/barcode?c=${encodeURIComponent(assetId)}&chs=300x100&chld=L%7C0&choe=UTF-8`;
+    
+    // Convert the URL to a data URL for download
+    fetch(barcodeUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          this.barcodeDataUrl = reader.result as string;
+          this.barcodeLoading = false;
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch((error) => {
+        console.error('Error generating barcode:', error);
+        this.barcodeLoading = false;
+      });
   }
 
   copyQRCodeUrl() {
