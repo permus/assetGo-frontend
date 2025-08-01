@@ -274,6 +274,21 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     return colors[status] || 'gray';
   }
 
+  getAssetStatusColor(assetStatus: any): string {
+    if (!assetStatus || !assetStatus.color) {
+      return '#6B7280'; // Default gray color
+    }
+    return assetStatus.color;
+  }
+
+  getAssetStatusBackgroundColor(assetStatus: any): string {
+    if (!assetStatus || !assetStatus.color) {
+      return '#F3F4F6'; // Default gray background
+    }
+    // Add 20% opacity to the color for background
+    return assetStatus.color + '20';
+  }
+
   getAssetTypeIcon(): string {
     if (!this.asset?.type) return 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4';
     
