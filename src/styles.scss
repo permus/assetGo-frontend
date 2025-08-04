@@ -1,3 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @use "tailwindcss";
 @import 'flatpickr/dist/flatpickr.css';
+
+/* Google Maps styling */
+#location-map,
+#edit-location-map {
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+/* Ensure Google Maps controls are properly styled */
+.gm-style {
+  font-family: inherit;
+}
+
+.gm-style-moc {
+  background-color: white;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}

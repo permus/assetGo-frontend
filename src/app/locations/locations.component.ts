@@ -70,7 +70,8 @@ export class LocationsComponent implements OnInit, OnDestroy {
     { value: '0', label: 'Level 0 (Root)' },
     { value: '1', label: 'Level 1' },
     { value: '2', label: 'Level 2' },
-    { value: '3', label: 'Level 3' }
+    { value: '3', label: 'Level 3' },
+    { value: 'true', label: 'Hierarchy Level' }
   ];
   
   assetCountOptions = [
@@ -93,7 +94,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.filtersForm = this.fb.group({
       type_id: [''],
       parent_id: [''],
-      hierarchy_level: [''],
+      hierarchy_level: ['0'],
       asset_count: [''],
       sort_by: ['created'],
       sort_direction: ['desc']
@@ -145,19 +146,30 @@ export class LocationsComponent implements OnInit, OnDestroy {
     const searchValue = this.searchForm.get('search')?.value;
     const filters = this.filtersForm.value;
     
-    const params = {
-      search: searchValue,
+    // Always include default parameters
+    const params: any = {
       page: page,
       per_page: this.pagination.per_page,
-      ...filters
+      hierarchy_level: filters.hierarchy_level || '0',
+      sort_by: filters.sort_by || 'created',
+      sort_direction: filters.sort_direction || 'desc'
     };
 
-    // Remove empty values
-    Object.keys(params).forEach(key => {
-      if (params[key as keyof typeof params] === '' || params[key as keyof typeof params] === null) {
-        delete params[key as keyof typeof params];
-      }
-    });
+    // Only add search if it has a value
+    if (searchValue && searchValue.trim() !== '') {
+      params.search = searchValue;
+    }
+
+    // Only add optional filter parameters if they have actual values
+    if (filters.type_id && filters.type_id !== '') {
+      params.type_id = filters.type_id;
+    }
+    if (filters.parent_id && filters.parent_id !== '') {
+      params.parent_id = filters.parent_id;
+    }
+    if (filters.asset_count && filters.asset_count !== '') {
+      params.asset_count = filters.asset_count;
+    }
 
     this.locationService.getLocations(params)
       .pipe(takeUntil(this.destroy$))
@@ -197,7 +209,11 @@ export class LocationsComponent implements OnInit, OnDestroy {
   // View Controls
   setView(view: 'grid' | 'tree' | 'analytics' | 'mgmt') {
     this.currentView = view;
-    if (view === 'tree' && this.hierarchyData.length === 0) {
+    
+    // When switching to grid view, clear filters to show only level 0 data
+    if (view === 'grid') {
+      this.clearFilters();
+    } else if (view === 'tree' && this.hierarchyData.length === 0) {
       this.loadHierarchy();
     }
   }
@@ -220,7 +236,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.filtersForm.reset({
       type_id: '',
       parent_id: '',
-      hierarchy_level: '',
+      hierarchy_level: '0',
       asset_count: '',
       sort_by: 'created',
       sort_direction: 'desc'

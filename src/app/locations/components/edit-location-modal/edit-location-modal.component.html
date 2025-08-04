@@ -82,8 +82,8 @@
                 formControlName="address"
                 placeholder="Start typing address..."
                 class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-                autocomplete="off">
+                autocomplete="off"
+                (blur)="onAddressChanged()">
             </div>
             <p class="text-xs text-gray-500 mt-1">
               <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,6 +91,17 @@
               </svg>
               Address suggestions powered by Google Places
             </p>
+            
+            <!-- Interactive Map -->
+            <div *ngIf="showMap" class="mt-4">
+              <div class="text-xs text-gray-600 mb-2 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                </svg>
+                Drag the marker or click on the map to adjust the location
+              </div>
+              <div id="edit-location-map" style="height: 300px; width: 100%; border-radius: 0.5rem; border: 1px solid #e5e7eb;"></div>
+            </div>
           </div>
         </div>
 

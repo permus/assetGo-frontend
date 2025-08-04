@@ -111,6 +111,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       purchase_date: [''],
       purchase_price: [null],
       depreciation: [null],
+      depreciation_life: [null],
       location_id: [null],
       department_id: [null],
       parent_id: [null],
@@ -180,40 +181,33 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
           if (inputRef?.nativeElement) {
             const inputElement = inputRef.nativeElement;
             const fieldName = inputElement.getAttribute('formControlName');
+            console.log('Processing date input:', fieldName);
 
-            let config: any = {
-              dateFormat: 'd M, Y',
-              allowInput: true,
-              clickOpens: true,
-             defaultDate: null,
-              onChange: (selectedDates: Date[], dateStr: string) => {
-                if (fieldName === 'purchase_date') {
-                 this.assetForm.get('purchase_date')?.setValue(dateStr);
-                } else if (fieldName === 'warranty') {
-                 this.assetForm.get('warranty')?.setValue(dateStr);
-                }
-              }
-            };
-
-            // Set specific constraints based on field
+            // Only initialize Flatpickr for purchase_date field
             if (fieldName === 'purchase_date') {
-              config.maxDate = 'today';
-             // Set default date if form has value
-             const purchaseDate = this.assetForm.get('purchase_date')?.value;
-             if (purchaseDate) {
-               config.defaultDate = this.convertDisplayDateToDate(purchaseDate);
-             }
-            } else if (fieldName === 'warranty') {
-              config.minDate = 'today';
-             // Set default date if form has value
-             const warrantyDate = this.assetForm.get('warranty')?.value;
-             if (warrantyDate) {
-               config.defaultDate = this.convertDisplayDateToDate(warrantyDate);
-             }
-            }
+              console.log('Initializing Flatpickr for purchase_date');
+              let config: any = {
+                dateFormat: 'd M, Y',
+                allowInput: true,
+                clickOpens: true,
+                maxDate: 'today',
+                defaultDate: null,
+                onChange: (selectedDates: Date[], dateStr: string) => {
+                  console.log('Date selected:', dateStr);
+                  this.assetForm.get('purchase_date')?.setValue(dateStr);
+                }
+              };
 
-            const instance = flatpickr(inputElement, config);
-            this.flatpickrInstances.push(instance);
+              // Set default date if form has value
+              const purchaseDate = this.assetForm.get('purchase_date')?.value;
+              if (purchaseDate) {
+                config.defaultDate = this.convertDisplayDateToDate(purchaseDate);
+              }
+
+              const instance = flatpickr(inputElement, config);
+              this.flatpickrInstances.push(instance);
+              console.log('Flatpickr initialized successfully for purchase_date');
+            }
           }
         });
       }
@@ -257,6 +251,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
        purchase_date: purchaseDate,
         purchase_price: this.asset.purchase_price || null,
         depreciation: this.asset.depreciation || null,
+        depreciation_life: this.asset.depreciation_life || null,
         location_id: this.asset.location_id || null,
         department_id: this.asset.department_id || null,
        warranty: warrantyDate,
@@ -850,7 +845,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.convertImagesToBase64().then((base64Images: string[]) => {
         const formData = this.assetForm.value;
 
-        // Convert tags to text format
+        // Convert tags to name format
         formData.tags = this.selectedTags.map(tag => tag.name);
 
         // Convert date formats from display format to Y-m-d format for backend

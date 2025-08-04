@@ -123,14 +123,89 @@
 
 // Print styles
 @media print {
-  .action-buttons,
-  .back-button {
-    display: none;
+  // Hide all navigation and UI elements
+  .bg-white.border-b, // Header with navigation
+  .flex.items-center.justify-between, // Action buttons
+  .bg-white.rounded-lg.p-6.shadow-sm.border.border-gray-200:has(button), // Sections with buttons
+  button,
+  .relative,
+  .dropdown,
+  .modal,
+  .fixed,
+  nav,
+  .breadcrumb,
+  .actions-dropdown,
+  .quick-actions,
+  .print-hide {
+    display: none !important;
   }
   
+  // Show only asset information
+  .bg-white.rounded-lg.p-6.shadow-sm.border.border-gray-200 {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    margin-bottom: 20px !important;
+    page-break-inside: avoid;
+  }
+  
+  // Ensure proper page breaks
+  .grid.grid-cols-1.lg\\:grid-cols-3 {
+    display: block !important;
+  }
+  
+  .lg\\:col-span-2 {
+    width: 100% !important;
+  }
+  
+  // Clean up spacing for print
+  body {
+    margin: 0 !important;
+    padding: 20px !important;
+    background: white !important;
+  }
+  
+  // Ensure text is readable
+  * {
+    color: black !important;
+    background: white !important;
+  }
+  
+  // Asset image container
   .asset-image-container {
-    border: 1px solid #000;
-    background: white;
+    border: 1px solid #000 !important;
+    background: white !important;
+    max-width: 100% !important;
+  }
+  
+  // QR and barcode sections
+  .qr-section,
+  .barcode-section {
+    text-align: center !important;
+    page-break-inside: avoid;
+  }
+  
+  // Tables for print
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  
+  th, td {
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+  }
+  
+  // Headers
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+  
+  // Status badges
+  .status-badge {
+    border: 1px solid #000 !important;
+    background: white !important;
+    color: black !important;
   }
 }
 

@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AssetService } from '../services/asset.service';
 import { Router } from '@angular/router';
 import {NgForOf, NgIf} from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import flatpickr from 'flatpickr';
 
 @Component({
@@ -30,6 +31,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   purchase_date: string = '';
   purchase_price: number | null = null;
   depreciation: number | null = null;
+  depreciation_life: number | null = null;
   location_id: number | null = null;
   department_id: number | null = null;
   warranty: string = '';
@@ -72,6 +74,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   assetTypeError: string = '';
   categoryError: string = '';
   serialNumberError: string = '';
+
+  // Address property
+  address: string = '';
 
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length) {
@@ -175,17 +180,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.submitSuccess = '';
     this.submitFieldErrors = {};
     
-    // Convert dates to backend format before sending
-    let purchaseDateFormatted = this.purchase_date;
-    let warrantyFormatted = this.warranty;
-    
-    if (this.purchase_date) {
-      purchaseDateFormatted = this.convertDateToBackendFormat(this.purchase_date);
-    }
-    if (this.warranty) {
-      warrantyFormatted = this.convertDateToBackendFormat(this.warranty);
-    }
-    
     // Convert images to base64
     this.convertImagesToBase64().then((base64Images: string[]) => {
       // Create payload object
@@ -193,17 +187,18 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         name: this.name,
         description: this.description,
         category_id: this.category_id,
-        type: this.selectedAssetType?.id || null,
+        type: this.assetType,
         serial_number: this.serial_number,
         model: this.model,
         manufacturer: this.manufacturer,
-        purchase_date: purchaseDateFormatted,
+        purchase_date: this.purchase_date ? this.convertDateToBackendFormat(this.purchase_date) : null,
         purchase_price: this.purchase_price,
         depreciation: this.depreciation,
+        depreciation_life: this.depreciation_life,
         location_id: this.location_id,
         department_id: this.department_id,
         parent_id: this.parent_id,
-        warranty: warrantyFormatted,
+        warranty: this.warranty,
         insurance: this.insurance,
         health_score: this.health_score,
         status: this.status,
@@ -270,7 +265,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private assetService: AssetService,
     private router: Router,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -381,35 +377,35 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     // Initialize new instances
     setTimeout(() => {
       if (this.dateInputs) {
+        console.log('Found date inputs:', this.dateInputs.length);
         this.dateInputs.forEach((inputRef, index) => {
           if (inputRef?.nativeElement) {
             const inputElement = inputRef.nativeElement;
             const fieldName = inputElement.getAttribute('name');
+            console.log('Processing date input:', fieldName);
             
-            let config: any = {
-              dateFormat: 'd M, Y',
-              allowInput: true,
-              clickOpens: true,
-              onChange: (selectedDates: Date[], dateStr: string) => {
-                if (fieldName === 'purchase_date') {
-                  this.purchase_date = dateStr;
-                } else if (fieldName === 'warranty') {
-                  this.warranty = dateStr;
-                }
-              }
-            };
-
-            // Set specific constraints based on field
+            // Only initialize Flatpickr for purchase_date field
             if (fieldName === 'purchase_date') {
-              config.maxDate = 'today';
-            } else if (fieldName === 'warranty') {
-              config.minDate = 'today';
-            }
+              console.log('Initializing Flatpickr for purchase_date');
+              let config: any = {
+                dateFormat: 'd M, Y',
+                allowInput: true,
+                clickOpens: true,
+                maxDate: 'today',
+                onChange: (selectedDates: Date[], dateStr: string) => {
+                  console.log('Date selected:', dateStr);
+                  this.purchase_date = dateStr;
+                }
+              };
 
-            const instance = flatpickr(inputElement, config);
-            this.flatpickrInstances.push(instance);
+              const instance = flatpickr(inputElement, config);
+              this.flatpickrInstances.push(instance);
+              console.log('Flatpickr initialized successfully for purchase_date');
+            }
           }
         });
+      } else {
+        console.warn('No date inputs found');
       }
     }, 50);
   }
@@ -459,6 +455,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.purchase_date = sourceAsset.purchase_date ? this.convertBackendDateToDisplay(sourceAsset.purchase_date) : '';
     this.purchase_price = sourceAsset.purchase_price || null;
     this.depreciation = sourceAsset.depreciation || null;
+    this.depreciation_life = sourceAsset.depreciation_life || null;
     this.location_id = sourceAsset.location_id || null;
     this.department_id = sourceAsset.department_id || null;
     this.warranty = sourceAsset.warranty ? this.convertBackendDateToDisplay(sourceAsset.warranty) : '';
@@ -685,30 +682,30 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       isValid = false;
     }
 
-    // Description validation (optional, max 500)
-    if (this.description && this.description.length > 500) {
-      this.submitError = 'Description cannot exceed 500 characters';
+    // Description validation (optional, max 1000)
+    if (this.description && this.description.length > 1000) {
+      this.submitError = 'Description cannot exceed 1000 characters';
       isValid = false;
     }
 
-    // Serial number validation (optional, max 255, cannot be empty if provided)
-    if (this.serial_number && this.serial_number.trim().length === 0) {
-      this.serialNumberError = 'Serial number cannot be empty if provided';
+    // Serial number validation (required, max 100)
+    if (!this.serial_number || this.serial_number.trim().length === 0) {
+      this.serialNumberError = 'Serial number is required';
       isValid = false;
-    } else if (this.serial_number && this.serial_number.length > 255) {
-      this.serialNumberError = 'Serial number cannot exceed 255 characters';
-      isValid = false;
-    }
-
-    // Model validation (optional, max 255)
-    if (this.model && this.model.length > 255) {
-      this.submitError = 'Model cannot exceed 255 characters';
+    } else if (this.serial_number.length > 100) {
+      this.serialNumberError = 'Serial number cannot exceed 100 characters';
       isValid = false;
     }
 
-    // Manufacturer validation (optional, max 255)
-    if (this.manufacturer && this.manufacturer.length > 255) {
-      this.submitError = 'Manufacturer cannot exceed 255 characters';
+    // Model validation (optional, max 100)
+    if (this.model && this.model.length > 100) {
+      this.submitError = 'Model cannot exceed 100 characters';
+      isValid = false;
+    }
+
+    // Manufacturer validation (optional, max 100)
+    if (this.manufacturer && this.manufacturer.length > 100) {
+      this.submitError = 'Manufacturer cannot exceed 100 characters';
       isValid = false;
     }
 
@@ -724,15 +721,21 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       isValid = false;
     }
 
-    // Purchase price validation (optional, min 0.01 if provided)
-    if (this.purchase_price !== null && this.purchase_price <= 0) {
-      this.submitError = 'Purchase price must be at least 0.01';
+    // Purchase price validation (optional, min 0 if provided)
+    if (this.purchase_price !== null && this.purchase_price < 0) {
+      this.submitError = 'Purchase price cannot be negative';
       isValid = false;
     }
 
-    // Depreciation validation (optional, numeric)
-    if (this.depreciation !== null && this.depreciation < 0) {
-      this.submitError = 'Depreciation cannot be negative';
+    // Depreciation validation (optional, 0-100)
+    if (this.depreciation !== null && (this.depreciation < 0 || this.depreciation > 100)) {
+      this.submitError = 'Depreciation must be between 0 and 100';
+      isValid = false;
+    }
+
+    // Depreciation life validation (optional, 1-100)
+    if (this.depreciation_life !== null && (this.depreciation_life < 1 || this.depreciation_life > 100)) {
+      this.submitError = 'Depreciation life must be between 1 and 100 years';
       isValid = false;
     }
 
@@ -749,6 +752,18 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     // Health score validation (optional, 0-100)
     if (this.health_score < 0 || this.health_score > 100) {
       this.submitError = 'Health score must be between 0 and 100';
+      isValid = false;
+    }
+
+    // Category validation (required)
+    if (!this.category_id) {
+      this.categoryError = 'Category is required';
+      isValid = false;
+    }
+
+    // Asset type validation (required)
+    if (!this.assetType) {
+      this.assetTypeError = 'Asset type is required';
       isValid = false;
     }
 

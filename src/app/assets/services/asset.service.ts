@@ -214,4 +214,40 @@ export class AssetService {
     
     return this.http.get(`${this.baseUrl}/assets/${assetId}/related${queryParams}`, this.getAuthHeaders());
   }
+
+  // Get asset depreciation chart data
+  getAssetDepreciationChart(assetId: number | string, params: any = {}): Observable<any> {
+    let queryParams = '';
+    const paramKeys = Object.keys(params);
+    
+    if (paramKeys.length > 0) {
+      const queryArray = paramKeys
+        .filter(key => params[key] !== '' && params[key] !== null && params[key] !== undefined)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+      
+      if (queryArray.length > 0) {
+        queryParams = '?' + queryArray.join('&');
+      }
+    }
+    
+    return this.http.get(`${this.baseUrl}/assets/${assetId}/chart-data${queryParams}`, this.getAuthHeaders());
+  }
+
+  // Get asset health & performance chart data
+  getAssetHealthPerformanceChart(assetId: number | string, params: any = {}): Observable<any> {
+    let queryParams = '';
+    const paramKeys = Object.keys(params);
+    
+    if (paramKeys.length > 0) {
+      const queryArray = paramKeys
+        .filter(key => params[key] !== '' && params[key] !== null && params[key] !== undefined)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+      
+      if (queryArray.length > 0) {
+        queryParams = '?' + queryArray.join('&');
+      }
+    }
+    
+    return this.http.get(`${this.baseUrl}/assets/${assetId}/health-performance-chart${queryParams}`, this.getAuthHeaders());
+  }
 }

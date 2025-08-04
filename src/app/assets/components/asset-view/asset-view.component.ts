@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -9,6 +9,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import flatpickr from 'flatpickr';
 import { TransferAssetModalComponent } from '../transfer-asset-modal/transfer-asset-modal.component';
 import * as QRCode from 'qrcode';
+import { Chart, ChartConfiguration, ChartData, ChartOptions } from 'chart.js';
+import { registerables } from 'chart.js';
+
+// Register Chart.js components
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-asset-view',
@@ -113,13 +118,26 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     limit: 10
   };
 
+  // Chart state
+  depreciationChart: Chart | null = null;
+  depreciationChartLoading = false;
+  depreciationChartError = '';
+  depreciationChartData: any = null;
+
+  // Health & Performance Chart
+  healthPerformanceChart: Chart | null = null;
+  healthPerformanceChartLoading = false;
+  healthPerformanceChartError = '';
+  healthPerformanceChartData: any = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private assetService: AssetService,
     private angularLocation: angularLocation,
     private pdfExportService: PdfExportService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) {
     this.maintenanceForm = this.fb.group({
       schedule_type: ['', Validators.required],
@@ -148,6 +166,12 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     this.initializeDatePickers();
+    // Initialize chart after view is ready
+    setTimeout(() => {
+      if (this.asset && !this.depreciationChart) {
+        this.createDepreciationChart();
+      }
+    }, 500);
   }
 
   ngOnDestroy() {
@@ -159,6 +183,13 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         instance.destroy();
       }
     });
+    // Cleanup charts
+    if (this.depreciationChart) {
+      this.depreciationChart.destroy();
+    }
+    if (this.healthPerformanceChart) {
+      this.healthPerformanceChart.destroy();
+    }
   }
 
   loadAsset(id: string) {
@@ -182,6 +213,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
             }
             // Load related assets after asset is loaded
             this.loadRelatedAssets();
+            this.loadDepreciationChart();
+            this.loadHealthPerformanceChart();
           } else {
             this.error = response.message || 'Failed to load asset';
           }
@@ -261,7 +294,234 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   printAsset() {
-    window.print();
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to print this asset');
+      return;
+    }
+
+    // Generate the print content
+    const printContent = this.generatePrintContent();
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Asset Details - ${this.asset?.name || 'Asset'}</title>
+          <style>
+            @media print {
+              body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+              .no-print { display: none !important; }
+              .print-only { display: block !important; }
+              .page-break { page-break-before: always; }
+              .avoid-break { page-break-inside: avoid; }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f8f9fa; font-weight: bold; }
+              .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+              .section { margin-bottom: 25px; }
+              .section-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+              .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+              .info-item { margin-bottom: 15px; }
+              .info-label { font-weight: bold; color: #666; font-size: 14px; }
+              .info-value { font-size: 16px; margin-top: 5px; }
+              .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+              .qr-section { text-align: center; margin: 20px 0; }
+              .qr-code { max-width: 200px; margin: 0 auto; }
+              .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }
+              @page { margin: 1in; }
+            }
+            @media screen {
+              body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+              .no-print { display: none; }
+              .print-only { display: block; }
+              .page-break { border-top: 2px solid #333; margin-top: 30px; padding-top: 30px; }
+              .avoid-break { }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f8f9fa; font-weight: bold; }
+              .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+              .section { margin-bottom: 25px; }
+              .section-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+              .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+              .info-item { margin-bottom: 15px; }
+              .info-label { font-weight: bold; color: #666; font-size: 14px; }
+              .info-value { font-size: 16px; margin-top: 5px; }
+              .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+              .qr-section { text-align: center; margin: 20px 0; }
+              .qr-code { max-width: 200px; margin: 0 auto; }
+              .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 20px; }
+            }
+          </style>
+        </head>
+        <body>
+          ${printContent}
+        </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    
+    // Wait for content to load then print
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close();
+    };
+  }
+
+  private generatePrintContent(): string {
+    if (!this.asset) return '<p>Asset not found</p>';
+
+    const asset = this.asset;
+    const currentDate = new Date().toLocaleDateString();
+    
+    return `
+      <div class="header">
+        <h1>Asset Details Report</h1>
+        <p>Generated on: ${currentDate}</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Asset Overview</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Asset Name</div>
+            <div class="info-value">${asset.name || 'N/A'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Asset ID</div>
+            <div class="info-value">${asset.asset_id || asset.id || 'N/A'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Category</div>
+            <div class="info-value">${asset.category?.name || 'General'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Status</div>
+            <div class="info-value">
+              <span class="status-badge" style="background-color: ${asset.asset_status?.color || '#6B7280'}20; color: ${asset.asset_status?.color || '#6B7280'}">
+                ${asset.asset_status?.name || 'Not specified'}
+              </span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Type</div>
+            <div class="info-value">${this.getAssetTypeName(asset.type)}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Location</div>
+            <div class="info-value">${asset.location?.name || 'No location assigned'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Description</div>
+        <p>${asset.description || 'No description available'}</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Technical Specifications</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Manufacturer</div>
+            <div class="info-value">${asset.manufacturer || 'Not specified'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Model</div>
+            <div class="info-value">${asset.model || 'Not specified'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Serial Number</div>
+            <div class="info-value">${asset.serial_number || 'Not specified'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Brand</div>
+            <div class="info-value">${asset.brand || 'Not specified'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Dimensions</div>
+            <div class="info-value">${asset.dimensions || 'Not specified'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Weight</div>
+            <div class="info-value">${asset.weight || 'Not specified'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Financial Information</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Purchase Price</div>
+            <div class="info-value">$${this.formatCurrency(asset.purchase_price || 0)}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Current Value</div>
+            <div class="info-value">$${this.formatCurrency(this.calculateCurrentValue())}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Purchase Date</div>
+            <div class="info-value">${asset.purchase_date ? new Date(asset.purchase_date).toLocaleDateString() : 'Not specified'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Warranty Status</div>
+            <div class="info-value">${this.getWarrantyStatus(asset.warranty)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Performance Metrics</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Health Score</div>
+            <div class="info-value">${asset.health_score || 0}%</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Utilization Rate</div>
+            <div class="info-value">${this.getUtilizationRate()}%</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Asset Age</div>
+            <div class="info-value">${this.getAssetAge()}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Total Cost of Ownership</div>
+            <div class="info-value">$${this.formatCurrency(this.calculateTotalCostOfOwnership())}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Timeline Information</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Created Date</div>
+            <div class="info-value">${asset.created_at ? new Date(asset.created_at).toLocaleDateString() : 'Not specified'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Last Modified</div>
+            <div class="info-value">${asset.updated_at ? new Date(asset.updated_at).toLocaleDateString() : 'Not specified'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qr-section">
+        <div class="section-title">Asset Identification</div>
+        <div class="qr-code">
+          ${this.qrCodeDataUrl ? `<img src="${this.qrCodeDataUrl}" alt="QR Code" style="max-width: 100%; height: auto;">` : '<p>QR Code not available</p>'}
+        </div>
+        <p><strong>Asset ID:</strong> ${asset.asset_id || asset.id || 'N/A'}</p>
+      </div>
+
+      <div class="footer">
+        <p>AssetGo - Asset Management System</p>
+        <p>This report was generated automatically on ${currentDate}</p>
+      </div>
+    `;
   }
 
   getStatusColor(status: string): string {
@@ -517,6 +777,208 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
+  loadDepreciationChart() {
+    if (!this.asset?.id) return;
+    
+    this.depreciationChartLoading = true;
+    this.depreciationChartError = '';
+    
+    console.log('Loading depreciation chart for asset:', this.asset.id);
+    
+    this.assetService.getAssetDepreciationChart(this.asset.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('Chart API Response:', response);
+          if (response.success) {
+            this.depreciationChartData = response.data;
+            console.log('Chart data set:', this.depreciationChartData);
+            this.createDepreciationChart();
+          } else {
+            this.depreciationChartError = response.message || 'Failed to load depreciation chart data';
+            console.log('API returned error, using mock data');
+            // Fallback to mock data if API returns error
+            this.createDepreciationChartWithMockData();
+          }
+          this.depreciationChartLoading = false;
+        },
+        error: (error) => {
+          console.error('Chart API Error:', error);
+          this.depreciationChartError = error.error?.message || 'An error occurred while loading depreciation chart data';
+          this.depreciationChartLoading = false;
+          // Fallback to mock data if API fails
+          this.createDepreciationChartWithMockData();
+        }
+      });
+  }
+
+  createDepreciationChart() {
+    console.log('Creating depreciation chart...');
+    
+    // Destroy existing chart if it exists
+    if (this.depreciationChart) {
+      console.log('Destroying existing chart');
+      this.depreciationChart.destroy();
+    }
+
+    // Wait a bit for the DOM to be ready
+    setTimeout(() => {
+      const ctx = document.getElementById('depreciationChart') as HTMLCanvasElement;
+      console.log('Canvas element:', ctx);
+      
+      if (!ctx) {
+        console.error('Depreciation chart canvas not found');
+        return;
+      }
+
+      // Use API data if available, otherwise fallback to mock data
+      const chartData = this.processChartData(this.depreciationChartData) || this.generateMockDepreciationData();
+      console.log('Chart data to use:', chartData);
+      
+      try {
+        this.depreciationChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartData.labels,
+            datasets: [
+              {
+                label: 'Asset Value',
+                data: chartData.values,
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+              },
+              {
+                label: 'Accumulated Depreciation',
+                data: chartData.depreciation,
+                borderColor: '#EF4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Asset Depreciation Over Time',
+                font: {
+                  size: 16,
+                  weight: 'bold'
+                }
+              },
+              legend: {
+                display: true,
+                position: 'top'
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                  label: (context) => {
+                    const label = context.dataset.label || '';
+                    const value = context.parsed.y;
+                    return `${label}: $${value.toLocaleString()}`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Month'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Value ($)'
+                },
+                beginAtZero: true,
+                ticks: {
+                  callback: (value) => `$${Number(value).toLocaleString()}`
+                }
+              }
+            },
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            }
+          }
+                 });
+         console.log('Chart created successfully');
+         // Trigger change detection after chart creation
+         this.cdr.detectChanges();
+       } catch (error) {
+         console.error('Error creating chart:', error);
+       }
+     }, 100);
+   }
+
+  processChartData(apiData: any) {
+    if (!apiData || !apiData.chart_data || !apiData.chart_data.has_data) {
+      return null;
+    }
+
+    const chartData = apiData.chart_data;
+    const labels = chartData.depreciation_months.map((month: number) => `Month ${month}`);
+    const values = chartData.depreciation_values.map((value: string) => parseFloat(value));
+    
+    // Calculate accumulated depreciation
+    const purchasePrice = parseFloat(apiData.asset.purchase_price);
+    const depreciation = values.map((value: number) => purchasePrice - value);
+
+    return {
+      labels,
+      values,
+      depreciation
+    };
+  }
+
+  createDepreciationChartWithMockData() {
+    const mockData = this.generateMockDepreciationData();
+    this.depreciationChartData = mockData;
+    this.createDepreciationChart();
+  }
+
+  generateMockDepreciationData() {
+    const purchasePrice = parseFloat(this.asset?.purchase_price) || 10000;
+    const usefulLife = parseFloat(this.asset?.depreciation) || 10;
+    const depreciationLife = this.asset?.depreciation_life || 10;
+    
+    const labels: string[] = [];
+    const values: number[] = [];
+    const depreciation: number[] = [];
+    
+    // Use depreciation_life if available, otherwise use usefulLife
+    const totalPeriods = depreciationLife || usefulLife;
+    
+    for (let month = 1; month <= totalPeriods; month++) {
+      labels.push(`Month ${month}`);
+      
+      const monthlyDepreciation = purchasePrice / totalPeriods;
+      const totalDepreciation = monthlyDepreciation * (month - 1);
+      const currentValue = Math.max(0, purchasePrice - totalDepreciation);
+      
+      values.push(currentValue);
+      depreciation.push(totalDepreciation);
+    }
+    
+    return {
+      labels,
+      values,
+      depreciation
+    };
+  }
+
   onRelatedFilterChange(filterType: string) {
     this.selectedRelatedFilter = filterType;
     this.relatedAssetsParams['type'] = filterType;
@@ -615,6 +1077,324 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadPerformanceMetrics();
     // Refresh health data
     console.log('Refreshing health metrics');
+  }
+
+  refreshDepreciationChart() {
+    console.log('Refreshing depreciation chart...');
+    this.loadDepreciationChart();
+  }
+
+  // Method to manually create chart (for debugging)
+  forceCreateChart() {
+    console.log('Force creating chart...');
+    this.createDepreciationChart();
+  }
+
+  // Health & Performance Chart Methods
+  loadHealthPerformanceChart() {
+    if (!this.asset?.id) {
+      console.log('No asset ID available for health performance chart');
+      return;
+    }
+
+    this.healthPerformanceChartLoading = true;
+    this.healthPerformanceChartError = '';
+
+    console.log('Loading health performance chart for asset:', this.asset.id);
+
+    this.assetService.getAssetHealthPerformanceChart(this.asset.id, { months: 12 })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('Health performance chart API response:', response);
+          this.healthPerformanceChartLoading = false;
+          
+          if (response.success && response.data) {
+            this.healthPerformanceChartData = response.data;
+            // Create chart after a delay to ensure DOM is ready
+            setTimeout(() => {
+              this.createHealthPerformanceChart();
+            }, 100);
+          } else {
+            this.healthPerformanceChartError = 'Failed to load health performance data';
+            console.error('Health performance chart API error:', response);
+          }
+        },
+        error: (error) => {
+          console.error('Health performance chart API error:', error);
+          this.healthPerformanceChartLoading = false;
+          this.healthPerformanceChartError = 'Failed to load health performance data';
+        }
+      });
+  }
+
+  createHealthPerformanceChart() {
+    console.log('Creating health performance chart...');
+    console.log('Health performance chart data:', this.healthPerformanceChartData);
+    
+    // Destroy existing chart
+    if (this.healthPerformanceChart) {
+      this.healthPerformanceChart.destroy();
+      this.healthPerformanceChart = null;
+    }
+
+    const canvas = document.getElementById('healthPerformanceChart') as HTMLCanvasElement;
+    console.log('Canvas element:', canvas);
+    if (!canvas) {
+      console.error('Health performance chart canvas not found');
+      return;
+    }
+
+    setTimeout(() => {
+      try {
+        console.log('Processing health performance data...');
+        const chartData = this.processHealthPerformanceData(this.healthPerformanceChartData);
+        console.log('Processed chart data:', chartData);
+        
+        const config: ChartConfiguration = {
+          type: 'line',
+          data: {
+            labels: chartData.labels,
+            datasets: [
+              {
+                label: 'Health Score',
+                data: chartData.healthScores,
+                borderColor: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4,
+                pointBackgroundColor: '#10B981',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Performance Score',
+                data: chartData.performanceScores,
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4,
+                pointBackgroundColor: '#3B82F6',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Maintenance Count',
+                data: chartData.maintenanceCounts,
+                borderColor: '#F59E0B',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4,
+                pointBackgroundColor: '#F59E0B',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: {
+                  usePointStyle: true,
+                  padding: 20,
+                  font: {
+                    size: 12
+                  }
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                borderColor: '#374151',
+                borderWidth: 1,
+                cornerRadius: 8,
+                displayColors: true,
+                callbacks: {
+                  label: function(context) {
+                    const label = context.dataset.label || '';
+                    const value = context.parsed.y;
+                    if (label === 'Maintenance Count') {
+                      return `${label}: ${value} activities`;
+                    }
+                    return `${label}: ${value}%`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Month',
+                  font: {
+                    size: 12,
+                    weight: 'bold'
+                  }
+                },
+                grid: {
+                  display: true,
+                  color: 'rgba(0, 0, 0, 0.1)'
+                }
+              },
+              y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: {
+                  display: true,
+                  text: 'Score (%)',
+                  font: {
+                    size: 12,
+                    weight: 'bold'
+                  }
+                },
+                min: 0,
+                max: 100,
+                grid: {
+                  display: true,
+                  color: 'rgba(0, 0, 0, 0.1)'
+                }
+              },
+              y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: {
+                  display: true,
+                  text: 'Maintenance Count',
+                  font: {
+                    size: 12,
+                    weight: 'bold'
+                  }
+                },
+                min: 0,
+                grid: {
+                  drawOnChartArea: false,
+                  color: 'rgba(0, 0, 0, 0.1)'
+                }
+              }
+            }
+          }
+        };
+
+        this.healthPerformanceChart = new Chart(canvas, config);
+        console.log('Health performance chart created successfully');
+        this.cdr.detectChanges();
+      } catch (error) {
+        console.error('Error creating health performance chart:', error);
+        // Retry after a longer delay if the first attempt fails
+        setTimeout(() => {
+          console.log('Retrying health performance chart creation...');
+          this.createHealthPerformanceChart();
+        }, 500);
+      }
+    }, 100);
+  }
+
+  processHealthPerformanceData(apiData: any) {
+    if (!apiData?.chart_data) {
+      console.log('No chart data available, using mock data');
+      return this.generateMockHealthPerformanceData();
+    }
+
+    const chartData = apiData.chart_data;
+    console.log('Processing health performance data:', chartData);
+
+    // Format dates for better display
+    const formattedLabels = (chartData.dates || []).map((dateStr: string) => {
+      if (dateStr && dateStr.includes('-')) {
+        const [year, month] = dateStr.split('-');
+        const date = new Date(parseInt(year), parseInt(month) - 1);
+        return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      }
+      return dateStr;
+    });
+
+    return {
+      labels: formattedLabels,
+      healthScores: chartData.health_scores || [],
+      performanceScores: chartData.performance_scores || [],
+      maintenanceCounts: chartData.maintenance_counts || [],
+      metrics: chartData.metrics || {}
+    };
+  }
+
+  generateMockHealthPerformanceData() {
+    const months = 12;
+    const labels = [];
+    const healthScores = [];
+    const performanceScores = [];
+    const maintenanceCounts = [];
+
+    for (let i = 0; i < months; i++) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - (months - 1 - i));
+      labels.push(date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+      
+      // Generate realistic health scores (declining trend)
+      const baseHealth = 85;
+      const decline = (i * 2) + Math.random() * 5;
+      healthScores.push(Math.max(60, Math.round(baseHealth - decline)));
+      
+      // Generate performance scores (more stable)
+      const basePerformance = 90;
+      const variation = (Math.random() - 0.5) * 10;
+      performanceScores.push(Math.max(75, Math.round(basePerformance + variation)));
+      
+      // Generate maintenance counts (random)
+      maintenanceCounts.push(Math.floor(Math.random() * 5) + 1);
+    }
+
+    return {
+      labels,
+      healthScores,
+      performanceScores,
+      maintenanceCounts,
+      metrics: {
+        average_health_score: Math.round(healthScores.reduce((a, b) => a + b, 0) / healthScores.length),
+        average_performance_score: Math.round(performanceScores.reduce((a, b) => a + b, 0) / performanceScores.length),
+        total_maintenance_count: maintenanceCounts.reduce((a, b) => a + b, 0),
+        health_trend: healthScores[healthScores.length - 1] - healthScores[0],
+        performance_trend: performanceScores[performanceScores.length - 1] - performanceScores[0]
+      }
+    };
+  }
+
+  refreshHealthPerformanceChart() {
+    this.loadHealthPerformanceChart();
+  }
+
+  forceCreateHealthPerformanceChart() {
+    console.log('Force creating health performance chart...');
+    console.log('Current health performance chart data:', this.healthPerformanceChartData);
+    
+    // If no data, try to load it first
+    if (!this.healthPerformanceChartData) {
+      console.log('No data available, loading health performance chart...');
+      this.loadHealthPerformanceChart();
+      return;
+    }
+    
+    this.createHealthPerformanceChart();
   }
 
   getHealthScoreColor(healthScore: number): string {
@@ -717,7 +1497,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   calculateCurrentValue(): number {
     const purchasePrice = parseFloat(this.asset?.purchase_price) || 0;
     const depreciation = this.calculateDepreciation();
-    return Math.max(purchasePrice - depreciation, 0);
+    // Round to 2 decimal places to avoid floating point precision issues
+    return Math.round(Math.max(purchasePrice - depreciation, 0) * 100) / 100;
   }
 
   getROIColor(roi: number): string {
@@ -983,7 +1764,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   calculateDepreciation(): number {
     if (!this.asset?.purchase_price) return 0;
     const currentValue = this.asset.current_value || this.asset.purchase_price;
-    return this.asset.purchase_price - currentValue;
+    // Round to 2 decimal places to avoid floating point precision issues
+    return Math.round((this.asset.purchase_price - currentValue) * 100) / 100;
   }
 
   calculateDepreciationRate(): number {
@@ -1072,7 +1854,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const usefulLife = 10;
     const yearsElapsed = (currentDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
     
-    return Math.max(0, usefulLife - yearsElapsed);
+    // Round to 2 decimal places to avoid floating point precision issues
+    return Math.round(Math.max(0, usefulLife - yearsElapsed) * 100) / 100;
   }
 
   calculateTotalCostOfOwnership(): number {
