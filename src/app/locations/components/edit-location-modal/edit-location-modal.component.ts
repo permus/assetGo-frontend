@@ -114,17 +114,24 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
             this.autocomplete = null;
           }
 
-          this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
-            this.addressInput.nativeElement,
-            (place: PlaceResult) => {
-              this.editForm.patchValue({
-                address: place.formatted_address
-              });
-            },
-            {
-              types: ['address'],
-              componentRestrictions: { country: 'us' }
-            }
+                     this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
+             this.addressInput.nativeElement,
+             (place: PlaceResult) => {
+               this.editForm.patchValue({
+                 address: place.formatted_address
+               });
+               
+               // Trigger map display when address is selected
+               if (place.geometry && place.geometry.location) {
+                 const lat = place.geometry.location.lat();
+                 const lng = place.geometry.location.lng();
+                 this.showMap = true;
+                 setTimeout(() => this.showMapOnCoords(lat, lng), 100);
+               }
+             },
+                         {
+               types: ['geocode']
+             }
           );
         } catch (error) {
           console.error('Failed to initialize Google Places Autocomplete:', error);
@@ -148,17 +155,28 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     });
   }
 
-  populateForm() {
-    if (this.location) {
-      this.editForm.patchValue({
-        name: this.location.name,
-        description: this.location.description || '',
-        address: this.location.address || '',
-        location_type_id: this.location.location_type_id
-      });
-      this.selectedTypeId = this.location.location_type_id;
-    }
-  }
+     populateForm() {
+     if (this.location) {
+       this.editForm.patchValue({
+         name: this.location.name,
+         description: this.location.description || '',
+         address: this.location.address || '',
+         location_type_id: this.location.location_type_id
+       });
+       this.selectedTypeId = this.location?.location_type_id || null;
+       
+               // Show map if location has coordinates
+        if (this.location && this.location.latitude !== undefined && this.location.longitude !== undefined) {
+          this.showMap = true;
+          const lat = this.location.latitude;
+          const lng = this.location.longitude;
+          setTimeout(() => this.showMapOnCoords(lat, lng), 100);
+        } else if (this.location && this.location.address) {
+          // Geocode the address to show on map
+          this.geocodeAddress();
+        }
+     }
+   }
 
   getDisplayedTypes() {
     return this.showAllTypes ? this.locationTypes : this.locationTypes.slice(0, 6);

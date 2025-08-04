@@ -171,17 +171,24 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
             this.autocomplete = null;
           }
 
-          this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
-            this.addressInput.nativeElement,
-            (place: PlaceResult) => {
-              this.locationForm.patchValue({
-                address: place.formatted_address
-              });
-            },
-            {
-              types: ['address'],
-              componentRestrictions: { country: 'us' }
-            }
+                     this.autocomplete = await this.googlePlacesService.initializeAutocomplete(
+             this.addressInput.nativeElement,
+             (place: PlaceResult) => {
+               this.locationForm.patchValue({
+                 address: place.formatted_address
+               });
+               
+               // Trigger map display when address is selected
+               if (place.geometry && place.geometry.location) {
+                 const lat = place.geometry.location.lat();
+                 const lng = place.geometry.location.lng();
+                 this.showMap = true;
+                 setTimeout(() => this.showMapOnCoords(lat, lng), 100);
+               }
+             },
+                         {
+               types: ['geocode']
+             }
           );
         } catch (error) {
           console.error('Failed to initialize Google Places Autocomplete:', error);

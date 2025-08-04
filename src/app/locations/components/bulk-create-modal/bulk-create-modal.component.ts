@@ -130,8 +130,7 @@ export class BulkCreateModalComponent implements OnInit, AfterViewInit {
                   }
                 },
                 {
-                  types: ['address'],
-                  componentRestrictions: { country: 'us' }
+                  types: ['geocode']
                 }
               );
               this.autocompleteInstances[index] = autocomplete;

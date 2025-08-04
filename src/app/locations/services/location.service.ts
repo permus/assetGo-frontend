@@ -26,6 +26,8 @@ export interface Location {
   company_id: number;
   user_id: number;
   hierarchy_level: number;
+  latitude?: number;
+  longitude?: number;
   qr_code_path?: string;
   qr_code_url?: string;
   created_at: string;

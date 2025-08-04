@@ -78,8 +78,7 @@ export class GooglePlacesService {
     await this.loadGoogleMaps();
 
     const defaultOptions = {
-      types: ['address'],
-      componentRestrictions: { country: 'us' }, // You can modify this or make it configurable
+      types: ['geocode'],
       fields: ['formatted_address', 'place_id', 'geometry', 'address_components']
     };
 
