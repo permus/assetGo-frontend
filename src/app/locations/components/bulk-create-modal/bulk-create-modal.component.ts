@@ -71,6 +71,12 @@ export class BulkCreateModalComponent implements OnInit, AfterViewInit {
     this.addLocationRow();
     this.addLocationRow();
     this.addLocationRow();
+    
+    // Listen for form value changes to update validation
+    this.bulkForm.valueChanges.subscribe(() => {
+      // Trigger change detection for the count display
+      this.locationsArray.updateValueAndValidity();
+    });
   }
 
   ngAfterViewInit() {
@@ -223,7 +229,12 @@ export class BulkCreateModalComponent implements OnInit, AfterViewInit {
   }
 
   getValidLocationsCount(): number {
-    return this.locationsArray.controls.filter(control => control.valid).length;
+    return this.locationsArray.controls.filter(control => {
+      // Check if the control is valid and has required fields filled
+      const name = control.get('name')?.value;
+      const locationTypeId = control.get('location_type_id')?.value;
+      return control.valid && name && name.trim().length >= 2 && locationTypeId;
+    }).length;
   }
 
   getTotalLocationsCount(): number {

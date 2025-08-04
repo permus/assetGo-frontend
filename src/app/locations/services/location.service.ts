@@ -30,6 +30,7 @@ export interface Location {
   longitude?: number;
   qr_code_path?: string;
   qr_code_url?: string;
+  quick_chart_qr_url?: string;
   created_at: string;
   updated_at: string;
   type: LocationType;

@@ -212,9 +212,9 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   downloadQR() {
-    if (this.location?.qr_code_url) {
+    if (this.location?.quick_chart_qr_url) {
       const link = document.createElement('a');
-      link.href = this.location.qr_code_url;
+      link.href = this.location.quick_chart_qr_url;
       link.target = '_blank';
       link.download = `qr-code-${this.location.name.toLowerCase().replace(/\s+/g, '-')}.png`;
       document.body.appendChild(link);
@@ -224,7 +224,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
  printLabel() {
-   if (this.location?.qr_code_url) {
+   if (this.location?.quick_chart_qr_url) {
      const printWindow = window.open('', '_blank');
      if (printWindow) {
        printWindow.document.write(`
@@ -245,7 +245,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
            </head>
            <body>
              <h1>${this.location.name}</h1>
-             <img src="${this.location.qr_code_url}" alt="QR Code for ${this.location.name}">
+             <img src="${this.location.quick_chart_qr_url}" alt="QR Code for ${this.location.name}">
              <p>Scan this QR code to access location details.</p>
              <script>
                window.onload = function() {
