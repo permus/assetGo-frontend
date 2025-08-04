@@ -1,0 +1,33 @@
+// Role Form Component Styles
+
+.permissions-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.permissions-table th {
+  position: sticky;
+  top: 0;
+  background-color: #f9fafb;
+  z-index: 10;
+}
+
+.checkbox-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.form-section {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.form-input {
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+} 

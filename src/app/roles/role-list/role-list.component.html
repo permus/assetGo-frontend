@@ -1,0 +1,354 @@
+<div class="role-list-page min-h-screen bg-gray-50 p-6">
+  <!-- Page Title and Subtitle + Actions -->
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 mb-1">Role Management Hub</h1>
+      <p class="text-gray-600 text-base">Advanced role management with granular permissions and user access control</p>
+    </div>
+    <div class="flex items-center space-x-3 mt-4 md:mt-0">
+      <button (click)="createRole()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Create Role
+      </button>
+      <div class="relative" (click)="$event.stopPropagation()">
+        <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="5" r="2" />
+            <circle cx="12" cy="12" r="2" />
+            <circle cx="12" cy="19" r="2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Total Roles -->
+    <div class="rounded-xl bg-blue-50 border border-blue-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Total Roles</span>
+        <span class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ roles.length }}</div>
+      <a href="#" class="text-sm text-blue-600 font-medium mt-1">Roles in system</a>
+    </div>
+
+    <!-- Active Roles -->
+    <div class="rounded-xl bg-green-50 border border-green-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Active Roles</span>
+        <span class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2" fill="none" />
+            <circle cx="12" cy="12" r="4" fill="currentColor" class="text-green-400" />
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ getActiveRolesCount() }}</div>
+      <a href="#" class="text-sm text-green-600 font-medium mt-1">Currently active</a>
+    </div>
+
+    <!-- Total Users -->
+    <div class="rounded-xl bg-purple-50 border border-purple-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Total Users</span>
+        <span class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ getTotalUsersCount() }}</div>
+      <a href="#" class="text-sm text-purple-600 font-medium mt-1">Users assigned</a>
+    </div>
+
+    <!-- Permissions -->
+    <div class="rounded-xl bg-orange-50 border border-orange-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Permissions</span>
+        <span class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ getTotalPermissionsCount() }}</div>
+      <a href="#" class="text-sm text-orange-600 font-medium mt-1">Total permissions</a>
+    </div>
+  </div>
+
+  <!-- Filters and Controls -->
+  <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+      <!-- Left: Search and Filters -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+        <!-- Search -->
+        <div class="relative">
+          <input
+            type="text"
+            placeholder="Search roles..."
+            class="w-full sm:w-64 px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()">
+          <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+
+        <!-- Sort By Dropdown -->
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="toggleSortDropdown()"
+            class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all min-w-[180px]"
+            [class.border-blue-500]="showSortDropdown">
+            <div class="flex items-center justify-between">
+              <span *ngIf="!selectedSort" class="text-gray-400">Sort By</span>
+              <span *ngIf="selectedSort">{{ selectedSort.label }}</span>
+              <svg class="w-4 h-4 text-gray-400 transition-transform ml-2" [class.rotate-180]="showSortDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div
+            *ngIf="showSortDropdown"
+            class="absolute z-10 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-72 overflow-y-auto min-w-[180px] w-full">
+            <div class="px-4 py-2 text-xs text-gray-400 font-semibold uppercase tracking-wider">Sort By</div>
+            <div
+              *ngFor="let sort of sortOptions"
+              (click)="selectSort(sort); showSortDropdown = false"
+              class="px-4 py-2 cursor-pointer hover:bg-blue-50"
+              [ngClass]="{'bg-blue-100 font-semibold': selectedSort?.value === sort.value}">
+              {{ sort.label }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Sort Direction Button -->
+        <div class="relative">
+          <button (click)="toggleSortDir()" class="px-4 py-2 bg-gray-100 rounded-lg text-gray-700 flex items-center space-x-2 min-w-[70px] cursor-pointer"
+            [class.bg-blue-100]="selectedSortDir === 'asc'" [class.text-blue-700]="selectedSortDir === 'asc'">
+            <svg *ngIf="selectedSortDir === 'desc'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"></path>
+            </svg>
+            <svg *ngIf="selectedSortDir === 'asc'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7l4-4m0 0l4 4m-4-4v18"></path>
+            </svg>
+            <span>{{ selectedSortDir === 'asc' ? 'A-Z' : 'Z-A' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: View Type Toggle -->
+      <div class="flex items-center space-x-2 mt-4 md:mt-0">
+        <button (click)="viewType = 'grid'" [class.bg-blue-100]="viewType === 'grid'" [class.text-blue-700]="viewType === 'grid'" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="4" y="4" width="7" height="7" rx="2" />
+            <rect x="13" y="4" width="7" height="7" rx="2" />
+            <rect x="4" y="13" width="7" height="7" rx="2" />
+            <rect x="13" y="13" width="7" height="7" rx="2" />
+          </svg>
+        </button>
+        <button (click)="viewType = 'list'" [class.bg-blue-100]="viewType === 'list'" [class.text-blue-700]="viewType === 'list'" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="4" y="6" width="16" height="4" rx="2" />
+            <rect x="4" y="14" width="16" height="4" rx="2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex items-center justify-center py-20">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+        <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Roles</h3>
+      <p class="text-sm text-gray-500">Please wait while we fetch your roles...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="flex items-center justify-center py-20">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Roles</h3>
+      <p class="text-sm text-gray-500 mb-4">{{error}}</p>
+      <button
+        (click)="loadRoles()"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && roles.length === 0" class="text-center py-20">
+    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+      </svg>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">No Roles Found</h3>
+    <p class="text-gray-600 mb-4">Get started by creating your first role.</p>
+    <button
+      (click)="createRole()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+      Create First Role
+    </button>
+  </div>
+
+  <!-- Grid View Cards -->
+  <div *ngIf="viewType === 'grid' && !loading && !error && roles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-2">
+    <div *ngFor="let role of filteredRoles" class="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col transition-all hover:shadow-md overflow-hidden">
+      <!-- Card Header -->
+      <div class="relative bg-[#e0edff] h-32 flex flex-col items-center justify-center">
+        <div class="absolute right-4 top-4 flex items-center space-x-2">
+          <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">Active</span>
+          <div class="relative" (click)="$event.stopPropagation()">
+            <button
+              (click)="toggleRoleMenu(role.id)"
+              class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="6" r="1.5" />
+                <circle cx="12" cy="12" r="1.5" />
+                <circle cx="12" cy="18" r="1.5" />
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div *ngIf="role.showMenu" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+              <button
+                (click)="editRole(role)"
+                class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <span class="text-sm text-gray-700">Edit Role</span>
+              </button>
+
+              <button
+                (click)="deleteRole(role)"
+                class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-red-50 transition-colors">
+                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <span class="text-sm text-red-600">Delete Role</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <svg class="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+      </div>
+
+      <!-- Card Body -->
+      <div class="flex-1 flex flex-col justify-between p-6 pt-4">
+        <div>
+          <div class="font-semibold text-lg text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors" (click)="editRole(role)">
+            {{ role.name }}
+          </div>
+          <div class="text-sm text-gray-500 mb-2">{{ role.description || 'No description' }}</div>
+          <div class="flex items-center text-xs text-gray-400 mb-2">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+            </svg>
+            <span>{{ role.users_count || 0 }} users assigned</span>
+          </div>
+          <hr class="my-3 border-gray-200">
+          <div class="flex items-center text-sm text-gray-700 mb-1">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+            <span>{{ getPermissionSummary(role) }}</span>
+          </div>
+          <div class="flex items-center text-sm text-gray-700 mb-1" *ngIf="role.created_at">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Created <b>{{ role.created_at | date:'MMM d, y' }}</b></span>
+          </div>
+        </div>
+
+        <!-- Permission Score Bar -->
+        <div class="mt-4">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs text-gray-500">Permission Score</span>
+            <span class="text-xs font-semibold text-gray-700">{{ getPermissionScore(role) }}%</span>
+          </div>
+          <div class="w-full h-2 bg-gray-200 rounded-full">
+            <div class="h-2 rounded-full bg-blue-500" [style.width.%]="getPermissionScore(role)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div *ngIf="viewType === 'list' && !loading && !error && roles.length > 0" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Table Header -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <div class="grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <div class="col-span-3">Role</div>
+        <div class="col-span-3">Description</div>
+        <div class="col-span-2">Permissions</div>
+        <div class="col-span-1">Users</div>
+        <div class="col-span-2">Created</div>
+        <div class="col-span-1">Actions</div>
+      </div>
+    </div>
+
+    <!-- Table Body -->
+    <div class="divide-y divide-gray-200">
+      <div *ngFor="let role of filteredRoles"
+           class="px-6 py-4 hover:bg-gray-50 transition-colors">
+        <div class="grid grid-cols-12 gap-4 items-center">
+          <div class="col-span-3">
+            <div class="text-sm font-medium text-gray-900">{{ role.name }}</div>
+          </div>
+          <div class="col-span-3">
+            <div class="text-sm text-gray-900">{{ role.description || 'No description' }}</div>
+          </div>
+          <div class="col-span-2">
+            <div class="text-sm text-gray-900">{{ getPermissionSummary(role) }}</div>
+          </div>
+          <div class="col-span-1">
+            <div class="text-sm text-gray-900">{{ role.users_count || 0 }}</div>
+          </div>
+          <div class="col-span-2">
+            <div class="text-sm text-gray-900">{{ role.created_at | date:'short' }}</div>
+          </div>
+          <div class="col-span-1 text-right">
+            <button
+              (click)="editRole(role)"
+              class="text-blue-600 hover:text-blue-900 mr-3">
+              Edit
+            </button>
+            <button
+              (click)="deleteRole(role)"
+              class="text-red-600 hover:text-red-900">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

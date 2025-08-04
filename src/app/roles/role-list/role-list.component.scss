@@ -1,0 +1,17 @@
+// Role List Component Styles
+// Add any custom styles here if needed
+
+.table-container {
+  overflow-x: auto;
+}
+
+.role-table {
+  min-width: 100%;
+}
+
+.role-table th {
+  position: sticky;
+  top: 0;
+  background-color: #f9fafb;
+  z-index: 10;
+} 

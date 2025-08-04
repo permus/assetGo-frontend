@@ -30,6 +30,10 @@ export const routes: Routes = [
       {
         path: 'assets',
         loadChildren: () => import('./assets/assets.module').then(m => m.AssetsModule)
+      },
+      {
+        path: 'roles',
+        loadChildren: () => import('./roles/roles.module').then(m => m.RolesModule)
       }
     ]
   },
