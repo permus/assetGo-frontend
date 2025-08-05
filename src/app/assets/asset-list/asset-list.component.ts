@@ -38,6 +38,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   // Loading states
   loading = false;
+  exportingExcel = false;
   error = '';
 
   showMenu = false;
@@ -595,6 +596,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   exportToExcel() {
     if (this.assetList.length > 0) {
+      this.exportingExcel = true;
       this.assetService.exportAssetsToExcel(this.showingArchived).subscribe({
         next: (blob: Blob) => {
           const url = window.URL.createObjectURL(blob);
@@ -604,10 +606,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
           link.download = filename;
           link.click();
           window.URL.revokeObjectURL(url);
+          this.exportingExcel = false;
           this.showMenu = false; // Close the dropdown menu
         },
         error: (error) => {
           console.error('Error exporting to Excel:', error);
+          this.exportingExcel = false;
           // You can add user notification here if needed
         }
       });
