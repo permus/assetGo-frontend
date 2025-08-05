@@ -196,15 +196,16 @@
           <div class="flex items-start space-x-3">
             <!--w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200-->
             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
-              <img [src]="location.type.icon" [alt]="location.type.name" class="w-7 h-7">
+              <span *ngIf="location.type" class="text-2xl">{{getLocationTypeIcon(location.type)}}</span>
+              <span *ngIf="!location.type" class="text-gray-600" [innerHTML]="getDefaultLocationIcon()"></span>
             </div>
             <div>
-              <h3 class="text-2xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">{{location.name}}</h3>
+              <h3 class="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">{{location.name}}</h3>
               <div class="flex items-center space-x-2 mt-1">
                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   {{getHierarchyLevelBadge(location.hierarchy_level)}}
                 </span>
-                <span class="text-sm text-gray-600">{{location.type.name}}</span>
+                <span class="text-sm text-gray-600">{{location.type?.name || 'Unknown Type'}}</span>
               </div>
             </div>
           </div>
