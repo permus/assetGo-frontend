@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RoleService, Role } from '../services/role.service';
 import { RoleDeleteConfirmationModalComponent } from '../components/role-delete-confirmation-modal/role-delete-confirmation-modal.component';
@@ -9,7 +10,7 @@ import { RoleDeleteConfirmationModalComponent } from '../components/role-delete-
   templateUrl: './role-list.component.html',
   styleUrls: ['./role-list.component.scss'],
   standalone: true,
-  imports: [CommonModule, RoleDeleteConfirmationModalComponent]
+  imports: [CommonModule, FormsModule, RoleDeleteConfirmationModalComponent]
 })
 export class RoleListComponent implements OnInit {
   roles: Role[] = [];
