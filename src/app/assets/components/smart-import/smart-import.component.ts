@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AssetService } from '../../services/asset.service';
 import { timer } from 'rxjs';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-smart-import',
@@ -49,6 +50,7 @@ export class SmartImportComponent {
   assetFields: any[] = [
     // Standard format fields
     { name: 'name', title: 'Asset Name', map: '-1', required: true, showDropdown: false },
+    { name: 'asset_id', title: 'Asset ID', map: '-1', required: false, showDropdown: false },
     { name: 'description', title: 'Description', map: '-1', required: false, showDropdown: false },
     { name: 'category', title: 'Category', map: '-1', required: false, showDropdown: false },
     { name: 'type', title: 'Asset Type', map: '-1', required: false, showDropdown: false },
@@ -125,12 +127,29 @@ export class SmartImportComponent {
       if (this.detectedFormat === 'EY_MASTER') {
         // EY Master format specific mappings
         switch (field.name) {
-          case 'name':
-            // Map to "Asset Description" for EY Master
+          case 'asset_id':
+            // Map to "Asset ID Number" for EY Master
             headerIndex = headers.findIndex(header => 
-              this.normalize(header).includes('assetdescription') || 
-              this.normalize(header).includes('description')
+              this.normalize(header).includes('assetidnumber') || 
+              this.normalize(header).includes('assetid') ||
+              this.normalize(header).includes('idnumber')
             );
+            break;
+          case 'name':
+            // First try to find "Asset Name" specifically
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('assetname') || 
+              this.normalize(header).includes('name')
+            );
+            
+            // If no "Asset Name" found, fall back to "Asset ID Number"
+            if (headerIndex === -1) {
+              headerIndex = headers.findIndex(header => 
+                this.normalize(header).includes('assetidnumber') || 
+                this.normalize(header).includes('assetid') ||
+                this.normalize(header).includes('idnumber')
+              );
+            }
             break;
           case 'description':
             // Map to "Asset Description" for EY Master
@@ -228,12 +247,24 @@ export class SmartImportComponent {
     }
 
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
-    if (!fileExtension || !['csv'].includes(fileExtension)) {
-      this.errorMessage = 'Please upload a valid CSV file. Excel files (.xls, .xlsx) are not supported in this version.';
+    if (!fileExtension || !['csv', 'xlsx', 'xls', 'ods'].includes(fileExtension)) {
+      this.errorMessage = 'Please upload a valid spreadsheet file (.csv, .xlsx, .xls, .ods).';
       this.showError = true;
       return;
     }
 
+    // Handle different file types
+    if (fileExtension === 'csv') {
+      this.parseCSVFile(file);
+    } else {
+      this.parseExcelFile(file);
+    }
+  }
+
+  /**
+   * Parse CSV file
+   */
+  private parseCSVFile(file: File): void {
     const reader: FileReader = new FileReader();
 
     reader.readAsText(file);
@@ -256,77 +287,126 @@ export class SmartImportComponent {
           return;
         }
 
-        // For EY Master format, skip the first row and use the second row as headers
-        let headerLine: string;
-        let actualHeaders: string[];
-        let dataStartIndex: number;
-        
-        if (allTextLines.length >= 2) {
-          // Check if first row looks like a title row (contains "EY_Master" or similar)
-          const firstRow = this.parseCSVLine(allTextLines[0]);
-          const firstRowText = firstRow.join(' ').toLowerCase();
-          
-          if (firstRowText.includes('ey_master') || firstRowText.includes('asset list')) {
-            // Use second row as headers for EY Master format
-            headerLine = allTextLines[1];
-            actualHeaders = this.parseCSVLine(headerLine);
-            dataStartIndex = 2; // Start data from third row
-            this.detectedFormat = 'EY_MASTER';
-          } else {
-            // Use first row as headers for standard format
-            headerLine = allTextLines[0];
-            actualHeaders = this.parseCSVLine(headerLine);
-            dataStartIndex = 1; // Start data from second row
-            this.detectedFormat = this.detectFormat(actualHeaders);
-          }
-        } else {
-          // Fallback to first row as headers
-          headerLine = allTextLines[0];
-          actualHeaders = this.parseCSVLine(headerLine);
-          dataStartIndex = 1;
-          this.detectedFormat = this.detectFormat(actualHeaders);
-        }
-        
-        // Validate headers
-        if (actualHeaders.length === 0) {
-          this.errorMessage = 'No valid headers found in the CSV file.';
-          this.showError = true;
-          return;
-        }
-
-        // Auto-map fields using the actual headers
-        this.autoMapFields(actualHeaders);
-
-        // Validate minimum rows based on detected format
-        const minRowsRequired = this.detectedFormat === 'EY_MASTER' ? 3 : 2;
-        if (allTextLines.length < minRowsRequired) {
-          this.errorMessage = this.detectedFormat === 'EY_MASTER' 
-            ? 'EY Master format requires at least a title row, header row, and one data row.' 
-            : 'File must contain at least a header row and one data row.';
-          this.showError = true;
-          return;
-        }
-
-        // Parse data rows starting from the appropriate index
-        const rows = allTextLines.slice(dataStartIndex).map(line => this.parseCSVLine(line));
-        
-        // Filter out empty rows
-        const validRows = rows.filter(row => row.length > 0 && row.some(cell => cell.trim() !== ''));
-
-        this.parsedData = { headers: actualHeaders, rows: validRows };
-        this.uploaded = true;
-        this.nextStep();
+        this.processParsedData(allTextLines);
       } catch (error) {
-        console.error('Error parsing file:', error);
-        this.errorMessage = 'Error parsing the file. Please ensure it is a valid CSV file.';
+        this.errorMessage = 'Error parsing CSV file: ' + (error as Error).message;
         this.showError = true;
       }
     };
 
     reader.onerror = () => {
-      this.errorMessage = 'Error reading the file. Please try again.';
+      this.errorMessage = 'Error reading CSV file.';
       this.showError = true;
     };
+  }
+
+  /**
+   * Parse Excel file (xlsx, xls)
+   */
+  private parseExcelFile(file: File): void {
+    const reader: FileReader = new FileReader();
+
+    reader.readAsArrayBuffer(file);
+    reader.onload = () => {
+      try {
+        const data = new Uint8Array(reader.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        
+        // Get the first worksheet
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        // Convert to JSON with header row
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        if (jsonData.length < 2) {
+          this.errorMessage = 'File must contain at least a header row and one data row.';
+          this.showError = true;
+          return;
+        }
+
+        // Convert JSON data to string format for consistency with CSV parsing
+        const allTextLines = jsonData.map((row: any) => 
+          Array.isArray(row) ? row.map(cell => cell || '').join(',') : ''
+        ).filter(line => line.trim() !== '');
+
+        this.processParsedData(allTextLines);
+      } catch (error) {
+        this.errorMessage = 'Error parsing Excel file: ' + (error as Error).message;
+        this.showError = true;
+      }
+    };
+
+    reader.onerror = () => {
+      this.errorMessage = 'Error reading Excel file.';
+      this.showError = true;
+    };
+  }
+
+  /**
+   * Process parsed data from either CSV or Excel files
+   */
+  private processParsedData(allTextLines: string[]): void {
+    // For EY Master format, skip the first row and use the second row as headers
+    let headerLine: string;
+    let actualHeaders: string[];
+    let dataStartIndex: number;
+    
+    if (allTextLines.length >= 2) {
+      // Check if first row looks like a title row (contains "EY_Master" or similar)
+      const firstRow = this.parseCSVLine(allTextLines[0]);
+      const firstRowText = firstRow.join(' ').toLowerCase();
+      
+      if (firstRowText.includes('ey_master') || firstRowText.includes('asset list')) {
+        // Use second row as headers for EY Master format
+        headerLine = allTextLines[1];
+        actualHeaders = this.parseCSVLine(headerLine);
+        dataStartIndex = 2; // Start data from third row
+        this.detectedFormat = 'EY_MASTER';
+      } else {
+        // Use first row as headers for standard format
+        headerLine = allTextLines[0];
+        actualHeaders = this.parseCSVLine(headerLine);
+        dataStartIndex = 1; // Start data from second row
+        this.detectedFormat = this.detectFormat(actualHeaders);
+      }
+    } else {
+      // Fallback to first row as headers
+      headerLine = allTextLines[0];
+      actualHeaders = this.parseCSVLine(headerLine);
+      dataStartIndex = 1;
+      this.detectedFormat = this.detectFormat(actualHeaders);
+    }
+    
+    // Validate headers
+    if (actualHeaders.length === 0) {
+      this.errorMessage = 'No valid headers found in the file.';
+      this.showError = true;
+      return;
+    }
+
+    // Auto-map fields using the actual headers
+    this.autoMapFields(actualHeaders);
+
+    // Validate minimum rows based on detected format
+    const minRowsRequired = this.detectedFormat === 'EY_MASTER' ? 3 : 2;
+    if (allTextLines.length < minRowsRequired) {
+      this.errorMessage = this.detectedFormat === 'EY_MASTER' 
+        ? 'EY Master format requires at least a title row, header row, and one data row.' 
+        : 'File must contain at least a header row and one data row.';
+      this.showError = true;
+      return;
+    }
+
+    // Parse data rows starting from the appropriate index
+    const rows = allTextLines.slice(dataStartIndex).map(line => this.parseCSVLine(line));
+    
+    // Filter out empty rows
+    const validRows = rows.filter(row => row.length > 0 && row.some(cell => cell.trim() !== ''));
+
+    this.parsedData = { headers: actualHeaders, rows: validRows };
+    this.uploaded = true;
+    this.nextStep();
   }
 
   /**
@@ -431,12 +511,29 @@ export class SmartImportComponent {
       if (this.detectedFormat === 'EY_MASTER') {
         // EY Master format specific mappings
         switch (field.name) {
-          case 'name':
-            // Map to "Asset Description" for EY Master
+          case 'asset_id':
+            // Map to "Asset ID Number" for EY Master
             headerIndex = fields.findIndex((header: string) => 
-              this.normalize(header).includes('assetdescription') || 
-              this.normalize(header).includes('description')
+              this.normalize(header).includes('assetidnumber') || 
+              this.normalize(header).includes('assetid') ||
+              this.normalize(header).includes('idnumber')
             );
+            break;
+          case 'name':
+            // First try to find "Asset Name" specifically
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('assetname') || 
+              this.normalize(header).includes('name')
+            );
+            
+            // If no "Asset Name" found, fall back to "Asset ID Number"
+            if (headerIndex === -1) {
+              headerIndex = fields.findIndex((header: string) => 
+                this.normalize(header).includes('assetidnumber') || 
+                this.normalize(header).includes('assetid') ||
+                this.normalize(header).includes('idnumber')
+              );
+            }
             break;
           case 'description':
             // Map to "Asset Description" for EY Master
@@ -597,6 +694,7 @@ export class SmartImportComponent {
       this.assetFields.forEach((field) => {
         if (field.map !== '-1' && row[parseInt(field.map)] !== undefined) {
           const value = row[parseInt(field.map)].trim();
+          console.log(`Processing field ${field.name} (${field.title}): "${value}" from column ${field.map}`);
           if (field.required && (!value || value === '')) {
             hasRequiredData = false;
           }
@@ -611,17 +709,29 @@ export class SmartImportComponent {
                      // Handle EY Master format specific mappings
            if (this.detectedFormat === 'EY_MASTER') {
              switch (field.name) {
-               case 'description':
-                 asset.name = value; // Use Asset Description as name
+               case 'asset_id':
+                 asset.asset_id = value; // Map Asset ID Number to asset_id
                  break;
-               case 'brand':
+               case 'name':
+                 asset.name = value; // Map Asset Name or Asset ID Number to name
+                 break;
+               case 'description':
+                 asset.description = value; // Map Asset Description to description
+                 break;
+               case 'manufacturer':
                  asset.manufacturer = value; // Map Brand/Make to manufacturer
+                 break;
+               case 'model':
+                 asset.model = value; // Map Model No to model
                  break;
                case 'capacity':
                  asset.capacity = value; // Map Capacity/Rating
                  break;
                case 'category':
                  asset.category = value; // Map S/M Type to category
+                 break;
+               case 'sm_type':
+                 asset.sm_type = value; // Map S/M Type to sm_type
                  break;
                case 'building':
                case 'floor':
@@ -660,6 +770,8 @@ export class SmartImportComponent {
     }
 
     console.log('Importing assets:', assets);
+    console.log('Asset fields mapping:', this.assetFields.map(f => ({ name: f.name, title: f.title, map: f.map })));
+    console.log('Parsed data headers:', this.parsedData.headers);
 
     timer(300).subscribe({
       complete: () => {
