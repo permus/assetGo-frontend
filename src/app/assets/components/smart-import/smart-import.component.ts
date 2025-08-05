@@ -41,8 +41,13 @@ export class SmartImportComponent {
   errorMessage = '';
   showError = false;
 
-  // Asset fields mapping - updated to match backend validation
+  // Format detection
+  detectedFormat: 'STANDARD' | 'EY_MASTER' | 'UNKNOWN' = 'UNKNOWN';
+  formatName = '';
+
+  // Asset fields mapping - supports both formats
   assetFields: any[] = [
+    // Standard format fields
     { name: 'name', title: 'Asset Name', map: '-1', required: true, showDropdown: false },
     { name: 'description', title: 'Description', map: '-1', required: false, showDropdown: false },
     { name: 'category', title: 'Category', map: '-1', required: false, showDropdown: false },
@@ -58,10 +63,153 @@ export class SmartImportComponent {
     { name: 'warranty', title: 'Warranty', map: '-1', required: false, showDropdown: false },
     { name: 'insurance', title: 'Insurance', map: '-1', required: false, showDropdown: false },
     { name: 'health_score', title: 'Health Score', map: '-1', required: false, showDropdown: false },
-    { name: 'status', title: 'Status', map: '-1', required: false, showDropdown: false }
+    { name: 'status', title: 'Status', map: '-1', required: false, showDropdown: false },
+    
+    // EY Master format fields
+    { name: 'sm_type', title: 'S/M Type', map: '-1', required: false, showDropdown: false },
+    { name: 'building', title: 'Building', map: '-1', required: false, showDropdown: false },
+    { name: 'floor', title: 'Floor', map: '-1', required: false, showDropdown: false },
+    { name: 'brand', title: 'Brand/Make', map: '-1', required: false, showDropdown: false },
+    { name: 'capacity', title: 'Capacity/Rating', map: '-1', required: false, showDropdown: false },
+    
+    // Additional backend fields
+    { name: 'depreciation_life', title: 'Depreciation Life (Years)', map: '-1', required: false, showDropdown: false }
   ];
 
+  // Format detection patterns
+  formatPatterns = {
+    STANDARD: [
+      'Asset Name', 'Description', 'Category', 'Type', 'Serial Number', 
+      'Model', 'Manufacturer', 'Purchase Date', 'Purchase Price', 'Depreciation',
+      'Location', 'Department', 'Warranty', 'Insurance', 'Health Score', 'Status'
+    ],
+    EY_MASTER: [
+      'Asset ID Number', 'S/M Type', 'Building', 'Location', 'Floor', 
+      'Asset Description', 'Brand/Make', 'Model No', 'Capacity/Rating'
+    ]
+  };
+
   constructor(private assetService: AssetService, private router: Router) {}
+
+  /**
+   * Detect file format based on headers
+   */
+  detectFormat(headers: string[]): 'STANDARD' | 'EY_MASTER' | 'UNKNOWN' {
+    const standardMatch = this.formatPatterns.STANDARD.filter(h => 
+      headers.some(header => this.normalize(header) === this.normalize(h))
+    ).length;
+    
+    const eyMasterMatch = this.formatPatterns.EY_MASTER.filter(h => 
+      headers.some(header => this.normalize(header) === this.normalize(h))
+    ).length;
+
+    if (standardMatch >= 10) {
+      this.formatName = 'Standard Asset List';
+      return 'STANDARD';
+    } else if (eyMasterMatch >= 7) {
+      this.formatName = 'EY Master Asset List (Starting from Row 2)';
+      return 'EY_MASTER';
+    }
+    
+    this.formatName = 'Unknown Format';
+    return 'UNKNOWN';
+  }
+
+  /**
+   * Auto-map fields based on detected format
+   */
+  autoMapFields(headers: string[]): void {
+    this.assetFields.forEach(field => {
+      let headerIndex = -1;
+      
+      if (this.detectedFormat === 'EY_MASTER') {
+        // EY Master format specific mappings
+        switch (field.name) {
+          case 'name':
+            // Map to "Asset Description" for EY Master
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('assetdescription') || 
+              this.normalize(header).includes('description')
+            );
+            break;
+          case 'description':
+            // Map to "Asset Description" for EY Master
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('assetdescription') || 
+              this.normalize(header).includes('description')
+            );
+            break;
+          case 'manufacturer':
+            // Map to "Brand/Make" for EY Master
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('brandmake') || 
+              this.normalize(header).includes('brand') ||
+              this.normalize(header).includes('make')
+            );
+            break;
+          case 'model':
+            // Map to "Model No" for EY Master
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('modelno') || 
+              this.normalize(header).includes('model')
+            );
+            break;
+          case 'capacity':
+            // Map to "Capacity/Rating" for EY Master
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('capacityrating') || 
+              this.normalize(header).includes('capacity') ||
+              this.normalize(header).includes('rating')
+            );
+            break;
+                     case 'sm_type':
+             // Map to "S/M Type" for EY Master
+             headerIndex = headers.findIndex(header => 
+               this.normalize(header).includes('smtype') || 
+               this.normalize(header).includes('type')
+             );
+             break;
+           case 'category':
+             // Map category to "S/M Type" for EY Master
+             headerIndex = headers.findIndex(header => 
+               this.normalize(header).includes('smtype') || 
+               this.normalize(header).includes('type')
+             );
+             break;
+          case 'building':
+            // Map to "Building" for EY Master
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('building')
+            );
+            break;
+          case 'floor':
+            // Map to "Floor" for EY Master
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('floor')
+            );
+            break;
+          case 'location':
+            // Map to "Location" for EY Master
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header).includes('location')
+            );
+            break;
+          default:
+            // Try exact match for other fields
+            headerIndex = headers.findIndex(header => 
+              this.normalize(header) === this.normalize(field.title)
+            );
+        }
+      } else {
+        // Standard format - use exact title matching
+        headerIndex = headers.findIndex(header => 
+          this.normalize(header) === this.normalize(field.title)
+        );
+      }
+      
+      field.map = headerIndex >= 0 ? headerIndex.toString() : '-1';
+    });
+  }
 
   /**
    * Parse uploaded file
@@ -108,24 +256,64 @@ export class SmartImportComponent {
           return;
         }
 
-        // Parse headers - handle quoted values
-        const headerLine = allTextLines[0];
-        const headers = this.parseCSVLine(headerLine);
+        // For EY Master format, skip the first row and use the second row as headers
+        let headerLine: string;
+        let actualHeaders: string[];
+        let dataStartIndex: number;
+        
+        if (allTextLines.length >= 2) {
+          // Check if first row looks like a title row (contains "EY_Master" or similar)
+          const firstRow = this.parseCSVLine(allTextLines[0]);
+          const firstRowText = firstRow.join(' ').toLowerCase();
+          
+          if (firstRowText.includes('ey_master') || firstRowText.includes('asset list')) {
+            // Use second row as headers for EY Master format
+            headerLine = allTextLines[1];
+            actualHeaders = this.parseCSVLine(headerLine);
+            dataStartIndex = 2; // Start data from third row
+            this.detectedFormat = 'EY_MASTER';
+          } else {
+            // Use first row as headers for standard format
+            headerLine = allTextLines[0];
+            actualHeaders = this.parseCSVLine(headerLine);
+            dataStartIndex = 1; // Start data from second row
+            this.detectedFormat = this.detectFormat(actualHeaders);
+          }
+        } else {
+          // Fallback to first row as headers
+          headerLine = allTextLines[0];
+          actualHeaders = this.parseCSVLine(headerLine);
+          dataStartIndex = 1;
+          this.detectedFormat = this.detectFormat(actualHeaders);
+        }
         
         // Validate headers
-        if (headers.length === 0) {
+        if (actualHeaders.length === 0) {
           this.errorMessage = 'No valid headers found in the CSV file.';
           this.showError = true;
           return;
         }
 
-        // Parse data rows
-        const rows = allTextLines.slice(1).map(line => this.parseCSVLine(line));
+        // Auto-map fields using the actual headers
+        this.autoMapFields(actualHeaders);
+
+        // Validate minimum rows based on detected format
+        const minRowsRequired = this.detectedFormat === 'EY_MASTER' ? 3 : 2;
+        if (allTextLines.length < minRowsRequired) {
+          this.errorMessage = this.detectedFormat === 'EY_MASTER' 
+            ? 'EY Master format requires at least a title row, header row, and one data row.' 
+            : 'File must contain at least a header row and one data row.';
+          this.showError = true;
+          return;
+        }
+
+        // Parse data rows starting from the appropriate index
+        const rows = allTextLines.slice(dataStartIndex).map(line => this.parseCSVLine(line));
         
         // Filter out empty rows
         const validRows = rows.filter(row => row.length > 0 && row.some(cell => cell.trim() !== ''));
 
-        this.parsedData = { headers, rows: validRows };
+        this.parsedData = { headers: actualHeaders, rows: validRows };
         this.uploaded = true;
         this.nextStep();
       } catch (error) {
@@ -236,13 +424,98 @@ export class SmartImportComponent {
       field.showDropdown = false;
     });
 
-    // Auto-map fields based on name similarity
+    // Auto-map fields based on detected format
     this.assetFields.forEach((field, i) => {
-      fields.forEach((header: string, j: number) => {
-        if (this.normalize(field.title) === this.normalize(header)) {
-          this.assetFields[i].map = j.toString();
+      let headerIndex = -1;
+      
+      if (this.detectedFormat === 'EY_MASTER') {
+        // EY Master format specific mappings
+        switch (field.name) {
+          case 'name':
+            // Map to "Asset Description" for EY Master
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('assetdescription') || 
+              this.normalize(header).includes('description')
+            );
+            break;
+          case 'description':
+            // Map to "Asset Description" for EY Master
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('assetdescription') || 
+              this.normalize(header).includes('description')
+            );
+            break;
+          case 'manufacturer':
+            // Map to "Brand/Make" for EY Master
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('brandmake') || 
+              this.normalize(header).includes('brand') ||
+              this.normalize(header).includes('make')
+            );
+            break;
+          case 'model':
+            // Map to "Model No" for EY Master
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('modelno') || 
+              this.normalize(header).includes('model')
+            );
+            break;
+          case 'capacity':
+            // Map to "Capacity/Rating" for EY Master
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('capacityrating') || 
+              this.normalize(header).includes('capacity') ||
+              this.normalize(header).includes('rating')
+            );
+            break;
+                     case 'sm_type':
+             // Map to "S/M Type" for EY Master
+             headerIndex = fields.findIndex((header: string) => 
+               this.normalize(header).includes('smtype') || 
+               this.normalize(header).includes('type')
+             );
+             break;
+           case 'category':
+             // Map category to "S/M Type" for EY Master
+             headerIndex = fields.findIndex((header: string) => 
+               this.normalize(header).includes('smtype') || 
+               this.normalize(header).includes('type')
+             );
+             break;
+          case 'building':
+            // Map to "Building" for EY Master
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('building')
+            );
+            break;
+          case 'floor':
+            // Map to "Floor" for EY Master
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('floor')
+            );
+            break;
+          case 'location':
+            // Map to "Location" for EY Master
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(header).includes('location')
+            );
+            break;
+          default:
+            // Try exact match for other fields
+            headerIndex = fields.findIndex((header: string) => 
+              this.normalize(field.title) === this.normalize(header)
+            );
         }
-      });
+      } else {
+        // Standard format - use exact title matching
+        headerIndex = fields.findIndex((header: string) => 
+          this.normalize(field.title) === this.normalize(header)
+        );
+      }
+      
+      if (headerIndex >= 0) {
+        this.assetFields[i].map = headerIndex.toString();
+      }
     });
 
     // Add all fields from the CSV to importFields for dropdown
@@ -335,7 +608,33 @@ export class SmartImportComponent {
             }
           }
           
-          asset[field.name] = value;
+                     // Handle EY Master format specific mappings
+           if (this.detectedFormat === 'EY_MASTER') {
+             switch (field.name) {
+               case 'description':
+                 asset.name = value; // Use Asset Description as name
+                 break;
+               case 'brand':
+                 asset.manufacturer = value; // Map Brand/Make to manufacturer
+                 break;
+               case 'capacity':
+                 asset.capacity = value; // Map Capacity/Rating
+                 break;
+               case 'category':
+                 asset.category = value; // Map S/M Type to category
+                 break;
+               case 'building':
+               case 'floor':
+               case 'location':
+                 // Add location fields directly to asset object
+                 asset[field.name] = value;
+                 break;
+               default:
+                 asset[field.name] = value;
+             }
+           } else {
+             asset[field.name] = value;
+           }
         }
       });
 

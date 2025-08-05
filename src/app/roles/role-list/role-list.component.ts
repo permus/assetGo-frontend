@@ -134,20 +134,16 @@ export class RoleListComponent implements OnInit {
     }, 0);
   }
 
-  getPermissionScore(role: Role): number {
+  getPermissionCount(role: Role): number {
     if (!role.permissions) return 0;
-    
     const permissions = role.permissions.permissions;
     const modules = Object.keys(permissions);
-    if (modules.length === 0) return 0;
-    
-    const totalPermissions = modules.reduce((total, module) => {
+    return modules.reduce((total, module) => {
       return total + Object.values(permissions[module]).filter(Boolean).length;
     }, 0);
-    
-    const maxPossiblePermissions = modules.length * 5; // 5 permissions per module
-    return Math.round((totalPermissions / maxPossiblePermissions) * 100);
   }
+
+
 
   onSearchChange(): void {
     this.filterRoles();
@@ -200,8 +196,8 @@ export class RoleListComponent implements OnInit {
           bValue = b.users_count || 0;
           break;
         case 'permissions':
-          aValue = this.getPermissionScore(a);
-          bValue = this.getPermissionScore(b);
+          aValue = this.getPermissionCount(a);
+          bValue = this.getPermissionCount(b);
           break;
         default:
           aValue = a.name.toLowerCase();
