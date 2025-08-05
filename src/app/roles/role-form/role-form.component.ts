@@ -17,6 +17,8 @@ export class RoleFormComponent implements OnInit {
   error = '';
   isEditMode = false;
   roleId?: number;
+  Math = Math; // Make Math available in template
+  private roleData: any = null; // Store role data until permissions are loaded
 
   constructor(
     private fb: FormBuilder,
@@ -47,6 +49,12 @@ export class RoleFormComponent implements OnInit {
       next: (response: any) => {
         this.availablePermissions = response.data;
         this.initializePermissionForm();
+        
+        // If we have stored role data, populate it now that form controls exist
+        if (this.roleData) {
+          this.populateRolePermissions(this.roleData);
+          this.roleData = null; // Clear stored data
+        }
       },
       error: (error: any) => {
         this.error = 'Failed to load available permissions';
@@ -65,10 +73,15 @@ export class RoleFormComponent implements OnInit {
           description: role.description
         });
         
-        if (role.permissions) {
-          this.roleForm.patchValue({
-            permissions: role.permissions.permissions
-          });
+        // Store role data for later population when form controls are ready
+        if (role.permissions && role.permissions.permissions) {
+          if (Object.keys(this.availablePermissions).length > 0) {
+            // Form controls already exist, populate immediately
+            this.populateRolePermissions(role);
+          } else {
+            // Store for later when available permissions are loaded
+            this.roleData = role;
+          }
         }
         
         this.loading = false;
@@ -144,5 +157,40 @@ export class RoleFormComponent implements OnInit {
     Object.keys(moduleGroup.controls).forEach(control => {
       moduleGroup.get(control)?.setValue(value);
     });
+  }
+
+  onViewPermissionChange(module: string, event: any): void {
+    const isChecked = event.target.checked;
+    
+    // If View is unchecked, uncheck all other permissions for this module
+    if (!isChecked) {
+      const moduleGroup = this.roleForm.get(`permissions.${module}`) as FormGroup;
+      moduleGroup.get('can_create')?.setValue(false);
+      moduleGroup.get('can_edit')?.setValue(false);
+      moduleGroup.get('can_delete')?.setValue(false);
+      moduleGroup.get('can_export')?.setValue(false);
+    }
+  }
+
+  private populateRolePermissions(role: any): void {
+    if (role.permissions && role.permissions.permissions) {
+      const permissionsData = role.permissions.permissions;
+      const permissionGroup = this.roleForm.get('permissions') as FormGroup;
+      
+      // Iterate through each module and set the permission values
+      Object.keys(permissionsData).forEach(module => {
+        const moduleGroup = permissionGroup.get(module) as FormGroup;
+        if (moduleGroup) {
+          const modulePermissions = permissionsData[module];
+          moduleGroup.patchValue({
+            can_view: modulePermissions.can_view || false,
+            can_create: modulePermissions.can_create || false,
+            can_edit: modulePermissions.can_edit || false,
+            can_delete: modulePermissions.can_delete || false,
+            can_export: modulePermissions.can_export || false
+          });
+        }
+      });
+    }
   }
 } 

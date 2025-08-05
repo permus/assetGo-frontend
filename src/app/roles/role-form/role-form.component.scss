@@ -1,33 +1,150 @@
-// Role Form Component Styles
+// Asset Create page styling to match the design
 
-.permissions-table {
-  border-collapse: separate;
-  border-spacing: 0;
+.role-create-page {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.permissions-table th {
-  position: sticky;
-  top: 0;
-  background-color: #f9fafb;
-  z-index: 10;
-}
-
-.checkbox-cell {
-  text-align: center;
-  vertical-align: middle;
-}
-
-.form-section {
-  background: white;
-  border-radius: 0.5rem;
+.section-card {
+  background: #fff;
+  border-radius: 1.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
 }
 
-.form-input {
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1f2937;
 }
 
-.form-input:focus {
+.input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 0.875rem;
+  font-size: 1rem;
+  background: #ffffff;
+  transition: all 0.2s ease-in-out;
+  
+  &::placeholder {
+    color: #9ca3af;
+  }
+}
+
+.input:focus {
+  outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: #ffffff;
+}
+
+.input.border-red-300 {
+  border-color: #fca5a5;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+// Permissions table styling
+.permissions-table {
+  .permission-checkbox {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #d1d5db;
+    transition: all 0.2s ease-in-out;
+    
+    &:checked {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+}
+
+.module-row {
+  transition: all 0.15s ease-in-out;
+  
+  &:hover {
+    background-color: #f8fafc;
+  }
+}
+
+.toggle-all-btn {
+  color: #3b82f6;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+  
+  &:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .role-create-page {
+    padding: 1rem;
+  }
+  
+  .section-card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  // Make permissions table scrollable on mobile
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+// Animation for smooth transitions
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Custom button styles to match Asset Create
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  
+  &:hover {
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  &:disabled {
+    background: #9ca3af;
+    box-shadow: none;
+    transform: none;
+  }
 } 

@@ -1,0 +1,65 @@
+// Role Delete Confirmation Modal Styles
+
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+}
+
+.modal-container {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+// Custom scrollbar for modal content
+.modal-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.modal-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.modal-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+// Button hover effects
+.delete-button {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+// Loading state
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive design
+@media (max-width: 640px) {
+  .modal-container {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+}

@@ -351,4 +351,14 @@
       </div>
     </div>
   </div>
-</div> 
+</div>
+
+<!-- Delete Confirmation Modal -->
+<app-role-delete-confirmation-modal
+  [isOpen]="showDeleteModal"
+  [roleName]="roleToDelete?.name || ''"
+  [roleId]="roleToDelete?.id || null"
+  [usersCount]="roleToDelete?.users_count || 0"
+  (closeModal)="closeDeleteModal()"
+  (confirmDelete)="confirmDeleteRole($event)">
+</app-role-delete-confirmation-modal>

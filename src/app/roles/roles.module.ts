@@ -9,7 +9,6 @@ import { RoleFormComponent } from './role-form/role-form.component';
 
 @NgModule({
   declarations: [
-    RoleListComponent,
     RoleFormComponent
   ],
   imports: [
@@ -17,7 +16,8 @@ import { RoleFormComponent } from './role-form/role-form.component';
     ReactiveFormsModule,
     FormsModule,
     RouterModule,
-    RolesRoutingModule
+    RolesRoutingModule,
+    RoleListComponent
   ]
 })
-export class RolesModule { } 
+export class RolesModule { }

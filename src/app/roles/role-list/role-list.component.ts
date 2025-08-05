@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RoleService, Role } from '../services/role.service';
+import { RoleDeleteConfirmationModalComponent } from '../components/role-delete-confirmation-modal/role-delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-role-list',
   templateUrl: './role-list.component.html',
   styleUrls: ['./role-list.component.scss'],
-  standalone: false
+  standalone: true,
+  imports: [CommonModule, RoleDeleteConfirmationModalComponent]
 })
 export class RoleListComponent implements OnInit {
   roles: Role[] = [];
@@ -24,6 +27,10 @@ export class RoleListComponent implements OnInit {
   
   // View type
   viewType: 'grid' | 'list' = 'grid';
+  
+  // Delete modal
+  showDeleteModal = false;
+  roleToDelete: Role | null = null;
   
   // Sort options
   sortOptions = [
@@ -69,17 +76,28 @@ export class RoleListComponent implements OnInit {
   }
 
   deleteRole(role: Role): void {
-    if (confirm(`Are you sure you want to delete the role "${role.name}"?`)) {
-      this.roleService.deleteRole(role.id).subscribe({
-        next: () => {
-          this.loadRoles();
-        },
-        error: (error: any) => {
-          console.error('Error deleting role:', error);
-          alert('Failed to delete role');
-        }
-      });
-    }
+    this.roleToDelete = role;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.roleToDelete = null;
+  }
+
+  confirmDeleteRole(data: { roleId: number, reason: string }): void {
+    this.roleService.deleteRole(data.roleId).subscribe({
+      next: () => {
+        this.loadRoles();
+        this.closeDeleteModal();
+        // You could add a success notification here
+      },
+      error: (error: any) => {
+        console.error('Error deleting role:', error);
+        // You could add an error notification here instead of alert
+        alert('Failed to delete role');
+      }
+    });
   }
 
   getPermissionSummary(role: Role): string {
