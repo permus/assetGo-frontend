@@ -38,6 +38,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   // Loading states
   loading = false;
+  exportingExcel = false;
   error = '';
 
   showMenu = false;
@@ -588,6 +589,32 @@ export class AssetListComponent implements OnInit, OnDestroy {
       const title = this.showingArchived ? 'Archived Assets Export Report' : 'Asset Export Report';
       this.pdfExportService.exportAssetsToPdf(this.assetList, title);
       this.showMenu = false; // Close the dropdown menu
+    } else {
+      console.log('No assets to export');
+    }
+  }
+
+  exportToExcel() {
+    if (this.assetList.length > 0) {
+      this.exportingExcel = true;
+      this.assetService.exportAssetsToExcel(this.showingArchived).subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          const filename = this.showingArchived ? 'archived-assets-export.xlsx' : 'assets-export.xlsx';
+          link.download = filename;
+          link.click();
+          window.URL.revokeObjectURL(url);
+          this.exportingExcel = false;
+          this.showMenu = false; // Close the dropdown menu
+        },
+        error: (error) => {
+          console.error('Error exporting to Excel:', error);
+          this.exportingExcel = false;
+          // You can add user notification here if needed
+        }
+      });
     } else {
       console.log('No assets to export');
     }

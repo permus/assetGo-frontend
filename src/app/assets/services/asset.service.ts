@@ -70,6 +70,15 @@ export class AssetService {
     });
   }
 
+  // Export assets to Excel
+  exportAssetsToExcel(archived: boolean = false): Observable<Blob> {
+    const params = archived ? '?archived=1' : '';
+    return this.http.get(`${this.baseUrl}/assets/export-excel${params}`, {
+      responseType: 'blob',
+      ...this.getAuthHeaders()
+    });
+  }
+
   // Archive asset
   archiveAsset(id: number | string, data: any = {}): Observable<any> {
     return this.http.post(`${this.baseUrl}/assets/${id}/archive`, data, this.getAuthHeaders());
