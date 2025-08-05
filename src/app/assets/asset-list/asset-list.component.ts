@@ -593,6 +593,29 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
+  exportToExcel() {
+    if (this.assetList.length > 0) {
+      this.assetService.exportAssetsToExcel(this.showingArchived).subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          const filename = this.showingArchived ? 'archived-assets-export.xlsx' : 'assets-export.xlsx';
+          link.download = filename;
+          link.click();
+          window.URL.revokeObjectURL(url);
+          this.showMenu = false; // Close the dropdown menu
+        },
+        error: (error) => {
+          console.error('Error exporting to Excel:', error);
+          // You can add user notification here if needed
+        }
+      });
+    } else {
+      console.log('No assets to export');
+    }
+  }
+
   public getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
       'Active': 'green',
