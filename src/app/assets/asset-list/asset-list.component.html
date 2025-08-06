@@ -703,6 +703,14 @@
     </div>
   </div>
 
+  <!-- Pagination -->
+  <app-pagination
+    *ngIf="assetList.length > 0 || pagination.total > 0"
+    [pagination]="pagination"
+    (pageChange)="onPageChange($event)"
+    (perPageChange)="onPerPageChange($event)">
+  </app-pagination>
+
   <!-- Archive Confirmation Modal -->
   <app-archive-confirmation-modal
     [isOpen]="showArchiveConfirmationModal"

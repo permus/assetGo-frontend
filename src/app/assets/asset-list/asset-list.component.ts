@@ -10,12 +10,13 @@ import { DeleteConfirmationModalComponent } from '../components/delete-confirmat
 import { RestoreConfirmationModalComponent } from '../components/restore-confirmation-modal/restore-confirmation-modal.component';
 import { PdfExportService } from '../../shared/services/pdf-export.service';
 import { RouterModule } from '@angular/router';
+import { PaginationComponent, PaginationData } from '../../shared/components/pagination/pagination.component';
 import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule, PaginationComponent],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
@@ -115,7 +116,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   openAssetMenuId: number | null = null;
   
   // Pagination
-  pagination = {
+  pagination: PaginationData = {
     current_page: 1,
     last_page: 1,
     per_page: 20,
@@ -809,5 +810,22 @@ export class AssetListComponent implements OnInit, OnDestroy {
     navigator.clipboard.writeText(publicUrl).then(() => {
       console.log('Public URL copied to clipboard');
     });
+  }
+
+  /**
+   * Handle pagination page change
+   */
+  onPageChange(page: number): void {
+    this.currentFilters.page = page;
+    this.loadAssets();
+  }
+
+  /**
+   * Handle pagination per page change
+   */
+  onPerPageChange(perPage: number): void {
+    this.currentFilters.per_page = perPage;
+    this.currentFilters.page = 1; // Reset to first page when changing per page
+    this.loadAssets();
   }
 }
