@@ -1,0 +1,109 @@
+<!-- Import Progress Popup -->
+<div *ngIf="state.showProgressBox" class="fixed bottom-6 right-6 bg-white rounded-xl shadow-2xl border border-gray-200 p-6 w-[420px] z-50">
+  <div class="flex items-start justify-between mb-4">
+    <div class="flex items-center">
+      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+      </div>
+      <div class="flex-1">
+        <h3 class="font-semibold text-gray-900">Asset Import</h3>
+        <p class="text-sm text-gray-600">{{ state.progressMessage }}</p>
+        <div *ngIf="state.importResults?.file_name" class="mt-2">
+          <p class="text-xs text-gray-500 truncate">{{ state.importResults.file_name }}</p>
+          <p class="text-xs text-gray-500" *ngIf="state.importResults?.total_assets">
+            {{ state.importResults.total_assets }} assets to process
+          </p>
+        </div>
+      </div>
+    </div>
+    <button *ngIf="state.isCompleted" (click)="closeProgressBox()" class="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="mb-4">
+    <div class="flex justify-between text-sm text-gray-600 mb-2">
+      <span>Progress</span>
+      <span>{{ state.progressPercentage }}%</span>
+    </div>
+    <div class="w-full bg-gray-200 rounded-full h-2">
+      <div class="h-2 rounded-full transition-all duration-300"
+           [class.bg-blue-600]="!state.isCompleted"
+           [class.bg-green-600]="state.isCompleted"
+           [style.width.%]="state.progressPercentage">
+      </div>
+    </div>
+  </div>
+
+  <!-- Processing Status (when not completed) -->
+  <div class="flex items-center" *ngIf="!state.isCompleted">
+    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-blue" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <span class="text-sm text-gray-600">{{ state.progressMessage }}</span>
+  </div>
+
+  <!-- Completion Report -->
+  <div *ngIf="state.isCompleted === true" class="space-y-4">
+    <!-- Summary Header -->
+    <div class="flex items-center">
+      <svg class="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      <span class="text-sm font-medium text-green-600">Import Complete!</span>
+    </div>
+
+    <!-- Import Statistics -->
+    <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+      <div class="grid grid-cols-3 gap-2 text-xs">
+        <div class="text-center">
+          <div class="font-semibold text-green-700">{{ state.importResults?.successful_imports || 0 }}</div>
+          <div class="text-gray-600">Successful</div>
+        </div>
+        <div class="text-center">
+          <div class="font-semibold text-red-700">{{ state.importResults?.failed_imports || 0 }}</div>
+          <div class="text-gray-600">Failed</div>
+        </div>
+        <div class="text-center">
+          <div class="font-semibold text-gray-700">{{ state.importResults?.total_assets || 0 }}</div>
+          <div class="text-gray-600">Total</div>
+        </div>
+      </div>
+
+      <!-- Failed Imports Actions -->
+      <div *ngIf="state.importResults?.failed_imports > 0" class="pt-2 border-t border-gray-200">
+        <button 
+          (click)="downloadFailedImportsCSV()"
+          class="w-full text-xs bg-red-50 hover:bg-red-100 text-red-700 px-2 py-1 rounded transition-colors flex items-center justify-center mb-2">
+          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+          </svg>
+          Download Failed Imports CSV
+        </button>
+      </div>
+      
+      <!-- Go to Asset List Button -->
+      <div class="pt-2 border-t border-gray-200">
+        <button 
+          (click)="goToAssetList()"
+          class="w-full text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 px-2 py-1 rounded transition-colors flex items-center justify-center">
+          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          Go to Asset List
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job ID for debugging/tracking -->
+  <div *ngIf="state.currentJobId" class="mt-3 pt-3 border-t border-gray-100">
+    <p class="text-xs text-gray-400 font-mono">Job ID: {{ state.currentJobId }}</p>
+  </div>
+</div>
