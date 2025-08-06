@@ -79,6 +79,27 @@ export class AssetService {
     });
   }
 
+  // Bulk import assets from Excel
+  importBulkExcel(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const token = this.authService.getToken();
+    const headers: { [header: string]: string } = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return this.http.post(`${this.baseUrl}/assets/import-bulk-excel`, formData, {
+      headers
+    });
+  }
+
+  // Get import progress
+  getImportProgress(jobId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/assets/import-progress/${jobId}`, this.getAuthHeaders());
+  }
+
   // Archive asset
   archiveAsset(id: number | string, data: any = {}): Observable<any> {
     return this.http.post(`${this.baseUrl}/assets/${id}/archive`, data, this.getAuthHeaders());
