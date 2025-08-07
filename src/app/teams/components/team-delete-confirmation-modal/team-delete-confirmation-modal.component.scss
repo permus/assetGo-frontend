@@ -1,0 +1,19 @@
+// Team delete confirmation modal styles
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
