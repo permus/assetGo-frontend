@@ -1,0 +1,122 @@
+.team-list-page {
+  // Styles for the team list page will go here
+
+  .team-card {
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px 0 rgba(16,30,54,0.08);
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #bfdbfe;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s;
+  }
+
+  .team-card hr {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-color: #e5e7eb;
+  }
+
+  .team-card-header {
+    background: #e0edff;
+    height: 8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden;
+  }
+
+  // Dropdown animations
+  .dropdown-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  .dropdown-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .dropdown-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .dropdown-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  // Hover effects
+  .team-card:hover {
+    box-shadow: 0 4px 12px 0 rgba(16,30,54,0.12);
+  }
+
+  // Statistics cards
+  .stat-card {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+  }
+
+  // Search input focus
+  .search-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  // Button hover effects
+  .btn-primary {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  // Table row hover
+  .table-row:hover {
+    background-color: #f9fafb;
+  }
+
+  // Loading spinner
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .statistics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .statistics-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
