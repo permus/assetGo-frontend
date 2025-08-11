@@ -1,0 +1,120 @@
+<div class="filters-section">
+  <div class="filters-container" [formGroup]="filterForm">
+    <!-- Search Input -->
+    <div class="search-input">
+      <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input 
+        class="search-field"
+        type="text"
+        formControlName="search"
+        placeholder="Search work orders..."
+        (input)="onSearch()">
+    </div>
+
+    <!-- Filter Dropdowns -->
+    <div class="filter-dropdowns">
+      <!-- Status Dropdown -->
+      <div class="filter-dropdown">
+        <button 
+          type="button"
+          class="filter-button"
+          (click)="toggleStatusDropdown()">
+          <span>{{ getStatusLabel() }}</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        <div class="dropdown-menu" [class.show]="showStatusDropdown">
+          <div 
+            *ngFor="let option of statusOptions" 
+            class="dropdown-item"
+            (click)="selectStatus(option.value)">
+            {{ option.label }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Priority Dropdown -->
+      <div class="filter-dropdown">
+        <button 
+          type="button"
+          class="filter-button"
+          (click)="togglePriorityDropdown()">
+          <span>{{ getPriorityLabel() }}</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        <div class="dropdown-menu" [class.show]="showPriorityDropdown">
+          <div 
+            *ngFor="let option of priorityOptions" 
+            class="dropdown-item"
+            (click)="selectPriority(option.value)">
+            {{ option.label }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Button -->
+    <button 
+      type="button"
+      class="advanced-button"
+      [class.active]="showAdvanced"
+      (click)="toggleAdvanced()">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+      </svg>
+      Advanced
+      <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showAdvanced" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </button>
+
+    <!-- Advanced Options -->
+    <div class="advanced-options" [class.show]="showAdvanced">
+      <div class="advanced-section">
+        <h4>Sort By</h4>
+        <div class="sort-options">
+          <button 
+            *ngFor="let option of sortOptions"
+            type="button"
+            class="sort-option"
+            [class.active]="sortBy === option.value"
+            (click)="setSortBy(option.value)">
+            {{ option.label }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="advanced-section">
+        <h4>Sort Order</h4>
+        <button 
+          type="button"
+          class="sort-order-button"
+          (click)="toggleSortOrder()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path *ngIf="sortOrder === 'asc'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+            <path *ngIf="sortOrder === 'desc'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+          </svg>
+          {{ sortOrder === 'asc' ? 'Ascending' : 'Descending' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Clear Filters -->
+    <button 
+      type="button"
+      class="clear-button"
+      (click)="clearFilters()">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      Clear
+    </button>
+  </div>
+</div>
