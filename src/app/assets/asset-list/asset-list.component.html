@@ -535,48 +535,59 @@
       <!-- Card Body -->
       <div class="flex-1 flex flex-col justify-between p-6 pt-4">
         <div>
-          <div *ngIf="asset.parent" class="mb-2">
-            <a [routerLink]="['/assets/preview', asset.parent.id]" class="text-blue-600 hover:underline text-xs">
-              Parent: {{ asset.parent.name }} ({{ asset.parent.asset_id }})
-            </a>
+          <!-- Asset ID -->
+          <div class="text-sm text-gray-500 mb-2">
+            <span class="font-semibold text-gray-700">ID:</span> {{ asset.asset_id || asset.id }}
           </div>
+          
+          <!-- Asset Name -->
           <div
-            class="font-semibold text-lg text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors"
+            class="font-semibold text-lg text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors"
             [class.cursor-pointer]="!showingArchived"
             [class.hover:text-blue-600]="!showingArchived"
             [class.cursor-default]="showingArchived"
             (click)="!showingArchived && viewAsset(asset)">
             {{ asset.name || 'Unnamed Asset' }}
           </div>
-          <div class="text-sm text-gray-500 mb-1">{{ asset.asset_id || asset.id }} • {{ asset.type || 'General' }}</div>
-          <div class="flex items-center text-xs text-gray-400 mb-2">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 12.414a4 4 0 10-1.414 1.414l4.243 4.243a1 1 0 001.414-1.414z" />
-            </svg>
-            <span>{{ asset.location?.name || 'No location' }}</span>
+          
+          <!-- Asset Category Type -->
+          <div class="text-sm text-gray-700 mb-1" *ngIf="asset.category?.name">
+            <span class="font-medium text-gray-600">Category:</span> {{ asset.category.name }}
           </div>
-          <hr class="my-3 border-gray-200">
-          <div class="flex items-center text-sm text-gray-700 mb-1">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8m8-8h-8m8 0a8 8 0 11-16 0 8 8 0 0116 0z" />
-            </svg>
-            <span>Value <b *ngIf="asset.purchase_price !== null">${{ asset.purchase_price | number:'1.0-0' }}</b><b *ngIf="asset.purchase_price === null">N/A</b></span>
+          
+          <!-- Asset Type -->
+          <div class="text-sm text-gray-700 mb-1" *ngIf="asset.type || asset.asset_type?.name">
+            <span class="font-medium text-gray-600">Type:</span> {{ asset.asset_type?.name || asset.type || 'General' }}
           </div>
-          <div class="flex items-center text-sm text-gray-700 mb-1" *ngIf="asset.purchase_date">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>Purchase Date <b>{{ asset.purchase_date | date:'MMM d, y' }}</b></span>
+          
+          <!-- Location with Parents -->
+          <div class="text-sm text-gray-700 mb-2" *ngIf="asset.location_hierarchy && asset.location_hierarchy.length > 0">
+            <span class="font-medium text-gray-600">Location:</span>
+            <div class="text-xs text-gray-500 mt-1">
+              <span *ngFor="let loc of asset.location_hierarchy; let last = last">
+                {{ loc.name }}<span *ngIf="!last"> → </span>
+              </span>
+            </div>
           </div>
-        </div>
-        <!-- Health Score Bar -->
-        <div class="mt-4">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs text-gray-500">Health Score</span>
-            <span class="text-xs font-semibold text-gray-700">{{ asset.health_score || 100 }}%</span>
+          
+          <!-- Description -->
+          <div class="text-sm text-gray-700 mb-2" *ngIf="asset.description">
+            <span class="font-medium text-gray-600">Description:</span> {{ asset.description }}
           </div>
-          <div class="w-full h-2 bg-gray-200 rounded-full">
-            <div class="h-2 rounded-full" [ngClass]="(asset.health_score || 100) < 50 ? 'bg-red-500' : 'bg-green-500'" [style.width.%]="asset.health_score || 100"></div>
+          
+          <!-- Manufacturer -->
+          <div class="text-sm text-gray-700 mb-1" *ngIf="asset.manufacturer">
+            <span class="font-medium text-gray-600">Manufacturer:</span> {{ asset.manufacturer }}
+          </div>
+          
+          <!-- Model -->
+          <div class="text-sm text-gray-700 mb-1" *ngIf="asset.model">
+            <span class="font-medium text-gray-600">Model:</span> {{ asset.model }}
+          </div>
+          
+          <!-- Capacity -->
+          <div class="text-sm text-gray-700 mb-1" *ngIf="asset.capacity">
+            <span class="font-medium text-gray-600">Capacity:</span> {{ asset.capacity }}
           </div>
         </div>
       </div>
@@ -596,11 +607,11 @@
             (change)="toggleSelectAllAssets()"
             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
         </div>
-        <div class="col-span-3">Asset</div>
-        <div class="col-span-2">Type & Category</div>
+        <div class="col-span-2">Asset ID & Name</div>
+        <div class="col-span-2">Category & Type</div>
         <div class="col-span-2">Location</div>
-        <div class="col-span-1">Status</div>
-        <div class="col-span-2">Financial</div>
+        <div class="col-span-2">Description</div>
+        <div class="col-span-2">Manufacturer & Model</div>
         <div class="col-span-1">Actions</div>
       </div>
     </div>
@@ -619,8 +630,8 @@
               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
           </div>
 
-          <!-- Asset Info -->
-          <div class="col-span-3">
+          <!-- Asset ID & Name -->
+          <div class="col-span-2">
             <div class="flex items-center space-x-3">
               <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -638,38 +649,47 @@
             </div>
           </div>
 
-          <!-- Type & Category -->
+          <!-- Category & Type -->
           <div class="col-span-2">
-            <div class="text-sm text-gray-900">{{asset.type || 'Standard Asset'}}</div>
-            <div class="text-sm text-gray-500">{{asset.category?.name || 'General'}}</div>
+            <div class="text-sm text-gray-900">{{asset.category?.name || 'General'}}</div>
+            <div class="text-sm text-gray-500">{{asset.asset_type?.name || asset.type || 'Standard Asset'}}</div>
           </div>
 
           <!-- Location -->
           <div class="col-span-2">
-            <div class="flex items-center space-x-1">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              <span class="text-sm text-gray-600">{{asset.location?.name || 'No location'}}</span>
+            <div class="text-sm text-gray-600" *ngIf="asset.location_hierarchy && asset.location_hierarchy.length > 0">
+              <div *ngFor="let loc of asset.location_hierarchy; let last = last">
+                {{ loc.name }}<span *ngIf="!last"> → </span>
+              </div>
+            </div>
+            <div class="text-sm text-gray-400" *ngIf="!asset.location_hierarchy || asset.location_hierarchy.length === 0">
+              No location
             </div>
           </div>
 
-          <!-- Status -->
-          <div class="col-span-1">
-            <span
-              [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getStatusColor(asset.asset_status?.name || asset.status || 'Active') + '-100 text-' + getStatusColor(asset.asset_status?.name || asset.status || 'Active') + '-800'">
-              {{asset.asset_status?.name || asset.status || 'Active'}}
-            </span>
-          </div>
-
-          <!-- Financial -->
+          <!-- Description -->
           <div class="col-span-2">
-            <div class="text-sm text-gray-900">
-              {{asset.purchase_price ? (asset.purchase_price | currency:'USD':'symbol':'1.0-0') : 'N/A'}}
+            <div class="text-sm text-gray-900" *ngIf="asset.description">
+              {{asset.description}}
             </div>
-            <div class="text-sm text-gray-500">
-              Health: {{asset.health_score || 100}}%
+            <div class="text-sm text-gray-400" *ngIf="!asset.description">
+              No description
+            </div>
+          </div>
+
+          <!-- Manufacturer & Model -->
+          <div class="col-span-2">
+            <div class="text-sm text-gray-900" *ngIf="asset.manufacturer">
+              <span class="font-medium">MFG:</span> {{asset.manufacturer}}
+            </div>
+            <div class="text-sm text-gray-500" *ngIf="asset.model">
+              <span class="font-medium">Model:</span> {{asset.model}}
+            </div>
+            <div class="text-sm text-gray-500" *ngIf="asset.capacity">
+              <span class="font-medium">Capacity:</span> {{asset.capacity}}
+            </div>
+            <div class="text-sm text-gray-400" *ngIf="!asset.manufacturer && !asset.model && !asset.capacity">
+              No details
             </div>
           </div>
 
