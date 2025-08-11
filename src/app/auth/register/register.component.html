@@ -5,14 +5,7 @@
     <div class="text-center">
       <div class="flex justify-center mb-6">
         <div class="flex items-center space-x-3">
-          <div class="relative">
-            <div class="w-10 h-10 bg-blue-600 rounded-full"></div>
-            <div class="absolute top-1 left-1 w-2 h-2 bg-blue-400 rounded-full"></div>
-            <div class="absolute top-2 right-1 w-2 h-2 bg-blue-400 rounded-full"></div>
-            <div class="absolute bottom-1 left-2 w-2 h-2 bg-blue-400 rounded-full"></div>
-            <div class="absolute bottom-1 right-2 w-2 h-2 bg-blue-400 rounded-full"></div>
-          </div>
-          <span class="text-2xl font-bold text-gray-900">AssetGo</span>
+          <img [src]="'images/logo.png'" alt="AssetGo Logo" class="h-20 w-auto">
         </div>
       </div>
       <p class="text-gray-600">Enterprise Asset Management System</p>
@@ -29,19 +22,19 @@
             </svg>
           </div>
         </div>
-        
+
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Registration Successful!</h2>
         <p class="text-gray-600 mb-6 leading-relaxed">
-          User registered successfully. Please check your email to verify your account.
+          User registered successfully. Please login now.
         </p>
-        
+
         <!-- Countdown -->
         <div class="bg-blue-50 rounded-lg p-4 mb-6">
           <p class="text-blue-800 text-sm">
             Redirecting to login page in <span class="font-bold">{{ countdown }}</span> seconds
           </p>
         </div>
-        
+
         <!-- Manual redirect button -->
         <button
           (click)="toggleMode()"
@@ -60,13 +53,13 @@
 
       <!-- Tab Buttons -->
       <div class="flex mb-8 bg-gray-100 rounded-lg p-1">
-        <button 
+        <button
           class="flex-1 py-2 px-4 text-center font-medium rounded-md text-gray-600 hover:text-gray-800 transition-all cursor-pointer"
           type="button"
           (click)="toggleMode()">
           Sign In
         </button>
-        <button 
+        <button
           class="flex-1 py-2 px-4 text-center font-medium rounded-md bg-blue-600 text-white transition-all cursor-pointer"
           type="button">
           Sign Up
