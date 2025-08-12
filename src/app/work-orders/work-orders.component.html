@@ -1,0 +1,194 @@
+<div class="work-orders-container">
+  <!-- Success Message -->
+  <div *ngIf="showSuccessMessage" class="success-message">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <span>Work order created successfully!</span>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="showErrorMessage" class="error-message">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    </svg>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="header">
+    <h1>Work Order Management</h1>
+    <p>Streamline maintenance workflows with intelligent work order tracking and scheduling.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab" 
+         [class.active]="activeTab === 'work-orders'"
+         (click)="setActiveTab('work-orders')">
+      Work Orders
+    </div>
+    <div class="tab" 
+         [class.active]="activeTab === 'analytics'"
+         (click)="setActiveTab('analytics')">
+      Analytics
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="work-orders-content" [class.active]="activeTab === 'work-orders'">
+      <app-work-order-stats></app-work-order-stats>
+      
+      <div class="create-button-container">
+        <button class="create-button" (click)="openCreateModal()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Create Work Order
+        </button>
+      </div>
+      
+      <app-work-order-filters (filtersChanged)="onFiltersChanged($event)"></app-work-order-filters>
+      <app-work-order-list></app-work-order-list>
+    </div>
+
+    <div class="analytics-content" [class.active]="activeTab === 'analytics'">
+      <div class="analytics-placeholder">
+        <h3>Analytics Dashboard</h3>
+        <p>Work order analytics and insights will be displayed here.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Work Order Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="closeCreateModal($event)">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <svg class="header-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      </svg>
+      <h2>Create New Work Order</h2>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()">
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg class="section-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h3>Basic Information</h3>
+          </div>
+          
+          <div class="form-row full-width">
+            <div class="form-group">
+              <label>Title <span class="required">*</span></label>
+              <input 
+                type="text" 
+                formControlName="title" 
+                placeholder="Enter work order title">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Priority</label>
+              <select formControlName="priority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Due Date</label>
+              <input 
+                type="datetime-local" 
+                formControlName="due_date">
+            </div>
+          </div>
+          
+          <div class="form-row full-width">
+            <div class="form-group">
+              <label>Description</label>
+              <textarea 
+                formControlName="description" 
+                placeholder="Enter work order description"></textarea>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Estimated Hours</label>
+              <input
+                type="number"
+                formControlName="estimated_hours"
+                placeholder="0"
+                min="0"
+                step="0.5">
+            </div>
+
+            <div class="form-group">
+              <label>Notes</label>
+              <textarea
+                formControlName="notes"
+                placeholder="Additional notes"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Assignment & Location Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg class="section-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <h3>Assignment & Location</h3>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Asset ID (Optional)</label>
+              <input
+                type="number"
+                formControlName="asset_id"
+                placeholder="Enter asset ID">
+            </div>
+            
+            <div class="form-group">
+              <label>Location ID (Optional)</label>
+              <input
+                type="number"
+                formControlName="location_id"
+                placeholder="Enter location ID">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Assign To User ID (Optional)</label>
+              <input
+                type="number"
+                formControlName="assigned_to"
+                placeholder="Enter user ID">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeCreateModal()" [disabled]="isLoading">Cancel</button>
+      <button class="btn btn-primary" (click)="onSubmit()" [disabled]="isLoading">
+        <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        {{ isLoading ? 'Creating...' : 'Create Work Order' }}
+      </button>
+    </div>
+  </div>
+</div>
