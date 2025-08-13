@@ -22,18 +22,18 @@
         
         <div class="form-row">
           <div class="form-field">
-            <label for="partNumber" class="field-label">
+            <label for="part_number" class="field-label">
               Part Number <span class="required">*</span>
             </label>
             <input 
               type="text" 
-              id="partNumber" 
-              formControlName="partNumber"
+              id="part_number" 
+              formControlName="part_number"
               class="form-input"
-              [class.error]="partForm.get('partNumber')?.errors && partForm.get('partNumber')?.touched"
+              [class.error]="partForm.get('part_number')?.errors && partForm.get('part_number')?.touched"
               placeholder="Enter part number">
-            <div class="error-message" *ngIf="getFieldError('partNumber')">
-              {{ getFieldError('partNumber') }}
+            <div class="error-message" *ngIf="getFieldError('part_number')">
+              {{ getFieldError('part_number') }}
             </div>
           </div>
           
@@ -66,57 +66,13 @@
         
         <div class="form-row">
           <div class="form-field">
-            <label for="manufacturer" class="field-label">Manufacturer</label>
-            <input 
-              type="text" 
-              id="manufacturer" 
-              formControlName="manufacturer"
-              class="form-input"
-              placeholder="Enter manufacturer">
-          </div>
-          
-          <div class="form-field">
-            <label for="category" class="field-label">Category</label>
-            <input 
-              type="text" 
-              id="category" 
-              formControlName="category"
-              class="form-input"
-              placeholder="Enter category">
-          </div>
-        </div>
-      </div>
-
-      <!-- Pricing & Details Section -->
-      <div class="form-section">
-        <div class="section-header">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-          </svg>
-          <h3 class="section-title">Pricing & Details</h3>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-field">
-            <label for="unitOfMeasure" class="field-label">Unit of Measure</label>
-            <input 
-              type="text" 
-              id="unitOfMeasure" 
-              formControlName="unitOfMeasure"
-              class="form-input"
-              placeholder="each">
-          </div>
-          
-          <div class="form-field">
-            <label for="unitCost" class="field-label">Unit Cost</label>
+            <label for="category_id" class="field-label">Category ID</label>
             <input 
               type="number" 
-              id="unitCost" 
-              formControlName="unitCost"
+              id="category_id" 
+              formControlName="category_id"
               class="form-input"
-              placeholder="0.00"
-              step="0.01"
-              min="0">
+              placeholder="Enter category ID">
           </div>
           
           <div class="form-field">
@@ -127,6 +83,46 @@
               formControlName="barcode"
               class="form-input"
               placeholder="Enter barcode">
+          </div>
+        </div>
+      </div>
+
+      <!-- Specifications Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+          </svg>
+          <h3 class="section-title">Specifications</h3>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label for="uom" class="field-label">
+              Unit of Measure <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="uom" 
+              formControlName="uom"
+              class="form-input"
+              [class.error]="partForm.get('uom')?.errors && partForm.get('uom')?.touched"
+              placeholder="e.g., pcs, kg, m">
+            <div class="error-message" *ngIf="getFieldError('uom')">
+              {{ getFieldError('uom') }}
+            </div>
+          </div>
+          
+          <div class="form-field">
+            <label for="unit_cost" class="field-label">Unit Cost</label>
+            <input 
+              type="number" 
+              id="unit_cost" 
+              formControlName="unit_cost"
+              class="form-input"
+              placeholder="0.00"
+              step="0.01"
+              min="0">
           </div>
         </div>
       </div>
@@ -142,58 +138,26 @@
         
         <div class="form-row">
           <div class="form-field">
-            <label for="minStock" class="field-label">Min Stock</label>
+            <label for="reorder_point" class="field-label">Reorder Point</label>
             <input 
               type="number" 
-              id="minStock" 
-              formControlName="minStock"
+              id="reorder_point" 
+              formControlName="reorder_point"
               class="form-input"
               placeholder="0"
               min="0">
           </div>
           
           <div class="form-field">
-            <label for="maxStock" class="field-label">Max Stock</label>
+            <label for="reorder_qty" class="field-label">Reorder Quantity</label>
             <input 
               type="number" 
-              id="maxStock" 
-              formControlName="maxStock"
-              class="form-input"
-              placeholder="Enter max stock"
-              min="0">
-          </div>
-          
-          <div class="form-field">
-            <label for="reorderPoint" class="field-label">Reorder Point</label>
-            <input 
-              type="number" 
-              id="reorderPoint" 
-              formControlName="reorderPoint"
-              class="form-input"
-              placeholder="0"
-              min="0">
-          </div>
-          
-          <div class="form-field">
-            <label for="reorderQty" class="field-label">Reorder Qty</label>
-            <input 
-              type="number" 
-              id="reorderQty" 
-              formControlName="reorderQty"
+              id="reorder_qty" 
+              formControlName="reorder_qty"
               class="form-input"
               placeholder="1"
               min="1">
           </div>
-        </div>
-        
-        <div class="form-field">
-          <label for="notes" class="field-label">Notes</label>
-          <textarea 
-            id="notes" 
-            formControlName="notes"
-            class="form-textarea"
-            rows="3"
-            placeholder="Enter additional notes"></textarea>
         </div>
       </div>
 

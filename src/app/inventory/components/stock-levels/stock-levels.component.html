@@ -1,147 +1,621 @@
 <div class="stock-levels">
-  <!-- Summary Cards Row -->
-  <div class="summary-cards-row">
-    <div class="summary-card total-stock">
-      <div class="card-icon">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
-        </svg>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading stock levels...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    </svg>
+    <h3 class="error-title">{{ error }}</h3>
+    <button class="btn btn-primary" (click)="refreshData()">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+      </svg>
+      Retry
+    </button>
+  </div>
+
+  <!-- Stock Levels Content -->
+  <div *ngIf="!loading && !error">
+    <!-- Summary Cards Row -->
+    <div class="summary-cards-row">
+      <div class="summary-card total-items">
+        <div class="card-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-value">{{ summaryData.totalItems }}</div>
+          <div class="card-label">Total Stock Items</div>
+        </div>
       </div>
-      <div class="card-content">
-        <div class="card-value">1</div>
-        <div class="card-label">Total Stock Items</div>
+
+      <div class="summary-card total-value">
+        <div class="card-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-value">${{ summaryData.totalValue.toLocaleString() }}</div>
+          <div class="card-label">Total Inventory Value</div>
+        </div>
+      </div>
+
+      <div class="summary-card low-stock">
+        <div class="card-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-value warning">{{ summaryData.lowStockItems }}</div>
+          <div class="card-label">Low Stock Items</div>
+        </div>
+      </div>
+
+      <div class="summary-card out-of-stock">
+        <div class="card-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-value danger">{{ summaryData.outOfStockItems }}</div>
+          <div class="card-label">Out of Stock</div>
+        </div>
       </div>
     </div>
 
-    <div class="summary-card low-stock">
-      <div class="card-icon">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-        </svg>
+    <!-- Search and Filters Section -->
+    <div class="search-filters-section">
+      <div class="search-row">
+        <div class="search-container">
+          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Search parts..." 
+            class="search-input"
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()">
+        </div>
+        
+        <div class="filter-container">
+          <select 
+            class="filter-select"
+            [(ngModel)]="selectedLocationId"
+            (change)="onLocationFilterChange()">
+            <option [value]="null">All Locations</option>
+            <option *ngFor="let location of availableLocations" [value]="location.id">
+              {{ location.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-container">
+          <select 
+            class="filter-select"
+            [(ngModel)]="selectedPartId"
+            (change)="onPartFilterChange()">
+            <option [value]="null">All Parts</option>
+            <option *ngFor="let part of availableParts" [value]="part.id">
+              {{ part.part_number }} - {{ part.name }}
+            </option>
+          </select>
+        </div>
       </div>
-      <div class="card-content">
-        <div class="card-value warning">0</div>
-        <div class="card-label">Low Stock</div>
+
+      <div class="actions-row">
+        <div class="bulk-actions">
+          <button class="btn btn-primary" (click)="openAdjustmentModal()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Stock Adjustment
+          </button>
+          <button class="btn btn-secondary" (click)="openTransferModal()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+            </svg>
+            Transfer Stock
+          </button>
+          <button class="btn btn-warning" (click)="openCountModal()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            Stock Count
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="summary-card out-of-stock">
-      <div class="card-icon">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    <!-- Stock Levels Table -->
+    <div class="stock-table-container">
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th class="th-part">Part</th>
+            <th class="th-location">Location</th>
+            <th class="th-on-hand">On Hand</th>
+            <th class="th-available">Available</th>
+            <th class="th-reserved">Reserved</th>
+            <th class="th-allocated">Allocated</th>
+            <th class="th-cost">Average Cost</th>
+            <th class="th-status">Status</th>
+            <th class="th-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let stock of stockLevels">
+            <td class="part-info">
+              <div class="part-name">{{ stock.part.name }}</div>
+              <div class="part-number">{{ stock.part.part_number }}</div>
+            </td>
+            <td class="location-info">
+              <div class="location-name">{{ stock.location.name }}</div>
+              <div class="location-code" *ngIf="stock.location.code">{{ stock.location.code }}</div>
+            </td>
+            <td class="stock-quantity">
+              <span class="quantity" [class]="getStockLevelClass(stock)">
+                {{ stock.on_hand }}
+              </span>
+            </td>
+            <td class="stock-quantity">
+              <span class="quantity available">{{ stock.available }}</span>
+            </td>
+            <td class="stock-quantity">
+              <span class="quantity reserved" *ngIf="stock.reserved > 0">{{ stock.reserved }}</span>
+              <span class="quantity" *ngIf="stock.reserved === 0">-</span>
+            </td>
+            <td class="stock-quantity">
+              <span class="quantity allocated" *ngIf="stock.allocated > 0">{{ stock.allocated }}</span>
+              <span class="quantity" *ngIf="stock.allocated === 0">-</span>
+            </td>
+            <td class="stock-cost">
+              <span class="cost" *ngIf="stock.average_cost > 0">${{ stock.average_cost.toFixed(2) }}</span>
+              <span class="cost" *ngIf="stock.average_cost === 0">-</span>
+            </td>
+            <td class="stock-status">
+              <span class="status-badge" [class]="getStockStatus(stock).class">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+                {{ getStockStatus(stock).status }}
+              </span>
+            </td>
+            <td class="stock-actions">
+              <div class="action-buttons">
+                <button class="action-btn adjust" (click)="openAdjustmentModal(stock)" title="Adjust Stock">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                </button>
+                <button class="action-btn transfer" (click)="openTransferModal(stock)" title="Transfer Stock">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                  </svg>
+                </button>
+                <button class="action-btn reserve" (click)="openReserveModal(stock)" title="Reserve Stock">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                </button>
+                <button class="action-btn count" (click)="openCountModal(stock)" title="Stock Count">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                  </svg>
+                </button>
+              </div>
+              
+              <!-- Quick Release for Reserved Stock -->
+              <div class="quick-release" *ngIf="stock.reserved > 0">
+                <input 
+                  type="number" 
+                  class="release-quantity" 
+                  [max]="stock.reserved"
+                  min="1"
+                  placeholder="Qty">
+                <button class="release-btn" (click)="onReleaseStock(stock, 1)" title="Release Reserved Stock">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- No Results Message -->
+      <div *ngIf="stockLevels.length === 0" class="no-results">
+        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
-      </div>
-      <div class="card-content">
-        <div class="card-value danger">0</div>
-        <div class="card-label">Out of Stock</div>
+        <h3 class="no-results-title">No Stock Items Found</h3>
+        <p class="no-results-description">Try adjusting your search criteria or filters.</p>
       </div>
     </div>
 
-    <div class="summary-card total-value">
-      <div class="card-content">
-        <div class="card-value">AED 9</div>
-        <div class="card-label">Total Value</div>
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination">
+      <button 
+        class="pagination-btn" 
+        [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Previous
+      </button>
+      
+      <div class="pagination-pages">
+        <button 
+          *ngFor="let page of [].constructor(totalPages); let i = index"
+          class="pagination-page" 
+          [class.active]="currentPage === i + 1"
+          (click)="onPageChange(i + 1)">
+          {{ i + 1 }}
+        </button>
       </div>
+      
+      <button 
+        class="pagination-btn" 
+        [disabled]="currentPage === totalPages"
+        (click)="onPageChange(currentPage + 1)">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
     </div>
   </div>
 
-  <!-- Control Bar -->
-  <div class="control-bar">
-    <div class="search-controls">
-      <div class="search-container">
-        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-        <input type="text" placeholder="Search parts..." class="search-input">
+  <!-- Stock Adjustment Modal -->
+  <div *ngIf="showAdjustmentModal" class="modal-overlay" (click)="closeAdjustmentModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+          </svg>
+          Stock Adjustment
+        </h2>
+        <button class="close-btn" (click)="closeAdjustmentModal()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
       </div>
 
-      <div class="location-dropdown">
-        <select class="location-select">
-          <option value="">All Locations</option>
-          <option value="toilet">Toilet</option>
-          <option value="kitchen">Kitchen</option>
-          <option value="office">Office</option>
-        </select>
-        <svg class="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </div>
-    </div>
+      <form (ngSubmit)="onAdjustStock()" class="modal-form">
+        <!-- Part Information Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+            </svg>
+            <h3 class="section-title">Part Information</h3>
+          </div>
+          <div class="form-group">
+            <label for="adjustment-part" class="form-label">Part *</label>
+            <select 
+              id="adjustment-part" 
+              class="form-select"
+              [(ngModel)]="adjustmentForm.part_id"
+              name="part_id"
+              required>
+              <option value="">Select a part</option>
+              <option *ngFor="let part of availableParts" [value]="part.id">
+                {{ part.part_number }} - {{ part.name }}
+              </option>
+            </select>
+          </div>
+        </div>
 
-    <div class="action-buttons">
-      <button class="btn btn-primary">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-        </svg>
-        Create Store Room
-      </button>
-      <button class="btn btn-primary" (click)="openStockAdjustmentModal()">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Stock Adjustment
-      </button>
+        <!-- Location Details Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <h3 class="section-title">Location Details</h3>
+          </div>
+          <div class="form-group">
+            <label for="adjustment-location" class="form-label">Location *</label>
+            <select 
+              id="adjustment-location" 
+              class="form-select"
+              [(ngModel)]="adjustmentForm.location_id"
+              name="location_id"
+              required>
+              <option value="">Select a location</option>
+              <option *ngFor="let location of availableLocations" [value]="location.id">
+                {{ location.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Adjustment Information Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <h3 class="section-title">Adjustment Information</h3>
+          </div>
+          <div class="form-group">
+            <label for="adjustment-quantity" class="form-label">Adjustment Quantity *</label>
+            <input 
+              type="number" 
+              id="adjustment-quantity" 
+              class="form-input"
+              [(ngModel)]="adjustmentForm.quantity"
+              name="quantity"
+              min="0"
+              required>
+          </div>
+          <div class="form-group">
+            <label for="adjustment-reason" class="form-label">Reason *</label>
+            <select 
+              id="adjustment-reason" 
+              class="form-select"
+              [(ngModel)]="adjustmentForm.reason"
+              name="reason"
+              required>
+              <option value="">Select a reason</option>
+              <option value="receipt">Receipt</option>
+              <option value="issue">Issue</option>
+              <option value="adjustment">Adjustment</option>
+              <option value="return">Return</option>
+              <option value="damage">Damage</option>
+              <option value="expiry">Expiry</option>
+              <option value="theft">Theft</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Additional Notes Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h3 class="section-title">Additional Notes</h3>
+          </div>
+          <div class="form-group">
+            <label for="adjustment-notes" class="form-label">Notes</label>
+            <textarea 
+              id="adjustment-notes" 
+              class="form-textarea"
+              [(ngModel)]="adjustmentForm.notes"
+              name="notes"
+              rows="3"
+              placeholder="Additional notes..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeAdjustmentModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Adjust Stock
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- Inventory Table -->
-  <div class="inventory-table-container">
-    <table class="inventory-table">
-      <thead>
-        <tr>
-          <th>Part Number</th>
-          <th>Name</th>
-          <th>Location</th>
-          <th>Bin</th>
-          <th>On Hand</th>
-          <th>Reserved</th>
-          <th>Available</th>
-          <th>Status</th>
-          <th>Value</th>
-          <th>Last Counted</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="part-number">1</td>
-          <td class="part-name">
-            <div class="name-primary">part 1</div>
-            <div class="name-secondary">e2 • ews</div>
-          </td>
-          <td class="location">Toilet</td>
-          <td class="bin">-</td>
-          <td class="on-hand">3</td>
-          <td class="reserved">0</td>
-          <td class="available">3</td>
-          <td class="status">
-            <span class="status-badge in-stock">In Stock</span>
-          </td>
-          <td class="value">AED 9</td>
-          <td class="last-counted">Never</td>
-          <td class="actions">
-            <button class="action-btn edit" title="Edit">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Stock Transfer Modal -->
+  <div *ngIf="showTransferModal" class="modal-overlay" (click)="closeTransferModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Transfer Stock</h2>
+        <button class="close-btn" (click)="closeTransferModal()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="onTransferStock()" class="modal-form">
+        <div class="form-group">
+          <label for="transfer-from" class="form-label">From Location *</label>
+          <select 
+            id="transfer-from" 
+            class="form-select"
+            [(ngModel)]="transferForm.from_location_id"
+            name="from_location_id"
+            required>
+            <option value="">Select source location</option>
+            <option *ngFor="let location of availableLocations" [value]="location.id">
+              {{ location.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="transfer-to" class="form-label">To Location *</label>
+          <select 
+            id="transfer-to" 
+            class="form-select"
+            [(ngModel)]="transferForm.to_location_id"
+            name="to_location_id"
+            required>
+            <option value="">Select destination location</option>
+            <option *ngFor="let location of availableLocations" [value]="location.id">
+              {{ location.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="transfer-quantity" class="form-label">Quantity *</label>
+          <input 
+            type="number" 
+            id="transfer-quantity" 
+            class="form-input"
+            [(ngModel)]="transferForm.quantity"
+            name="quantity"
+            min="1"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="transfer-reason" class="form-label">Reason</label>
+          <input 
+            type="text" 
+            id="transfer-reason" 
+            class="form-input"
+            [(ngModel)]="transferForm.reason"
+            name="reason"
+            placeholder="Reason for transfer">
+        </div>
+
+        <div class="form-group">
+          <label for="transfer-notes" class="form-label">Notes</label>
+          <textarea 
+            id="transfer-notes" 
+            class="form-textarea"
+            [(ngModel)]="transferForm.notes"
+            name="notes"
+            rows="3"
+            placeholder="Additional notes"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="transfer-reference" class="form-label">Reference</label>
+          <input 
+            type="text" 
+            id="transfer-reference" 
+            class="form-input"
+            [(ngModel)]="transferForm.reference"
+            name="reference"
+            placeholder="Reference number or document">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeTransferModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Transfer Stock
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stock Reserve Modal -->
+  <div *ngIf="showReserveModal" class="modal-overlay" (click)="closeReserveModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Reserve Stock</h2>
+        <button class="close-btn" (click)="closeReserveModal()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="onReserveStock()" class="modal-form">
+        <div class="form-group">
+          <label for="reserve-quantity" class="form-label">Quantity to Reserve *</label>
+          <input 
+            type="number" 
+            id="reserve-quantity" 
+            class="form-input"
+            [(ngModel)]="reserveForm.quantity"
+            name="quantity"
+            min="1"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="reserve-reference" class="form-label">Reference</label>
+          <input 
+            type="text" 
+            id="reserve-reference" 
+            class="form-input"
+            [(ngModel)]="reserveForm.reference"
+            name="reference"
+            placeholder="Reference for reservation">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeReserveModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Reserve Stock
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stock Count Modal -->
+  <div *ngIf="showCountModal" class="modal-overlay" (click)="closeCountModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Stock Count</h2>
+        <button class="close-btn" (click)="closeCountModal()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="onPerformStockCount()" class="modal-form">
+        <div class="form-group">
+          <label for="count-quantity" class="form-label">Counted Quantity *</label>
+          <input 
+            type="number" 
+            id="count-quantity" 
+            class="form-input"
+            [(ngModel)]="countForm.counted_quantity"
+            name="counted_quantity"
+            min="0"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="count-notes" class="form-label">Notes</label>
+          <textarea 
+            id="count-notes" 
+            class="form-textarea"
+            [(ngModel)]="countForm.notes"
+            name="notes"
+            rows="3"
+            placeholder="Notes about the count"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeCountModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Update Count
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- Floating Action Button -->
-  <button class="fab" (click)="openStockAdjustmentModal()">
+  <button class="fab" (click)="openAdjustmentModal()" title="Stock Adjustment">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
     </svg>
   </button>
-
-  <!-- Stock Adjustment Modal -->
-  <app-stock-adjustment-modal
-    *ngIf="showStockAdjustmentModal"
-    (closeModal)="closeStockAdjustmentModal()"
-    (adjustStock)="onStockAdjustment($event)">
-  </app-stock-adjustment-modal>
 </div>

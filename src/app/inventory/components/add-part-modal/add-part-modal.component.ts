@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CreatePartRequest } from '../../../core/services/inventory-analytics.service';
 
 @Component({
   selector: 'app-add-part-modal',
@@ -11,31 +12,42 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 })
 export class AddPartModalComponent {
   @Output() closeModal = new EventEmitter<void>();
-  @Output() createPart = new EventEmitter<any>();
+  @Output() createPart = new EventEmitter<CreatePartRequest>();
 
   partForm: FormGroup;
 
   constructor(private fb: FormBuilder) {
     this.partForm = this.fb.group({
-      partNumber: ['', [Validators.required]],
+      part_number: ['', [Validators.required]],
       name: ['', [Validators.required]],
       description: [''],
-      manufacturer: [''],
-      category: [''],
-      unitOfMeasure: ['each'],
-      unitCost: [''],
-      barcode: [''],
-      minStock: [0],
-      maxStock: [''],
-      reorderPoint: [0],
-      reorderQty: [1],
-      notes: ['']
+      uom: ['each', [Validators.required]],
+      unit_cost: [''],
+      category_id: [''],
+      reorder_point: [0],
+      reorder_qty: [1],
+      barcode: ['']
     });
   }
 
   onSubmit(): void {
     if (this.partForm.valid) {
-      this.createPart.emit(this.partForm.value);
+      const formValue = this.partForm.value;
+      
+      // Convert empty strings to undefined for optional fields
+      const partData: CreatePartRequest = {
+        part_number: formValue.part_number,
+        name: formValue.name,
+        description: formValue.description || undefined,
+        uom: formValue.uom,
+        unit_cost: formValue.unit_cost ? parseFloat(formValue.unit_cost) : undefined,
+        category_id: formValue.category_id ? parseInt(formValue.category_id) : undefined,
+        reorder_point: formValue.reorder_point ? parseInt(formValue.reorder_point) : undefined,
+        reorder_qty: formValue.reorder_qty ? parseInt(formValue.reorder_qty) : undefined,
+        barcode: formValue.barcode || undefined
+      };
+
+      this.createPart.emit(partData);
     }
   }
 
@@ -51,5 +63,13 @@ export class AddPartModalComponent {
       }
     }
     return '';
+  }
+
+  getStatusOptions(): string[] {
+    return ['active', 'inactive', 'discontinued'];
+  }
+
+  getAbcClassOptions(): string[] {
+    return ['A', 'B', 'C'];
   }
 }
