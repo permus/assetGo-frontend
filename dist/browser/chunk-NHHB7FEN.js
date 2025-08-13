@@ -127,7 +127,7 @@ var routes = [
           },
           {
             path: "overview",
-            loadComponent: () => import("./chunk-7UVHIWIE.js").then((m) => m.DashboardOverviewComponent)
+            loadComponent: () => import("./chunk-FK4TG4NN.js").then((m) => m.DashboardOverviewComponent)
           },
           {
             path: "automation",
@@ -141,11 +141,11 @@ var routes = [
       },
       {
         path: "parts-catalog",
-        loadComponent: () => import("./chunk-5JOBBJHJ.js").then((m) => m.PartsCatalogComponent)
+        loadComponent: () => import("./chunk-PMOO7CLF.js").then((m) => m.PartsCatalogComponent)
       },
       {
         path: "stock-levels",
-        loadComponent: () => import("./chunk-GJFMBAUA.js").then((m) => m.StockLevelsComponent)
+        loadComponent: () => import("./chunk-XBAVS64K.js").then((m) => m.StockLevelsComponent)
       },
       {
         path: "transactions",
@@ -157,7 +157,7 @@ var routes = [
       },
       {
         path: "abc-analysis",
-        loadComponent: () => import("./chunk-UXT3IEWN.js").then((m) => m.AbcAnalysisComponent)
+        loadComponent: () => import("./chunk-7FL3QJA6.js").then((m) => m.AbcAnalysisComponent)
       },
       {
         path: "analytics",
@@ -216,4 +216,4 @@ var InventoryModule = class _InventoryModule {
 export {
   InventoryModule
 };
-//# sourceMappingURL=chunk-RASU43M6.js.map
+//# sourceMappingURL=chunk-NHHB7FEN.js.map

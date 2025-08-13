@@ -5313,7 +5313,7 @@ var routes = [
       },
       {
         path: "inventory",
-        loadChildren: () => import("./chunk-RASU43M6.js").then((m) => m.InventoryModule)
+        loadChildren: () => import("./chunk-NHHB7FEN.js").then((m) => m.InventoryModule)
       }
     ]
   },

@@ -89,6 +89,11 @@ var InventoryAnalyticsService = class _InventoryAnalyticsService {
   performStockCount(countData) {
     return this.http.post(`${this.apiUrl}/inventory/stocks/count`, countData, this.getAuthHeaders());
   }
+  // Locations Methods
+  getLocations(page = 1, perPage = 15, hierarchyLevel = 0, sortBy = "created", sortDirection = "desc") {
+    let params = new HttpParams().set("page", page.toString()).set("per_page", perPage.toString()).set("hierarchy_level", hierarchyLevel.toString()).set("sort_by", sortBy).set("sort_direction", sortDirection);
+    return this.http.get(`${this.apiUrl}/locations`, __spreadProps(__spreadValues({}, this.getAuthHeaders()), { params }));
+  }
   static \u0275fac = function InventoryAnalyticsService_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _InventoryAnalyticsService)(\u0275\u0275inject(HttpClient));
   };
@@ -106,4 +111,4 @@ var InventoryAnalyticsService = class _InventoryAnalyticsService {
 export {
   InventoryAnalyticsService
 };
-//# sourceMappingURL=chunk-VWF56NBE.js.map
+//# sourceMappingURL=chunk-JOTUIW65.js.map

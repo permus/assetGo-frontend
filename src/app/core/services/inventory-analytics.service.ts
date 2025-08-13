@@ -100,6 +100,17 @@ export interface InventoryLocation {
   company_id: number;
 }
 
+export interface LocationResponse {
+  success: boolean;
+  data: {
+    data: InventoryLocation[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
 export interface InventoryStock {
   id: number;
   part_id: number;
@@ -319,6 +330,27 @@ export class InventoryAnalyticsService {
       `${this.apiUrl}/inventory/stocks/count`,
       countData,
       this.getAuthHeaders()
+    );
+  }
+
+  // Locations Methods
+  getLocations(
+    page: number = 1,
+    perPage: number = 15,
+    hierarchyLevel: number = 0,
+    sortBy: string = 'created',
+    sortDirection: string = 'desc'
+  ): Observable<LocationResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', perPage.toString())
+      .set('hierarchy_level', hierarchyLevel.toString())
+      .set('sort_by', sortBy)
+      .set('sort_direction', sortDirection);
+
+    return this.http.get<LocationResponse>(
+      `${this.apiUrl}/locations`,
+      { ...this.getAuthHeaders(), params }
     );
   }
 }

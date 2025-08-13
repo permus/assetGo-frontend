@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { InventoryAnalyticsService, InventoryStock, StockLevelsResponse, StockAdjustmentRequest, StockTransferRequest, StockReserveRequest, StockCountRequest } from '../../../core/services/inventory-analytics.service';
+import { InventoryAnalyticsService, InventoryStock, StockLevelsResponse, StockAdjustmentRequest, StockTransferRequest, StockReserveRequest, StockCountRequest, LocationResponse } from '../../../core/services/inventory-analytics.service';
 
 @Component({
   selector: 'app-stock-levels',
@@ -110,21 +110,37 @@ export class StockLevelsComponent implements OnInit {
   }
 
   loadAvailableLocations(): void {
-    // This would typically come from a locations API
-    // For now, we'll use mock data - can be replaced with real API call later
-    this.availableLocations = [
-      { id: 1, name: 'Main Warehouse', code: 'MW' },
-      { id: 2, name: 'Secondary Storage', code: 'SS' },
-      { id: 3, name: 'Field Office', code: 'FO' }
-    ];
+    // Fetch locations from the API
+    this.analyticsService.getLocations(1, 100).subscribe({
+      next: (response: LocationResponse) => {
+        if (response.success) {
+          this.availableLocations = response.data.data.map(location => ({
+            id: location.id,
+            name: location.name,
+            code: location.code || location.name.substring(0, 2).toUpperCase()
+          }));
+        } else {
+          console.error('Failed to load locations for dropdown');
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading locations:', err);
+        // Fallback to mock data if API fails
+        this.availableLocations = [
+          { id: 1, name: 'Main Warehouse', code: 'MW' },
+          { id: 2, name: 'Secondary Storage', code: 'SS' },
+          { id: 3, name: 'Field Office', code: 'FO' }
+        ];
+      }
+    });
   }
 
   loadAvailableParts(): void {
     // Fetch parts from the API
     this.analyticsService.getPartsCatalog('', 'active', 1, 100).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success) {
-          this.availableParts = response.data.data.map(part => ({
+          this.availableParts = response.data.data.map((part: any) => ({
             id: part.id,
             name: part.name,
             part_number: part.part_number
@@ -133,7 +149,7 @@ export class StockLevelsComponent implements OnInit {
           console.error('Failed to load parts for dropdown');
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading parts for dropdown:', err);
         // Fallback to empty array if API fails
         this.availableParts = [];
