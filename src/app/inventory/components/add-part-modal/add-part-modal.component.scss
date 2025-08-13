@@ -1,0 +1,270 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-container {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Modal Header
+.modal-header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    svg {
+      color: #3b82f6;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+    }
+  }
+}
+
+// Modal Form
+.modal-form {
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+
+  .form-section {
+    margin-bottom: 2rem;
+
+    &:last-of-type {
+      margin-bottom: 1.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f3f4f6;
+
+      svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+
+      .section-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0;
+      }
+
+      // Section icon colors
+      &:first-child svg {
+        color: #10b981; // Green for Basic Information
+      }
+
+      &:nth-child(2) svg {
+        color: #f59e0b; // Yellow for Pricing & Details
+      }
+
+      &:nth-child(3) svg {
+        color: #8b5cf6; // Purple for Stock Management
+      }
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .form-field {
+      margin-bottom: 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .field-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+
+        .required {
+          color: #ef4444;
+          font-weight: 600;
+        }
+      }
+
+      .form-input,
+      .form-textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        color: #111827;
+        background-color: white;
+        transition: all 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+
+        &.error {
+          border-color: #ef4444;
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+      }
+
+      .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+        font-family: inherit;
+      }
+
+      .error-message {
+        color: #ef4444;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+      }
+    }
+  }
+}
+
+// Modal Footer
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.btn-secondary {
+      background-color: #f3f4f6;
+      color: #374151;
+
+      &:hover {
+        background-color: #e5e7eb;
+      }
+    }
+
+    &.btn-primary {
+      background-color: #3b82f6;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #2563eb;
+      }
+
+      &:disabled {
+        background-color: #9ca3af;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .modal-container {
+    max-width: 95vw;
+    margin: 0.5rem;
+  }
+
+  .modal-form {
+    padding: 1rem;
+
+    .form-section {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  .modal-footer {
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 1rem;
+
+    .header-left {
+      .modal-title {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  .modal-form {
+    padding: 0.75rem;
+
+    .form-section {
+      .section-header {
+        .section-title {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}

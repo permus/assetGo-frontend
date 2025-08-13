@@ -1,0 +1,211 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-left">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+        </svg>
+        <h2 class="modal-title">Add New Part</h2>
+      </div>
+    </div>
+
+    <form [formGroup]="partForm" (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <h3 class="section-title">Basic Information</h3>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label for="partNumber" class="field-label">
+              Part Number <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="partNumber" 
+              formControlName="partNumber"
+              class="form-input"
+              [class.error]="partForm.get('partNumber')?.errors && partForm.get('partNumber')?.touched"
+              placeholder="Enter part number">
+            <div class="error-message" *ngIf="getFieldError('partNumber')">
+              {{ getFieldError('partNumber') }}
+            </div>
+          </div>
+          
+          <div class="form-field">
+            <label for="name" class="field-label">
+              Name <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="name" 
+              formControlName="name"
+              class="form-input"
+              [class.error]="partForm.get('name')?.errors && partForm.get('name')?.touched"
+              placeholder="Enter part name">
+            <div class="error-message" *ngIf="getFieldError('name')">
+              {{ getFieldError('name') }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-field">
+          <label for="description" class="field-label">Description</label>
+          <textarea 
+            id="description" 
+            formControlName="description"
+            class="form-textarea"
+            rows="3"
+            placeholder="Enter part description"></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label for="manufacturer" class="field-label">Manufacturer</label>
+            <input 
+              type="text" 
+              id="manufacturer" 
+              formControlName="manufacturer"
+              class="form-input"
+              placeholder="Enter manufacturer">
+          </div>
+          
+          <div class="form-field">
+            <label for="category" class="field-label">Category</label>
+            <input 
+              type="text" 
+              id="category" 
+              formControlName="category"
+              class="form-input"
+              placeholder="Enter category">
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing & Details Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+          </svg>
+          <h3 class="section-title">Pricing & Details</h3>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label for="unitOfMeasure" class="field-label">Unit of Measure</label>
+            <input 
+              type="text" 
+              id="unitOfMeasure" 
+              formControlName="unitOfMeasure"
+              class="form-input"
+              placeholder="each">
+          </div>
+          
+          <div class="form-field">
+            <label for="unitCost" class="field-label">Unit Cost</label>
+            <input 
+              type="number" 
+              id="unitCost" 
+              formControlName="unitCost"
+              class="form-input"
+              placeholder="0.00"
+              step="0.01"
+              min="0">
+          </div>
+          
+          <div class="form-field">
+            <label for="barcode" class="field-label">Barcode</label>
+            <input 
+              type="text" 
+              id="barcode" 
+              formControlName="barcode"
+              class="form-input"
+              placeholder="Enter barcode">
+          </div>
+        </div>
+      </div>
+
+      <!-- Stock Management Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+          </svg>
+          <h3 class="section-title">Stock Management</h3>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label for="minStock" class="field-label">Min Stock</label>
+            <input 
+              type="number" 
+              id="minStock" 
+              formControlName="minStock"
+              class="form-input"
+              placeholder="0"
+              min="0">
+          </div>
+          
+          <div class="form-field">
+            <label for="maxStock" class="field-label">Max Stock</label>
+            <input 
+              type="number" 
+              id="maxStock" 
+              formControlName="maxStock"
+              class="form-input"
+              placeholder="Enter max stock"
+              min="0">
+          </div>
+          
+          <div class="form-field">
+            <label for="reorderPoint" class="field-label">Reorder Point</label>
+            <input 
+              type="number" 
+              id="reorderPoint" 
+              formControlName="reorderPoint"
+              class="form-input"
+              placeholder="0"
+              min="0">
+          </div>
+          
+          <div class="form-field">
+            <label for="reorderQty" class="field-label">Reorder Qty</label>
+            <input 
+              type="number" 
+              id="reorderQty" 
+              formControlName="reorderQty"
+              class="form-input"
+              placeholder="1"
+              min="1">
+          </div>
+        </div>
+        
+        <div class="form-field">
+          <label for="notes" class="field-label">Notes</label>
+          <textarea 
+            id="notes" 
+            formControlName="notes"
+            class="form-textarea"
+            rows="3"
+            placeholder="Enter additional notes"></textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="!partForm.valid">
+          Create Part
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

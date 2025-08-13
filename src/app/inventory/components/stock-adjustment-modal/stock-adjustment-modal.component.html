@@ -1,0 +1,161 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Stock Adjustment</h2>
+    </div>
+
+    <form [formGroup]="adjustmentForm" (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Part Information Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+          </svg>
+          <h3 class="section-title">Part Information</h3>
+        </div>
+        
+        <div class="form-field">
+          <label for="part" class="field-label">
+            Part <span class="required">*</span>
+          </label>
+          <div class="select-container">
+            <select 
+              id="part" 
+              formControlName="part"
+              class="form-select"
+              [class.error]="adjustmentForm.get('part')?.errors && adjustmentForm.get('part')?.touched">
+              <option value="">Select a part</option>
+              <option *ngFor="let part of parts" [value]="part.id">
+                {{ part.name }} - {{ part.description }}
+              </option>
+            </select>
+            <svg class="select-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+          <div class="error-message" *ngIf="getFieldError('part')">
+            {{ getFieldError('part') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Details Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <h3 class="section-title">Location Details</h3>
+        </div>
+        
+        <div class="form-field">
+          <label for="location" class="field-label">
+            Location <span class="required">*</span>
+          </label>
+          <div class="select-container">
+            <select 
+              id="location" 
+              formControlName="location"
+              class="form-select"
+              [class.error]="adjustmentForm.get('location')?.errors && adjustmentForm.get('location')?.touched">
+              <option value="">Select a location</option>
+              <option *ngFor="let location of locations" [value]="location.id">
+                {{ location.name }}
+              </option>
+            </select>
+            <svg class="select-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+          <div class="error-message" *ngIf="getFieldError('location')">
+            {{ getFieldError('location') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Adjustment Information Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          <h3 class="section-title">Adjustment Information</h3>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label for="adjustmentQuantity" class="field-label">
+              Adjustment Quantity <span class="required">*</span>
+            </label>
+            <input 
+              type="number" 
+              id="adjustmentQuantity" 
+              formControlName="adjustmentQuantity"
+              class="form-input"
+              [class.error]="adjustmentForm.get('adjustmentQuantity')?.errors && adjustmentForm.get('adjustmentQuantity')?.touched"
+              placeholder="0">
+            <div class="error-message" *ngIf="getFieldError('adjustmentQuantity')">
+              {{ getFieldError('adjustmentQuantity') }}
+            </div>
+          </div>
+          
+          <div class="form-field">
+            <label for="reason" class="field-label">
+              Reason <span class="required">*</span>
+            </label>
+            <div class="select-container">
+              <select 
+                id="reason" 
+                formControlName="reason"
+                class="form-select"
+                [class.error]="adjustmentForm.get('reason')?.errors && adjustmentForm.get('reason')?.touched">
+                <option value="">Select a reason</option>
+                <option *ngFor="let reason of reasons" [value]="reason.id">
+                  {{ reason.name }}
+                </option>
+              </select>
+              <svg class="select-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+            <div class="error-message" *ngIf="getFieldError('reason')">
+              {{ getFieldError('reason') }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Notes Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <h3 class="section-title">Additional Notes</h3>
+        </div>
+        
+        <div class="form-field">
+          <label for="notes" class="field-label">Notes</label>
+          <textarea 
+            id="notes" 
+            formControlName="notes"
+            class="form-textarea"
+            rows="3"
+            placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="!adjustmentForm.valid">
+          Adjust Stock
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

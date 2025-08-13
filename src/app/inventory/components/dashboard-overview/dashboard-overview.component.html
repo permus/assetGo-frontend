@@ -1,0 +1,159 @@
+<div class="dashboard-overview">
+  <!-- Top Row - Metric Cards -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="card-header">
+        <h4 class="card-title">Total Inventory Value</h4>
+        <div class="card-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="card-value">$0</div>
+      <div class="card-trend positive">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+        +2.1% from last month
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="card-header">
+        <h4 class="card-title">Parts at Reorder Point</h4>
+        <div class="card-icon warning">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="card-value warning">1</div>
+      <div class="card-message">Need immediate attention</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="card-header">
+        <h4 class="card-title">Average Turnover</h4>
+        <div class="card-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="card-value">0.0x</div>
+      <div class="card-unit">Times per year</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="card-header">
+        <h4 class="card-title">Slow Moving Items</h4>
+        <div class="card-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="card-value danger">0</div>
+      <div class="card-description">180+ days without movement</div>
+    </div>
+  </div>
+
+  <!-- Middle Row - Classification Cards -->
+  <div class="classification-row">
+    <div class="classification-card">
+      <h4 class="classification-title">Class A Items</h4>
+      <div class="classification-stats">
+        <div class="stat-item">
+          <span class="stat-label">Count:</span>
+          <span class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Value:</span>
+          <span class="stat-value">$0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Percentage:</span>
+          <span class="stat-value">0.0% of total value</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div class="classification-card">
+      <h4 class="classification-title">Class B Items</h4>
+      <div class="classification-stats">
+        <div class="stat-item">
+          <span class="stat-label">Count:</span>
+          <span class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Value:</span>
+          <span class="stat-value">$0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Percentage:</span>
+          <span class="stat-value">0.0% of total value</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div class="classification-card">
+      <h4 class="classification-title">Class C Items</h4>
+      <div class="classification-stats">
+        <div class="stat-item">
+          <span class="stat-label">Count:</span>
+          <span class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Value:</span>
+          <span class="stat-value">$0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Percentage:</span>
+          <span class="stat-value">0.0% of total value</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Section - Active Reorder Alerts -->
+  <div class="alerts-section">
+    <div class="alerts-header">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+      </svg>
+      <h4 class="alerts-title">Active Reorder Alerts</h4>
+    </div>
+    
+    <div class="alert-item">
+      <div class="alert-left">
+        <svg class="w-5 h-5 warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+        <div class="alert-content">
+          <span class="alert-part">part 1</span>
+          <span class="alert-details">Current: 0 | Reorder at: 2</span>
+        </div>
+      </div>
+      <div class="alert-right">
+        <span class="priority-tag high">high</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <button class="fab">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+    </svg>
+  </button>
+</div>

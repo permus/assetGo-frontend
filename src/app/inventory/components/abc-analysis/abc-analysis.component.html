@@ -1,0 +1,169 @@
+<div class="abc-analysis">
+  <!-- Header Section -->
+  <div class="abc-header">
+    <div class="header-left">
+      <h2 class="main-title">ABC Analysis Report</h2>
+      <p class="subtitle">Inventory classification by value contribution</p>
+    </div>
+    <div class="header-right">
+      <button class="export-btn" (click)="exportCSV()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- ABC Classification Summary Cards -->
+  <div class="abc-summary-cards">
+    <!-- Class A Items Card -->
+    <div class="abc-card class-a">
+      <div class="card-header">
+        <div class="class-badge class-a-badge">A</div>
+        <h3 class="card-title">Class A Items</h3>
+      </div>
+      <div class="card-metrics">
+        <div class="metric-row">
+          <span class="metric-label">Count:</span>
+          <span class="metric-value">{{ abcData.classA.count }}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Value:</span>
+          <span class="metric-value">AED {{ abcData.classA.value }}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Value %:</span>
+          <span class="metric-value">{{ abcData.classA.percentage }}%</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill class-a-fill" [style.width.%]="abcData.classA.percentage"></div>
+      </div>
+    </div>
+
+    <!-- Class B Items Card -->
+    <div class="abc-card class-b">
+      <div class="card-header">
+        <div class="class-badge class-b-badge">B</div>
+        <h3 class="card-title">Class B Items</h3>
+      </div>
+      <div class="card-metrics">
+        <div class="metric-row">
+          <span class="metric-label">Count:</span>
+          <span class="metric-value">{{ abcData.classB.count }}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Value:</span>
+          <span class="metric-value">AED {{ abcData.classB.value }}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Value %:</span>
+          <span class="metric-value">{{ abcData.classB.percentage }}%</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill class-b-fill" [style.width.%]="abcData.classB.percentage"></div>
+      </div>
+    </div>
+
+    <!-- Class C Items Card -->
+    <div class="abc-card class-c">
+      <div class="card-header">
+        <div class="class-badge class-c-badge">C</div>
+        <h3 class="card-title">Class C Items</h3>
+      </div>
+      <div class="card-metrics">
+        <div class="metric-row">
+          <span class="metric-label">Count:</span>
+          <span class="metric-value">{{ abcData.classC.count }}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Value:</span>
+          <span class="metric-value">AED {{ abcData.classC.value }}</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Value %:</span>
+          <span class="metric-value">{{ abcData.classC.percentage }}%</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill class-c-fill" [style.width.%]="abcData.classC.percentage"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Analysis Section -->
+  <div class="detailed-analysis">
+    <h3 class="section-title">Detailed Analysis</h3>
+    
+    <!-- Search and Filter Controls -->
+    <div class="controls-row">
+      <div class="search-container">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Search parts..." 
+          class="search-input"
+          [value]="searchTerm"
+          (input)="onSearchChange($event)">
+      </div>
+
+      <div class="filter-container">
+        <select 
+          class="filter-select"
+          [value]="selectedClass"
+          (change)="onClassFilterChange($event)">
+          <option value="all">All Classes</option>
+          <option value="A">Class A</option>
+          <option value="B">Class B</option>
+          <option value="C">Class C</option>
+        </select>
+        <svg class="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Analysis Table -->
+    <div class="analysis-table-container">
+      <table class="analysis-table">
+        <thead>
+          <tr>
+            <th>Part Number</th>
+            <th>Part Name</th>
+            <th>Category</th>
+            <th>Total Value</th>
+            <th>Value %</th>
+            <th>Cumulative %</th>
+            <th>ABC Class</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredItems">
+            <td class="part-number">{{ item.partNumber }}</td>
+            <td class="part-name">{{ item.partName }}</td>
+            <td class="category">{{ item.category }}</td>
+            <td class="total-value">AED {{ item.totalValue }}</td>
+            <td class="value-percentage">{{ item.valuePercentage }}%</td>
+            <td class="cumulative-percentage">{{ item.cumulativePercentage }}%</td>
+            <td class="abc-class">
+              <span class="abc-badge" [class]="getAbcClassColor(item.abcClass)">
+                {{ item.abcClass }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Voice Assistant Button -->
+  <button class="voice-assistant">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+    </svg>
+  </button>
+</div>

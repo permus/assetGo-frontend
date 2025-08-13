@@ -1,0 +1,120 @@
+.inventory-container {
+  padding: 1.5rem;
+  min-height: 100vh;
+  background-color: #f9fafb;
+
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+
+    .title-section {
+      .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.5rem;
+      }
+
+      .page-subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+
+        &.btn-primary {
+          background-color: #3b82f6;
+          color: white;
+
+          &:hover {
+            background-color: #2563eb;
+          }
+        }
+
+        &.btn-secondary {
+          background-color: white;
+          color: #374151;
+          border: 1px solid #d1d5db;
+
+          &:hover {
+            background-color: #f9fafb;
+            border-color: #9ca3af;
+          }
+        }
+      }
+    }
+  }
+
+  .navigation-tabs {
+    margin-bottom: 2rem;
+
+    .tabs-nav {
+      display: flex;
+      border-radius: 0.75rem;
+      padding: 0.25rem;
+      gap: 4px;
+
+      .tab-link {
+        width: 100%;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        padding:5px 1.5rem;
+        text-decoration: none;
+        color: #6b7280;
+        font-weight: 500;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        white-space: nowrap;
+        cursor: pointer;
+        justify-content: center;
+
+        &:hover {
+          color: #374151;
+          background-color: #f9fafb;
+        }
+
+        &.active {
+          background-color: #3b82f6;
+          color: white;
+        }
+
+        &.analytics-tab {
+          background-color: #f3f4f6;
+          color: #374151;
+          border: 1px solid #d1d5db;
+
+          &:hover {
+            background-color: #e5e7eb;
+          }
+
+          &.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+          }
+        }
+      }
+    }
+  }
+
+  .content-area {
+    min-height: 400px;
+  }
+}

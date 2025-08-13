@@ -1,0 +1,256 @@
+.dashboard-overview {
+  position: relative;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+
+  // Top Row - Metric Cards
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+
+    .metric-card {
+      background-color: white;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+
+        .card-title {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #6b7280;
+          margin: 0;
+        }
+
+        .card-icon {
+          width: 2.5rem;
+          height: 2.5rem;
+          background-color: #f3f4f6;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #9ca3af;
+
+          &.warning {
+            background-color: #fef3c7;
+            color: #f59e0b;
+          }
+        }
+      }
+
+      .card-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.5rem;
+
+        &.warning {
+          color: #f59e0b;
+        }
+
+        &.danger {
+          color: #ef4444;
+        }
+      }
+
+      .card-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: #6b7280;
+
+        &.positive {
+          color: #10b981;
+        }
+
+        svg {
+          color: #10b981;
+        }
+      }
+
+      .card-message,
+      .card-unit,
+      .card-description {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin: 0;
+      }
+    }
+  }
+
+  // Middle Row - Classification Cards
+  .classification-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+
+    .classification-card {
+      background-color: white;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+      .classification-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0 0 1rem 0;
+      }
+
+      .classification-stats {
+        margin-bottom: 1rem;
+
+        .stat-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0.5rem;
+
+          .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+          }
+
+          .stat-value {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #111827;
+          }
+        }
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 4px;
+        background-color: #f3f4f6;
+        border-radius: 2px;
+        overflow: hidden;
+
+        .progress-fill {
+          height: 100%;
+          background-color: #3b82f6;
+          transition: width 0.3s ease;
+        }
+      }
+    }
+  }
+
+  // Bottom Section - Alerts
+  .alerts-section {
+    background-color: white;
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+    .alerts-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+
+      svg {
+        color: #6b7280;
+      }
+
+      .alerts-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0;
+      }
+    }
+
+    .alert-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 0.5rem;
+
+      .alert-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .warning-icon {
+          color: #ef4444;
+        }
+
+        .alert-content {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .alert-part {
+            font-weight: 600;
+            color: #111827;
+          }
+
+          .alert-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+          }
+        }
+      }
+
+      .alert-right {
+        .priority-tag {
+          padding: 0.25rem 0.75rem;
+          border-radius: 9999px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          text-transform: uppercase;
+
+          &.high {
+            background-color: #ef4444;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+
+  // Floating Action Button
+  .fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    svg {
+      color: white;
+    }
+  }
+}

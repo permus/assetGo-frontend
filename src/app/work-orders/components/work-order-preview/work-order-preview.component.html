@@ -69,7 +69,7 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
               </svg>
-              <span>{{ workOrder?.assigned_to ? 'User ID: ' + workOrder.assigned_to : 'Unassigned' }}</span>
+              <span>{{ workOrder && workOrder.assigned_to ? 'User ID: ' + workOrder.assigned_to : 'Unassigned' }}</span>
             </div>
           </div>
         </div>
@@ -185,8 +185,8 @@
             <button type="submit" class="submit-comment-button">Add Comment</button>
           </form>
           
-          <div class="comments-list" *ngIf="workOrder?.comments?.length > 0">
-            <div *ngFor="let comment of workOrder?.comments" class="comment-entry">
+          <div class="comments-list" *ngIf="workOrder && workOrder.comments && workOrder.comments.length > 0">
+            <div *ngFor="let comment of workOrder.comments" class="comment-entry">
               <div class="comment-info">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -214,7 +214,7 @@
             <div class="timeline-dot"></div>
             <div class="timeline-content">
               <label>Created</label>
-              <p>{{ workOrder?.created_at | date:'MMMM d, y \'at\' h:mm a' }} by {{ workOrder?.created_by?.first_name }} {{ workOrder?.created_by?.last_name }}</p>
+              <p>{{ workOrder?.created_at | date:'MMMM d, y \'at\' h:mm a' }} by {{ workOrder && workOrder.created_by ? (workOrder.created_by.first_name + ' ' + workOrder.created_by.last_name) : 'Unknown' }}</p>
             </div>
           </div>
           <div class="timeline-item">
@@ -228,7 +228,7 @@
             <div class="timeline-dot"></div>
             <div class="timeline-content">
               <label>Due Date</label>
-              <p>{{ workOrder?.due_date ? (workOrder.due_date | date:'MMMM d, y') : 'Not set' }}</p>
+              <p>{{ workOrder && workOrder.due_date ? (workOrder.due_date | date:'MMMM d, y') : 'Not set' }}</p>
             </div>
           </div>
         </div>

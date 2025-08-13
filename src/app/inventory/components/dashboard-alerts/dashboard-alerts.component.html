@@ -1,0 +1,131 @@
+<div class="dashboard-alerts">
+  <!-- Stock Alert System Header -->
+  <div class="alert-system-header">
+    <h2 class="system-title">Stock Alert System</h2>
+    <p class="system-subtitle">Real-time notifications for inventory issues and opportunities</p>
+  </div>
+
+  <!-- Summary Cards Row -->
+  <div class="summary-cards-row">
+    <div class="summary-card active-alerts">
+      <div class="card-icon">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+      </div>
+      <div class="card-content">
+        <div class="card-value">1</div>
+        <div class="card-label">Active Alerts</div>
+      </div>
+    </div>
+
+    <div class="summary-card critical">
+      <div class="card-icon">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </div>
+      <div class="card-content">
+        <div class="card-value">1</div>
+        <div class="card-label">Critical</div>
+      </div>
+    </div>
+
+    <div class="summary-card acknowledged">
+      <div class="card-icon">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <div class="card-content">
+        <div class="card-value">0</div>
+        <div class="card-label">Acknowledged</div>
+      </div>
+    </div>
+
+    <div class="summary-card total-alerts">
+      <div class="card-icon">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+        </svg>
+      </div>
+      <div class="card-content">
+        <div class="card-value">1</div>
+        <div class="card-label">Total Alerts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Management Section -->
+  <div class="alert-management-section">
+    <div class="section-header">
+      <h3 class="section-title">Alert Management</h3>
+      <p class="section-subtitle">Monitor and manage all inventory alerts</p>
+    </div>
+
+    <!-- Alert Filter Tabs -->
+    <div class="alert-tabs">
+      <button class="tab-button active">
+        <span class="tab-text">Active</span>
+        <span class="tab-count">(1)</span>
+      </button>
+      <button class="tab-button">
+        <span class="tab-text">Critical</span>
+        <span class="tab-count">(1)</span>
+      </button>
+      <button class="tab-button">
+        <span class="tab-text">Acknowledged</span>
+        <span class="tab-count">(0)</span>
+      </button>
+      <button class="tab-button">
+        <span class="tab-text">All</span>
+        <span class="tab-count">(1)</span>
+      </button>
+    </div>
+
+    <!-- Alert List -->
+    <div class="alert-list">
+      <div class="alert-item critical">
+        <div class="alert-left">
+          <div class="alert-severity">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            <span class="severity-label">CRITICAL</span>
+          </div>
+          
+          <div class="alert-content">
+            <h4 class="alert-title">part 1 (1)</h4>
+            <p class="alert-description">part 1 is completely out of stock</p>
+            <div class="alert-details">
+              <span class="stock-info">Current: 0</span>
+              <span class="timestamp">Aug 12, 2025 22:38</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="alert-actions">
+          <button class="action-btn acknowledge">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Acknowledge
+          </button>
+          <button class="action-btn dismiss">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Dismiss
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <button class="fab">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+    </svg>
+  </button>
+</div>
