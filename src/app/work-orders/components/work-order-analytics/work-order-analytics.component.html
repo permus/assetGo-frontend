@@ -1,0 +1,241 @@
+<div class="work-order-analytics">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading work order analytics...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    </svg>
+    <h3 class="error-title">{{ error }}</h3>
+    <button class="btn btn-primary" (click)="refreshData()">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+      </svg>
+      Retry
+    </button>
+  </div>
+
+  <!-- Analytics Content -->
+  <div *ngIf="!loading && !error">
+    <!-- Header Section -->
+    <div class="analytics-header">
+      <div class="header-left">
+        <h2 class="main-title">Work Order Analytics</h2>
+        <p class="subtitle">Performance insights and trends</p>
+      </div>
+      <div class="header-right">
+        <button class="refresh-btn" (click)="refreshData()" title="Refresh Data">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Performance Metrics Cards -->
+    <div class="metrics-section" *ngIf="analyticsData && performanceMetrics">
+      <h3 class="section-title">Performance Metrics</h3>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-header">
+            <h4 class="metric-title">Average Resolution Time</h4>
+            <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="metric-value">{{ formatDays(performanceMetrics.average_resolution_time) }}</div>
+          <div class="metric-trend positive">
+            {{ performanceMetrics.resolution_time_trend || 'No trend data' }}
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <h4 class="metric-title">Completion Rate</h4>
+            <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="metric-value">{{ formatPercentage(performanceMetrics.completion_rate) }}</div>
+          <div class="metric-target">Target: 85%</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <h4 class="metric-title">Overdue Work Orders</h4>
+            <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          <div class="metric-value warning">{{ performanceMetrics.overdue_count || 0 }}</div>
+          <div class="metric-trend">
+            {{ performanceMetrics.overdue_trend || 'No trend data' }}
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <h4 class="metric-title">Active Technicians</h4>
+            <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <div class="metric-value">{{ performanceMetrics.active_technicians || 0 }}</div>
+          <div class="metric-status">Active right now</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section" *ngIf="analyticsData">
+      <div class="chart-row">
+        <!-- Status Distribution Chart -->
+        <div class="chart-card" *ngIf="hasStatusDistribution">
+          <div class="chart-header">
+            <h3 class="chart-title">Work Order Status Distribution</h3>
+            <p class="chart-subtitle">Current breakdown by status ({{ totalStatusCount }} total)</p>
+          </div>
+          <div class="chart-container">
+            <div class="pie-chart">
+              <div class="chart-legend">
+                <div class="legend-item" *ngFor="let item of statusChartData">
+                  <div class="legend-color" [style.background-color]="item.color"></div>
+                  <span class="legend-label">{{ item.name }}</span>
+                  <span class="legend-value">{{ item.value }}</span>
+                  <span class="legend-percentage">
+                    ({{ formatPercentage(getStatusPercentage(item.value, totalStatusCount)) }})
+                  </span>
+                </div>
+              </div>
+              <div class="chart-placeholder">
+                <div class="chart-circle">
+                  <div class="chart-center">
+                    <span class="total-count">{{ totalStatusCount }}</span>
+                    <span class="total-label">Total</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Priority Distribution Chart -->
+        <div class="chart-card" *ngIf="hasPriorityDistribution">
+          <div class="chart-header">
+            <h3 class="chart-title">Priority Distribution</h3>
+            <p class="chart-subtitle">Work orders by priority level with trends</p>
+          </div>
+          <div class="chart-container">
+            <div class="bar-chart">
+              <div class="chart-bars">
+                <div class="bar-item" *ngFor="let item of priorityChartData">
+                  <div class="bar-label">{{ item.name }}</div>
+                  <div class="bar-container">
+                    <div class="bar" 
+                         [style.width]="getStatusPercentage(item.value, totalStatusCount) + '%'"
+                         [style.background-color]="item.color"></div>
+                    <span class="bar-value">{{ item.value }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Performance Trend -->
+      <div class="chart-card full-width" *ngIf="hasMonthlyTrends">
+        <div class="chart-header">
+          <h3 class="chart-title">Monthly Performance Trend</h3>
+          <p class="chart-subtitle">Work orders created vs completed with efficiency tracking</p>
+        </div>
+        <div class="chart-container">
+          <div class="trend-chart">
+            <div class="chart-y-axis">
+              <span>80</span>
+              <span>60</span>
+              <span>40</span>
+              <span>20</span>
+              <span>0</span>
+            </div>
+            <div class="chart-area">
+              <div class="grid-lines">
+                <div class="grid-line" *ngFor="let i of [0,1,2,3,4]"></div>
+              </div>
+              <div class="trend-lines">
+                <div class="trend-line created" 
+                     [style.height]="'100%'"
+                     title="Work orders created"></div>
+                <div class="trend-line completed" 
+                     [style.height]="'80%'"
+                     title="Work orders completed"></div>
+              </div>
+              <div class="chart-x-axis">
+                <span *ngFor="let month of monthlyTrendData">{{ month.month }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technician Performance Section -->
+    <div class="technician-section" *ngIf="hasTechnicianData">
+      <h3 class="section-title">Top Technician Performance</h3>
+      <p class="section-subtitle">Individual performance metrics for this month</p>
+      <div class="technician-grid">
+        <div class="technician-card" *ngFor="let tech of technicianData">
+          <div class="tech-header">
+            <h4 class="tech-name">{{ tech.name }}</h4>
+            <div class="tech-score">{{ tech.score.toFixed(2) }}</div>
+          </div>
+          <div class="tech-metrics">
+            <div class="tech-metric">
+              <span class="metric-label">Completed:</span>
+              <span class="metric-value">{{ tech.completed }}</span>
+            </div>
+            <div class="tech-metric">
+              <span class="metric-label">Avg Time:</span>
+              <span class="metric-value">{{ formatDays(tech.avgTime) }}</span>
+            </div>
+          </div>
+          <div class="performance-bar">
+            <div class="bar-fill" [style.width]="(tech.score * 100) + '%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Insights Section -->
+    <div class="insights-section" *ngIf="hasInsights">
+      <h3 class="section-title">Performance Insights & Recommendations</h3>
+      <p class="section-subtitle">AI-powered insights based on current performance data</p>
+      <div class="insights-grid">
+        <div class="insight-card" 
+             *ngFor="let insight of (analyticsData?.insights || [])"
+             [class]="insight.type">
+          <div class="insight-header">
+            <span class="insight-icon">{{ getInsightIcon(insight.type) }}</span>
+            <span class="insight-tag" [class]="getInsightColor(insight.type)">{{ insight.tag }}</span>
+          </div>
+          <h4 class="insight-title">{{ insight.title }}</h4>
+          <p class="insight-description">{{ insight.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Data Message -->
+    <div *ngIf="analyticsData && !hasStatusDistribution && !hasPriorityDistribution && !hasMonthlyTrends && !hasTechnicianData && !hasInsights" class="no-data-message">
+      <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <h3 class="no-data-title">No Analytics Data Available</h3>
+      <p class="no-data-description">Work order analytics data will appear here once available.</p>
+    </div>
+  </div>
+</div>

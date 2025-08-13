@@ -64,7 +64,8 @@
     }
   }
 
-  .work-orders-grid.active {
+  // Ensure grid is visible by default (when viewMode is 'grid')
+  .work-orders-grid {
     display: grid;
   }
 }

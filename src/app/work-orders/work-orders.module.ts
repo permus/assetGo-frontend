@@ -12,6 +12,7 @@ import {
   WorkOrderStatsComponent,
   WorkOrderPreviewComponent
 } from './components';
+import { WorkOrderAnalyticsComponent } from './components/work-order-analytics/work-order-analytics.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import {
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    WorkOrdersRoutingModule
+    WorkOrdersRoutingModule,
+    WorkOrderAnalyticsComponent
   ]
 })
 export class WorkOrdersModule { }

@@ -34,7 +34,19 @@
   </div>
 
   <div class="content">
-    <div class="work-orders-content" [class.active]="activeTab === 'work-orders'">
+    <!-- Test element to debug activeTab -->
+    <div style="background: yellow; color: black; padding: 10px; margin: 10px; border-radius: 5px;">
+      DEBUG: activeTab = {{ activeTab }}
+    </div>
+    
+    <div class="work-orders-content" [class.active]="activeTab === 'work-orders'" 
+         [style.display]="activeTab === 'work-orders' ? 'block' : 'none'"
+         style="border: 2px solid #00ff00; padding: 10px; margin: 10px; background: #f0f0f0;">
+      <!-- Test element to see if this section is visible -->
+      <div style="background: #ffeb3b; color: black; padding: 10px; margin: 10px; border-radius: 5px; font-weight: bold;">
+        WORK ORDERS CONTENT SECTION IS VISIBLE - activeTab: {{ activeTab }}
+      </div>
+      
       <app-work-order-stats></app-work-order-stats>
       
       <div class="create-button-container">
@@ -50,11 +62,9 @@
       <app-work-order-list></app-work-order-list>
     </div>
 
-    <div class="analytics-content" [class.active]="activeTab === 'analytics'">
-      <div class="analytics-placeholder">
-        <h3>Analytics Dashboard</h3>
-        <p>Work order analytics and insights will be displayed here.</p>
-      </div>
+    <div class="analytics-content" [class.active]="activeTab === 'analytics'"
+         [style.display]="activeTab === 'analytics' ? 'block' : 'none'">
+      <app-work-order-analytics></app-work-order-analytics>
     </div>
   </div>
 </div>
@@ -82,12 +92,16 @@
           </div>
           
           <div class="form-row full-width">
-            <div class="form-group">
+            <div class="form-group" [class.error]="hasFieldError('title')">
               <label>Title <span class="required">*</span></label>
               <input 
                 type="text" 
                 formControlName="title" 
-                placeholder="Enter work order title">
+                placeholder="Enter work order title"
+                [class.error-input]="hasFieldError('title')">
+              <div class="field-error" *ngIf="hasFieldError('title')">
+                {{ getFieldError('title') }}
+              </div>
             </div>
           </div>
           
@@ -150,30 +164,63 @@
           </div>
           
           <div class="form-row">
-            <div class="form-group">
-              <label>Asset ID (Optional)</label>
-              <input
-                type="number"
+            <div class="form-group" [class.error]="hasFieldError('asset_id')">
+              <label>Asset (Optional)</label>
+              <select
                 formControlName="asset_id"
-                placeholder="Enter asset ID">
+                [class.error-input]="hasFieldError('asset_id')"
+                [disabled]="assets.length === 0">
+                <option value="">{{ assets.length === 0 ? 'Loading assets...' : 'Select an asset' }}</option>
+                <option *ngFor="let asset of assets" [value]="asset.id">
+                  {{ asset.name || asset.asset_name || 'Asset ' + asset.id }}
+                </option>
+              </select>
+              <div class="field-error" *ngIf="hasFieldError('asset_id')">
+                {{ getFieldError('asset_id') }}
+              </div>
+              <div class="field-help">
+                <small>Select an existing asset from your assets list</small>
+              </div>
             </div>
             
-            <div class="form-group">
-              <label>Location ID (Optional)</label>
-              <input
-                type="number"
+            <div class="form-group" [class.error]="hasFieldError('location_id')">
+              <label>Location (Optional)</label>
+              <select
                 formControlName="location_id"
-                placeholder="Enter location ID">
+                [class.error-input]="hasFieldError('location_id')"
+                [disabled]="locations.length === 0">
+                <option value="">{{ locations.length === 0 ? 'Loading locations...' : 'Select a location' }}</option>
+                <option *ngFor="let location of locations" [value]="location.id">
+                  {{ location.name || 'Location ' + location.id }}
+                </option>
+              </select>
+              <div class="field-error" *ngIf="hasFieldError('location_id')">
+                {{ getFieldError('location_id') }}
+              </div>
+              <div class="field-help">
+                <small>Select an existing location from your locations list</small>
+              </div>
             </div>
           </div>
           
           <div class="form-row">
-            <div class="form-group">
-              <label>Assign To User ID (Optional)</label>
-              <input
-                type="number"
+            <div class="form-group" [class.error]="hasFieldError('assigned_to')">
+              <label>Assign To Team Member (Optional)</label>
+              <select
                 formControlName="assigned_to"
-                placeholder="Enter user ID">
+                [class.error-input]="hasFieldError('assigned_to')"
+                [disabled]="teamMembers.length === 0">
+                <option value="">{{ teamMembers.length === 0 ? 'Loading team members...' : 'Select a team member' }}</option>
+                <option *ngFor="let member of teamMembers" [value]="member.id">
+                  {{ member.first_name }} {{ member.last_name }}
+                </option>
+              </select>
+              <div class="field-error" *ngIf="hasFieldError('assigned_to')">
+                {{ getFieldError('assigned_to') }}
+              </div>
+              <div class="field-help">
+                <small>Select an existing team member to assign the work order to</small>
+              </div>
             </div>
           </div>
         </div>

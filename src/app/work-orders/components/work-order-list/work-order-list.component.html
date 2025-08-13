@@ -1,4 +1,12 @@
-<div class="list-section">
+<div class="list-section" style="border: 2px solid #ff6b6b; padding: 10px; margin: 10px; background: #fff;">
+  <!-- Debug info to see what's happening -->
+  <div style="background: #e5f3ff; border: 1px solid #0066cc; padding: 10px; margin: 10px; border-radius: 5px; font-family: monospace;">
+    <strong>DEBUG INFO:</strong><br>
+    isLoading: {{ isLoading }}<br>
+    workOrders.length: {{ workOrders.length }}<br>
+    workOrders data: {{ workOrders | json }}
+  </div>
+  
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
     <div class="flex items-center justify-center py-8">

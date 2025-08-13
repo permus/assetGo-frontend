@@ -29,7 +29,8 @@ import {
 } from "./chunk-5YESG6NV.js";
 import {
   HttpClient,
-  HttpClientModule
+  HttpClientModule,
+  HttpParams
 } from "./chunk-3DQDTIJW.js";
 import {
   CommonModule,
@@ -43,9 +44,11 @@ import {
   NgIf,
   NgModule,
   Output,
+  Subject,
   Subscription,
   ViewChild,
   setClassMetadata,
+  takeUntil,
   ɵsetClassDebugInfo,
   ɵɵadvance,
   ɵɵclassMap,
@@ -68,9 +71,11 @@ import {
   ɵɵpipe,
   ɵɵpipeBind2,
   ɵɵproperty,
+  ɵɵpureFunction0,
   ɵɵqueryRefresh,
   ɵɵresetView,
   ɵɵrestoreView,
+  ɵɵstyleProp,
   ɵɵtemplate,
   ɵɵtext,
   ɵɵtextInterpolate,
@@ -103,9 +108,18 @@ var WorkOrderService = class _WorkOrderService {
       }, token ? { "Authorization": `Bearer ${token}` } : {})
     };
   }
-  // Get all work orders with pagination
-  getWorkOrders() {
-    return this.http.get(this.apiUrl, this.getAuthHeaders());
+  // Enhanced: Get all work orders with advanced filtering and search
+  getWorkOrders(params) {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        const value = params[key];
+        if (value !== void 0 && value !== null && value !== "") {
+          httpParams = httpParams.set(key, value.toString());
+        }
+      });
+    }
+    return this.http.get(this.apiUrl, __spreadProps(__spreadValues({}, this.getAuthHeaders()), { params: httpParams }));
   }
   // Get a single work order by ID
   getWorkOrderById(id) {
@@ -115,7 +129,40 @@ var WorkOrderService = class _WorkOrderService {
   createWorkOrder(workOrder) {
     return this.http.post(this.apiUrl, workOrder, this.getAuthHeaders());
   }
-  // Get work order statistics
+  // Update an existing work order
+  updateWorkOrder(id, workOrder) {
+    return this.http.put(`${this.apiUrl}/${id}`, workOrder, this.getAuthHeaders());
+  }
+  // Delete a work order
+  deleteWorkOrder(id) {
+    return this.http.delete(`${this.apiUrl}/${id}`, this.getAuthHeaders());
+  }
+  // Get comprehensive work order analytics
+  getWorkOrderAnalytics() {
+    return this.http.get(`${this.apiUrl}/analytics`, this.getAuthHeaders());
+  }
+  // Get basic work order statistics
+  getWorkOrderStatistics() {
+    return this.http.get(`${this.apiUrl}/statistics`, this.getAuthHeaders());
+  }
+  // Get work order count with filters
+  getWorkOrderCount(params) {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        const value = params[key];
+        if (value !== void 0 && value !== null && value !== "") {
+          httpParams = httpParams.set(key, value.toString());
+        }
+      });
+    }
+    return this.http.get(`${this.apiUrl}/count`, __spreadProps(__spreadValues({}, this.getAuthHeaders()), { params: httpParams }));
+  }
+  // Get available filter options
+  getWorkOrderFilters() {
+    return this.http.get(`${this.apiUrl}/filters`, this.getAuthHeaders());
+  }
+  // Legacy: Get work order statistics (kept for backward compatibility)
   getWorkOrderStats() {
     return this.http.get(`${this.apiUrl}/count`, this.getAuthHeaders());
   }
@@ -846,6 +893,938 @@ var WorkOrderStatsComponent = class _WorkOrderStatsComponent {
   (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(WorkOrderStatsComponent, { className: "WorkOrderStatsComponent", filePath: "src/app/work-orders/components/work-order-stats/work-order-stats.component.ts", lineNumber: 11 });
 })();
 
+// src/app/work-orders/components/work-order-analytics/work-order-analytics.component.ts
+var _c0 = () => [0, 1, 2, 3, 4];
+var _c1 = () => [];
+function WorkOrderAnalyticsComponent_div_1_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 4);
+    \u0275\u0275element(1, "div", 5);
+    \u0275\u0275elementStart(2, "p");
+    \u0275\u0275text(3, "Loading work order analytics...");
+    \u0275\u0275elementEnd()();
+  }
+}
+function WorkOrderAnalyticsComponent_div_2_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r1 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 6);
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(1, "svg", 7);
+    \u0275\u0275element(2, "path", 8);
+    \u0275\u0275elementEnd();
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(3, "h3", 9);
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "button", 10);
+    \u0275\u0275listener("click", function WorkOrderAnalyticsComponent_div_2_Template_button_click_5_listener() {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.refreshData());
+    });
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(6, "svg", 11);
+    \u0275\u0275element(7, "path", 12);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(8, " Retry ");
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(4);
+    \u0275\u0275textInterpolate(ctx_r1.error);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_12_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 24)(1, "h3", 25);
+    \u0275\u0275text(2, "Performance Metrics");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 26)(4, "div", 27)(5, "div", 28)(6, "h4", 29);
+    \u0275\u0275text(7, "Average Resolution Time");
+    \u0275\u0275elementEnd();
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(8, "svg", 30);
+    \u0275\u0275element(9, "path", 31);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(10, "div", 32);
+    \u0275\u0275text(11);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(12, "div", 33);
+    \u0275\u0275text(13);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(14, "div", 27)(15, "div", 28)(16, "h4", 29);
+    \u0275\u0275text(17, "Completion Rate");
+    \u0275\u0275elementEnd();
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(18, "svg", 30);
+    \u0275\u0275element(19, "path", 34);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(20, "div", 32);
+    \u0275\u0275text(21);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(22, "div", 35);
+    \u0275\u0275text(23, "Target: 85%");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(24, "div", 27)(25, "div", 28)(26, "h4", 29);
+    \u0275\u0275text(27, "Overdue Work Orders");
+    \u0275\u0275elementEnd();
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(28, "svg", 30);
+    \u0275\u0275element(29, "path", 8);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(30, "div", 36);
+    \u0275\u0275text(31);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(32, "div", 37);
+    \u0275\u0275text(33);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(34, "div", 27)(35, "div", 28)(36, "h4", 29);
+    \u0275\u0275text(37, "Active Technicians");
+    \u0275\u0275elementEnd();
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(38, "svg", 30);
+    \u0275\u0275element(39, "path", 38);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(40, "div", 32);
+    \u0275\u0275text(41);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(42, "div", 39);
+    \u0275\u0275text(43, "Active right now");
+    \u0275\u0275elementEnd()()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(11);
+    \u0275\u0275textInterpolate(ctx_r1.formatDays(ctx_r1.performanceMetrics.average_resolution_time));
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", ctx_r1.performanceMetrics.resolution_time_trend || "No trend data", " ");
+    \u0275\u0275advance(8);
+    \u0275\u0275textInterpolate(ctx_r1.formatPercentage(ctx_r1.performanceMetrics.completion_rate));
+    \u0275\u0275advance(10);
+    \u0275\u0275textInterpolate(ctx_r1.performanceMetrics.overdue_count || 0);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", ctx_r1.performanceMetrics.overdue_trend || "No trend data", " ");
+    \u0275\u0275advance(8);
+    \u0275\u0275textInterpolate(ctx_r1.performanceMetrics.active_technicians || 0);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_13_div_2_div_9_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 57);
+    \u0275\u0275element(1, "div", 58);
+    \u0275\u0275elementStart(2, "span", 59);
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "span", 60);
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "span", 61);
+    \u0275\u0275text(7);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const item_r4 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(4);
+    \u0275\u0275advance();
+    \u0275\u0275styleProp("background-color", item_r4.color);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(item_r4.name);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(item_r4.value);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" (", ctx_r1.formatPercentage(ctx_r1.getStatusPercentage(item_r4.value, ctx_r1.totalStatusCount)), ") ");
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_13_div_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 44)(1, "div", 45)(2, "h3", 46);
+    \u0275\u0275text(3, "Work Order Status Distribution");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "p", 47);
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(6, "div", 48)(7, "div", 49)(8, "div", 50);
+    \u0275\u0275template(9, WorkOrderAnalyticsComponent_div_3_div_13_div_2_div_9_Template, 8, 5, "div", 51);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(10, "div", 52)(11, "div", 53)(12, "div", 54)(13, "span", 55);
+    \u0275\u0275text(14);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(15, "span", 56);
+    \u0275\u0275text(16, "Total");
+    \u0275\u0275elementEnd()()()()()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(5);
+    \u0275\u0275textInterpolate1("Current breakdown by status (", ctx_r1.totalStatusCount, " total)");
+    \u0275\u0275advance(4);
+    \u0275\u0275property("ngForOf", ctx_r1.statusChartData);
+    \u0275\u0275advance(5);
+    \u0275\u0275textInterpolate(ctx_r1.totalStatusCount);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_13_div_3_div_9_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 65)(1, "div", 66);
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 67);
+    \u0275\u0275element(4, "div", 68);
+    \u0275\u0275elementStart(5, "span", 69);
+    \u0275\u0275text(6);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const item_r5 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(4);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(item_r5.name);
+    \u0275\u0275advance(2);
+    \u0275\u0275styleProp("width", ctx_r1.getStatusPercentage(item_r5.value, ctx_r1.totalStatusCount) + "%")("background-color", item_r5.color);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(item_r5.value);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_13_div_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 44)(1, "div", 45)(2, "h3", 46);
+    \u0275\u0275text(3, "Priority Distribution");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "p", 47);
+    \u0275\u0275text(5, "Work orders by priority level with trends");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(6, "div", 48)(7, "div", 62)(8, "div", 63);
+    \u0275\u0275template(9, WorkOrderAnalyticsComponent_div_3_div_13_div_3_div_9_Template, 7, 6, "div", 64);
+    \u0275\u0275elementEnd()()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(9);
+    \u0275\u0275property("ngForOf", ctx_r1.priorityChartData);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_13_div_4_div_21_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "div", 81);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_13_div_4_span_26_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "span");
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const month_r6 = ctx.$implicit;
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(month_r6.month);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_13_div_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 70)(1, "div", 45)(2, "h3", 46);
+    \u0275\u0275text(3, "Monthly Performance Trend");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "p", 47);
+    \u0275\u0275text(5, "Work orders created vs completed with efficiency tracking");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(6, "div", 48)(7, "div", 71)(8, "div", 72)(9, "span");
+    \u0275\u0275text(10, "80");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(11, "span");
+    \u0275\u0275text(12, "60");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(13, "span");
+    \u0275\u0275text(14, "40");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(15, "span");
+    \u0275\u0275text(16, "20");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(17, "span");
+    \u0275\u0275text(18, "0");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(19, "div", 73)(20, "div", 74);
+    \u0275\u0275template(21, WorkOrderAnalyticsComponent_div_3_div_13_div_4_div_21_Template, 1, 0, "div", 75);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(22, "div", 76);
+    \u0275\u0275element(23, "div", 77)(24, "div", 78);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(25, "div", 79);
+    \u0275\u0275template(26, WorkOrderAnalyticsComponent_div_3_div_13_div_4_span_26_Template, 2, 1, "span", 80);
+    \u0275\u0275elementEnd()()()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(21);
+    \u0275\u0275property("ngForOf", \u0275\u0275pureFunction0(6, _c0));
+    \u0275\u0275advance(2);
+    \u0275\u0275styleProp("height", "100%");
+    \u0275\u0275advance();
+    \u0275\u0275styleProp("height", "80%");
+    \u0275\u0275advance(2);
+    \u0275\u0275property("ngForOf", ctx_r1.monthlyTrendData);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_13_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 40)(1, "div", 41);
+    \u0275\u0275template(2, WorkOrderAnalyticsComponent_div_3_div_13_div_2_Template, 17, 3, "div", 42)(3, WorkOrderAnalyticsComponent_div_3_div_13_div_3_Template, 10, 1, "div", 42);
+    \u0275\u0275elementEnd();
+    \u0275\u0275template(4, WorkOrderAnalyticsComponent_div_3_div_13_div_4_Template, 27, 7, "div", 43);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275property("ngIf", ctx_r1.hasStatusDistribution);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r1.hasPriorityDistribution);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r1.hasMonthlyTrends);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_14_div_6_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 86)(1, "div", 87)(2, "h4", 88);
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "div", 89);
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(6, "div", 90)(7, "div", 91)(8, "span", 92);
+    \u0275\u0275text(9, "Completed:");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(10, "span", 32);
+    \u0275\u0275text(11);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(12, "div", 91)(13, "span", 92);
+    \u0275\u0275text(14, "Avg Time:");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(15, "span", 32);
+    \u0275\u0275text(16);
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(17, "div", 93);
+    \u0275\u0275element(18, "div", 94);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const tech_r7 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(tech_r7.name);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(tech_r7.score.toFixed(2));
+    \u0275\u0275advance(6);
+    \u0275\u0275textInterpolate(tech_r7.completed);
+    \u0275\u0275advance(5);
+    \u0275\u0275textInterpolate(ctx_r1.formatDays(tech_r7.avgTime));
+    \u0275\u0275advance(2);
+    \u0275\u0275styleProp("width", tech_r7.score * 100 + "%");
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_14_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 82)(1, "h3", 25);
+    \u0275\u0275text(2, "Top Technician Performance");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "p", 83);
+    \u0275\u0275text(4, "Individual performance metrics for this month");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "div", 84);
+    \u0275\u0275template(6, WorkOrderAnalyticsComponent_div_3_div_14_div_6_Template, 19, 6, "div", 85);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(6);
+    \u0275\u0275property("ngForOf", ctx_r1.technicianData);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_15_div_6_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 98)(1, "div", 99)(2, "span", 100);
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "span", 101);
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(6, "h4", 102);
+    \u0275\u0275text(7);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(8, "p", 103);
+    \u0275\u0275text(9);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const insight_r8 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275classMap(insight_r8.type);
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(ctx_r1.getInsightIcon(insight_r8.type));
+    \u0275\u0275advance();
+    \u0275\u0275classMap(ctx_r1.getInsightColor(insight_r8.type));
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(insight_r8.tag);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(insight_r8.title);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(insight_r8.description);
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_15_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 95)(1, "h3", 25);
+    \u0275\u0275text(2, "Performance Insights & Recommendations");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "p", 83);
+    \u0275\u0275text(4, "AI-powered insights based on current performance data");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "div", 96);
+    \u0275\u0275template(6, WorkOrderAnalyticsComponent_div_3_div_15_div_6_Template, 10, 8, "div", 97);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(6);
+    \u0275\u0275property("ngForOf", (ctx_r1.analyticsData == null ? null : ctx_r1.analyticsData.insights) || \u0275\u0275pureFunction0(1, _c1));
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_div_16_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 104);
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(1, "svg", 105);
+    \u0275\u0275element(2, "path", 106);
+    \u0275\u0275elementEnd();
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(3, "h3", 107);
+    \u0275\u0275text(4, "No Analytics Data Available");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "p", 108);
+    \u0275\u0275text(6, "Work order analytics data will appear here once available.");
+    \u0275\u0275elementEnd()();
+  }
+}
+function WorkOrderAnalyticsComponent_div_3_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div")(1, "div", 13)(2, "div", 14)(3, "h2", 15);
+    \u0275\u0275text(4, "Work Order Analytics");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "p", 16);
+    \u0275\u0275text(6, "Performance insights and trends");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(7, "div", 17)(8, "button", 18);
+    \u0275\u0275listener("click", function WorkOrderAnalyticsComponent_div_3_Template_button_click_8_listener() {
+      \u0275\u0275restoreView(_r3);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.refreshData());
+    });
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(9, "svg", 11);
+    \u0275\u0275element(10, "path", 12);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(11, " Refresh ");
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275template(12, WorkOrderAnalyticsComponent_div_3_div_12_Template, 44, 6, "div", 19)(13, WorkOrderAnalyticsComponent_div_3_div_13_Template, 5, 3, "div", 20)(14, WorkOrderAnalyticsComponent_div_3_div_14_Template, 7, 1, "div", 21)(15, WorkOrderAnalyticsComponent_div_3_div_15_Template, 7, 2, "div", 22)(16, WorkOrderAnalyticsComponent_div_3_div_16_Template, 7, 0, "div", 23);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(12);
+    \u0275\u0275property("ngIf", ctx_r1.analyticsData && ctx_r1.performanceMetrics);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r1.analyticsData);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r1.hasTechnicianData);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r1.hasInsights);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r1.analyticsData && !ctx_r1.hasStatusDistribution && !ctx_r1.hasPriorityDistribution && !ctx_r1.hasMonthlyTrends && !ctx_r1.hasTechnicianData && !ctx_r1.hasInsights);
+  }
+}
+var WorkOrderAnalyticsComponent = class _WorkOrderAnalyticsComponent {
+  workOrderService;
+  destroy$ = new Subject();
+  // Loading and error states
+  loading = false;
+  error = null;
+  // Analytics data
+  analyticsData = null;
+  statisticsData = null;
+  // Chart data for visualization
+  statusChartData = [];
+  priorityChartData = [];
+  monthlyTrendData = [];
+  technicianData = [];
+  constructor(workOrderService) {
+    this.workOrderService = workOrderService;
+  }
+  ngOnInit() {
+    this.loadAnalytics();
+  }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+  loadAnalytics() {
+    this.loading = true;
+    this.error = null;
+    Promise.all([
+      this.loadWorkOrderAnalytics(),
+      this.loadWorkOrderStatistics()
+    ]).finally(() => {
+      this.loading = false;
+    });
+  }
+  loadWorkOrderAnalytics() {
+    return new Promise((resolve) => {
+      this.workOrderService.getWorkOrderAnalytics().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (response) => {
+          this.analyticsData = response;
+          this.prepareChartData();
+          resolve();
+        },
+        error: (err) => {
+          console.error("Error loading work order analytics:", err);
+          this.error = "Failed to load analytics data. Please try again.";
+          resolve();
+        }
+      });
+    });
+  }
+  loadWorkOrderStatistics() {
+    return new Promise((resolve) => {
+      this.workOrderService.getWorkOrderStatistics().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (response) => {
+          this.statisticsData = response;
+          resolve();
+        },
+        error: (err) => {
+          console.error("Error loading work order statistics:", err);
+          resolve();
+        }
+      });
+    });
+  }
+  prepareChartData() {
+    if (!this.analyticsData)
+      return;
+    this.statusChartData = [
+      {
+        name: "Completed",
+        value: this.analyticsData.status_distribution?.completed || 0,
+        color: "#10b981"
+      },
+      {
+        name: "Open",
+        value: this.analyticsData.status_distribution?.open || 0,
+        color: "#ef4444"
+      },
+      {
+        name: "In Progress",
+        value: this.analyticsData.status_distribution?.in_progress || 0,
+        color: "#3b82f6"
+      },
+      {
+        name: "On Hold",
+        value: this.analyticsData.status_distribution?.on_hold || 0,
+        color: "#f59e0b"
+      },
+      {
+        name: "Cancelled",
+        value: this.analyticsData.status_distribution?.cancelled || 0,
+        color: "#6b7280"
+      }
+    ];
+    this.priorityChartData = [
+      {
+        name: "Critical",
+        value: this.analyticsData.priority_distribution?.critical || 0,
+        color: "#dc2626"
+      },
+      {
+        name: "High",
+        value: this.analyticsData.priority_distribution?.high || 0,
+        color: "#f59e0b"
+      },
+      {
+        name: "Medium",
+        value: this.analyticsData.priority_distribution?.medium || 0,
+        color: "#3b82f6"
+      },
+      {
+        name: "Low",
+        value: this.analyticsData.priority_distribution?.low || 0,
+        color: "#10b981"
+      }
+    ];
+    if (this.analyticsData.monthly_trends?.months && this.analyticsData.monthly_trends.months.length > 0) {
+      this.monthlyTrendData = this.analyticsData.monthly_trends.months.map((month, index) => ({
+        month,
+        created: this.analyticsData.monthly_trends.created[index] || 0,
+        completed: this.analyticsData.monthly_trends.completed[index] || 0
+      }));
+    } else {
+      this.monthlyTrendData = [];
+    }
+    if (this.analyticsData.technician_performance && this.analyticsData.technician_performance.length > 0) {
+      this.technicianData = this.analyticsData.technician_performance.map((tech) => ({
+        name: tech.name || "Unknown",
+        score: tech.performance_score || 0,
+        completed: tech.completed_orders || 0,
+        avgTime: tech.average_resolution_time || 0
+      }));
+    } else {
+      this.technicianData = [];
+    }
+  }
+  refreshData() {
+    this.loadAnalytics();
+  }
+  getInsightIcon(type) {
+    switch (type) {
+      case "success":
+        return "\u2713";
+      case "warning":
+        return "\u26A0";
+      case "info":
+        return "\u2139";
+      case "optimization":
+        return "\u{1F4A1}";
+      default:
+        return "\u2139";
+    }
+  }
+  getInsightColor(type) {
+    switch (type) {
+      case "success":
+        return "text-green-600 bg-green-100";
+      case "warning":
+        return "text-yellow-600 bg-yellow-100";
+      case "info":
+        return "text-blue-600 bg-blue-100";
+      case "optimization":
+        return "text-purple-600 bg-purple-100";
+      default:
+        return "text-gray-600 bg-gray-100";
+    }
+  }
+  formatDays(days) {
+    if (!days || days <= 0)
+      return "0 days";
+    if (days === 1)
+      return "1 day";
+    return `${days} days`;
+  }
+  formatPercentage(value) {
+    if (!value || isNaN(value))
+      return "0.0%";
+    return `${value.toFixed(1)}%`;
+  }
+  getStatusPercentage(value, total) {
+    if (!total || total <= 0)
+      return 0;
+    return value / total * 100;
+  }
+  // Safe getters for template usage
+  get hasStatusDistribution() {
+    return !!this.analyticsData?.status_distribution;
+  }
+  get hasPriorityDistribution() {
+    return !!this.analyticsData?.priority_distribution;
+  }
+  get hasMonthlyTrends() {
+    return !!(this.analyticsData?.monthly_trends?.months && this.analyticsData.monthly_trends.months.length > 0);
+  }
+  get hasTechnicianData() {
+    return !!(this.analyticsData?.technician_performance && this.analyticsData.technician_performance.length > 0);
+  }
+  get hasInsights() {
+    return !!(this.analyticsData?.insights && this.analyticsData.insights.length > 0);
+  }
+  get totalStatusCount() {
+    return this.analyticsData?.status_distribution?.total || 0;
+  }
+  get performanceMetrics() {
+    return this.analyticsData?.performance_metrics || {};
+  }
+  static \u0275fac = function WorkOrderAnalyticsComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _WorkOrderAnalyticsComponent)(\u0275\u0275directiveInject(WorkOrderService));
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _WorkOrderAnalyticsComponent, selectors: [["app-work-order-analytics"]], decls: 4, vars: 3, consts: [[1, "work-order-analytics"], ["class", "loading-state", 4, "ngIf"], ["class", "error-state", 4, "ngIf"], [4, "ngIf"], [1, "loading-state"], [1, "loading-spinner"], [1, "error-state"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-12", "h-12", "text-red-500"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"], [1, "error-title"], [1, "btn", "btn-primary", 3, "click"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-4", "h-4"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"], [1, "analytics-header"], [1, "header-left"], [1, "main-title"], [1, "subtitle"], [1, "header-right"], ["title", "Refresh Data", 1, "refresh-btn", 3, "click"], ["class", "metrics-section", 4, "ngIf"], ["class", "charts-section", 4, "ngIf"], ["class", "technician-section", 4, "ngIf"], ["class", "insights-section", 4, "ngIf"], ["class", "no-data-message", 4, "ngIf"], [1, "metrics-section"], [1, "section-title"], [1, "metrics-grid"], [1, "metric-card"], [1, "metric-header"], [1, "metric-title"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "metric-icon"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"], [1, "metric-value"], [1, "metric-trend", "positive"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"], [1, "metric-target"], [1, "metric-value", "warning"], [1, "metric-trend"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"], [1, "metric-status"], [1, "charts-section"], [1, "chart-row"], ["class", "chart-card", 4, "ngIf"], ["class", "chart-card full-width", 4, "ngIf"], [1, "chart-card"], [1, "chart-header"], [1, "chart-title"], [1, "chart-subtitle"], [1, "chart-container"], [1, "pie-chart"], [1, "chart-legend"], ["class", "legend-item", 4, "ngFor", "ngForOf"], [1, "chart-placeholder"], [1, "chart-circle"], [1, "chart-center"], [1, "total-count"], [1, "total-label"], [1, "legend-item"], [1, "legend-color"], [1, "legend-label"], [1, "legend-value"], [1, "legend-percentage"], [1, "bar-chart"], [1, "chart-bars"], ["class", "bar-item", 4, "ngFor", "ngForOf"], [1, "bar-item"], [1, "bar-label"], [1, "bar-container"], [1, "bar"], [1, "bar-value"], [1, "chart-card", "full-width"], [1, "trend-chart"], [1, "chart-y-axis"], [1, "chart-area"], [1, "grid-lines"], ["class", "grid-line", 4, "ngFor", "ngForOf"], [1, "trend-lines"], ["title", "Work orders created", 1, "trend-line", "created"], ["title", "Work orders completed", 1, "trend-line", "completed"], [1, "chart-x-axis"], [4, "ngFor", "ngForOf"], [1, "grid-line"], [1, "technician-section"], [1, "section-subtitle"], [1, "technician-grid"], ["class", "technician-card", 4, "ngFor", "ngForOf"], [1, "technician-card"], [1, "tech-header"], [1, "tech-name"], [1, "tech-score"], [1, "tech-metrics"], [1, "tech-metric"], [1, "metric-label"], [1, "performance-bar"], [1, "bar-fill"], [1, "insights-section"], [1, "insights-grid"], ["class", "insight-card", 3, "class", 4, "ngFor", "ngForOf"], [1, "insight-card"], [1, "insight-header"], [1, "insight-icon"], [1, "insight-tag"], [1, "insight-title"], [1, "insight-description"], [1, "no-data-message"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-16", "h-16", "text-gray-400"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"], [1, "no-data-title"], [1, "no-data-description"]], template: function WorkOrderAnalyticsComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 0);
+      \u0275\u0275template(1, WorkOrderAnalyticsComponent_div_1_Template, 4, 0, "div", 1)(2, WorkOrderAnalyticsComponent_div_2_Template, 9, 1, "div", 2)(3, WorkOrderAnalyticsComponent_div_3_Template, 17, 5, "div", 3);
+      \u0275\u0275elementEnd();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", ctx.loading);
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", ctx.error && !ctx.loading);
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", !ctx.loading && !ctx.error);
+    }
+  }, dependencies: [CommonModule, NgForOf, NgIf], styles: ['\n\n.work-order-analytics[_ngcontent-%COMP%] {\n  padding: 1.5rem;\n  background-color: #f8fafc;\n  min-height: 100vh;\n}\n.loading-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 4rem 2rem;\n  text-align: center;\n}\n.loading-state[_ngcontent-%COMP%]   .loading-spinner[_ngcontent-%COMP%] {\n  width: 3rem;\n  height: 3rem;\n  border: 3px solid #e2e8f0;\n  border-top: 3px solid #3b82f6;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 1s linear infinite;\n  margin-bottom: 1rem;\n}\n.loading-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 1.125rem;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.error-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 4rem 2rem;\n  text-align: center;\n}\n.error-state[_ngcontent-%COMP%]   .error-title[_ngcontent-%COMP%] {\n  color: #dc2626;\n  font-size: 1.25rem;\n  font-weight: 600;\n  margin: 1rem 0;\n}\n.error-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.5rem;\n  font-weight: 500;\n  transition: all 0.2s;\n}\n.error-state[_ngcontent-%COMP%]   .btn.btn-primary[_ngcontent-%COMP%] {\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n}\n.error-state[_ngcontent-%COMP%]   .btn.btn-primary[_ngcontent-%COMP%]:hover {\n  background-color: #2563eb;\n}\n.no-data-message[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 4rem 2rem;\n  text-align: center;\n  background: white;\n  border-radius: 0.75rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n}\n.no-data-message[_ngcontent-%COMP%]   .no-data-title[_ngcontent-%COMP%] {\n  color: #374151;\n  font-size: 1.5rem;\n  font-weight: 600;\n  margin: 1rem 0 0.5rem 0;\n}\n.no-data-message[_ngcontent-%COMP%]   .no-data-description[_ngcontent-%COMP%] {\n  color: #6b7280;\n  font-size: 1rem;\n  margin: 0;\n}\n.analytics-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  margin-bottom: 2rem;\n  background: white;\n  padding: 1.5rem;\n  border-radius: 0.75rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n}\n.analytics-header[_ngcontent-%COMP%]   .header-left[_ngcontent-%COMP%]   .main-title[_ngcontent-%COMP%] {\n  font-size: 1.875rem;\n  font-weight: 700;\n  color: #1e293b;\n  margin: 0 0 0.5rem 0;\n}\n.analytics-header[_ngcontent-%COMP%]   .header-left[_ngcontent-%COMP%]   .subtitle[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 1.125rem;\n  margin: 0;\n}\n.analytics-header[_ngcontent-%COMP%]   .header-right[_ngcontent-%COMP%]   .refresh-btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1rem;\n  background-color: #f3f4f6;\n  color: #374151;\n  border: none;\n  border-radius: 0.5rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.analytics-header[_ngcontent-%COMP%]   .header-right[_ngcontent-%COMP%]   .refresh-btn[_ngcontent-%COMP%]:hover {\n  background-color: #e5e7eb;\n  transform: translateY(-1px);\n}\n.section-title[_ngcontent-%COMP%] {\n  font-size: 1.5rem;\n  font-weight: 600;\n  color: #1e293b;\n  margin: 0 0 1rem 0;\n}\n.section-subtitle[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 1rem;\n  margin: 0 0 1.5rem 0;\n}\n.metrics-section[_ngcontent-%COMP%] {\n  margin-bottom: 2rem;\n}\n.metrics-section[_ngcontent-%COMP%]   .metrics-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1.5rem;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%] {\n  background: white;\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n  border: 1px solid #e2e8f0;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 1rem;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-header[_ngcontent-%COMP%]   .metric-title[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  font-weight: 600;\n  color: #64748b;\n  margin: 0;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-header[_ngcontent-%COMP%]   .metric-icon[_ngcontent-%COMP%] {\n  width: 1.5rem;\n  height: 1.5rem;\n  color: #6b7280;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-value[_ngcontent-%COMP%] {\n  font-size: 2rem;\n  font-weight: 700;\n  color: #1e293b;\n  margin-bottom: 0.5rem;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-value.warning[_ngcontent-%COMP%] {\n  color: #f59e0b;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-trend[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  color: #64748b;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-trend.positive[_ngcontent-%COMP%] {\n  color: #10b981;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-target[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  color: #64748b;\n}\n.metrics-section[_ngcontent-%COMP%]   .metric-card[_ngcontent-%COMP%]   .metric-status[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  color: #10b981;\n  font-weight: 500;\n}\n.charts-section[_ngcontent-%COMP%] {\n  margin-bottom: 2rem;\n}\n.charts-section[_ngcontent-%COMP%]   .chart-row[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n  gap: 1.5rem;\n  margin-bottom: 1.5rem;\n}\n.charts-section[_ngcontent-%COMP%]   .chart-card[_ngcontent-%COMP%] {\n  background: white;\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n}\n.charts-section[_ngcontent-%COMP%]   .chart-card.full-width[_ngcontent-%COMP%] {\n  grid-column: 1/-1;\n}\n.charts-section[_ngcontent-%COMP%]   .chart-card[_ngcontent-%COMP%]   .chart-header[_ngcontent-%COMP%] {\n  margin-bottom: 1.5rem;\n}\n.charts-section[_ngcontent-%COMP%]   .chart-card[_ngcontent-%COMP%]   .chart-header[_ngcontent-%COMP%]   .chart-title[_ngcontent-%COMP%] {\n  font-size: 1.25rem;\n  font-weight: 600;\n  color: #1e293b;\n  margin: 0 0 0.5rem 0;\n}\n.charts-section[_ngcontent-%COMP%]   .chart-card[_ngcontent-%COMP%]   .chart-header[_ngcontent-%COMP%]   .chart-subtitle[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 0.875rem;\n  margin: 0;\n}\n.charts-section[_ngcontent-%COMP%]   .chart-card[_ngcontent-%COMP%]   .chart-container[_ngcontent-%COMP%] {\n  min-height: 300px;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 2rem;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-legend[_ngcontent-%COMP%] {\n  flex: 1;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-legend[_ngcontent-%COMP%]   .legend-item[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  margin-bottom: 0.75rem;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-legend[_ngcontent-%COMP%]   .legend-item[_ngcontent-%COMP%]   .legend-color[_ngcontent-%COMP%] {\n  width: 1rem;\n  height: 1rem;\n  border-radius: 50%;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-legend[_ngcontent-%COMP%]   .legend-item[_ngcontent-%COMP%]   .legend-label[_ngcontent-%COMP%] {\n  font-weight: 500;\n  color: #374151;\n  min-width: 80px;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-legend[_ngcontent-%COMP%]   .legend-item[_ngcontent-%COMP%]   .legend-value[_ngcontent-%COMP%] {\n  font-weight: 600;\n  color: #1e293b;\n  min-width: 30px;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-legend[_ngcontent-%COMP%]   .legend-item[_ngcontent-%COMP%]   .legend-percentage[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 0.875rem;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%]   .chart-circle[_ngcontent-%COMP%] {\n  width: 200px;\n  height: 200px;\n  border-radius: 50%;\n  background:\n    conic-gradient(\n      #10b981 0deg 174deg,\n      #ef4444 174deg 234deg,\n      #3b82f6 234deg 264deg,\n      #f59e0b 264deg 285deg,\n      #6b7280 285deg 360deg);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%]   .chart-circle[_ngcontent-%COMP%]::before {\n  content: "";\n  position: absolute;\n  width: 120px;\n  height: 120px;\n  background: white;\n  border-radius: 50%;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%]   .chart-circle[_ngcontent-%COMP%]   .chart-center[_ngcontent-%COMP%] {\n  text-align: center;\n  z-index: 1;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%]   .chart-circle[_ngcontent-%COMP%]   .chart-center[_ngcontent-%COMP%]   .total-count[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 2rem;\n  font-weight: 700;\n  color: #1e293b;\n}\n.charts-section[_ngcontent-%COMP%]   .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%]   .chart-circle[_ngcontent-%COMP%]   .chart-center[_ngcontent-%COMP%]   .total-label[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  color: #64748b;\n}\n.charts-section[_ngcontent-%COMP%]   .bar-chart[_ngcontent-%COMP%]   .chart-bars[_ngcontent-%COMP%]   .bar-item[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n  margin-bottom: 1rem;\n}\n.charts-section[_ngcontent-%COMP%]   .bar-chart[_ngcontent-%COMP%]   .chart-bars[_ngcontent-%COMP%]   .bar-item[_ngcontent-%COMP%]   .bar-label[_ngcontent-%COMP%] {\n  min-width: 60px;\n  font-weight: 500;\n  color: #374151;\n  font-size: 0.875rem;\n}\n.charts-section[_ngcontent-%COMP%]   .bar-chart[_ngcontent-%COMP%]   .chart-bars[_ngcontent-%COMP%]   .bar-item[_ngcontent-%COMP%]   .bar-container[_ngcontent-%COMP%] {\n  flex: 1;\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n}\n.charts-section[_ngcontent-%COMP%]   .bar-chart[_ngcontent-%COMP%]   .chart-bars[_ngcontent-%COMP%]   .bar-item[_ngcontent-%COMP%]   .bar-container[_ngcontent-%COMP%]   .bar[_ngcontent-%COMP%] {\n  height: 2rem;\n  border-radius: 0.25rem;\n  min-width: 20px;\n  transition: width 0.3s ease;\n}\n.charts-section[_ngcontent-%COMP%]   .bar-chart[_ngcontent-%COMP%]   .chart-bars[_ngcontent-%COMP%]   .bar-item[_ngcontent-%COMP%]   .bar-container[_ngcontent-%COMP%]   .bar-value[_ngcontent-%COMP%] {\n  font-weight: 600;\n  color: #1e293b;\n  min-width: 30px;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%] {\n  display: flex;\n  height: 300px;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-y-axis[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  padding-right: 1rem;\n  font-size: 0.75rem;\n  color: #6b7280;\n  font-weight: 500;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%] {\n  flex: 1;\n  position: relative;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .grid-lines[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .grid-lines[_ngcontent-%COMP%]   .grid-line[_ngcontent-%COMP%] {\n  position: absolute;\n  left: 0;\n  right: 0;\n  height: 1px;\n  background-color: #f3f4f6;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .grid-lines[_ngcontent-%COMP%]   .grid-line[_ngcontent-%COMP%]:nth-child(1) {\n  top: 0;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .grid-lines[_ngcontent-%COMP%]   .grid-line[_ngcontent-%COMP%]:nth-child(2) {\n  top: 25%;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .grid-lines[_ngcontent-%COMP%]   .grid-line[_ngcontent-%COMP%]:nth-child(3) {\n  top: 50%;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .grid-lines[_ngcontent-%COMP%]   .grid-line[_ngcontent-%COMP%]:nth-child(4) {\n  top: 75%;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .grid-lines[_ngcontent-%COMP%]   .grid-line[_ngcontent-%COMP%]:nth-child(5) {\n  top: 100%;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .trend-lines[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .trend-lines[_ngcontent-%COMP%]   .trend-line[_ngcontent-%COMP%] {\n  position: absolute;\n  width: 100%;\n  background:\n    linear-gradient(\n      90deg,\n      transparent 0%,\n      rgba(59, 130, 246, 0.1) 100%);\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .trend-lines[_ngcontent-%COMP%]   .trend-line.created[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      90deg,\n      transparent 0%,\n      rgba(59, 130, 246, 0.2) 100%);\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .trend-lines[_ngcontent-%COMP%]   .trend-line.completed[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      90deg,\n      transparent 0%,\n      rgba(16, 185, 129, 0.2) 100%);\n}\n.charts-section[_ngcontent-%COMP%]   .trend-chart[_ngcontent-%COMP%]   .chart-area[_ngcontent-%COMP%]   .chart-x-axis[_ngcontent-%COMP%] {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  display: flex;\n  justify-content: space-between;\n  padding: 0 1rem;\n  font-size: 0.75rem;\n  color: #6b7280;\n  font-weight: 500;\n}\n.technician-section[_ngcontent-%COMP%] {\n  margin-bottom: 2rem;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n  gap: 1.5rem;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%] {\n  background: white;\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .tech-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 1rem;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .tech-header[_ngcontent-%COMP%]   .tech-name[_ngcontent-%COMP%] {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #1e293b;\n  margin: 0;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .tech-header[_ngcontent-%COMP%]   .tech-score[_ngcontent-%COMP%] {\n  font-size: 1.5rem;\n  font-weight: 700;\n  color: #3b82f6;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .tech-metrics[_ngcontent-%COMP%] {\n  margin-bottom: 1rem;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .tech-metrics[_ngcontent-%COMP%]   .tech-metric[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 0.5rem;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .tech-metrics[_ngcontent-%COMP%]   .tech-metric[_ngcontent-%COMP%]   .metric-label[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 0.875rem;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .tech-metrics[_ngcontent-%COMP%]   .tech-metric[_ngcontent-%COMP%]   .metric-value[_ngcontent-%COMP%] {\n  font-weight: 600;\n  color: #1e293b;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .performance-bar[_ngcontent-%COMP%] {\n  height: 0.5rem;\n  background-color: #f3f4f6;\n  border-radius: 0.25rem;\n  overflow: hidden;\n}\n.technician-section[_ngcontent-%COMP%]   .technician-card[_ngcontent-%COMP%]   .performance-bar[_ngcontent-%COMP%]   .bar-fill[_ngcontent-%COMP%] {\n  height: 100%;\n  background-color: #3b82f6;\n  border-radius: 0.25rem;\n  transition: width 0.3s ease;\n}\n.insights-section[_ngcontent-%COMP%] {\n  margin-bottom: 2rem;\n}\n.insights-section[_ngcontent-%COMP%]   .insights-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n  gap: 1.5rem;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card[_ngcontent-%COMP%] {\n  background: white;\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n  border-left: 4px solid;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card.success[_ngcontent-%COMP%] {\n  border-left-color: #10b981;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card.warning[_ngcontent-%COMP%] {\n  border-left-color: #f59e0b;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card.info[_ngcontent-%COMP%] {\n  border-left-color: #3b82f6;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card.optimization[_ngcontent-%COMP%] {\n  border-left-color: #8b5cf6;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card[_ngcontent-%COMP%]   .insight-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 1rem;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card[_ngcontent-%COMP%]   .insight-header[_ngcontent-%COMP%]   .insight-icon[_ngcontent-%COMP%] {\n  font-size: 1.5rem;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card[_ngcontent-%COMP%]   .insight-header[_ngcontent-%COMP%]   .insight-tag[_ngcontent-%COMP%] {\n  padding: 0.25rem 0.75rem;\n  border-radius: 9999px;\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card[_ngcontent-%COMP%]   .insight-title[_ngcontent-%COMP%] {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #1e293b;\n  margin: 0 0 0.5rem 0;\n}\n.insights-section[_ngcontent-%COMP%]   .insight-card[_ngcontent-%COMP%]   .insight-description[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 0.875rem;\n  margin: 0;\n  line-height: 1.5;\n}\n@media (max-width: 768px) {\n  .work-order-analytics[_ngcontent-%COMP%] {\n    padding: 1rem;\n  }\n  .analytics-header[_ngcontent-%COMP%] {\n    flex-direction: column;\n    gap: 1rem;\n  }\n  .analytics-header[_ngcontent-%COMP%]   .header-right[_ngcontent-%COMP%] {\n    width: 100%;\n    display: flex;\n    justify-content: center;\n  }\n  .metrics-grid[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .chart-row[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .pie-chart[_ngcontent-%COMP%] {\n    flex-direction: column;\n    gap: 1rem;\n  }\n  .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%]   .chart-circle[_ngcontent-%COMP%] {\n    width: 150px;\n    height: 150px;\n  }\n  .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%]   .chart-circle[_ngcontent-%COMP%]::before {\n    width: 90px;\n    height: 90px;\n  }\n  .pie-chart[_ngcontent-%COMP%]   .chart-placeholder[_ngcontent-%COMP%]   .chart-circle[_ngcontent-%COMP%]   .chart-center[_ngcontent-%COMP%]   .total-count[_ngcontent-%COMP%] {\n    font-size: 1.5rem;\n  }\n  .technician-grid[_ngcontent-%COMP%], \n   .insights-grid[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n}\n/*# sourceMappingURL=work-order-analytics.component.css.map */'] });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(WorkOrderAnalyticsComponent, [{
+    type: Component,
+    args: [{ selector: "app-work-order-analytics", standalone: true, imports: [CommonModule], template: `<div class="work-order-analytics">\r
+  <!-- Loading State -->\r
+  <div *ngIf="loading" class="loading-state">\r
+    <div class="loading-spinner"></div>\r
+    <p>Loading work order analytics...</p>\r
+  </div>\r
+\r
+  <!-- Error State -->\r
+  <div *ngIf="error && !loading" class="error-state">\r
+    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>\r
+    </svg>\r
+    <h3 class="error-title">{{ error }}</h3>\r
+    <button class="btn btn-primary" (click)="refreshData()">\r
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>\r
+      </svg>\r
+      Retry\r
+    </button>\r
+  </div>\r
+\r
+  <!-- Analytics Content -->\r
+  <div *ngIf="!loading && !error">\r
+    <!-- Header Section -->\r
+    <div class="analytics-header">\r
+      <div class="header-left">\r
+        <h2 class="main-title">Work Order Analytics</h2>\r
+        <p class="subtitle">Performance insights and trends</p>\r
+      </div>\r
+      <div class="header-right">\r
+        <button class="refresh-btn" (click)="refreshData()" title="Refresh Data">\r
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>\r
+          </svg>\r
+          Refresh\r
+        </button>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Performance Metrics Cards -->\r
+    <div class="metrics-section" *ngIf="analyticsData && performanceMetrics">\r
+      <h3 class="section-title">Performance Metrics</h3>\r
+      <div class="metrics-grid">\r
+        <div class="metric-card">\r
+          <div class="metric-header">\r
+            <h4 class="metric-title">Average Resolution Time</h4>\r
+            <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+            </svg>\r
+          </div>\r
+          <div class="metric-value">{{ formatDays(performanceMetrics.average_resolution_time) }}</div>\r
+          <div class="metric-trend positive">\r
+            {{ performanceMetrics.resolution_time_trend || 'No trend data' }}\r
+          </div>\r
+        </div>\r
+\r
+        <div class="metric-card">\r
+          <div class="metric-header">\r
+            <h4 class="metric-title">Completion Rate</h4>\r
+            <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+            </svg>\r
+          </div>\r
+          <div class="metric-value">{{ formatPercentage(performanceMetrics.completion_rate) }}</div>\r
+          <div class="metric-target">Target: 85%</div>\r
+        </div>\r
+\r
+        <div class="metric-card">\r
+          <div class="metric-header">\r
+            <h4 class="metric-title">Overdue Work Orders</h4>\r
+            <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>\r
+            </svg>\r
+          </div>\r
+          <div class="metric-value warning">{{ performanceMetrics.overdue_count || 0 }}</div>\r
+          <div class="metric-trend">\r
+            {{ performanceMetrics.overdue_trend || 'No trend data' }}\r
+          </div>\r
+        </div>\r
+\r
+        <div class="metric-card">\r
+          <div class="metric-header">\r
+            <h4 class="metric-title">Active Technicians</h4>\r
+            <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>\r
+            </svg>\r
+          </div>\r
+          <div class="metric-value">{{ performanceMetrics.active_technicians || 0 }}</div>\r
+          <div class="metric-status">Active right now</div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Charts Section -->\r
+    <div class="charts-section" *ngIf="analyticsData">\r
+      <div class="chart-row">\r
+        <!-- Status Distribution Chart -->\r
+        <div class="chart-card" *ngIf="hasStatusDistribution">\r
+          <div class="chart-header">\r
+            <h3 class="chart-title">Work Order Status Distribution</h3>\r
+            <p class="chart-subtitle">Current breakdown by status ({{ totalStatusCount }} total)</p>\r
+          </div>\r
+          <div class="chart-container">\r
+            <div class="pie-chart">\r
+              <div class="chart-legend">\r
+                <div class="legend-item" *ngFor="let item of statusChartData">\r
+                  <div class="legend-color" [style.background-color]="item.color"></div>\r
+                  <span class="legend-label">{{ item.name }}</span>\r
+                  <span class="legend-value">{{ item.value }}</span>\r
+                  <span class="legend-percentage">\r
+                    ({{ formatPercentage(getStatusPercentage(item.value, totalStatusCount)) }})\r
+                  </span>\r
+                </div>\r
+              </div>\r
+              <div class="chart-placeholder">\r
+                <div class="chart-circle">\r
+                  <div class="chart-center">\r
+                    <span class="total-count">{{ totalStatusCount }}</span>\r
+                    <span class="total-label">Total</span>\r
+                  </div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Priority Distribution Chart -->\r
+        <div class="chart-card" *ngIf="hasPriorityDistribution">\r
+          <div class="chart-header">\r
+            <h3 class="chart-title">Priority Distribution</h3>\r
+            <p class="chart-subtitle">Work orders by priority level with trends</p>\r
+          </div>\r
+          <div class="chart-container">\r
+            <div class="bar-chart">\r
+              <div class="chart-bars">\r
+                <div class="bar-item" *ngFor="let item of priorityChartData">\r
+                  <div class="bar-label">{{ item.name }}</div>\r
+                  <div class="bar-container">\r
+                    <div class="bar" \r
+                         [style.width]="getStatusPercentage(item.value, totalStatusCount) + '%'"\r
+                         [style.background-color]="item.color"></div>\r
+                    <span class="bar-value">{{ item.value }}</span>\r
+                  </div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Monthly Performance Trend -->\r
+      <div class="chart-card full-width" *ngIf="hasMonthlyTrends">\r
+        <div class="chart-header">\r
+          <h3 class="chart-title">Monthly Performance Trend</h3>\r
+          <p class="chart-subtitle">Work orders created vs completed with efficiency tracking</p>\r
+        </div>\r
+        <div class="chart-container">\r
+          <div class="trend-chart">\r
+            <div class="chart-y-axis">\r
+              <span>80</span>\r
+              <span>60</span>\r
+              <span>40</span>\r
+              <span>20</span>\r
+              <span>0</span>\r
+            </div>\r
+            <div class="chart-area">\r
+              <div class="grid-lines">\r
+                <div class="grid-line" *ngFor="let i of [0,1,2,3,4]"></div>\r
+              </div>\r
+              <div class="trend-lines">\r
+                <div class="trend-line created" \r
+                     [style.height]="'100%'"\r
+                     title="Work orders created"></div>\r
+                <div class="trend-line completed" \r
+                     [style.height]="'80%'"\r
+                     title="Work orders completed"></div>\r
+              </div>\r
+              <div class="chart-x-axis">\r
+                <span *ngFor="let month of monthlyTrendData">{{ month.month }}</span>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Technician Performance Section -->\r
+    <div class="technician-section" *ngIf="hasTechnicianData">\r
+      <h3 class="section-title">Top Technician Performance</h3>\r
+      <p class="section-subtitle">Individual performance metrics for this month</p>\r
+      <div class="technician-grid">\r
+        <div class="technician-card" *ngFor="let tech of technicianData">\r
+          <div class="tech-header">\r
+            <h4 class="tech-name">{{ tech.name }}</h4>\r
+            <div class="tech-score">{{ tech.score.toFixed(2) }}</div>\r
+          </div>\r
+          <div class="tech-metrics">\r
+            <div class="tech-metric">\r
+              <span class="metric-label">Completed:</span>\r
+              <span class="metric-value">{{ tech.completed }}</span>\r
+            </div>\r
+            <div class="tech-metric">\r
+              <span class="metric-label">Avg Time:</span>\r
+              <span class="metric-value">{{ formatDays(tech.avgTime) }}</span>\r
+            </div>\r
+          </div>\r
+          <div class="performance-bar">\r
+            <div class="bar-fill" [style.width]="(tech.score * 100) + '%'"></div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Performance Insights Section -->\r
+    <div class="insights-section" *ngIf="hasInsights">\r
+      <h3 class="section-title">Performance Insights & Recommendations</h3>\r
+      <p class="section-subtitle">AI-powered insights based on current performance data</p>\r
+      <div class="insights-grid">\r
+        <div class="insight-card" \r
+             *ngFor="let insight of (analyticsData?.insights || [])"\r
+             [class]="insight.type">\r
+          <div class="insight-header">\r
+            <span class="insight-icon">{{ getInsightIcon(insight.type) }}</span>\r
+            <span class="insight-tag" [class]="getInsightColor(insight.type)">{{ insight.tag }}</span>\r
+          </div>\r
+          <h4 class="insight-title">{{ insight.title }}</h4>\r
+          <p class="insight-description">{{ insight.description }}</p>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- No Data Message -->\r
+    <div *ngIf="analyticsData && !hasStatusDistribution && !hasPriorityDistribution && !hasMonthlyTrends && !hasTechnicianData && !hasInsights" class="no-data-message">\r
+      <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>\r
+      </svg>\r
+      <h3 class="no-data-title">No Analytics Data Available</h3>\r
+      <p class="no-data-description">Work order analytics data will appear here once available.</p>\r
+    </div>\r
+  </div>\r
+</div>\r
+`, styles: ['/* src/app/work-orders/components/work-order-analytics/work-order-analytics.component.scss */\n.work-order-analytics {\n  padding: 1.5rem;\n  background-color: #f8fafc;\n  min-height: 100vh;\n}\n.loading-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 4rem 2rem;\n  text-align: center;\n}\n.loading-state .loading-spinner {\n  width: 3rem;\n  height: 3rem;\n  border: 3px solid #e2e8f0;\n  border-top: 3px solid #3b82f6;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n  margin-bottom: 1rem;\n}\n.loading-state p {\n  color: #64748b;\n  font-size: 1.125rem;\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.error-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 4rem 2rem;\n  text-align: center;\n}\n.error-state .error-title {\n  color: #dc2626;\n  font-size: 1.25rem;\n  font-weight: 600;\n  margin: 1rem 0;\n}\n.error-state .btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.5rem;\n  font-weight: 500;\n  transition: all 0.2s;\n}\n.error-state .btn.btn-primary {\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n}\n.error-state .btn.btn-primary:hover {\n  background-color: #2563eb;\n}\n.no-data-message {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 4rem 2rem;\n  text-align: center;\n  background: white;\n  border-radius: 0.75rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n}\n.no-data-message .no-data-title {\n  color: #374151;\n  font-size: 1.5rem;\n  font-weight: 600;\n  margin: 1rem 0 0.5rem 0;\n}\n.no-data-message .no-data-description {\n  color: #6b7280;\n  font-size: 1rem;\n  margin: 0;\n}\n.analytics-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  margin-bottom: 2rem;\n  background: white;\n  padding: 1.5rem;\n  border-radius: 0.75rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n}\n.analytics-header .header-left .main-title {\n  font-size: 1.875rem;\n  font-weight: 700;\n  color: #1e293b;\n  margin: 0 0 0.5rem 0;\n}\n.analytics-header .header-left .subtitle {\n  color: #64748b;\n  font-size: 1.125rem;\n  margin: 0;\n}\n.analytics-header .header-right .refresh-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1rem;\n  background-color: #f3f4f6;\n  color: #374151;\n  border: none;\n  border-radius: 0.5rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.analytics-header .header-right .refresh-btn:hover {\n  background-color: #e5e7eb;\n  transform: translateY(-1px);\n}\n.section-title {\n  font-size: 1.5rem;\n  font-weight: 600;\n  color: #1e293b;\n  margin: 0 0 1rem 0;\n}\n.section-subtitle {\n  color: #64748b;\n  font-size: 1rem;\n  margin: 0 0 1.5rem 0;\n}\n.metrics-section {\n  margin-bottom: 2rem;\n}\n.metrics-section .metrics-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1.5rem;\n}\n.metrics-section .metric-card {\n  background: white;\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n  border: 1px solid #e2e8f0;\n}\n.metrics-section .metric-card .metric-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 1rem;\n}\n.metrics-section .metric-card .metric-header .metric-title {\n  font-size: 0.875rem;\n  font-weight: 600;\n  color: #64748b;\n  margin: 0;\n}\n.metrics-section .metric-card .metric-header .metric-icon {\n  width: 1.5rem;\n  height: 1.5rem;\n  color: #6b7280;\n}\n.metrics-section .metric-card .metric-value {\n  font-size: 2rem;\n  font-weight: 700;\n  color: #1e293b;\n  margin-bottom: 0.5rem;\n}\n.metrics-section .metric-card .metric-value.warning {\n  color: #f59e0b;\n}\n.metrics-section .metric-card .metric-trend {\n  font-size: 0.875rem;\n  color: #64748b;\n}\n.metrics-section .metric-card .metric-trend.positive {\n  color: #10b981;\n}\n.metrics-section .metric-card .metric-target {\n  font-size: 0.875rem;\n  color: #64748b;\n}\n.metrics-section .metric-card .metric-status {\n  font-size: 0.875rem;\n  color: #10b981;\n  font-weight: 500;\n}\n.charts-section {\n  margin-bottom: 2rem;\n}\n.charts-section .chart-row {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n  gap: 1.5rem;\n  margin-bottom: 1.5rem;\n}\n.charts-section .chart-card {\n  background: white;\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n}\n.charts-section .chart-card.full-width {\n  grid-column: 1/-1;\n}\n.charts-section .chart-card .chart-header {\n  margin-bottom: 1.5rem;\n}\n.charts-section .chart-card .chart-header .chart-title {\n  font-size: 1.25rem;\n  font-weight: 600;\n  color: #1e293b;\n  margin: 0 0 0.5rem 0;\n}\n.charts-section .chart-card .chart-header .chart-subtitle {\n  color: #64748b;\n  font-size: 0.875rem;\n  margin: 0;\n}\n.charts-section .chart-card .chart-container {\n  min-height: 300px;\n}\n.charts-section .pie-chart {\n  display: flex;\n  align-items: center;\n  gap: 2rem;\n}\n.charts-section .pie-chart .chart-legend {\n  flex: 1;\n}\n.charts-section .pie-chart .chart-legend .legend-item {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  margin-bottom: 0.75rem;\n}\n.charts-section .pie-chart .chart-legend .legend-item .legend-color {\n  width: 1rem;\n  height: 1rem;\n  border-radius: 50%;\n}\n.charts-section .pie-chart .chart-legend .legend-item .legend-label {\n  font-weight: 500;\n  color: #374151;\n  min-width: 80px;\n}\n.charts-section .pie-chart .chart-legend .legend-item .legend-value {\n  font-weight: 600;\n  color: #1e293b;\n  min-width: 30px;\n}\n.charts-section .pie-chart .chart-legend .legend-item .legend-percentage {\n  color: #64748b;\n  font-size: 0.875rem;\n}\n.charts-section .pie-chart .chart-placeholder {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.charts-section .pie-chart .chart-placeholder .chart-circle {\n  width: 200px;\n  height: 200px;\n  border-radius: 50%;\n  background:\n    conic-gradient(\n      #10b981 0deg 174deg,\n      #ef4444 174deg 234deg,\n      #3b82f6 234deg 264deg,\n      #f59e0b 264deg 285deg,\n      #6b7280 285deg 360deg);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n}\n.charts-section .pie-chart .chart-placeholder .chart-circle::before {\n  content: "";\n  position: absolute;\n  width: 120px;\n  height: 120px;\n  background: white;\n  border-radius: 50%;\n}\n.charts-section .pie-chart .chart-placeholder .chart-circle .chart-center {\n  text-align: center;\n  z-index: 1;\n}\n.charts-section .pie-chart .chart-placeholder .chart-circle .chart-center .total-count {\n  display: block;\n  font-size: 2rem;\n  font-weight: 700;\n  color: #1e293b;\n}\n.charts-section .pie-chart .chart-placeholder .chart-circle .chart-center .total-label {\n  font-size: 0.875rem;\n  color: #64748b;\n}\n.charts-section .bar-chart .chart-bars .bar-item {\n  display: flex;\n  align-items: center;\n  gap: 1rem;\n  margin-bottom: 1rem;\n}\n.charts-section .bar-chart .chart-bars .bar-item .bar-label {\n  min-width: 60px;\n  font-weight: 500;\n  color: #374151;\n  font-size: 0.875rem;\n}\n.charts-section .bar-chart .chart-bars .bar-item .bar-container {\n  flex: 1;\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n}\n.charts-section .bar-chart .chart-bars .bar-item .bar-container .bar {\n  height: 2rem;\n  border-radius: 0.25rem;\n  min-width: 20px;\n  transition: width 0.3s ease;\n}\n.charts-section .bar-chart .chart-bars .bar-item .bar-container .bar-value {\n  font-weight: 600;\n  color: #1e293b;\n  min-width: 30px;\n}\n.charts-section .trend-chart {\n  display: flex;\n  height: 300px;\n}\n.charts-section .trend-chart .chart-y-axis {\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  padding-right: 1rem;\n  font-size: 0.75rem;\n  color: #6b7280;\n  font-weight: 500;\n}\n.charts-section .trend-chart .chart-area {\n  flex: 1;\n  position: relative;\n}\n.charts-section .trend-chart .chart-area .grid-lines {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n}\n.charts-section .trend-chart .chart-area .grid-lines .grid-line {\n  position: absolute;\n  left: 0;\n  right: 0;\n  height: 1px;\n  background-color: #f3f4f6;\n}\n.charts-section .trend-chart .chart-area .grid-lines .grid-line:nth-child(1) {\n  top: 0;\n}\n.charts-section .trend-chart .chart-area .grid-lines .grid-line:nth-child(2) {\n  top: 25%;\n}\n.charts-section .trend-chart .chart-area .grid-lines .grid-line:nth-child(3) {\n  top: 50%;\n}\n.charts-section .trend-chart .chart-area .grid-lines .grid-line:nth-child(4) {\n  top: 75%;\n}\n.charts-section .trend-chart .chart-area .grid-lines .grid-line:nth-child(5) {\n  top: 100%;\n}\n.charts-section .trend-chart .chart-area .trend-lines {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n}\n.charts-section .trend-chart .chart-area .trend-lines .trend-line {\n  position: absolute;\n  width: 100%;\n  background:\n    linear-gradient(\n      90deg,\n      transparent 0%,\n      rgba(59, 130, 246, 0.1) 100%);\n}\n.charts-section .trend-chart .chart-area .trend-lines .trend-line.created {\n  background:\n    linear-gradient(\n      90deg,\n      transparent 0%,\n      rgba(59, 130, 246, 0.2) 100%);\n}\n.charts-section .trend-chart .chart-area .trend-lines .trend-line.completed {\n  background:\n    linear-gradient(\n      90deg,\n      transparent 0%,\n      rgba(16, 185, 129, 0.2) 100%);\n}\n.charts-section .trend-chart .chart-area .chart-x-axis {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  display: flex;\n  justify-content: space-between;\n  padding: 0 1rem;\n  font-size: 0.75rem;\n  color: #6b7280;\n  font-weight: 500;\n}\n.technician-section {\n  margin-bottom: 2rem;\n}\n.technician-section .technician-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n  gap: 1.5rem;\n}\n.technician-section .technician-card {\n  background: white;\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n}\n.technician-section .technician-card .tech-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 1rem;\n}\n.technician-section .technician-card .tech-header .tech-name {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #1e293b;\n  margin: 0;\n}\n.technician-section .technician-card .tech-header .tech-score {\n  font-size: 1.5rem;\n  font-weight: 700;\n  color: #3b82f6;\n}\n.technician-section .technician-card .tech-metrics {\n  margin-bottom: 1rem;\n}\n.technician-section .technician-card .tech-metrics .tech-metric {\n  display: flex;\n  justify-content: space-between;\n  margin-bottom: 0.5rem;\n}\n.technician-section .technician-card .tech-metrics .tech-metric .metric-label {\n  color: #64748b;\n  font-size: 0.875rem;\n}\n.technician-section .technician-card .tech-metrics .tech-metric .metric-value {\n  font-weight: 600;\n  color: #1e293b;\n}\n.technician-section .technician-card .performance-bar {\n  height: 0.5rem;\n  background-color: #f3f4f6;\n  border-radius: 0.25rem;\n  overflow: hidden;\n}\n.technician-section .technician-card .performance-bar .bar-fill {\n  height: 100%;\n  background-color: #3b82f6;\n  border-radius: 0.25rem;\n  transition: width 0.3s ease;\n}\n.insights-section {\n  margin-bottom: 2rem;\n}\n.insights-section .insights-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n  gap: 1.5rem;\n}\n.insights-section .insight-card {\n  background: white;\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);\n  border-left: 4px solid;\n}\n.insights-section .insight-card.success {\n  border-left-color: #10b981;\n}\n.insights-section .insight-card.warning {\n  border-left-color: #f59e0b;\n}\n.insights-section .insight-card.info {\n  border-left-color: #3b82f6;\n}\n.insights-section .insight-card.optimization {\n  border-left-color: #8b5cf6;\n}\n.insights-section .insight-card .insight-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 1rem;\n}\n.insights-section .insight-card .insight-header .insight-icon {\n  font-size: 1.5rem;\n}\n.insights-section .insight-card .insight-header .insight-tag {\n  padding: 0.25rem 0.75rem;\n  border-radius: 9999px;\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.insights-section .insight-card .insight-title {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #1e293b;\n  margin: 0 0 0.5rem 0;\n}\n.insights-section .insight-card .insight-description {\n  color: #64748b;\n  font-size: 0.875rem;\n  margin: 0;\n  line-height: 1.5;\n}\n@media (max-width: 768px) {\n  .work-order-analytics {\n    padding: 1rem;\n  }\n  .analytics-header {\n    flex-direction: column;\n    gap: 1rem;\n  }\n  .analytics-header .header-right {\n    width: 100%;\n    display: flex;\n    justify-content: center;\n  }\n  .metrics-grid {\n    grid-template-columns: 1fr;\n  }\n  .chart-row {\n    grid-template-columns: 1fr;\n  }\n  .pie-chart {\n    flex-direction: column;\n    gap: 1rem;\n  }\n  .pie-chart .chart-placeholder .chart-circle {\n    width: 150px;\n    height: 150px;\n  }\n  .pie-chart .chart-placeholder .chart-circle::before {\n    width: 90px;\n    height: 90px;\n  }\n  .pie-chart .chart-placeholder .chart-circle .chart-center .total-count {\n    font-size: 1.5rem;\n  }\n  .technician-grid,\n  .insights-grid {\n    grid-template-columns: 1fr;\n  }\n}\n/*# sourceMappingURL=work-order-analytics.component.css.map */\n'] }]
+  }], () => [{ type: WorkOrderService }], null);
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(WorkOrderAnalyticsComponent, { className: "WorkOrderAnalyticsComponent", filePath: "src/app/work-orders/components/work-order-analytics/work-order-analytics.component.ts", lineNumber: 13 });
+})();
+
 // src/app/work-orders/components/work-order-filters/work-order-filters.component.ts
 function WorkOrderFiltersComponent_div_14_Template(rf, ctx) {
   if (rf & 1) {
@@ -1288,10 +2267,10 @@ var WorkOrderFiltersComponent = class _WorkOrderFiltersComponent {
 // src/app/work-orders/work-orders.component.ts
 function WorkOrdersComponent_div_1_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 16);
+    \u0275\u0275elementStart(0, "div", 15);
     \u0275\u0275namespaceSVG();
     \u0275\u0275elementStart(1, "svg", 10);
-    \u0275\u0275element(2, "path", 17);
+    \u0275\u0275element(2, "path", 16);
     \u0275\u0275elementEnd();
     \u0275\u0275namespaceHTML();
     \u0275\u0275elementStart(3, "span");
@@ -1301,10 +2280,10 @@ function WorkOrdersComponent_div_1_Template(rf, ctx) {
 }
 function WorkOrdersComponent_div_2_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 18);
+    \u0275\u0275elementStart(0, "div", 17);
     \u0275\u0275namespaceSVG();
     \u0275\u0275elementStart(1, "svg", 10);
-    \u0275\u0275element(2, "path", 19);
+    \u0275\u0275element(2, "path", 18);
     \u0275\u0275elementEnd();
     \u0275\u0275namespaceHTML();
     \u0275\u0275elementStart(3, "span");
@@ -1317,141 +2296,223 @@ function WorkOrdersComponent_div_2_Template(rf, ctx) {
     \u0275\u0275textInterpolate(ctx_r0.errorMessage);
   }
 }
-function WorkOrdersComponent_div_29__svg_svg_79_Template(rf, ctx) {
+function WorkOrdersComponent_div_25_div_23_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 56);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", ctx_r0.getFieldError("title"), " ");
+  }
+}
+function WorkOrdersComponent_div_25_div_67_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 56);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", ctx_r0.getFieldError("asset_id"), " ");
+  }
+}
+function WorkOrdersComponent_div_25_div_75_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 56);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", ctx_r0.getFieldError("location_id"), " ");
+  }
+}
+function WorkOrdersComponent_div_25_div_84_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 56);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", ctx_r0.getFieldError("assigned_to"), " ");
+  }
+}
+function WorkOrdersComponent_div_25__svg_svg_92_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275namespaceSVG();
-    \u0275\u0275elementStart(0, "svg", 55);
-    \u0275\u0275element(1, "circle", 56)(2, "path", 57);
+    \u0275\u0275elementStart(0, "svg", 57);
+    \u0275\u0275element(1, "circle", 58)(2, "path", 59);
     \u0275\u0275elementEnd();
   }
 }
-function WorkOrdersComponent_div_29_Template(rf, ctx) {
+function WorkOrdersComponent_div_25_Template(rf, ctx) {
   if (rf & 1) {
     const _r2 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 20);
-    \u0275\u0275listener("click", function WorkOrdersComponent_div_29_Template_div_click_0_listener($event) {
+    \u0275\u0275elementStart(0, "div", 19);
+    \u0275\u0275listener("click", function WorkOrdersComponent_div_25_Template_div_click_0_listener($event) {
       \u0275\u0275restoreView(_r2);
       const ctx_r0 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r0.closeCreateModal($event));
     });
-    \u0275\u0275elementStart(1, "div", 21);
-    \u0275\u0275listener("click", function WorkOrdersComponent_div_29_Template_div_click_1_listener($event) {
+    \u0275\u0275elementStart(1, "div", 20);
+    \u0275\u0275listener("click", function WorkOrdersComponent_div_25_Template_div_click_1_listener($event) {
       \u0275\u0275restoreView(_r2);
       return \u0275\u0275resetView($event.stopPropagation());
     });
-    \u0275\u0275elementStart(2, "div", 22);
+    \u0275\u0275elementStart(2, "div", 21);
     \u0275\u0275namespaceSVG();
-    \u0275\u0275elementStart(3, "svg", 23);
-    \u0275\u0275element(4, "path", 24)(5, "path", 25);
+    \u0275\u0275elementStart(3, "svg", 22);
+    \u0275\u0275element(4, "path", 23)(5, "path", 24);
     \u0275\u0275elementEnd();
     \u0275\u0275namespaceHTML();
     \u0275\u0275elementStart(6, "h2");
     \u0275\u0275text(7, "Create New Work Order");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(8, "div", 26)(9, "form", 27);
-    \u0275\u0275listener("ngSubmit", function WorkOrdersComponent_div_29_Template_form_ngSubmit_9_listener() {
+    \u0275\u0275elementStart(8, "div", 25)(9, "form", 26);
+    \u0275\u0275listener("ngSubmit", function WorkOrdersComponent_div_25_Template_form_ngSubmit_9_listener() {
       \u0275\u0275restoreView(_r2);
       const ctx_r0 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r0.onSubmit());
     });
-    \u0275\u0275elementStart(10, "div", 28)(11, "div", 29);
+    \u0275\u0275elementStart(10, "div", 27)(11, "div", 28);
     \u0275\u0275namespaceSVG();
-    \u0275\u0275elementStart(12, "svg", 30);
-    \u0275\u0275element(13, "path", 31);
+    \u0275\u0275elementStart(12, "svg", 29);
+    \u0275\u0275element(13, "path", 30);
     \u0275\u0275elementEnd();
     \u0275\u0275namespaceHTML();
     \u0275\u0275elementStart(14, "h3");
     \u0275\u0275text(15, "Basic Information");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(16, "div", 32)(17, "div", 33)(18, "label");
+    \u0275\u0275elementStart(16, "div", 31)(17, "div", 32)(18, "label");
     \u0275\u0275text(19, "Title ");
-    \u0275\u0275elementStart(20, "span", 34);
+    \u0275\u0275elementStart(20, "span", 33);
     \u0275\u0275text(21, "*");
     \u0275\u0275elementEnd()();
-    \u0275\u0275element(22, "input", 35);
+    \u0275\u0275element(22, "input", 34);
+    \u0275\u0275template(23, WorkOrdersComponent_div_25_div_23_Template, 2, 1, "div", 35);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(23, "div", 36)(24, "div", 33)(25, "label");
-    \u0275\u0275text(26, "Priority");
+    \u0275\u0275elementStart(24, "div", 36)(25, "div", 32)(26, "label");
+    \u0275\u0275text(27, "Priority");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(27, "select", 37)(28, "option", 38);
-    \u0275\u0275text(29, "Low");
+    \u0275\u0275elementStart(28, "select", 37)(29, "option", 38);
+    \u0275\u0275text(30, "Low");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(30, "option", 39);
-    \u0275\u0275text(31, "Medium");
+    \u0275\u0275elementStart(31, "option", 39);
+    \u0275\u0275text(32, "Medium");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(32, "option", 40);
-    \u0275\u0275text(33, "High");
+    \u0275\u0275elementStart(33, "option", 40);
+    \u0275\u0275text(34, "High");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(34, "option", 41);
-    \u0275\u0275text(35, "Critical");
+    \u0275\u0275elementStart(35, "option", 41);
+    \u0275\u0275text(36, "Critical");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(36, "div", 33)(37, "label");
-    \u0275\u0275text(38, "Due Date");
+    \u0275\u0275elementStart(37, "div", 32)(38, "label");
+    \u0275\u0275text(39, "Due Date");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(39, "input", 42);
+    \u0275\u0275element(40, "input", 42);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(40, "div", 32)(41, "div", 33)(42, "label");
-    \u0275\u0275text(43, "Description");
+    \u0275\u0275elementStart(41, "div", 31)(42, "div", 32)(43, "label");
+    \u0275\u0275text(44, "Description");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(44, "textarea", 43);
+    \u0275\u0275element(45, "textarea", 43);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(45, "div", 36)(46, "div", 33)(47, "label");
-    \u0275\u0275text(48, "Estimated Hours");
+    \u0275\u0275elementStart(46, "div", 36)(47, "div", 32)(48, "label");
+    \u0275\u0275text(49, "Estimated Hours");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(49, "input", 44);
+    \u0275\u0275element(50, "input", 44);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(50, "div", 33)(51, "label");
-    \u0275\u0275text(52, "Notes");
+    \u0275\u0275elementStart(51, "div", 32)(52, "label");
+    \u0275\u0275text(53, "Notes");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(53, "textarea", 45);
+    \u0275\u0275element(54, "textarea", 45);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(54, "div", 28)(55, "div", 29);
+    \u0275\u0275elementStart(55, "div", 27)(56, "div", 28);
     \u0275\u0275namespaceSVG();
-    \u0275\u0275elementStart(56, "svg", 30);
-    \u0275\u0275element(57, "path", 46)(58, "path", 47);
+    \u0275\u0275elementStart(57, "svg", 29);
+    \u0275\u0275element(58, "path", 46)(59, "path", 47);
     \u0275\u0275elementEnd();
     \u0275\u0275namespaceHTML();
-    \u0275\u0275elementStart(59, "h3");
-    \u0275\u0275text(60, "Assignment & Location");
+    \u0275\u0275elementStart(60, "h3");
+    \u0275\u0275text(61, "Assignment & Location");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(61, "div", 36)(62, "div", 33)(63, "label");
-    \u0275\u0275text(64, "Asset ID (Optional)");
+    \u0275\u0275elementStart(62, "div", 36)(63, "div", 32)(64, "label");
+    \u0275\u0275text(65, "Asset ID (Optional)");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(65, "input", 48);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(66, "div", 33)(67, "label");
-    \u0275\u0275text(68, "Location ID (Optional)");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(69, "input", 49);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(70, "div", 36)(71, "div", 33)(72, "label");
-    \u0275\u0275text(73, "Assign To User ID (Optional)");
+    \u0275\u0275element(66, "input", 48);
+    \u0275\u0275template(67, WorkOrdersComponent_div_25_div_67_Template, 2, 1, "div", 35);
+    \u0275\u0275elementStart(68, "div", 49)(69, "small");
+    \u0275\u0275text(70, "Enter the ID of an existing asset from your assets list");
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(71, "div", 32)(72, "label");
+    \u0275\u0275text(73, "Location ID (Optional)");
     \u0275\u0275elementEnd();
     \u0275\u0275element(74, "input", 50);
-    \u0275\u0275elementEnd()()()()();
-    \u0275\u0275elementStart(75, "div", 51)(76, "button", 52);
-    \u0275\u0275listener("click", function WorkOrdersComponent_div_29_Template_button_click_76_listener() {
+    \u0275\u0275template(75, WorkOrdersComponent_div_25_div_75_Template, 2, 1, "div", 35);
+    \u0275\u0275elementStart(76, "div", 49)(77, "small");
+    \u0275\u0275text(78, "Enter the ID of an existing location from your locations list");
+    \u0275\u0275elementEnd()()()();
+    \u0275\u0275elementStart(79, "div", 36)(80, "div", 32)(81, "label");
+    \u0275\u0275text(82, "Assign To User ID (Optional)");
+    \u0275\u0275elementEnd();
+    \u0275\u0275element(83, "input", 51);
+    \u0275\u0275template(84, WorkOrdersComponent_div_25_div_84_Template, 2, 1, "div", 35);
+    \u0275\u0275elementStart(85, "div", 49)(86, "small");
+    \u0275\u0275text(87, "Enter the ID of an existing user from your team members");
+    \u0275\u0275elementEnd()()()()()()();
+    \u0275\u0275elementStart(88, "div", 52)(89, "button", 53);
+    \u0275\u0275listener("click", function WorkOrdersComponent_div_25_Template_button_click_89_listener() {
       \u0275\u0275restoreView(_r2);
       const ctx_r0 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r0.closeCreateModal());
     });
-    \u0275\u0275text(77, "Cancel");
+    \u0275\u0275text(90, "Cancel");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(78, "button", 53);
-    \u0275\u0275listener("click", function WorkOrdersComponent_div_29_Template_button_click_78_listener() {
+    \u0275\u0275elementStart(91, "button", 54);
+    \u0275\u0275listener("click", function WorkOrdersComponent_div_25_Template_button_click_91_listener() {
       \u0275\u0275restoreView(_r2);
       const ctx_r0 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r0.onSubmit());
     });
-    \u0275\u0275template(79, WorkOrdersComponent_div_29__svg_svg_79_Template, 3, 0, "svg", 54);
-    \u0275\u0275text(80);
+    \u0275\u0275template(92, WorkOrdersComponent_div_25__svg_svg_92_Template, 3, 0, "svg", 55);
+    \u0275\u0275text(93);
     \u0275\u0275elementEnd()()()();
   }
   if (rf & 2) {
     const ctx_r0 = \u0275\u0275nextContext();
     \u0275\u0275advance(9);
     \u0275\u0275property("formGroup", ctx_r0.workOrderForm);
-    \u0275\u0275advance(67);
+    \u0275\u0275advance(8);
+    \u0275\u0275classProp("error", ctx_r0.hasFieldError("title"));
+    \u0275\u0275advance(5);
+    \u0275\u0275classProp("error-input", ctx_r0.hasFieldError("title"));
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r0.hasFieldError("title"));
+    \u0275\u0275advance(40);
+    \u0275\u0275classProp("error", ctx_r0.hasFieldError("asset_id"));
+    \u0275\u0275advance(3);
+    \u0275\u0275classProp("error-input", ctx_r0.hasFieldError("asset_id"));
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r0.hasFieldError("asset_id"));
+    \u0275\u0275advance(4);
+    \u0275\u0275classProp("error", ctx_r0.hasFieldError("location_id"));
+    \u0275\u0275advance(3);
+    \u0275\u0275classProp("error-input", ctx_r0.hasFieldError("location_id"));
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r0.hasFieldError("location_id"));
+    \u0275\u0275advance(5);
+    \u0275\u0275classProp("error", ctx_r0.hasFieldError("assigned_to"));
+    \u0275\u0275advance(3);
+    \u0275\u0275classProp("error-input", ctx_r0.hasFieldError("assigned_to"));
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r0.hasFieldError("assigned_to"));
+    \u0275\u0275advance(5);
     \u0275\u0275property("disabled", ctx_r0.isLoading);
     \u0275\u0275advance(2);
     \u0275\u0275property("disabled", ctx_r0.isLoading);
@@ -1466,6 +2527,7 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
   workOrderService;
   workOrderList;
   workOrderStats;
+  workOrderAnalytics;
   activeTab = "work-orders";
   showCreateModal = false;
   workOrderForm;
@@ -1473,6 +2535,7 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
   showSuccessMessage = false;
   showErrorMessage = false;
   errorMessage = "";
+  fieldErrors = {};
   currentFilters = {};
   subscription = new Subscription();
   constructor(fb, workOrderService) {
@@ -1497,6 +2560,9 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
   }
   setActiveTab(tab) {
     this.activeTab = tab;
+    if (tab === "analytics" && this.workOrderAnalytics) {
+      this.workOrderAnalytics.refreshData();
+    }
   }
   openCreateModal() {
     this.showCreateModal = true;
@@ -1514,6 +2580,7 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
     this.showSuccessMessage = false;
     this.showErrorMessage = false;
     this.errorMessage = "";
+    this.fieldErrors = {};
   }
   showSuccess() {
     this.showSuccessMessage = true;
@@ -1521,12 +2588,24 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
       this.showSuccessMessage = false;
     }, 3e3);
   }
-  showError(message) {
+  showError(message, fieldErrors) {
     this.errorMessage = message;
     this.showErrorMessage = true;
+    if (fieldErrors) {
+      this.fieldErrors = fieldErrors;
+    }
     setTimeout(() => {
       this.showErrorMessage = false;
-    }, 5e3);
+      this.fieldErrors = {};
+    }, 8e3);
+  }
+  // Helper method to get field errors for display
+  getFieldError(fieldName) {
+    return this.fieldErrors[fieldName] ? this.fieldErrors[fieldName].join(", ") : "";
+  }
+  // Helper method to check if a field has errors
+  hasFieldError(fieldName) {
+    return !!this.fieldErrors[fieldName] && this.fieldErrors[fieldName].length > 0;
   }
   onFiltersChanged(filters) {
     this.currentFilters = filters;
@@ -1563,16 +2642,37 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
           if (this.workOrderStats) {
             this.workOrderStats.loadStats();
           }
+          if (this.activeTab === "analytics" && this.workOrderAnalytics) {
+            this.workOrderAnalytics.refreshData();
+          }
         },
         error: (error) => {
           console.error("Error creating work order:", error);
-          const message = error.error?.message || "Failed to create work order. Please try again.";
-          this.showError(message);
+          if (error.error?.errors) {
+            const fieldErrors = error.error.errors;
+            const message = error.error?.message || "Please fix the validation errors below.";
+            this.showError(message, fieldErrors);
+          } else if (error.error?.message) {
+            this.showError(error.error.message);
+          } else {
+            this.showError("Failed to create work order. Please try again.");
+          }
         },
         complete: () => {
           this.isLoading = false;
         }
       }));
+    }
+  }
+  refreshAllData() {
+    if (this.workOrderList) {
+      this.workOrderList.refreshWorkOrders();
+    }
+    if (this.workOrderStats) {
+      this.workOrderStats.loadStats();
+    }
+    if (this.workOrderAnalytics) {
+      this.workOrderAnalytics.refreshData();
     }
   }
   static \u0275fac = function WorkOrdersComponent_Factory(__ngFactoryType__) {
@@ -1582,13 +2682,15 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
     if (rf & 1) {
       \u0275\u0275viewQuery(WorkOrderListComponent, 5);
       \u0275\u0275viewQuery(WorkOrderStatsComponent, 5);
+      \u0275\u0275viewQuery(WorkOrderAnalyticsComponent, 5);
     }
     if (rf & 2) {
       let _t;
       \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.workOrderList = _t.first);
       \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.workOrderStats = _t.first);
+      \u0275\u0275queryRefresh(_t = \u0275\u0275loadQuery()) && (ctx.workOrderAnalytics = _t.first);
     }
-  }, standalone: false, decls: 30, vars: 11, consts: [[1, "work-orders-container"], ["class", "success-message", 4, "ngIf"], ["class", "error-message", 4, "ngIf"], [1, "header"], [1, "tabs"], [1, "tab", 3, "click"], [1, "content"], [1, "work-orders-content"], [1, "create-button-container"], [1, "create-button", 3, "click"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-5", "h-5"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 4v16m8-8H4"], [3, "filtersChanged"], [1, "analytics-content"], [1, "analytics-placeholder"], ["class", "modal-overlay", 3, "click", 4, "ngIf"], [1, "success-message"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"], [1, "error-message"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"], [1, "modal-overlay", 3, "click"], [1, "modal", 3, "click"], [1, "modal-header"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "header-icon", "w-5", "h-5"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M15 12a3 3 0 11-6 0 3 3 0 016 0z"], [1, "modal-body"], [3, "ngSubmit", "formGroup"], [1, "form-section"], [1, "section-header"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "section-icon", "w-5", "h-5"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"], [1, "form-row", "full-width"], [1, "form-group"], [1, "required"], ["type", "text", "formControlName", "title", "placeholder", "Enter work order title"], [1, "form-row"], ["formControlName", "priority"], ["value", "low"], ["value", "medium", "selected", ""], ["value", "high"], ["value", "critical"], ["type", "datetime-local", "formControlName", "due_date"], ["formControlName", "description", "placeholder", "Enter work order description"], ["type", "number", "formControlName", "estimated_hours", "placeholder", "0", "min", "0", "step", "0.5"], ["formControlName", "notes", "placeholder", "Additional notes"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M15 11a3 3 0 11-6 0 3 3 0 016 0z"], ["type", "number", "formControlName", "asset_id", "placeholder", "Enter asset ID"], ["type", "number", "formControlName", "location_id", "placeholder", "Enter location ID"], ["type", "number", "formControlName", "assigned_to", "placeholder", "Enter user ID"], [1, "modal-footer"], [1, "btn", "btn-secondary", 3, "click", "disabled"], [1, "btn", "btn-primary", 3, "click", "disabled"], ["class", "animate-spin -ml-1 mr-2 h-4 w-4 text-white", "fill", "none", "viewBox", "0 0 24 24", 4, "ngIf"], ["fill", "none", "viewBox", "0 0 24 24", 1, "animate-spin", "-ml-1", "mr-2", "h-4", "w-4", "text-white"], ["cx", "12", "cy", "12", "r", "10", "stroke", "currentColor", "stroke-width", "4", 1, "opacity-25"], ["fill", "currentColor", "d", "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z", 1, "opacity-75"]], template: function WorkOrdersComponent_Template(rf, ctx) {
+  }, standalone: false, decls: 26, vars: 11, consts: [[1, "work-orders-container"], ["class", "success-message", 4, "ngIf"], ["class", "error-message", 4, "ngIf"], [1, "header"], [1, "tabs"], [1, "tab", 3, "click"], [1, "content"], [1, "work-orders-content"], [1, "create-button-container"], [1, "create-button", 3, "click"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-5", "h-5"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 4v16m8-8H4"], [3, "filtersChanged"], [1, "analytics-content"], ["class", "modal-overlay", 3, "click", 4, "ngIf"], [1, "success-message"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"], [1, "error-message"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"], [1, "modal-overlay", 3, "click"], [1, "modal", 3, "click"], [1, "modal-header"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "header-icon", "w-5", "h-5"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M15 12a3 3 0 11-6 0 3 3 0 016 0z"], [1, "modal-body"], [3, "ngSubmit", "formGroup"], [1, "form-section"], [1, "section-header"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "section-icon", "w-5", "h-5"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"], [1, "form-row", "full-width"], [1, "form-group"], [1, "required"], ["type", "text", "formControlName", "title", "placeholder", "Enter work order title"], ["class", "field-error", 4, "ngIf"], [1, "form-row"], ["formControlName", "priority"], ["value", "low"], ["value", "medium", "selected", ""], ["value", "high"], ["value", "critical"], ["type", "datetime-local", "formControlName", "due_date"], ["formControlName", "description", "placeholder", "Enter work order description"], ["type", "number", "formControlName", "estimated_hours", "placeholder", "0", "min", "0", "step", "0.5"], ["formControlName", "notes", "placeholder", "Additional notes"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M15 11a3 3 0 11-6 0 3 3 0 016 0z"], ["type", "number", "formControlName", "asset_id", "placeholder", "Enter asset ID"], [1, "field-help"], ["type", "number", "formControlName", "location_id", "placeholder", "Enter location ID"], ["type", "number", "formControlName", "assigned_to", "placeholder", "Enter user ID"], [1, "modal-footer"], [1, "btn", "btn-secondary", 3, "click", "disabled"], [1, "btn", "btn-primary", 3, "click", "disabled"], ["class", "animate-spin -ml-1 mr-2 h-4 w-4 text-white", "fill", "none", "viewBox", "0 0 24 24", 4, "ngIf"], [1, "field-error"], ["fill", "none", "viewBox", "0 0 24 24", 1, "animate-spin", "-ml-1", "mr-2", "h-4", "w-4", "text-white"], ["cx", "12", "cy", "12", "r", "10", "stroke", "currentColor", "stroke-width", "4", 1, "opacity-25"], ["fill", "currentColor", "d", "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z", 1, "opacity-75"]], template: function WorkOrdersComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0);
       \u0275\u0275template(1, WorkOrdersComponent_div_1_Template, 5, 0, "div", 1)(2, WorkOrdersComponent_div_2_Template, 5, 1, "div", 2);
@@ -1630,13 +2732,10 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
       \u0275\u0275elementEnd();
       \u0275\u0275element(22, "app-work-order-list");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(23, "div", 13)(24, "div", 14)(25, "h3");
-      \u0275\u0275text(26, "Analytics Dashboard");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(27, "p");
-      \u0275\u0275text(28, "Work order analytics and insights will be displayed here.");
-      \u0275\u0275elementEnd()()()()();
-      \u0275\u0275template(29, WorkOrdersComponent_div_29_Template, 81, 5, "div", 15);
+      \u0275\u0275elementStart(23, "div", 13);
+      \u0275\u0275element(24, "app-work-order-analytics");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275template(25, WorkOrdersComponent_div_25_Template, 94, 25, "div", 14);
     }
     if (rf & 2) {
       \u0275\u0275advance();
@@ -1651,10 +2750,12 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
       \u0275\u0275classProp("active", ctx.activeTab === "work-orders");
       \u0275\u0275advance(9);
       \u0275\u0275classProp("active", ctx.activeTab === "analytics");
-      \u0275\u0275advance(6);
+      \u0275\u0275advance(2);
       \u0275\u0275property("ngIf", ctx.showCreateModal);
     }
-  }, dependencies: [NgIf, \u0275NgNoValidate, NgSelectOption, \u0275NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor, SelectControlValueAccessor, NgControlStatus, NgControlStatusGroup, MinValidator, FormGroupDirective, FormControlName, WorkOrderListComponent, WorkOrderFiltersComponent, WorkOrderStatsComponent], styles: [`
+  }, dependencies: [NgIf, \u0275NgNoValidate, NgSelectOption, \u0275NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor, SelectControlValueAccessor, NgControlStatus, NgControlStatusGroup, MinValidator, FormGroupDirective, FormControlName, WorkOrderAnalyticsComponent, WorkOrderListComponent, WorkOrderFiltersComponent, WorkOrderStatsComponent], styles: [`@charset "UTF-8";
+
+
 
 .work-orders-container[_ngcontent-%COMP%] {
   padding: 2rem;
@@ -1862,6 +2963,17 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
 .modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   textarea[_ngcontent-%COMP%]::placeholder {
   color: #9ca3af;
 }
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   input.error-input[_ngcontent-%COMP%], 
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   select.error-input[_ngcontent-%COMP%], 
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   textarea.error-input[_ngcontent-%COMP%] {
+  border-color: #dc2626;
+}
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   input.error-input[_ngcontent-%COMP%]:focus, 
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   select.error-input[_ngcontent-%COMP%]:focus, 
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   textarea.error-input[_ngcontent-%COMP%]:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
 .modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   select[_ngcontent-%COMP%] {
   cursor: pointer;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
@@ -1882,6 +2994,30 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
 }
 .modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   input[type=datetime-local][_ngcontent-%COMP%]:hover::-webkit-calendar-picker-indicator {
   opacity: 1;
+}
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group.error[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {
+  color: #dc2626;
+}
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   .field-error[_ngcontent-%COMP%] {
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   .field-error[_ngcontent-%COMP%]::before {
+  content: "\\26a0";
+  font-size: 0.875rem;
+}
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   .field-help[_ngcontent-%COMP%] {
+  margin-top: 0.25rem;
+}
+.modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .form-section[_ngcontent-%COMP%]   .form-row[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   .field-help[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-style: italic;
 }
 .modal-overlay[_ngcontent-%COMP%]   .modal[_ngcontent-%COMP%]   .modal-footer[_ngcontent-%COMP%] {
   padding: 1rem 1.5rem 1.5rem;
@@ -2006,10 +3142,7 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
     </div>\r
 \r
     <div class="analytics-content" [class.active]="activeTab === 'analytics'">\r
-      <div class="analytics-placeholder">\r
-        <h3>Analytics Dashboard</h3>\r
-        <p>Work order analytics and insights will be displayed here.</p>\r
-      </div>\r
+      <app-work-order-analytics></app-work-order-analytics>\r
     </div>\r
   </div>\r
 </div>\r
@@ -2037,12 +3170,16 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
           </div>\r
           \r
           <div class="form-row full-width">\r
-            <div class="form-group">\r
+            <div class="form-group" [class.error]="hasFieldError('title')">\r
               <label>Title <span class="required">*</span></label>\r
               <input \r
                 type="text" \r
                 formControlName="title" \r
-                placeholder="Enter work order title">\r
+                placeholder="Enter work order title"\r
+                [class.error-input]="hasFieldError('title')">\r
+              <div class="field-error" *ngIf="hasFieldError('title')">\r
+                {{ getFieldError('title') }}\r
+              </div>\r
             </div>\r
           </div>\r
           \r
@@ -2105,30 +3242,51 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
           </div>\r
           \r
           <div class="form-row">\r
-            <div class="form-group">\r
+            <div class="form-group" [class.error]="hasFieldError('asset_id')">\r
               <label>Asset ID (Optional)</label>\r
               <input\r
                 type="number"\r
                 formControlName="asset_id"\r
-                placeholder="Enter asset ID">\r
+                placeholder="Enter asset ID"\r
+                [class.error-input]="hasFieldError('asset_id')">\r
+              <div class="field-error" *ngIf="hasFieldError('asset_id')">\r
+                {{ getFieldError('asset_id') }}\r
+              </div>\r
+              <div class="field-help">\r
+                <small>Enter the ID of an existing asset from your assets list</small>\r
+              </div>\r
             </div>\r
             \r
-            <div class="form-group">\r
+            <div class="form-group" [class.error]="hasFieldError('location_id')">\r
               <label>Location ID (Optional)</label>\r
               <input\r
                 type="number"\r
                 formControlName="location_id"\r
-                placeholder="Enter location ID">\r
+                placeholder="Enter location ID"\r
+                [class.error-input]="hasFieldError('location_id')">\r
+              <div class="field-error" *ngIf="hasFieldError('location_id')">\r
+                {{ getFieldError('location_id') }}\r
+              </div>\r
+              <div class="field-help">\r
+                <small>Enter the ID of an existing location from your locations list</small>\r
+              </div>\r
             </div>\r
           </div>\r
           \r
           <div class="form-row">\r
-            <div class="form-group">\r
+            <div class="form-group" [class.error]="hasFieldError('assigned_to')">\r
               <label>Assign To User ID (Optional)</label>\r
               <input\r
                 type="number"\r
                 formControlName="assigned_to"\r
-                placeholder="Enter user ID">\r
+                placeholder="Enter user ID"\r
+                [class.error-input]="hasFieldError('assigned_to')">\r
+              <div class="field-error" *ngIf="hasFieldError('assigned_to')">\r
+                {{ getFieldError('assigned_to') }}\r
+              </div>\r
+              <div class="field-help">\r
+                <small>Enter the ID of an existing user from your team members</small>\r
+              </div>\r
             </div>\r
           </div>\r
         </div>\r
@@ -2147,7 +3305,9 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
     </div>\r
   </div>\r
 </div>\r
-`, styles: [`/* src/app/work-orders/work-orders.component.scss */
+`, styles: [`@charset "UTF-8";
+
+/* src/app/work-orders/work-orders.component.scss */
 .work-orders-container {
   padding: 2rem;
   background-color: #f8fafc;
@@ -2354,6 +3514,17 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
 .modal-overlay .modal .modal-body .form-section .form-row .form-group textarea::placeholder {
   color: #9ca3af;
 }
+.modal-overlay .modal .modal-body .form-section .form-row .form-group input.error-input,
+.modal-overlay .modal .modal-body .form-section .form-row .form-group select.error-input,
+.modal-overlay .modal .modal-body .form-section .form-row .form-group textarea.error-input {
+  border-color: #dc2626;
+}
+.modal-overlay .modal .modal-body .form-section .form-row .form-group input.error-input:focus,
+.modal-overlay .modal .modal-body .form-section .form-row .form-group select.error-input:focus,
+.modal-overlay .modal .modal-body .form-section .form-row .form-group textarea.error-input:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
 .modal-overlay .modal .modal-body .form-section .form-row .form-group select {
   cursor: pointer;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
@@ -2374,6 +3545,30 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
 }
 .modal-overlay .modal .modal-body .form-section .form-row .form-group input[type=datetime-local]:hover::-webkit-calendar-picker-indicator {
   opacity: 1;
+}
+.modal-overlay .modal .modal-body .form-section .form-row .form-group.error label {
+  color: #dc2626;
+}
+.modal-overlay .modal .modal-body .form-section .form-row .form-group .field-error {
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.modal-overlay .modal .modal-body .form-section .form-row .form-group .field-error::before {
+  content: "\\26a0";
+  font-size: 0.875rem;
+}
+.modal-overlay .modal .modal-body .form-section .form-row .form-group .field-help {
+  margin-top: 0.25rem;
+}
+.modal-overlay .modal .modal-body .form-section .form-row .form-group .field-help small {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-style: italic;
 }
 .modal-overlay .modal .modal-footer {
   padding: 1rem 1.5rem 1.5rem;
@@ -2448,10 +3643,13 @@ var WorkOrdersComponent = class _WorkOrdersComponent {
   }], workOrderStats: [{
     type: ViewChild,
     args: [WorkOrderStatsComponent]
+  }], workOrderAnalytics: [{
+    type: ViewChild,
+    args: [WorkOrderAnalyticsComponent]
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(WorkOrdersComponent, { className: "WorkOrdersComponent", filePath: "src/app/work-orders/work-orders.component.ts", lineNumber: 14 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(WorkOrdersComponent, { className: "WorkOrdersComponent", filePath: "src/app/work-orders/work-orders.component.ts", lineNumber: 15 });
 })();
 
 // src/app/work-orders/components/work-order-preview/work-order-preview.component.ts
@@ -3278,7 +4476,8 @@ var WorkOrdersModule = class _WorkOrdersModule {
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    WorkOrdersRoutingModule
+    WorkOrdersRoutingModule,
+    WorkOrderAnalyticsComponent
   ] });
 };
 (() => {
@@ -3298,7 +4497,8 @@ var WorkOrdersModule = class _WorkOrdersModule {
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,
-        WorkOrdersRoutingModule
+        WorkOrdersRoutingModule,
+        WorkOrderAnalyticsComponent
       ]
     }]
   }], null, null);
@@ -3306,4 +4506,4 @@ var WorkOrdersModule = class _WorkOrdersModule {
 export {
   WorkOrdersModule
 };
-//# sourceMappingURL=chunk-UKJV3WQP.js.map
+//# sourceMappingURL=chunk-V5I6M4PG.js.map

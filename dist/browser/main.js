@@ -5309,7 +5309,7 @@ var routes = [
       },
       {
         path: "work-orders",
-        loadChildren: () => import("./chunk-UKJV3WQP.js").then((m) => m.WorkOrdersModule)
+        loadChildren: () => import("./chunk-V5I6M4PG.js").then((m) => m.WorkOrdersModule)
       },
       {
         path: "inventory",
