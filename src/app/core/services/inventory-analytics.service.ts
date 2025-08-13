@@ -111,6 +111,156 @@ export interface LocationResponse {
   };
 }
 
+// Transactions Interfaces
+export interface InventoryTransaction {
+  id: number;
+  company_id: number;
+  part_id: number;
+  location_id: number;
+  type: 'receipt' | 'issue' | 'adjustment' | 'transfer_out' | 'transfer_in' | 'return';
+  quantity: number;
+  unit_cost: number;
+  total_cost: number;
+  reason: string;
+  notes: string;
+  reference: string;
+  related_id: number;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  part: {
+    id: number;
+    name: string;
+    part_number: string;
+    description: string;
+  };
+  location: {
+    id: number;
+    name: string;
+    code: string;
+  };
+}
+
+export interface TransactionsResponse {
+  success: boolean;
+  data: {
+    data: InventoryTransaction[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
+// Purchase Order Interfaces
+export interface PurchaseOrderItem {
+  id?: number;
+  part_id?: number;
+  part_number: string;
+  description: string;
+  ordered_qty: number;
+  received_qty?: number;
+  unit_cost: number;
+  line_total?: number;
+  notes?: string;
+  part?: InventoryPart;
+}
+
+export interface PurchaseOrder {
+  id?: number;
+  company_id?: number;
+  po_number: string;
+  supplier_id?: number;
+  vendor_name: string;
+  vendor_contact: string;
+  order_date: string;
+  expected_date: string;
+  status: string;
+  subtotal: number;
+  tax: number;
+  total: number;
+  terms?: string;
+  notes?: string;
+  created_by?: number;
+  approved_by?: number;
+  approved_at?: string;
+  reject_comment?: string;
+  created_at?: string;
+  updated_at?: string;
+  supplier?: any;
+  items: PurchaseOrderItem[];
+}
+
+export interface CreatePurchaseOrderRequest {
+  supplier_id?: number;
+  vendor_name: string;
+  vendor_contact: string;
+  order_date: string;
+  expected_date: string;
+  items: {
+    part_id?: number;
+    part_number: string;
+    description: string;
+    qty: number;
+    unit_cost: number;
+  }[];
+  tax_rate?: number;
+  tax_amount?: number;
+  terms?: string;
+  notes?: string;
+}
+
+export interface UpdatePurchaseOrderRequest {
+  supplier_id?: number;
+  vendor_name?: string;
+  vendor_contact?: string;
+  order_date?: string;
+  expected_date?: string;
+  items?: {
+    part_id?: number;
+    part_number: string;
+    description: string;
+    qty: number;
+    unit_cost: number;
+  }[];
+  tax_rate?: number;
+  tax_amount?: number;
+  terms?: string;
+  notes?: string;
+}
+
+export interface ReceivePurchaseOrderRequest {
+  location_id: number;
+  items: {
+    item_id: number;
+    receive_qty: number;
+  }[];
+  reference?: string;
+  notes?: string;
+}
+
+export interface ApprovePurchaseOrderRequest {
+  purchase_order_id: number;
+  approve: boolean;
+  comment?: string;
+}
+
+export interface PurchaseOrdersResponse {
+  success: boolean;
+  data: {
+    data: PurchaseOrder[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
+export interface PurchaseOrderResponse {
+  success: boolean;
+  data: PurchaseOrder;
+}
+
 export interface InventoryStock {
   id: number;
   part_id: number;
@@ -176,6 +326,87 @@ export interface StockOperationResponse {
   data: any;
 }
 
+// Supplier interfaces
+export interface Supplier {
+  id: number;
+  company_id: number;
+  supplier_code: string;
+  name: string;
+  contact_person: string;
+  tax_registration_number?: string;
+  email: string;
+  phone: string;
+  alternate_phone?: string;
+  website?: string;
+  street_address?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  payment_terms?: string;
+  terms?: string;
+  currency: string;
+  credit_limit?: number;
+  delivery_lead_time?: number;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateSupplierRequest {
+  name: string;
+  contact_person: string;
+  email: string;
+  phone: string;
+  supplier_code?: string;
+  tax_registration_number?: string;
+  alternate_phone?: string;
+  website?: string;
+  street_address?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  payment_terms?: string;
+  currency?: string;
+  credit_limit?: number;
+  delivery_lead_time?: number;
+  notes?: string;
+}
+
+export interface UpdateSupplierRequest {
+  name?: string;
+  contact_person?: string;
+  email?: string;
+  phone?: string;
+  supplier_code?: string;
+  tax_registration_number?: string;
+  alternate_phone?: string;
+  website?: string;
+  street_address?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  payment_terms?: string;
+  currency?: string;
+  credit_limit?: number;
+  delivery_lead_time?: number;
+  notes?: string;
+}
+
+export interface SuppliersResponse {
+  success: boolean;
+  data: {
+    current_page: number;
+    data: Supplier[];
+    per_page: number;
+    total: number;
+  };
+}
+
+export interface SupplierResponse {
+  success: boolean;
+  data: Supplier;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -215,6 +446,7 @@ export class InventoryAnalyticsService {
     page: number = 1,
     perPage: number = 15
   ): Observable<PartsCatalogResponse> {
+    console.log('Calling parts API:', `${this.apiUrl}/inventory/parts`);
     let params = new HttpParams()
       .set('page', page.toString())
       .set('per_page', perPage.toString());
@@ -226,6 +458,9 @@ export class InventoryAnalyticsService {
     if (status) {
       params = params.set('status', status);
     }
+
+    console.log('Parts API params:', params.toString());
+    console.log('Auth headers:', this.getAuthHeaders());
 
     return this.http.get<PartsCatalogResponse>(
       `${this.apiUrl}/inventory/parts`,
@@ -341,6 +576,7 @@ export class InventoryAnalyticsService {
     sortBy: string = 'created',
     sortDirection: string = 'desc'
   ): Observable<LocationResponse> {
+    console.log('Calling locations API:', `${this.apiUrl}/locations`);
     let params = new HttpParams()
       .set('page', page.toString())
       .set('per_page', perPage.toString())
@@ -348,9 +584,158 @@ export class InventoryAnalyticsService {
       .set('sort_by', sortBy)
       .set('sort_direction', sortDirection);
 
+    console.log('Locations API params:', params.toString());
+    console.log('Auth headers:', this.getAuthHeaders());
+
     return this.http.get<LocationResponse>(
       `${this.apiUrl}/locations`,
       { ...this.getAuthHeaders(), params }
     );
+  }
+
+  // Transactions Methods
+  getTransactions(queryParams: string = ''): Observable<TransactionsResponse> {
+    const url = queryParams ? 
+      `${this.apiUrl}/inventory/transactions?${queryParams}` : 
+      `${this.apiUrl}/inventory/transactions`;
+    
+    return this.http.get<TransactionsResponse>(
+      url,
+      this.getAuthHeaders()
+    );
+  }
+
+  // Purchase Order Methods
+
+  // Purchase Order Methods
+  getPurchaseOrders(
+    page: number = 1,
+    perPage: number = 15,
+    status?: string,
+    search?: string
+  ): Observable<PurchaseOrdersResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', perPage.toString());
+
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<PurchaseOrdersResponse>(
+      `${this.apiUrl}/inventory/purchase-orders`,
+      { ...this.getAuthHeaders(), params }
+    );
+  }
+
+  getPurchaseOrder(id: number): Observable<PurchaseOrderResponse> {
+    return this.http.get<PurchaseOrderResponse>(
+      `${this.apiUrl}/inventory/purchase-orders/${id}`,
+      this.getAuthHeaders()
+    );
+  }
+
+  createPurchaseOrder(poData: CreatePurchaseOrderRequest): Observable<PurchaseOrderResponse> {
+    return this.http.post<PurchaseOrderResponse>(
+      `${this.apiUrl}/inventory/purchase-orders`,
+      poData,
+      this.getAuthHeaders()
+    );
+  }
+
+  updatePurchaseOrder(id: number, poData: UpdatePurchaseOrderRequest): Observable<PurchaseOrderResponse> {
+    return this.http.put<PurchaseOrderResponse>(
+      `${this.apiUrl}/inventory/purchase-orders/${id}`,
+      poData,
+      this.getAuthHeaders()
+    );
+  }
+
+  deletePurchaseOrder(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/inventory/purchase-orders/${id}`,
+      this.getAuthHeaders()
+    );
+  }
+
+  receivePurchaseOrder(id: number, receiveData: ReceivePurchaseOrderRequest): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/inventory/purchase-orders/${id}/receive`,
+      receiveData,
+      this.getAuthHeaders()
+    );
+  }
+
+  approvePurchaseOrder(approveData: ApprovePurchaseOrderRequest): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/inventory/purchase-orders/approve`,
+      approveData,
+      this.getAuthHeaders()
+    );
+  }
+
+  getPendingApprovals(): Observable<PurchaseOrdersResponse> {
+    return this.http.get<PurchaseOrdersResponse>(
+      `${this.apiUrl}/inventory/purchase-orders/pending-approval`,
+      this.getAuthHeaders()
+    );
+  }
+
+  getPurchaseOrderPerformance(): Observable<any> {
+    return this.http.get(
+      `${this.apiUrl}/inventory/purchase-orders/performance`,
+      this.getAuthHeaders()
+    );
+  }
+
+  sendPurchaseOrderEmail(id: number, emailData: any): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/inventory/purchase-orders/${id}/send-email`,
+      emailData,
+      this.getAuthHeaders()
+    );
+  }
+
+  // Supplier methods
+  getSuppliers(search: string = '', perPage: number = 15, page: number = 1): Observable<SuppliersResponse> {
+    const params = new HttpParams()
+      .set('search', search)
+      .set('per_page', perPage.toString())
+      .set('page', page.toString());
+
+    console.log('Getting suppliers with params:', params.toString());
+    return this.http.get<SuppliersResponse>(`${this.apiUrl}/inventory/suppliers`, { 
+      ...this.getAuthHeaders(), 
+      params 
+    });
+  }
+
+  getSupplier(id: number): Observable<SupplierResponse> {
+    console.log('Getting supplier:', id);
+    return this.http.get<SupplierResponse>(`${this.apiUrl}/inventory/suppliers/${id}`, this.getAuthHeaders());
+  }
+
+  createSupplier(supplierData: CreateSupplierRequest): Observable<SupplierResponse> {
+    console.log('Creating supplier:', supplierData);
+    return this.http.post<SupplierResponse>(`${this.apiUrl}/inventory/suppliers`, supplierData, this.getAuthHeaders());
+  }
+
+  updateSupplier(id: number, supplierData: UpdateSupplierRequest): Observable<SupplierResponse> {
+    console.log('Updating supplier:', id, supplierData);
+    return this.http.put<SupplierResponse>(`${this.apiUrl}/inventory/suppliers/${id}`, supplierData, this.getAuthHeaders());
+  }
+
+  deleteSupplier(id: number): Observable<any> {
+    console.log('Deleting supplier:', id);
+    return this.http.delete(`${this.apiUrl}/inventory/suppliers/${id}`, this.getAuthHeaders());
+  }
+
+  bulkDeleteSuppliers(supplierIds: number[]): Observable<any> {
+    console.log('Bulk deleting suppliers:', supplierIds);
+    return this.http.post(`${this.apiUrl}/inventory/suppliers/bulk-delete`, { supplier_ids: supplierIds }, this.getAuthHeaders());
   }
 }

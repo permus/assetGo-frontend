@@ -1,0 +1,243 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Add New Supplier</h2>
+      <p class="modal-subtitle">Create a new supplier for purchase orders</p>
+      <button class="close-btn" (click)="onCancel()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()">
+        <!-- Basic Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon basic">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <h3 class="section-title">Basic Information</h3>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="supplierCode" class="field-label">Supplier Code *</label>
+              <div class="input-with-button">
+                <input type="text" id="supplierCode" formControlName="supplier_code" class="form-input" placeholder="Enter supplier code">
+                <button type="button" class="generate-btn" (click)="generateSupplierCode()">Generate</button>
+              </div>
+              <div class="error-message" *ngIf="getFieldError('supplier_code')">
+                {{ getFieldError('supplier_code') }}
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="businessName" class="field-label">Business Name *</label>
+              <input type="text" id="businessName" formControlName="name" class="form-input" placeholder="Enter business name">
+              <div class="error-message" *ngIf="getFieldError('name')">
+                {{ getFieldError('name') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="contactPerson" class="field-label">Contact Person *</label>
+              <input type="text" id="contactPerson" formControlName="contact_person" class="form-input" placeholder="Enter contact person name">
+              <div class="error-message" *ngIf="getFieldError('contact_person')">
+                {{ getFieldError('contact_person') }}
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="taxRegistration" class="field-label">Tax Registration Number</label>
+              <input type="text" id="taxRegistration" formControlName="tax_registration_number" class="form-input" placeholder="Enter tax registration number">
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon contact">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <h3 class="section-title">Contact Information</h3>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="email" class="field-label">Email *</label>
+              <input type="email" id="email" formControlName="email" class="form-input" placeholder="Enter email address">
+              <div class="error-message" *ngIf="getFieldError('email')">
+                {{ getFieldError('email') }}
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="primaryPhone" class="field-label">Primary Phone *</label>
+              <input type="tel" id="primaryPhone" formControlName="phone" class="form-input" placeholder="Enter primary phone">
+              <div class="error-message" *ngIf="getFieldError('phone')">
+                {{ getFieldError('phone') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="alternatePhone" class="field-label">Alternate Phone</label>
+              <input type="tel" id="alternatePhone" formControlName="alternate_phone" class="form-input" placeholder="Enter alternate phone">
+            </div>
+            
+            <div class="form-field">
+              <label for="website" class="field-label">Website</label>
+              <input type="url" id="website" formControlName="website" class="form-input" placeholder="Enter website URL">
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon address">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <h3 class="section-title">Address Information</h3>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="streetAddress" class="field-label">Street Address</label>
+              <div class="input-with-icon">
+                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <input type="text" id="streetAddress" formControlName="street_address" class="form-input" placeholder="Enter supplier address">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="city" class="field-label">City</label>
+              <input type="text" id="city" formControlName="city" class="form-input" placeholder="Enter city">
+            </div>
+            
+            <div class="form-field">
+              <label for="state" class="field-label">State/Emirate</label>
+              <select id="state" formControlName="state" class="form-select">
+                <option value="">Select emirate</option>
+                <option value="Abu Dhabi">Abu Dhabi</option>
+                <option value="Dubai">Dubai</option>
+                <option value="Sharjah">Sharjah</option>
+                <option value="Ajman">Ajman</option>
+                <option value="Umm Al Quwain">Umm Al Quwain</option>
+                <option value="Ras Al Khaimah">Ras Al Khaimah</option>
+                <option value="Fujairah">Fujairah</option>
+              </select>
+            </div>
+            
+            <div class="form-field">
+              <label for="postalCode" class="field-label">Postal Code</label>
+              <input type="text" id="postalCode" formControlName="postal_code" class="form-input" placeholder="Enter postal code">
+            </div>
+          </div>
+        </div>
+
+        <!-- Business Terms -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon business">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              </svg>
+            </div>
+            <h3 class="section-title">Business Terms</h3>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="paymentTerms" class="field-label">Payment Terms</label>
+              <select id="paymentTerms" formControlName="payment_terms" class="form-select">
+                <option value="Net 30">Net 30</option>
+                <option value="Net 45">Net 45</option>
+                <option value="Net 60">Net 60</option>
+                <option value="Net 90">Net 90</option>
+                <option value="Due on Receipt">Due on Receipt</option>
+              </select>
+            </div>
+            
+            <div class="form-field">
+              <label for="currency" class="field-label">Currency</label>
+              <select id="currency" formControlName="currency" class="form-select">
+                <option value="AED">AED - UAE Dirham</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="creditLimit" class="field-label">Credit Limit</label>
+              <input type="number" id="creditLimit" formControlName="credit_limit" class="form-input" min="0" step="0.01" placeholder="Enter credit limit">
+            </div>
+            
+            <div class="form-field">
+              <label for="deliveryLeadTime" class="field-label">Delivery Lead Time (Days)</label>
+              <input type="number" id="deliveryLeadTime" formControlName="delivery_lead_time" class="form-input" min="1" placeholder="Enter lead time">
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon notes">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </div>
+            <h3 class="section-title">Additional Information</h3>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="notes" class="field-label">Notes</label>
+              <textarea id="notes" formControlName="notes" rows="3" class="form-textarea" 
+                        placeholder="Additional notes about this supplier..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-section" *ngIf="error">
+          <div class="error-message">{{ error }}</div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="!supplierForm.valid || loading">
+        <span *ngIf="!loading">Create Supplier</span>
+        <span *ngIf="loading">Creating...</span>
+      </button>
+    </div>
+  </div>
+</div>

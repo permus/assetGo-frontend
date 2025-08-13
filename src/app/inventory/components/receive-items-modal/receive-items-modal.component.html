@@ -1,0 +1,139 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Receive Items</h2>
+      <button class="close-btn" (click)="onCancel()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <div *ngIf="purchaseOrder" class="po-summary">
+        <h3 class="section-title">Purchase Order Summary</h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <label>PO Number</label>
+            <span>{{ purchaseOrder.po_number }}</span>
+          </div>
+          <div class="summary-item">
+            <label>Supplier</label>
+            <span>{{ purchaseOrder.supplier?.name || 'Unknown Supplier' }}</span>
+          </div>
+          <div class="summary-item">
+            <label>Total Items</label>
+            <span>{{ purchaseOrder.items?.length || 0 }}</span>
+          </div>
+          <div class="summary-item">
+            <label>Total Value</label>
+            <span>{{ formatCurrency(purchaseOrder.total) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="receiveForm" (ngSubmit)="onSubmit()" class="receive-form">
+        <!-- Location Selection -->
+        <div class="form-section">
+          <h3 class="section-title">Receiving Location</h3>
+          <div class="form-field">
+            <label for="location" class="field-label">Location *</label>
+            <select id="location" formControlName="location_id" class="form-select">
+              <option value="">Select a location</option>
+              <option *ngFor="let location of locations" [value]="location.id">
+                {{ location.name }} ({{ location.code || 'N/A' }})
+              </option>
+            </select>
+            <div class="error-message" *ngIf="getFieldError('location_id')">
+              {{ getFieldError('location_id') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Items to Receive -->
+        <div class="form-section">
+          <h3 class="section-title">Items to Receive</h3>
+          <div formArrayName="items" class="items-container">
+            <div *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i" class="item-row">
+              <div class="item-header">
+                <h4 class="item-title">{{ item.get('part_name')?.value }}</h4>
+                <div class="item-summary">
+                  <span class="ordered">Ordered: {{ item.get('ordered_qty')?.value }}</span>
+                  <span class="received">Received: {{ item.get('received_qty')?.value }}</span>
+                  <span class="remaining">Remaining: {{ item.get('remaining_qty')?.value }}</span>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-field">
+                  <label [for]="'receive_qty_' + i" class="field-label">Receive Quantity *</label>
+                  <input 
+                    type="number" 
+                    [id]="'receive_qty_' + i" 
+                    formControlName="receive_qty" 
+                    class="form-input"
+                    [min]="1"
+                    [max]="item.get('remaining_qty')?.value">
+                  <div class="error-message" *ngIf="getArrayFieldError(i, 'receive_qty')">
+                    {{ getArrayFieldError(i, 'receive_qty') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="form-section">
+          <h3 class="section-title">Additional Information</h3>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="reference" class="field-label">Reference</label>
+              <input 
+                type="text" 
+                id="reference" 
+                formControlName="reference" 
+                class="form-input"
+                placeholder="e.g., Delivery Note DN-001">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="notes" class="field-label">Notes</label>
+              <textarea 
+                id="notes" 
+                formControlName="notes" 
+                rows="3" 
+                class="form-textarea" 
+                placeholder="Add any additional notes about this delivery..."></textarea>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        Cancel
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-primary" 
+        (click)="onSubmit()" 
+        [disabled]="!receiveForm.valid || loading">
+        <span *ngIf="loading">Receiving...</span>
+        <span *ngIf="!loading">Receive Items</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+

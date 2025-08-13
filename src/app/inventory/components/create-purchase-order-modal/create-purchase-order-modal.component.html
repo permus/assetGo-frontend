@@ -26,15 +26,35 @@
           
           <div class="form-row">
             <div class="form-field">
-              <label for="supplier" class="field-label">Supplier *</label>
-              <select id="supplier" formControlName="supplier" class="form-select">
-                <option value="">Select a supplier</option>
-                <option *ngFor="let supplier of suppliers" [value]="supplier.id">
-                  {{ supplier.name }} - {{ supplier.contact }}
-                </option>
-              </select>
-              <div class="error-message" *ngIf="getFieldError('supplier')">
-                {{ getFieldError('supplier') }}
+              <label for="supplier" class="field-label">Supplier (Optional)</label>
+              <div class="supplier-selection">
+                <select id="supplier" formControlName="supplier_id" class="form-select">
+                  <option value="">Select a supplier</option>
+                  <option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                    {{ supplier.name }} - {{ supplier.contact_person }}
+                  </option>
+                </select>
+                <button type="button" class="btn btn-sm btn-outline" (click)="openAddSupplierModal()">
+                  New Supplier
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="vendorName" class="field-label">Vendor Name *</label>
+              <input type="text" id="vendorName" formControlName="vendor_name" class="form-input" placeholder="Enter vendor name">
+              <div class="error-message" *ngIf="getFieldError('vendor_name')">
+                {{ getFieldError('vendor_name') }}
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="vendorContact" class="field-label">Vendor Contact *</label>
+              <input type="text" id="vendorContact" formControlName="vendor_contact" class="form-input" placeholder="Enter vendor contact information">
+              <div class="error-message" *ngIf="getFieldError('vendor_contact')">
+                {{ getFieldError('vendor_contact') }}
               </div>
             </div>
           </div>
@@ -54,30 +74,144 @@
           <div class="form-row">
             <div class="form-field">
               <label for="orderDate" class="field-label">Order Date *</label>
-              <input type="date" id="orderDate" formControlName="orderDate" class="form-input">
-              <div class="error-message" *ngIf="getFieldError('orderDate')">
-                {{ getFieldError('orderDate') }}
+              <input type="date" id="orderDate" formControlName="order_date" class="form-input">
+              <div class="error-message" *ngIf="getFieldError('order_date')">
+                {{ getFieldError('order_date') }}
               </div>
             </div>
             
             <div class="form-field">
               <label for="expectedDelivery" class="field-label">Expected Delivery *</label>
-              <input type="date" id="expectedDelivery" formControlName="expectedDelivery" class="form-input">
-              <div class="error-message" *ngIf="getFieldError('expectedDelivery')">
-                {{ getFieldError('expectedDelivery') }}
+              <input type="date" id="expectedDelivery" formControlName="expected_date" class="form-input">
+              <div class="error-message" *ngIf="getFieldError('expected_date')">
+                {{ getFieldError('expected_date') }}
               </div>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-field">
-              <label for="priority" class="field-label">Priority</label>
-              <select id="priority" formControlName="priority" class="form-select">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
+              <label for="taxRate" class="field-label">Tax Rate (%)</label>
+              <input type="number" id="taxRate" formControlName="tax_rate" class="form-input" min="0" max="100" step="0.01" placeholder="0.00">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="terms" class="field-label">Terms & Conditions</label>
+              <textarea id="terms" formControlName="terms" rows="2" class="form-textarea" 
+                        placeholder="Enter payment terms and conditions..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon items">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+            </div>
+            <h3 class="section-title">Order Items</h3>
+            <button type="button" class="btn btn-sm btn-outline" (click)="addItem()">
+              Add Item
+            </button>
+          </div>
+          
+          <div formArrayName="items" class="items-container">
+            <div *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i" class="item-row">
+              <div class="item-header">
+                <h4 class="item-title">Item {{ i + 1 }}</h4>
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-danger" 
+                  (click)="removeItem(i)"
+                  *ngIf="itemsArray.length > 1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-field">
+                  <label [for]="'part_' + i" class="field-label">Part (Optional)</label>
+                  <select [id]="'part_' + i" formControlName="part_id" class="form-select">
+                    <option value="">Select a part</option>
+                    <option *ngFor="let part of parts" [value]="part.id">
+                      {{ part.name }} ({{ part.part_number }})
+                    </option>
+                  </select>
+                </div>
+                
+                <div class="form-field">
+                  <label [for]="'partNumber_' + i" class="field-label">Part Number *</label>
+                  <input type="text" [id]="'partNumber_' + i" formControlName="part_number" class="form-input" placeholder="Enter part number">
+                  <div class="error-message" *ngIf="getArrayFieldError('items', i, 'part_number')">
+                    {{ getArrayFieldError('items', i, 'part_number') }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field full-width">
+                  <label [for]="'description_' + i" class="field-label">Description *</label>
+                  <input type="text" [id]="'description_' + i" formControlName="description" class="form-input" placeholder="Enter item description">
+                  <div class="error-message" *ngIf="getArrayFieldError('items', i, 'description')">
+                    {{ getArrayFieldError('items', i, 'description') }}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-field">
+                  <label [for]="'qty_' + i" class="field-label">Quantity *</label>
+                  <input 
+                    type="number" 
+                    [id]="'qty_' + i" 
+                    formControlName="qty" 
+                    class="form-input"
+                    min="1">
+                  <div class="error-message" *ngIf="getArrayFieldError('items', i, 'qty')">
+                    {{ getArrayFieldError('items', i, 'qty') }}
+                  </div>
+                </div>
+                
+                <div class="form-field">
+                  <label [for]="'cost_' + i" class="field-label">Unit Cost *</label>
+                  <input 
+                    type="number" 
+                    [id]="'cost_' + i" 
+                    formControlName="unit_cost" 
+                    class="form-input"
+                    min="0.01"
+                    step="0.01">
+                  <div class="error-message" *ngIf="getArrayFieldError('items', i, 'unit_cost')">
+                    {{ getArrayFieldError('items', i, 'unit_cost') }}
+                  </div>
+                </div>
+                
+                <div class="form-field">
+                  <label class="field-label">Line Total</label>
+                  <div class="line-total">{{ calculateItemTotal(i) | currency:'AED' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="total-section">
+            <div class="total-row">
+              <div class="total-label">Subtotal:</div>
+              <div class="total-value">{{ calculateSubtotal() | currency:'AED' }}</div>
+            </div>
+            <div class="total-row">
+              <div class="total-label">Tax ({{ poForm.get('tax_rate')?.value || 0 }}%):</div>
+              <div class="total-value">{{ calculateTax() | currency:'AED' }}</div>
+            </div>
+            <div class="total-row total-final">
+              <div class="total-label">Total Order Value:</div>
+              <div class="total-value">{{ calculateTotal() | currency:'AED' }}</div>
             </div>
           </div>
         </div>
@@ -114,4 +248,11 @@
       </button>
     </div>
   </div>
+
+  <!-- Add Supplier Modal -->
+  <app-add-supplier-modal 
+    *ngIf="showAddSupplierModal"
+    (closeModal)="closeAddSupplierModal()"
+    (supplierCreated)="onSupplierCreated($event)">
+  </app-add-supplier-modal>
 </div>

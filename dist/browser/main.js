@@ -1,10 +1,10 @@
 import {
   ImportProgressService
-} from "./chunk-R6AUMG72.js";
-import "./chunk-HE7TYEWI.js";
+} from "./chunk-Q7LU7DI2.js";
+import "./chunk-LJFCQSIX.js";
 import {
   AuthService
-} from "./chunk-ORU7ONSE.js";
+} from "./chunk-5RUWZRCY.js";
 import {
   AUTO_STYLE,
   AnimationGroupPlayer,
@@ -24,12 +24,12 @@ import {
   RouterOutlet,
   bootstrapApplication,
   provideRouter
-} from "./chunk-ANYYK4S4.js";
+} from "./chunk-WX4YBHDT.js";
 import "./chunk-5YESG6NV.js";
 import {
   HTTP_INTERCEPTORS,
   provideHttpClient
-} from "./chunk-TS6BXV7E.js";
+} from "./chunk-3DQDTIJW.js";
 import {
   ANIMATION_MODULE_TYPE,
   CommonModule,
@@ -76,7 +76,7 @@ import {
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
   ɵɵtextInterpolate2
-} from "./chunk-BHMN65X2.js";
+} from "./chunk-E3IEKUEF.js";
 import {
   __objRest,
   __spreadValues
@@ -5275,12 +5275,12 @@ var routes = [
   { path: "", component: LandingComponent },
   {
     path: "",
-    loadChildren: () => import("./chunk-R6XA4ND2.js").then((m) => m.AuthModule)
+    loadChildren: () => import("./chunk-MKJGZ46S.js").then((m) => m.AuthModule)
   },
   // Public asset view route (no authentication required)
   {
     path: "public/asset/:id",
-    loadComponent: () => import("./chunk-74WUMTFS.js").then((m) => m.PublicAssetViewComponent)
+    loadComponent: () => import("./chunk-KXTNB6D5.js").then((m) => m.PublicAssetViewComponent)
   },
   {
     path: "",
@@ -5289,31 +5289,31 @@ var routes = [
     children: [
       {
         path: "dashboard",
-        loadChildren: () => import("./chunk-NHRYOXU4.js").then((m) => m.DashboardModule)
+        loadChildren: () => import("./chunk-RAZTUQ5V.js").then((m) => m.DashboardModule)
       },
       {
         path: "locations",
-        loadChildren: () => import("./chunk-KHLIVWM4.js").then((m) => m.LocationsModule)
+        loadChildren: () => import("./chunk-EUPAFIRI.js").then((m) => m.LocationsModule)
       },
       {
         path: "assets",
-        loadChildren: () => import("./chunk-67TVJXNG.js").then((m) => m.AssetsModule)
+        loadChildren: () => import("./chunk-GREL656P.js").then((m) => m.AssetsModule)
       },
       {
         path: "roles",
-        loadChildren: () => import("./chunk-7CAFQL5C.js").then((m) => m.RolesModule)
+        loadChildren: () => import("./chunk-IXGTEZMW.js").then((m) => m.RolesModule)
       },
       {
         path: "teams",
-        loadChildren: () => import("./chunk-ENGIS2BO.js").then((m) => m.TeamsModule)
+        loadChildren: () => import("./chunk-FLULB3QS.js").then((m) => m.TeamsModule)
       },
       {
         path: "work-orders",
-        loadChildren: () => import("./chunk-QTXNJ47B.js").then((m) => m.WorkOrdersModule)
+        loadChildren: () => import("./chunk-UKJV3WQP.js").then((m) => m.WorkOrdersModule)
       },
       {
         path: "inventory",
-        loadChildren: () => import("./chunk-NHHB7FEN.js").then((m) => m.InventoryModule)
+        loadChildren: () => import("./chunk-UXXIGQYW.js").then((m) => m.InventoryModule)
       }
     ]
   },

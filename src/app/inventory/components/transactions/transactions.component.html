@@ -1,110 +1,253 @@
-<div class="transactions">
-  <!-- Summary Cards Row -->
-  <div class="summary-cards-row">
-    <div class="summary-card total-transactions">
-      <div class="card-content">
-        <div class="card-value">1</div>
-        <div class="card-label">Total Transactions</div>
-      </div>
+<div class="transactions-container">
+  <!-- Header -->
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="text-2xl font-bold text-gray-900">Inventory Transactions</h1>
+      <p class="text-gray-600">Track and manage all inventory movements and transactions</p>
     </div>
-
-    <div class="summary-card receipts">
-      <div class="card-content">
-        <div class="card-value success">0</div>
-        <div class="card-label">Receipts</div>
-        <svg class="trend-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-        </svg>
-      </div>
-    </div>
-
-    <div class="summary-card issues">
-      <div class="card-content">
-        <div class="card-value warning">0</div>
-        <div class="card-label">Issues</div>
-        <svg class="trend-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-        </svg>
-      </div>
-    </div>
-
-    <div class="summary-card adjustments">
-      <div class="card-content">
-        <div class="card-value">1</div>
-        <div class="card-label">Adjustments</div>
-        <svg class="trend-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="header-actions">
+      <button 
+        (click)="refreshData()" 
+        class="btn btn-secondary"
+        [disabled]="loading">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
         </svg>
-      </div>
+        Refresh
+      </button>
     </div>
   </div>
 
-  <!-- Search and Filter Bar -->
-  <div class="search-filter-bar">
-    <div class="search-container">
-      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-      </svg>
-      <input type="text" placeholder="Search transactions..." class="search-input">
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <!-- Transaction Type Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Transaction Type</label>
+        <select 
+          [(ngModel)]="filters.type" 
+          class="filter-select"
+          (change)="applyFilters()">
+          <option *ngFor="let type of transactionTypes" [value]="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Part Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Part</label>
+        <select 
+          [(ngModel)]="filters.part_id" 
+          class="filter-select"
+          (change)="applyFilters()">
+          <option value="">All Parts</option>
+          <option *ngFor="let part of availableParts" [value]="part.id">
+            {{ part.name }} ({{ part.part_number }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Location Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Location</label>
+        <select 
+          [(ngModel)]="filters.location_id" 
+          class="filter-select"
+          (change)="applyFilters()">
+          <option value="">All Locations</option>
+          <option *ngFor="let location of availableLocations" [value]="location.id">
+            {{ location.name }} ({{ location.code }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Date Range Filters -->
+      <div class="filter-group">
+        <label class="filter-label">Start Date</label>
+        <input 
+          type="date" 
+          [(ngModel)]="filters.start_date" 
+          class="filter-input"
+          (change)="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">End Date</label>
+        <input 
+          type="date" 
+          [(ngModel)]="filters.end_date" 
+          class="filter-input"
+          (change)="applyFilters()">
+      </div>
+
+      <!-- Search Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Search</label>
+        <input 
+          type="text" 
+          [(ngModel)]="filters.search" 
+          placeholder="Search transactions..."
+          class="filter-input"
+          (input)="applyFilters()">
+      </div>
     </div>
 
-    <div class="filter-dropdown">
-      <select class="filter-select">
-        <option value="">All Types</option>
-        <option value="receipt">Receipt</option>
-        <option value="issue">Issue</option>
-        <option value="adjustment">Adjustment</option>
-        <option value="transfer">Transfer</option>
-      </select>
-      <svg class="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    <div class="filter-actions">
+      <button 
+        (click)="clearFilters()" 
+        class="btn btn-outline">
+        Clear Filters
+      </button>
+      <button 
+        (click)="applyFilters()" 
+        class="btn btn-primary">
+        Apply Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading transactions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <div class="error-icon">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
     </div>
+    <p class="error-message">{{ error }}</p>
+    <button (click)="refreshData()" class="btn btn-primary">Retry</button>
   </div>
 
   <!-- Transactions Table -->
-  <div class="transactions-table-container">
-    <table class="transactions-table">
-      <thead>
-        <tr>
-          <th>Date/Time</th>
-          <th>Part</th>
-          <th>Location</th>
-          <th>Type</th>
-          <th>Quantity</th>
-          <th>Unit Cost</th>
-          <th>Total Cost</th>
-          <th>Reference</th>
-          <th>Reason</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="datetime">12/08/2025, 23:02:00</td>
-          <td class="part">
-            <div class="part-primary">1</div>
-            <div class="part-secondary">part 1</div>
-          </td>
-          <td class="location">Toilet</td>
-          <td class="type">
-            <span class="type-badge adjustment">Adjustment</span>
-          </td>
-          <td class="quantity positive">+3</td>
-          <td class="unit-cost">-</td>
-          <td class="total-cost">-</td>
-          <td class="reference">manual</td>
-          <td class="reason">Cycle Count</td>
-          <td class="notes">trset</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <div *ngIf="!loading && !error" class="table-container">
+    <div class="table-header">
+      <h3 class="table-title">Transactions ({{ totalItems }})</h3>
+      <div class="table-actions">
+        <span class="text-sm text-gray-500">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+      </div>
+    </div>
 
-  <!-- Floating Action Button -->
-  <button class="fab">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-    </svg>
-  </button>
+    <div class="table-wrapper">
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th class="th-date">Date</th>
+            <th class="th-type">Type</th>
+            <th class="th-part">Part</th>
+            <th class="th-location">Location</th>
+            <th class="th-quantity">Quantity</th>
+            <th class="th-cost">Unit Cost</th>
+            <th class="th-total">Total Cost</th>
+            <th class="th-reason">Reason</th>
+            <th class="th-reference">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transaction of transactions" class="table-row">
+            <td class="td-date">
+              {{ formatDate(transaction.created_at) }}
+            </td>
+            <td class="td-type">
+              <span 
+                class="transaction-type-badge"
+                [ngClass]="getTransactionTypeClass(transaction.type)">
+                {{ getTransactionTypeLabel(transaction.type) }}
+              </span>
+            </td>
+            <td class="td-part">
+              <div class="part-info">
+                <div class="part-name">{{ transaction.part?.name || 'Unknown Part' }}</div>
+                <div class="part-number">{{ transaction.part?.part_number || 'N/A' }}</div>
+              </div>
+            </td>
+            <td class="td-location">
+              <div class="location-info">
+                <div class="location-name">{{ transaction.location?.name || 'Unknown Location' }}</div>
+                <div class="location-code">{{ transaction.location?.code || 'N/A' }}</div>
+              </div>
+            </td>
+            <td class="td-quantity">
+              <span class="quantity-value" [ngClass]="{
+                'text-green-600': transaction.type === 'receipt' || transaction.type === 'transfer_in' || transaction.type === 'return',
+                'text-red-600': transaction.type === 'issue' || transaction.type === 'transfer_out',
+                'text-blue-600': transaction.type === 'adjustment'
+              }">
+                {{ transaction.type === 'issue' || transaction.type === 'transfer_out' ? '-' : '+' }}{{ transaction.quantity }}
+              </span>
+            </td>
+            <td class="td-cost">
+              {{ formatCurrency(transaction.unit_cost || 0) }}
+            </td>
+            <td class="td-total">
+              <span class="total-cost">{{ formatCurrency(transaction.total_cost || 0) }}</span>
+            </td>
+            <td class="td-reason">
+              <span class="reason-text" [title]="transaction.reason">
+                {{ transaction.reason || 'N/A' }}
+              </span>
+            </td>
+            <td class="td-reference">
+              <span class="reference-text" [title]="transaction.reference">
+                {{ transaction.reference || 'N/A' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="transactions.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <h3 class="empty-title">No transactions found</h3>
+      <p class="empty-description">
+        No transactions match your current filters. Try adjusting your search criteria.
+      </p>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination">
+      <button 
+        (click)="onPageChange(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        class="pagination-btn pagination-prev">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Previous
+      </button>
+
+      <div class="pagination-pages">
+        <button 
+          *ngFor="let page of [].constructor(totalPages); let i = index"
+          (click)="onPageChange(i + 1)"
+          [class.active]="currentPage === i + 1"
+          class="pagination-page">
+          {{ i + 1 }}
+        </button>
+      </div>
+
+      <button 
+        (click)="onPageChange(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn pagination-next">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
 </div>
