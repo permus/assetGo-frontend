@@ -1,6 +1,6 @@
 import {
   InventoryAnalyticsService
-} from "./chunk-AUIJHXYG.js";
+} from "./chunk-ESHGZUZD.js";
 import "./chunk-5YESG6NV.js";
 import "./chunk-3DQDTIJW.js";
 import {
@@ -405,4 +405,4 @@ var DashboardOverviewComponent = class _DashboardOverviewComponent {
 export {
   DashboardOverviewComponent
 };
-//# sourceMappingURL=chunk-XMRKESSR.js.map
+//# sourceMappingURL=chunk-3E44NAVQ.js.map

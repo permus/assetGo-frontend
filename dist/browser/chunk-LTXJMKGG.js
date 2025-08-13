@@ -306,106 +306,106 @@ var RoleDeleteConfirmationModalComponent = class _RoleDeleteConfirmationModalCom
           }))
         ])
       ])
-    ], template: `<!-- Role Delete Confirmation Modal -->
-<div *ngIf="isOpen"
-     class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4"
-     [@backdropAnimation]>
-  <!-- Modal Container -->
-  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full"
-       [@modalAnimation]>
-    <!-- Modal Header -->
-    <div class="flex items-center justify-between p-6 border-b border-gray-200">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-          <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-        </div>
-        <h2 class="text-xl font-semibold text-gray-900">Delete Role</h2>
-      </div>
-      <button
-        (click)="onCancel()"
-        [disabled]="loading"
-        class="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50">
-        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Modal Content -->
-    <div class="p-6">
-      <!-- Deletion Reason Input -->
-      <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Deletion Reason (Optional)</label>
-        <textarea
-          [(ngModel)]="deletionReason"
-          rows="3"
-          placeholder="Enter reason for deleting this role..."
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none placeholder-gray-400"></textarea>
-        <p class="text-xs text-gray-500 mt-1">This will be recorded in the audit trail</p>
-      </div>
-
-      <!-- Warning Icon -->
-      <div class="flex justify-center mb-4">
-        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Confirmation Message -->
-      <div class="text-center mb-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Are you sure you want to delete "{{ roleName }}"?</h3>
-        <p class="text-gray-600">
-          This action cannot be undone. The role will be permanently removed from the system.
-        </p>
-        
-        <!-- Users Warning if applicable -->
-        <div *ngIf="usersCount > 0" class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-          <p class="text-amber-800 text-sm font-medium">
-            \u26A0\uFE0F Warning: This role is assigned to {{ usersCount }} user{{ usersCount !== 1 ? 's' : '' }}
-          </p>
-          <p class="text-amber-700 text-xs mt-1">
-            Users with this role will lose their permissions when the role is deleted.
-          </p>
-        </div>
-
-        <!-- General Warning -->
-        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p class="text-red-800 text-sm font-medium">
-            \u{1F6A8} This action is permanent and cannot be undone
-          </p>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex items-center justify-end space-x-3">
-        <button
-          (click)="onCancel()"
-          [disabled]="loading"
-          class="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors disabled:opacity-50">
-          Cancel
-        </button>
-
-        <button
-          (click)="onConfirm()"
-          [disabled]="loading"
-          class="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-          <span *ngIf="!loading">Delete Role</span>
-          <span *ngIf="loading" class="flex items-center space-x-2">
-            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Deleting...</span>
-          </span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+    ], template: `<!-- Role Delete Confirmation Modal -->\r
+<div *ngIf="isOpen"\r
+     class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4"\r
+     [@backdropAnimation]>\r
+  <!-- Modal Container -->\r
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full"\r
+       [@modalAnimation]>\r
+    <!-- Modal Header -->\r
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">\r
+      <div class="flex items-center space-x-3">\r
+        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">\r
+          <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>\r
+          </svg>\r
+        </div>\r
+        <h2 class="text-xl font-semibold text-gray-900">Delete Role</h2>\r
+      </div>\r
+      <button\r
+        (click)="onCancel()"\r
+        [disabled]="loading"\r
+        class="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50">\r
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\r
+        </svg>\r
+      </button>\r
+    </div>\r
+\r
+    <!-- Modal Content -->\r
+    <div class="p-6">\r
+      <!-- Deletion Reason Input -->\r
+      <div class="mb-6">\r
+        <label class="block text-sm font-medium text-gray-700 mb-2">Deletion Reason (Optional)</label>\r
+        <textarea\r
+          [(ngModel)]="deletionReason"\r
+          rows="3"\r
+          placeholder="Enter reason for deleting this role..."\r
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none placeholder-gray-400"></textarea>\r
+        <p class="text-xs text-gray-500 mt-1">This will be recorded in the audit trail</p>\r
+      </div>\r
+\r
+      <!-- Warning Icon -->\r
+      <div class="flex justify-center mb-4">\r
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">\r
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>\r
+          </svg>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Confirmation Message -->\r
+      <div class="text-center mb-6">\r
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Are you sure you want to delete "{{ roleName }}"?</h3>\r
+        <p class="text-gray-600">\r
+          This action cannot be undone. The role will be permanently removed from the system.\r
+        </p>\r
+        \r
+        <!-- Users Warning if applicable -->\r
+        <div *ngIf="usersCount > 0" class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">\r
+          <p class="text-amber-800 text-sm font-medium">\r
+            \u26A0\uFE0F Warning: This role is assigned to {{ usersCount }} user{{ usersCount !== 1 ? 's' : '' }}\r
+          </p>\r
+          <p class="text-amber-700 text-xs mt-1">\r
+            Users with this role will lose their permissions when the role is deleted.\r
+          </p>\r
+        </div>\r
+\r
+        <!-- General Warning -->\r
+        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">\r
+          <p class="text-red-800 text-sm font-medium">\r
+            \u{1F6A8} This action is permanent and cannot be undone\r
+          </p>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Action Buttons -->\r
+      <div class="flex items-center justify-end space-x-3">\r
+        <button\r
+          (click)="onCancel()"\r
+          [disabled]="loading"\r
+          class="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors disabled:opacity-50">\r
+          Cancel\r
+        </button>\r
+\r
+        <button\r
+          (click)="onConfirm()"\r
+          [disabled]="loading"\r
+          class="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">\r
+          <span *ngIf="!loading">Delete Role</span>\r
+          <span *ngIf="loading" class="flex items-center space-x-2">\r
+            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">\r
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+            </svg>\r
+            <span>Deleting...</span>\r
+          </span>\r
+        </button>\r
+      </div>\r
+    </div>\r
+  </div>\r
+</div>\r
 `, styles: ["/* src/app/roles/components/role-delete-confirmation-modal/role-delete-confirmation-modal.component.scss */\n.modal-backdrop {\n  -webkit-backdrop-filter: blur(4px);\n  backdrop-filter: blur(4px);\n}\n.modal-container {\n  max-height: 90vh;\n  overflow-y: auto;\n}\n.modal-container::-webkit-scrollbar {\n  width: 6px;\n}\n.modal-container::-webkit-scrollbar-track {\n  background: #f1f1f1;\n  border-radius: 3px;\n}\n.modal-container::-webkit-scrollbar-thumb {\n  background: #c1c1c1;\n  border-radius: 3px;\n}\n.modal-container::-webkit-scrollbar-thumb:hover {\n  background: #a8a8a8;\n}\n.delete-button {\n  transition: all 0.2s ease-in-out;\n}\n.delete-button:hover:not(:disabled) {\n  transform: translateY(-1px);\n  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);\n}\n.delete-button:active:not(:disabled) {\n  transform: translateY(0);\n}\n.loading-spinner {\n  animation: spin 1s linear infinite;\n}\n@keyframes spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n@media (max-width: 640px) {\n  .modal-container {\n    margin: 1rem;\n    max-width: calc(100vw - 2rem);\n  }\n}\n/*# sourceMappingURL=role-delete-confirmation-modal.component.css.map */\n"] }]
   }], null, { isOpen: [{
     type: Input
@@ -1326,209 +1326,209 @@ var RoleListComponent = class _RoleListComponent {
       </div>\r
 \r
       <!-- Right: View Type Toggle -->\r
-      <div class="flex items-center space-x-2 mt-4 md:mt-0">
-        <button (click)="viewType = 'grid'" [class.bg-blue-100]="viewType === 'grid'" [class.text-blue-700]="viewType === 'grid'" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <rect x="4" y="4" width="7" height="7" rx="2" />
-            <rect x="13" y="4" width="7" height="7" rx="2" />
-            <rect x="4" y="13" width="7" height="7" rx="2" />
-            <rect x="13" y="13" width="7" height="7" rx="2" />
-          </svg>
-        </button>
-        <button (click)="viewType = 'list'" [class.bg-blue-100]="viewType === 'list'" [class.text-blue-700]="viewType === 'list'" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <rect x="4" y="6" width="16" height="4" rx="2" />
-            <rect x="4" y="14" width="16" height="4" rx="2" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="loading" class="flex items-center justify-center py-20">
-    <div class="text-center">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-        <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Roles</h3>
-      <p class="text-sm text-gray-500">Please wait while we fetch your roles...</p>
-    </div>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="error && !loading" class="flex items-center justify-center py-20">
-    <div class="text-center">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-        </svg>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Roles</h3>
-      <p class="text-sm text-gray-500 mb-4">{{error}}</p>
-      <button
-        (click)="loadRoles()"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-        Retry
-      </button>
-    </div>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!loading && !error && roles.length === 0" class="text-center py-20">
-    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-      </svg>
-    </div>
-    <h3 class="text-lg font-medium text-gray-900 mb-2">No Roles Found</h3>
-    <p class="text-gray-600 mb-4">Get started by creating your first role.</p>
-    <button
-      (click)="createRole()"
-      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-      Create First Role
-    </button>
-  </div>
-
-  <!-- Grid View Cards -->
-  <div *ngIf="viewType === 'grid' && !loading && !error && roles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-2">
-    <div *ngFor="let role of filteredRoles" class="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col transition-all hover:shadow-md overflow-hidden">
-      <!-- Card Header -->
-      <div class="relative bg-[#e0edff] h-32 flex flex-col items-center justify-center">
-        <div class="absolute right-4 top-4 flex items-center space-x-2">
-          <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">Active</span>
-          <div class="relative" (click)="$event.stopPropagation()">
-            <button
-              (click)="toggleRoleMenu(role.id)"
-              class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="6" r="1.5" />
-                <circle cx="12" cy="12" r="1.5" />
-                <circle cx="12" cy="18" r="1.5" />
-              </svg>
-            </button>
-
-            <!-- Dropdown Menu -->
-            <div *ngIf="role.showMenu" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-              <button
-                (click)="editRole(role)"
-                class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                <span class="text-sm text-gray-700">Edit Role</span>
-              </button>
-
-              <button
-                (click)="deleteRole(role)"
-                class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-red-50 transition-colors">
-                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-                <span class="text-sm text-red-600">Delete Role</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <svg class="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
-      </div>
-
-      <!-- Card Body -->
-      <div class="flex-1 flex flex-col justify-between p-6 pt-4">
-        <div>
-          <div class="font-semibold text-lg text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors" (click)="editRole(role)">
-            {{ role.name }}
-          </div>
-          <div class="text-sm text-gray-500 mb-2">{{ role.description || 'No description' }}</div>
-          <div class="flex items-center text-xs text-gray-400 mb-2">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-            </svg>
-            <span>{{ role.users_count || 0 }} users assigned</span>
-          </div>
-          <hr class="my-3 border-gray-200">
-          <div class="flex items-center text-sm text-gray-700 mb-1">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-            </svg>
-            <span>{{ getPermissionSummary(role) }}</span>
-          </div>
-          <div class="flex items-center text-sm text-gray-700 mb-1" *ngIf="role.created_at">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>Created <b>{{ role.created_at | date:'MMM d, y' }}</b></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- List View -->
-  <div *ngIf="viewType === 'list' && !loading && !error && roles.length > 0" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-    <!-- Table Header -->
-    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-      <div class="grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-        <div class="col-span-3">Role</div>
-        <div class="col-span-3">Description</div>
-        <div class="col-span-2">Permissions</div>
-        <div class="col-span-1">Users</div>
-        <div class="col-span-2">Created</div>
-        <div class="col-span-1">Actions</div>
-      </div>
-    </div>
-
-    <!-- Table Body -->
-    <div class="divide-y divide-gray-200">
-      <div *ngFor="let role of filteredRoles"
-           class="px-6 py-4 hover:bg-gray-50 transition-colors">
-        <div class="grid grid-cols-12 gap-4 items-center">
-          <div class="col-span-3">
-            <div class="text-sm font-medium text-gray-900">{{ role.name }}</div>
-          </div>
-          <div class="col-span-3">
-            <div class="text-sm text-gray-900">{{ role.description || 'No description' }}</div>
-          </div>
-          <div class="col-span-2">
-            <div class="text-sm text-gray-900">{{ getPermissionSummary(role) }}</div>
-          </div>
-          <div class="col-span-1">
-            <div class="text-sm text-gray-900">{{ role.users_count || 0 }}</div>
-          </div>
-          <div class="col-span-2">
-            <div class="text-sm text-gray-900">{{ role.created_at | date:'short' }}</div>
-          </div>
-          <div class="col-span-1 text-right">
-            <button
-              (click)="editRole(role)"
-              class="text-blue-600 hover:text-blue-900 mr-3">
-              Edit
-            </button>
-            <button
-              (click)="deleteRole(role)"
-              class="text-red-600 hover:text-red-900">
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<app-role-delete-confirmation-modal
-  [isOpen]="showDeleteModal"
-  [roleName]="roleToDelete?.name || ''"
-  [roleId]="roleToDelete?.id || null"
-  [usersCount]="roleToDelete?.users_count || 0"
-  (closeModal)="closeDeleteModal()"
-  (confirmDelete)="confirmDeleteRole($event)">
+      <div class="flex items-center space-x-2 mt-4 md:mt-0">\r
+        <button (click)="viewType = 'grid'" [class.bg-blue-100]="viewType === 'grid'" [class.text-blue-700]="viewType === 'grid'" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer">\r
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <rect x="4" y="4" width="7" height="7" rx="2" />\r
+            <rect x="13" y="4" width="7" height="7" rx="2" />\r
+            <rect x="4" y="13" width="7" height="7" rx="2" />\r
+            <rect x="13" y="13" width="7" height="7" rx="2" />\r
+          </svg>\r
+        </button>\r
+        <button (click)="viewType = 'list'" [class.bg-blue-100]="viewType === 'list'" [class.text-blue-700]="viewType === 'list'" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors cursor-pointer">\r
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <rect x="4" y="6" width="16" height="4" rx="2" />\r
+            <rect x="4" y="14" width="16" height="4" rx="2" />\r
+          </svg>\r
+        </button>\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Loading State -->\r
+  <div *ngIf="loading" class="flex items-center justify-center py-20">\r
+    <div class="text-center">\r
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">\r
+        <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">\r
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+        </svg>\r
+      </div>\r
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Roles</h3>\r
+      <p class="text-sm text-gray-500">Please wait while we fetch your roles...</p>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Error State -->\r
+  <div *ngIf="error && !loading" class="flex items-center justify-center py-20">\r
+    <div class="text-center">\r
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">\r
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>\r
+        </svg>\r
+      </div>\r
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Roles</h3>\r
+      <p class="text-sm text-gray-500 mb-4">{{error}}</p>\r
+      <button\r
+        (click)="loadRoles()"\r
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">\r
+        Retry\r
+      </button>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Empty State -->\r
+  <div *ngIf="!loading && !error && roles.length === 0" class="text-center py-20">\r
+    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">\r
+      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>\r
+      </svg>\r
+    </div>\r
+    <h3 class="text-lg font-medium text-gray-900 mb-2">No Roles Found</h3>\r
+    <p class="text-gray-600 mb-4">Get started by creating your first role.</p>\r
+    <button\r
+      (click)="createRole()"\r
+      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">\r
+      Create First Role\r
+    </button>\r
+  </div>\r
+\r
+  <!-- Grid View Cards -->\r
+  <div *ngIf="viewType === 'grid' && !loading && !error && roles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-2">\r
+    <div *ngFor="let role of filteredRoles" class="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col transition-all hover:shadow-md overflow-hidden">\r
+      <!-- Card Header -->\r
+      <div class="relative bg-[#e0edff] h-32 flex flex-col items-center justify-center">\r
+        <div class="absolute right-4 top-4 flex items-center space-x-2">\r
+          <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">Active</span>\r
+          <div class="relative" (click)="$event.stopPropagation()">\r
+            <button\r
+              (click)="toggleRoleMenu(role.id)"\r
+              class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">\r
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <circle cx="12" cy="6" r="1.5" />\r
+                <circle cx="12" cy="12" r="1.5" />\r
+                <circle cx="12" cy="18" r="1.5" />\r
+              </svg>\r
+            </button>\r
+\r
+            <!-- Dropdown Menu -->\r
+            <div *ngIf="role.showMenu" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">\r
+              <button\r
+                (click)="editRole(role)"\r
+                class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">\r
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>\r
+                </svg>\r
+                <span class="text-sm text-gray-700">Edit Role</span>\r
+              </button>\r
+\r
+              <button\r
+                (click)="deleteRole(role)"\r
+                class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-red-50 transition-colors">\r
+                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>\r
+                </svg>\r
+                <span class="text-sm text-red-600">Delete Role</span>\r
+              </button>\r
+            </div>\r
+          </div>\r
+        </div>\r
+        <svg class="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>\r
+        </svg>\r
+      </div>\r
+\r
+      <!-- Card Body -->\r
+      <div class="flex-1 flex flex-col justify-between p-6 pt-4">\r
+        <div>\r
+          <div class="font-semibold text-lg text-gray-900 mb-1 cursor-pointer hover:text-blue-600 transition-colors" (click)="editRole(role)">\r
+            {{ role.name }}\r
+          </div>\r
+          <div class="text-sm text-gray-500 mb-2">{{ role.description || 'No description' }}</div>\r
+          <div class="flex items-center text-xs text-gray-400 mb-2">\r
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>\r
+            </svg>\r
+            <span>{{ role.users_count || 0 }} users assigned</span>\r
+          </div>\r
+          <hr class="my-3 border-gray-200">\r
+          <div class="flex items-center text-sm text-gray-700 mb-1">\r
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>\r
+            </svg>\r
+            <span>{{ getPermissionSummary(role) }}</span>\r
+          </div>\r
+          <div class="flex items-center text-sm text-gray-700 mb-1" *ngIf="role.created_at">\r
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />\r
+            </svg>\r
+            <span>Created <b>{{ role.created_at | date:'MMM d, y' }}</b></span>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- List View -->\r
+  <div *ngIf="viewType === 'list' && !loading && !error && roles.length > 0" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">\r
+    <!-- Table Header -->\r
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">\r
+      <div class="grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">\r
+        <div class="col-span-3">Role</div>\r
+        <div class="col-span-3">Description</div>\r
+        <div class="col-span-2">Permissions</div>\r
+        <div class="col-span-1">Users</div>\r
+        <div class="col-span-2">Created</div>\r
+        <div class="col-span-1">Actions</div>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Table Body -->\r
+    <div class="divide-y divide-gray-200">\r
+      <div *ngFor="let role of filteredRoles"\r
+           class="px-6 py-4 hover:bg-gray-50 transition-colors">\r
+        <div class="grid grid-cols-12 gap-4 items-center">\r
+          <div class="col-span-3">\r
+            <div class="text-sm font-medium text-gray-900">{{ role.name }}</div>\r
+          </div>\r
+          <div class="col-span-3">\r
+            <div class="text-sm text-gray-900">{{ role.description || 'No description' }}</div>\r
+          </div>\r
+          <div class="col-span-2">\r
+            <div class="text-sm text-gray-900">{{ getPermissionSummary(role) }}</div>\r
+          </div>\r
+          <div class="col-span-1">\r
+            <div class="text-sm text-gray-900">{{ role.users_count || 0 }}</div>\r
+          </div>\r
+          <div class="col-span-2">\r
+            <div class="text-sm text-gray-900">{{ role.created_at | date:'short' }}</div>\r
+          </div>\r
+          <div class="col-span-1 text-right">\r
+            <button\r
+              (click)="editRole(role)"\r
+              class="text-blue-600 hover:text-blue-900 mr-3">\r
+              Edit\r
+            </button>\r
+            <button\r
+              (click)="deleteRole(role)"\r
+              class="text-red-600 hover:text-red-900">\r
+              Delete\r
+            </button>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+  </div>\r
+</div>\r
+\r
+<!-- Delete Confirmation Modal -->\r
+<app-role-delete-confirmation-modal\r
+  [isOpen]="showDeleteModal"\r
+  [roleName]="roleToDelete?.name || ''"\r
+  [roleId]="roleToDelete?.id || null"\r
+  [usersCount]="roleToDelete?.users_count || 0"\r
+  (closeModal)="closeDeleteModal()"\r
+  (confirmDelete)="confirmDeleteRole($event)">\r
 </app-role-delete-confirmation-modal>`, styles: ["/* src/app/roles/role-list/role-list.component.scss */\n.table-container {\n  overflow-x: auto;\n}\n.role-table {\n  min-width: 100%;\n}\n.role-table th {\n  position: sticky;\n  top: 0;\n  background-color: #f9fafb;\n  z-index: 10;\n}\n/*# sourceMappingURL=role-list.component.css.map */\n"] }]
   }], () => [{ type: RoleService }, { type: Router }], null);
 })();
@@ -1987,212 +1987,212 @@ var RoleFormComponent = class _RoleFormComponent {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(RoleFormComponent, [{
     type: Component,
-    args: [{ selector: "app-role-form", standalone: false, template: `<div class="min-h-screen bg-gray-50 p-6">
-  <div class="role-create-page">
-    <!-- Header -->
-    <div class="mb-8">
-      <div class="flex items-center space-x-4 mb-4">
-        <button
-          type="button"
-          (click)="cancel()"
-          class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-          <span class="font-medium">Back to Roles</span>
-        </button>
-      </div>
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">
-        {{ isEditMode ? 'Edit Role' : 'Create New Role' }}
-      </h1>
-      <p class="text-gray-600">
-        {{ isEditMode ? 'Update role details and permissions for your organization' : 'Define a new role and assign specific permissions to control user access' }}
-      </p>
-    </div>
-
-    <!-- Loading State -->
-    <div *ngIf="loading" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-    </div>
-
-    <!-- Error State -->
-    <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-      <div class="flex">
-        <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <span class="text-red-800">{{ error }}</span>
-      </div>
-    </div>
-
-    <!-- Form -->
-    <form *ngIf="!loading" [formGroup]="roleForm" (ngSubmit)="onSubmit()">
-      <!-- Basic Information -->
-      <div class="section-card">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-          </div>
-          <h2 class="section-title">Basic Information</h2>
-        </div>
-        
-        <div class="mb-6">
-          <!-- Role Name -->
-          <div>
-            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-              Role Name <span class="text-red-500">*</span>
-            </label>
-            <input
-              id="name"
-              type="text"
-              formControlName="name"
-              class="input"
-              [class.border-red-300]="roleForm.get('name')?.invalid && roleForm.get('name')?.touched"
-              placeholder="e.g., Asset Manager, Maintenance Supervisor">
-            <div *ngIf="roleForm.get('name')?.invalid && roleForm.get('name')?.touched" class="text-red-600 text-sm mt-1">
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-              </svg>
-              <span *ngIf="roleForm.get('name')?.errors?.['required']">Role name is required</span>
-              <span *ngIf="roleForm.get('name')?.errors?.['maxlength']">Role name cannot exceed 255 characters</span>
-            </div>
-            <div class="text-xs text-gray-500 mt-1">Maximum 255 characters</div>
-          </div>
-        </div>
-
-        <div class="mb-6">
-          <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-          <textarea
-            id="description"
-            formControlName="description"
-            class="input resize-none"
-            rows="3"
-            placeholder="Brief description of the role and its responsibilities..."
-            maxlength="500"></textarea>
-          <div class="text-xs text-gray-500 mt-1">Maximum 500 characters</div>
-        </div>
-      </div>
-
-      <!-- Permissions Matrix -->
-      <div class="section-card">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-            </svg>
-          </div>
-          <h2 class="section-title">Role Permissions</h2>
-        </div>
-        <p class="text-gray-600 mb-6">Define what actions this role can perform in each module of the system</p>
-
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
-              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <button
-                  type="button"
-                  (click)="toggleAllPermissions('all', true)"
-                  class="text-blue-600 hover:text-blue-800">
-                  Select All
-                </button>
-              </th>
-              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">View</th>
-              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Create</th>
-              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Edit</th>
-              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Delete</th>
-              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Export</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200" formGroupName="permissions">
-            <tr *ngFor="let module of availablePermissions | keyvalue" [formGroupName]="module.key">
-              <td class="px-4 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ getModuleDisplayName(module.key) }}</div>
-              </td>
-              <td class="px-4 py-4 whitespace-nowrap text-center">
-                <button
-                  type="button"
-                  (click)="toggleAllPermissions(module.key, true)"
-                  class="text-blue-600 hover:text-blue-800 text-sm">
-                  All
-                </button>
-              </td>
-              <td class="px-4 py-4 whitespace-nowrap text-center">
-                <input
-                  type="checkbox"
-                  formControlName="can_view"
-                  (change)="onViewPermissionChange(module.key, $event)"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-              </td>
-              <td class="px-4 py-4 whitespace-nowrap text-center">
-                <input
-                  type="checkbox"
-                  formControlName="can_create"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-              </td>
-              <td class="px-4 py-4 whitespace-nowrap text-center">
-                <input
-                  type="checkbox"
-                  formControlName="can_edit"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-              </td>
-              <td class="px-4 py-4 whitespace-nowrap text-center">
-                <input
-                  type="checkbox"
-                  formControlName="can_delete"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-              </td>
-              <td class="px-4 py-4 whitespace-nowrap text-center">
-                <input
-                  type="checkbox"
-                  formControlName="can_export"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        </div>
-      </div>
-
-      <!-- Submit Buttons -->
-      <div class="section-card">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2 text-gray-600">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span class="text-sm">Review all information before saving</span>
-          </div>
-          <div class="flex space-x-3">
-            <button
-              type="button"
-              (click)="cancel()"
-              class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium">
-              Cancel
-            </button>
-            <button
-              type="submit"
-              [disabled]="saving || roleForm.invalid"
-              class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium shadow-sm">
-              <span *ngIf="saving" class="inline-flex items-center">
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {{ isEditMode ? 'Updating Role...' : 'Creating Role...' }}
-              </span>
-              <span *ngIf="!saving">
-                {{ isEditMode ? 'Update Role' : 'Create Role' }}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
+    args: [{ selector: "app-role-form", standalone: false, template: `<div class="min-h-screen bg-gray-50 p-6">\r
+  <div class="role-create-page">\r
+    <!-- Header -->\r
+    <div class="mb-8">\r
+      <div class="flex items-center space-x-4 mb-4">\r
+        <button\r
+          type="button"\r
+          (click)="cancel()"\r
+          class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors">\r
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>\r
+          </svg>\r
+          <span class="font-medium">Back to Roles</span>\r
+        </button>\r
+      </div>\r
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">\r
+        {{ isEditMode ? 'Edit Role' : 'Create New Role' }}\r
+      </h1>\r
+      <p class="text-gray-600">\r
+        {{ isEditMode ? 'Update role details and permissions for your organization' : 'Define a new role and assign specific permissions to control user access' }}\r
+      </p>\r
+    </div>\r
+\r
+    <!-- Loading State -->\r
+    <div *ngIf="loading" class="flex justify-center items-center py-12">\r
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>\r
+    </div>\r
+\r
+    <!-- Error State -->\r
+    <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">\r
+      <div class="flex">\r
+        <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+        </svg>\r
+        <span class="text-red-800">{{ error }}</span>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Form -->\r
+    <form *ngIf="!loading" [formGroup]="roleForm" (ngSubmit)="onSubmit()">\r
+      <!-- Basic Information -->\r
+      <div class="section-card">\r
+        <div class="flex items-center space-x-3 mb-6">\r
+          <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">\r
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>\r
+            </svg>\r
+          </div>\r
+          <h2 class="section-title">Basic Information</h2>\r
+        </div>\r
+        \r
+        <div class="mb-6">\r
+          <!-- Role Name -->\r
+          <div>\r
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">\r
+              Role Name <span class="text-red-500">*</span>\r
+            </label>\r
+            <input\r
+              id="name"\r
+              type="text"\r
+              formControlName="name"\r
+              class="input"\r
+              [class.border-red-300]="roleForm.get('name')?.invalid && roleForm.get('name')?.touched"\r
+              placeholder="e.g., Asset Manager, Maintenance Supervisor">\r
+            <div *ngIf="roleForm.get('name')?.invalid && roleForm.get('name')?.touched" class="text-red-600 text-sm mt-1">\r
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>\r
+              </svg>\r
+              <span *ngIf="roleForm.get('name')?.errors?.['required']">Role name is required</span>\r
+              <span *ngIf="roleForm.get('name')?.errors?.['maxlength']">Role name cannot exceed 255 characters</span>\r
+            </div>\r
+            <div class="text-xs text-gray-500 mt-1">Maximum 255 characters</div>\r
+          </div>\r
+        </div>\r
+\r
+        <div class="mb-6">\r
+          <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>\r
+          <textarea\r
+            id="description"\r
+            formControlName="description"\r
+            class="input resize-none"\r
+            rows="3"\r
+            placeholder="Brief description of the role and its responsibilities..."\r
+            maxlength="500"></textarea>\r
+          <div class="text-xs text-gray-500 mt-1">Maximum 500 characters</div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Permissions Matrix -->\r
+      <div class="section-card">\r
+        <div class="flex items-center space-x-3 mb-6">\r
+          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">\r
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>\r
+            </svg>\r
+          </div>\r
+          <h2 class="section-title">Role Permissions</h2>\r
+        </div>\r
+        <p class="text-gray-600 mb-6">Define what actions this role can perform in each module of the system</p>\r
+\r
+      <div class="overflow-x-auto">\r
+        <table class="min-w-full divide-y divide-gray-200">\r
+          <thead class="bg-gray-50">\r
+            <tr>\r
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>\r
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">\r
+                <button\r
+                  type="button"\r
+                  (click)="toggleAllPermissions('all', true)"\r
+                  class="text-blue-600 hover:text-blue-800">\r
+                  Select All\r
+                </button>\r
+              </th>\r
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">View</th>\r
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Create</th>\r
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Edit</th>\r
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Delete</th>\r
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Export</th>\r
+            </tr>\r
+          </thead>\r
+          <tbody class="bg-white divide-y divide-gray-200" formGroupName="permissions">\r
+            <tr *ngFor="let module of availablePermissions | keyvalue" [formGroupName]="module.key">\r
+              <td class="px-4 py-4 whitespace-nowrap">\r
+                <div class="text-sm font-medium text-gray-900">{{ getModuleDisplayName(module.key) }}</div>\r
+              </td>\r
+              <td class="px-4 py-4 whitespace-nowrap text-center">\r
+                <button\r
+                  type="button"\r
+                  (click)="toggleAllPermissions(module.key, true)"\r
+                  class="text-blue-600 hover:text-blue-800 text-sm">\r
+                  All\r
+                </button>\r
+              </td>\r
+              <td class="px-4 py-4 whitespace-nowrap text-center">\r
+                <input\r
+                  type="checkbox"\r
+                  formControlName="can_view"\r
+                  (change)="onViewPermissionChange(module.key, $event)"\r
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">\r
+              </td>\r
+              <td class="px-4 py-4 whitespace-nowrap text-center">\r
+                <input\r
+                  type="checkbox"\r
+                  formControlName="can_create"\r
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">\r
+              </td>\r
+              <td class="px-4 py-4 whitespace-nowrap text-center">\r
+                <input\r
+                  type="checkbox"\r
+                  formControlName="can_edit"\r
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">\r
+              </td>\r
+              <td class="px-4 py-4 whitespace-nowrap text-center">\r
+                <input\r
+                  type="checkbox"\r
+                  formControlName="can_delete"\r
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">\r
+              </td>\r
+              <td class="px-4 py-4 whitespace-nowrap text-center">\r
+                <input\r
+                  type="checkbox"\r
+                  formControlName="can_export"\r
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">\r
+              </td>\r
+            </tr>\r
+          </tbody>\r
+        </table>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Submit Buttons -->\r
+      <div class="section-card">\r
+        <div class="flex items-center justify-between">\r
+          <div class="flex items-center space-x-2 text-gray-600">\r
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+            </svg>\r
+            <span class="text-sm">Review all information before saving</span>\r
+          </div>\r
+          <div class="flex space-x-3">\r
+            <button\r
+              type="button"\r
+              (click)="cancel()"\r
+              class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium">\r
+              Cancel\r
+            </button>\r
+            <button\r
+              type="submit"\r
+              [disabled]="saving || roleForm.invalid"\r
+              class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium shadow-sm">\r
+              <span *ngIf="saving" class="inline-flex items-center">\r
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">\r
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+                </svg>\r
+                {{ isEditMode ? 'Updating Role...' : 'Creating Role...' }}\r
+              </span>\r
+              <span *ngIf="!saving">\r
+                {{ isEditMode ? 'Update Role' : 'Create Role' }}\r
+              </span>\r
+            </button>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </form>\r
+  </div>\r
 </div> `, styles: ["/* src/app/roles/role-form/role-form.component.scss */\n.role-create-page {\n  max-width: 1000px;\n  margin: 0 auto;\n}\n.section-card {\n  background: #fff;\n  border-radius: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);\n  border: 1px solid #e5e7eb;\n  padding: 2rem;\n  margin-bottom: 1.5rem;\n  transition: all 0.2s ease-in-out;\n}\n.section-card:hover {\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);\n}\n.section-title {\n  font-size: 1.25rem;\n  font-weight: 600;\n  margin: 0;\n  color: #1f2937;\n}\n.input {\n  width: 100%;\n  border-radius: 0.5rem;\n  border: 1px solid #d1d5db;\n  padding: 0.75rem 0.875rem;\n  font-size: 1rem;\n  background: #ffffff;\n  transition: all 0.2s ease-in-out;\n}\n.input::placeholder {\n  color: #9ca3af;\n}\n.input:focus {\n  outline: none;\n  border-color: #3b82f6;\n  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);\n  background: #ffffff;\n}\n.input.border-red-300 {\n  border-color: #fca5a5;\n  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);\n}\n.permissions-table .permission-checkbox {\n  width: 1rem;\n  height: 1rem;\n  border-radius: 0.25rem;\n  border: 1px solid #d1d5db;\n  transition: all 0.2s ease-in-out;\n}\n.permissions-table .permission-checkbox:checked {\n  background-color: #3b82f6;\n  border-color: #3b82f6;\n}\n.permissions-table .permission-checkbox:focus {\n  outline: none;\n  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);\n}\n.module-row {\n  transition: all 0.15s ease-in-out;\n}\n.module-row:hover {\n  background-color: #f8fafc;\n}\n.toggle-all-btn {\n  color: #3b82f6;\n  font-size: 0.875rem;\n  font-weight: 500;\n  transition: all 0.15s ease-in-out;\n}\n.toggle-all-btn:hover {\n  color: #1d4ed8;\n  text-decoration: underline;\n}\n@media (max-width: 768px) {\n  .role-create-page {\n    padding: 1rem;\n  }\n  .section-card {\n    padding: 1.5rem;\n    margin-bottom: 1rem;\n    border-radius: 1rem;\n  }\n  .grid-cols-2 {\n    grid-template-columns: 1fr;\n  }\n  .overflow-x-auto {\n    -webkit-overflow-scrolling: touch;\n  }\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n    transform: translateY(10px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n.section-card {\n  animation: fadeIn 0.3s ease-out;\n}\n.btn-primary {\n  background:\n    linear-gradient(\n      135deg,\n      #3b82f6 0%,\n      #1d4ed8 100%);\n  border: none;\n  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);\n}\n.btn-primary:hover {\n  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);\n  transform: translateY(-1px);\n}\n.btn-primary:disabled {\n  background: #9ca3af;\n  box-shadow: none;\n  transform: none;\n}\n/*# sourceMappingURL=role-form.component.css.map */\n"] }]
   }], () => [{ type: FormBuilder }, { type: RoleService }, { type: ActivatedRoute }, { type: Router }], null);
 })();
@@ -2268,4 +2268,4 @@ var RolesModule = class _RolesModule {
 export {
   RolesModule
 };
-//# sourceMappingURL=chunk-IXGTEZMW.js.map
+//# sourceMappingURL=chunk-LTXJMKGG.js.map

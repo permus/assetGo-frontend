@@ -1,12 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { InventoryAnalyticsService, PurchaseOrder, UpdatePurchaseOrderRequest } from '../../../core/services/inventory-analytics.service';
+import { PurchaseOrder } from '../../../core/services/inventory-analytics.service';
 
 @Component({
   selector: 'app-view-purchase-order-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './view-purchase-order-modal.component.html',
   styleUrls: ['./view-purchase-order-modal.component.scss']
 })
@@ -15,60 +14,13 @@ export class ViewPurchaseOrderModalComponent {
   @Output() closeModal = new EventEmitter<void>();
   @Output() purchaseOrderUpdated = new EventEmitter<PurchaseOrder>();
 
-  isEditing = false;
-  loading = false;
-  error: string | null = null;
-
-  constructor(private inventoryService: InventoryAnalyticsService) {}
-
-  toggleEdit(): void {
-    this.isEditing = !this.isEditing;
+  // Safe getters for template use
+  get hasItems(): boolean {
+    return !!(this.purchaseOrder?.items && this.purchaseOrder.items.length > 0);
   }
 
-  onUpdate(updatedData: UpdatePurchaseOrderRequest): void {
-    if (!this.purchaseOrder?.id) return;
-
-    this.loading = true;
-    this.error = null;
-
-    this.inventoryService.updatePurchaseOrder(this.purchaseOrder.id, updatedData).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.purchaseOrderUpdated.emit(response.data);
-          this.isEditing = false;
-        } else {
-          this.error = 'Failed to update purchase order';
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Error updating purchase order: ' + err.message;
-        this.loading = false;
-      }
-    });
-  }
-
-  onDelete(): void {
-    if (!this.purchaseOrder?.id) return;
-
-    if (confirm('Are you sure you want to delete this purchase order? This action cannot be undone.')) {
-      this.loading = true;
-      this.error = null;
-
-      this.inventoryService.deletePurchaseOrder(this.purchaseOrder.id).subscribe({
-        next: () => {
-          this.closeModal.emit();
-        },
-        error: (err) => {
-          this.error = 'Error deleting purchase order: ' + err.message;
-          this.loading = false;
-        }
-      });
-    }
-  }
-
-  onClose(): void {
-    this.closeModal.emit();
+  get itemsCount(): number {
+    return this.purchaseOrder?.items?.length || 0;
   }
 
   getStatusClass(status: string): string {
@@ -97,19 +49,55 @@ export class ViewPurchaseOrderModalComponent {
     }
   }
 
-  formatCurrency(amount: number): string {
-    return `AED ${amount.toFixed(2)}`;
+  formatCurrency(amount: any): string {
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || !isFinite(numAmount)) {
+      return 'AED 0.00';
+    }
+    return `AED ${numAmount.toFixed(2)}`;
   }
 
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString();
+  formatDate(dateString: any): string {
+    if (!dateString) {
+      return 'N/A';
+    }
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+      return date.toLocaleDateString();
+    } catch (error) {
+      return 'Invalid Date';
+    }
   }
 
-  canEdit(): boolean {
-    return this.purchaseOrder?.status === 'draft';
+  calculateItemsTotal(items: any[]): number {
+    if (!items || !Array.isArray(items) || items.length === 0) return 0;
+    return items.reduce((sum, item) => {
+      const qty = Number(item?.ordered_qty) || 0;
+      return sum + (isNaN(qty) ? 0 : qty);
+    }, 0);
   }
 
-  canDelete(): boolean {
-    return this.purchaseOrder?.status === 'draft';
+  calculateTotalValue(items: any[]): number {
+    if (!items || !Array.isArray(items) || items.length === 0) return 0;
+    return items.reduce((sum, item) => {
+      const qty = Number(item?.ordered_qty) || 0;
+      const price = Number(item?.unit_price) || 0;
+      return sum + (qty * price);
+    }, 0);
+  }
+
+  onClose(): void {
+    this.closeModal.emit();
+  }
+
+  onEdit(): void {
+    // Emit the purchase order for editing
+    if (this.purchaseOrder) {
+      this.purchaseOrderUpdated.emit(this.purchaseOrder);
+    }
+    this.onClose();
   }
 }

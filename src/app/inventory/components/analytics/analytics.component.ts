@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem } from '../../../core/services/inventory-analytics.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-analytics',
@@ -8,11 +10,29 @@ import { CommonModule } from '@angular/common';
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.scss']
 })
-export class AnalyticsComponent {
-  activeTab = 'turnover';
+export class AnalyticsComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  activeTab = 'overview';
   selectedPeriod = '6months';
 
-  // Sample data for different periods
+  // Loading and error states
+  loading = false;
+  error: string | null = null;
+
+  // Real-time analytics data from API
+  dashboardData: DashboardData | null = null;
+  abcAnalysisData: AbcAnalysisItem[] = [];
+  overviewData: DashboardData | null = null;
+
+  // ABC Analysis summary
+  abcSummary = {
+    classA: { count: 0, value: 0, percentage: 0 },
+    classB: { count: 0, value: 0, percentage: 0 },
+    classC: { count: 0, value: 0, percentage: 0 }
+  };
+
+  // Sample data for different periods (for demo purposes)
   periodData = {
     '6months': {
       turnover: '2.4x',
@@ -48,9 +68,119 @@ export class AnalyticsComponent {
     }
   };
 
+  constructor(private analyticsService: InventoryAnalyticsService) { }
+
+  ngOnInit(): void {
+    this.loadAllAnalytics();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadAllAnalytics(): void {
+    this.loading = true;
+    this.error = null;
+
+    // Load all three analytics endpoints
+    Promise.all([
+      this.loadInventoryAnalytics(),
+      this.loadAbcAnalysis(),
+      this.loadDashboardOverview()
+    ]).finally(() => {
+      this.loading = false;
+    });
+  }
+
+  loadInventoryAnalytics(): Promise<void> {
+    return new Promise((resolve) => {
+      this.analyticsService.getInventoryAnalytics()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.dashboardData = response.data;
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading inventory analytics:', err);
+            resolve();
+          }
+        });
+    });
+  }
+
+  loadAbcAnalysis(): Promise<void> {
+    return new Promise((resolve) => {
+      this.analyticsService.getAbcAnalysis()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.abcAnalysisData = response.data;
+              this.calculateAbcSummary();
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading ABC analysis:', err);
+            resolve();
+          }
+        });
+    });
+  }
+
+  loadDashboardOverview(): Promise<void> {
+    return new Promise((resolve) => {
+      this.analyticsService.getDashboardData()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.overviewData = response.data;
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading dashboard overview:', err);
+            resolve();
+          }
+        });
+    });
+  }
+
+  calculateAbcSummary(): void {
+    if (!this.abcAnalysisData.length) return;
+
+    const classA = this.abcAnalysisData.filter(item => item.class === 'A');
+    const classB = this.abcAnalysisData.filter(item => item.class === 'B');
+    const classC = this.abcAnalysisData.filter(item => item.class === 'C');
+
+    const totalValue = this.abcAnalysisData.reduce((sum, item) => sum + item.value, 0);
+
+    this.abcSummary.classA = {
+      count: classA.length,
+      value: classA.reduce((sum, item) => sum + item.value, 0),
+      percentage: totalValue > 0 ? (classA.reduce((sum, item) => sum + item.value, 0) / totalValue) * 100 : 0
+    };
+
+    this.abcSummary.classB = {
+      count: classB.length,
+      value: classB.reduce((sum, item) => sum + item.value, 0),
+      percentage: totalValue > 0 ? (classB.reduce((sum, item) => sum + item.value, 0) / totalValue) * 100 : 0
+    };
+
+    this.abcSummary.classC = {
+      count: classC.length,
+      value: classC.reduce((sum, item) => sum + item.value, 0),
+      percentage: totalValue > 0 ? (classC.reduce((sum, item) => sum + item.value, 0) / totalValue) * 100 : 0
+    };
+  }
+
   onTabChange(tab: string): void {
     this.activeTab = tab;
-    // Here you would typically load different data based on the selected tab
     console.log('Switched to tab:', tab);
   }
 
@@ -58,18 +188,33 @@ export class AnalyticsComponent {
     const target = event.target as HTMLSelectElement;
     if (target && target.value) {
       this.selectedPeriod = target.value;
-      // Here you would typically refresh the data based on the selected period
       console.log('Changed period to:', target.value);
     }
   }
 
   exportReport(): void {
-    // Here you would implement the export functionality
-    console.log('Exporting report for period:', this.selectedPeriod);
-    // Example: this.analyticsService.exportReport(this.selectedPeriod);
+    console.log('Exporting analytics report for period:', this.selectedPeriod);
+    // Here you would implement the actual export functionality
   }
 
   getCurrentData() {
     return this.periodData[this.selectedPeriod as keyof typeof this.periodData];
+  }
+
+  refreshData(): void {
+    this.loadAllAnalytics();
+  }
+
+  formatCurrency(amount: number): string {
+    return `AED ${amount.toLocaleString()}`;
+  }
+
+  getAbcClassColor(abcClass: string): string {
+    switch (abcClass) {
+      case 'A': return 'bg-green-100 text-green-800';
+      case 'B': return 'bg-yellow-100 text-yellow-800';
+      case 'C': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   }
 }

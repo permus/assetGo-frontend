@@ -432,6 +432,13 @@ export class InventoryAnalyticsService {
     );
   }
 
+  getInventoryAnalytics(): Observable<DashboardResponse> {
+    return this.http.get<DashboardResponse>(
+      `${this.apiUrl}/inventory/analytics/dashboard`,
+      this.getAuthHeaders()
+    );
+  }
+
   getAbcAnalysis(): Observable<AbcAnalysisResponse> {
     return this.http.get<AbcAnalysisResponse>(
       `${this.apiUrl}/inventory/analytics/abc-analysis`,

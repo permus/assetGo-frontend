@@ -1,122 +1,325 @@
 <div class="analytics">
-  <!-- Header Section -->
-  <div class="analytics-header">
-    <div class="header-left">
-      <h2 class="main-title">Inventory Analytics</h2>
-      <p class="subtitle">Advanced insights and performance metrics</p>
-    </div>
-    <div class="header-right">
-      <div class="period-dropdown">
-        <select class="period-select" [value]="selectedPeriod" (change)="onPeriodChange($event)">
-          <option value="6months">Last 6 Months</option>
-          <option value="3months">Last 3 Months</option>
-          <option value="1month">Last Month</option>
-          <option value="1year">Last Year</option>
-        </select>
-        <svg class="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading inventory analytics...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    </svg>
+    <h3 class="error-title">{{ error }}</h3>
+    <button class="btn btn-primary" (click)="refreshData()">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+      </svg>
+      Retry
+    </button>
+  </div>
+
+  <!-- Analytics Content -->
+  <div *ngIf="!loading && !error">
+    <!-- Header Section -->
+    <div class="analytics-header">
+      <div class="header-left">
+        <h2 class="main-title">Inventory Analytics</h2>
+        <p class="subtitle">Advanced insights and performance metrics</p>
       </div>
-      <button class="export-btn" (click)="exportReport()">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-        </svg>
-        Export Report
+      <div class="header-right">
+        <div class="period-dropdown">
+          <select class="period-select" [value]="selectedPeriod" (change)="onPeriodChange($event)">
+            <option value="6months">Last 6 Months</option>
+            <option value="3months">Last 3 Months</option>
+            <option value="1month">Last Month</option>
+            <option value="1year">Last Year</option>
+          </select>
+          <svg class="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+        <button class="refresh-btn" (click)="refreshData()" title="Refresh Data">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+        <button class="export-btn" (click)="exportReport()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Export Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="analytics-tabs">
+      <button class="tab-button" [class.active]="activeTab === 'overview'" (click)="onTabChange('overview')">
+        <span class="tab-text">Overview</span>
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 'turnover'" (click)="onTabChange('turnover')">
+        <span class="tab-text">Turnover Analysis</span>
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 'abc'" (click)="onTabChange('abc')">
+        <span class="tab-text">ABC Analysis</span>
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 'demand'" (click)="onTabChange('demand')">
+        <span class="tab-text">Demand Forecast</span>
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 'aging'" (click)="onTabChange('aging')">
+        <span class="tab-text">Stock Aging</span>
       </button>
     </div>
-  </div>
 
-  <!-- Metric Cards Row -->
-  <div class="metric-cards-row">
-    <div class="metric-card turnover">
-      <div class="card-content">
-        <div class="metric-value">{{ getCurrentData().turnover }}</div>
-        <div class="metric-label">Inventory Turnover</div>
-        <div class="metric-change positive">{{ getCurrentData().turnoverChange }}</div>
-      </div>
-      <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-      </svg>
-    </div>
-
-    <div class="metric-card carrying-cost">
-      <div class="card-content">
-        <div class="metric-value">{{ getCurrentData().carryingCost }}</div>
-        <div class="metric-label">Carrying Cost</div>
-        <div class="metric-change">Monthly holding cost</div>
-      </div>
-      <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-      </svg>
-    </div>
-
-    <div class="metric-card dead-stock">
-      <div class="card-content">
-        <div class="metric-value warning">{{ getCurrentData().deadStockValue }}</div>
-        <div class="metric-label">Dead Stock Value</div>
-        <div class="metric-change">{{ getCurrentData().deadStockItems }}</div>
-      </div>
-      <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-      </svg>
-    </div>
-
-    <div class="metric-card avg-days">
-      <div class="card-content">
-        <div class="metric-value">{{ getCurrentData().avgDays }}</div>
-        <div class="metric-label">Avg Days on Hand</div>
-        <div class="metric-change">Average inventory age</div>
-      </div>
-      <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-    </div>
-  </div>
-
-  <!-- Navigation Tabs -->
-  <div class="analytics-tabs">
-    <button class="tab-button" [class.active]="activeTab === 'turnover'" (click)="onTabChange('turnover')">
-      <span class="tab-text">Turnover Analysis</span>
-    </button>
-    <button class="tab-button" [class.active]="activeTab === 'abc'" (click)="onTabChange('abc')">
-      <span class="tab-text">ABC Analysis</span>
-    </button>
-    <button class="tab-button" [class.active]="activeTab === 'demand'" (click)="onTabChange('demand')">
-      <span class="tab-text">Demand Forecast</span>
-    </button>
-    <button class="tab-button" [class.active]="activeTab === 'aging'" (click)="onTabChange('aging')">
-      <span class="tab-text">Stock Aging</span>
-    </button>
-  </div>
-
-  <!-- Charts Section -->
-  <div class="charts-section">
-    <!-- Left Chart Panel -->
-    <div class="chart-panel">
-      <div class="panel-header">
-        <h3 class="panel-title">Inventory Turnover by Category</h3>
-        <p class="panel-subtitle">How quickly inventory moves across categories</p>
-      </div>
-      <div class="chart-container">
-        <div class="chart-placeholder">
-          <div class="chart-grid">
-            <div class="y-axis">
-              <span>4</span>
-              <span>3</span>
-              <span>2</span>
-              <span>1</span>
-              <span>0</span>
+    <!-- Overview Tab Content -->
+    <div *ngIf="activeTab === 'overview'" class="tab-content">
+      <!-- Real-time Analytics Cards -->
+      <div class="analytics-cards">
+        <!-- Inventory Analytics Card -->
+        <div class="analytics-card" *ngIf="dashboardData">
+          <div class="card-header">
+            <h3 class="card-title">Inventory Analytics</h3>
+            <span class="card-subtitle">Real-time data from /api/inventory/analytics/dashboard</span>
+          </div>
+          <div class="card-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Total Value:</span>
+              <span class="metric-value">{{ formatCurrency(dashboardData.total_value) }}</span>
             </div>
-            <div class="chart-area">
-              <div class="grid-lines">
-                <div class="grid-line"></div>
-                <div class="grid-line"></div>
-                <div class="grid-line"></div>
-                <div class="grid-line"></div>
-                <div class="grid-line"></div>
+            <div class="metric-item">
+              <span class="metric-label">Total Parts:</span>
+              <span class="metric-value">{{ dashboardData.total_parts.toLocaleString() }}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Low Stock:</span>
+              <span class="metric-value warning">{{ dashboardData.low_stock_count.toLocaleString() }}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Out of Stock:</span>
+              <span class="metric-value danger">{{ dashboardData.out_of_stock_count.toLocaleString() }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Overview Card -->
+        <div class="analytics-card" *ngIf="overviewData">
+          <div class="card-header">
+            <h3 class="card-title">Dashboard Overview</h3>
+            <span class="card-subtitle">Data from /api/inventory/dashboard/overview</span>
+          </div>
+          <div class="card-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Total Value:</span>
+              <span class="metric-value">{{ formatCurrency(overviewData.total_value) }}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Total Parts:</span>
+              <span class="metric-value">{{ overviewData.total_parts.toLocaleString() }}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Low Stock:</span>
+              <span class="metric-value warning">{{ overviewData.low_stock_count.toLocaleString() }}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Out of Stock:</span>
+              <span class="metric-value danger">{{ overviewData.out_of_stock_count.toLocaleString() }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABC Analysis Summary Card -->
+        <div class="analytics-card" *ngIf="abcAnalysisData.length > 0">
+          <div class="card-header">
+            <h3 class="card-title">ABC Analysis Summary</h3>
+            <span class="card-subtitle">Data from /api/inventory/analytics/abc-analysis</span>
+          </div>
+          <div class="card-metrics">
+            <div class="metric-item">
+              <span class="metric-label">Class A Items:</span>
+              <span class="metric-value">{{ abcSummary.classA.count }} ({{ abcSummary.classA.percentage.toFixed(1) }}%)</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Class B Items:</span>
+              <span class="metric-value">{{ abcSummary.classB.count }} ({{ abcSummary.classB.percentage.toFixed(1) }}%)</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Class C Items:</span>
+              <span class="metric-value">{{ abcSummary.classC.count }} ({{ abcSummary.classC.percentage.toFixed(1) }}%)</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Total Items:</span>
+              <span class="metric-value">{{ abcAnalysisData.length }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABC Analysis Table -->
+      <div class="abc-table-section" *ngIf="abcAnalysisData.length > 0">
+        <h3 class="section-title">ABC Analysis Details</h3>
+        <div class="table-container">
+          <table class="analytics-table">
+            <thead>
+              <tr>
+                <th>Part ID</th>
+                <th>Part Name</th>
+                <th>Value</th>
+                <th>Cumulative Ratio</th>
+                <th>ABC Class</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of abcAnalysisData.slice(0, 10)">
+                <td>{{ item.part_id }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ formatCurrency(item.value) }}</td>
+                <td>{{ (item.cumulative_ratio * 100).toFixed(2) }}%</td>
+                <td>
+                  <span class="abc-badge" [class]="getAbcClassColor(item.class)">
+                    {{ item.class }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-footer" *ngIf="abcAnalysisData.length > 10">
+            <p>Showing first 10 items of {{ abcAnalysisData.length }} total items</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Turnover Analysis Tab Content -->
+    <div *ngIf="activeTab === 'turnover'" class="tab-content">
+      <!-- Metric Cards Row -->
+      <div class="metric-cards-row">
+        <div class="metric-card turnover">
+          <div class="card-content">
+            <div class="metric-value">{{ getCurrentData().turnover }}</div>
+            <div class="metric-label">Inventory Turnover</div>
+            <div class="metric-change positive">{{ getCurrentData().turnoverChange }}</div>
+          </div>
+          <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+          </svg>
+        </div>
+
+        <div class="metric-card carrying-cost">
+          <div class="card-content">
+            <div class="metric-value">{{ getCurrentData().carryingCost }}</div>
+            <div class="metric-label">Carrying Cost</div>
+            <div class="metric-change">Monthly holding cost</div>
+          </div>
+          <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+
+        <div class="metric-card dead-stock">
+          <div class="card-content">
+            <div class="metric-value warning">{{ getCurrentData().deadStockValue }}</div>
+            <div class="metric-label">Dead Stock Value</div>
+            <div class="metric-change">{{ getCurrentData().deadStockItems }}</div>
+          </div>
+          <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+
+        <div class="metric-card avg-days">
+          <div class="card-content">
+            <div class="metric-value">{{ getCurrentData().avgDays }}</div>
+            <div class="metric-label">Avg Days on Hand</div>
+            <div class="metric-change">Average inventory age</div>
+          </div>
+          <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <!-- Left Chart Panel -->
+        <div class="chart-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">Inventory Turnover by Category</h3>
+            <p class="panel-subtitle">How quickly inventory moves across categories</p>
+          </div>
+          <div class="chart-container">
+            <div class="chart-placeholder">
+              <div class="chart-grid">
+                <div class="y-axis">
+                  <span>4</span>
+                  <span>3</span>
+                  <span>2</span>
+                  <span>1</span>
+                  <span>0</span>
+                </div>
+                <div class="chart-area">
+                  <div class="grid-lines">
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                  </div>
+                  <div class="x-axis">
+                    <span>News</span>
+                  </div>
+                </div>
               </div>
-              <div class="x-axis">
-                <span>ews</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Chart Panel -->
+        <div class="chart-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">Monthly Turnover Trend</h3>
+            <p class="panel-subtitle">Turnover ratio over time</p>
+          </div>
+          <div class="chart-container">
+            <div class="line-chart">
+              <div class="y-axis">
+                <span>3.6</span>
+                <span>2.7</span>
+                <span>1.8</span>
+                <span>0.9</span>
+                <span>0</span>
+              </div>
+              <div class="chart-area">
+                <div class="grid-lines">
+                  <div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                  <div class="grid-line"></div>
+                </div>
+                <svg class="trend-line" viewBox="0 0 400 200" preserveAspectRatio="none">
+                  <path d="M0,40 L67,160 L133,80 L200,120 L267,60 L333,100 L400,80" 
+                        stroke="#0d9488" 
+                        stroke-width="3" 
+                        fill="none" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round"/>
+                  <circle cx="0" cy="40" r="4" fill="#0d9488"/>
+                  <circle cx="67" cy="160" r="4" fill="#0d9488"/>
+                  <circle cx="133" cy="80" r="4" fill="#0d9488"/>
+                  <circle cx="200" cy="120" r="4" fill="#0d9488"/>
+                  <circle cx="267" cy="60" r="4" fill="#0d9488"/>
+                  <circle cx="333" cy="100" r="4" fill="#0d9488"/>
+                  <circle cx="400" cy="80" r="4" fill="#0d9488"/>
+                </svg>
+                <div class="x-axis">
+                  <span>Mar</span>
+                  <span>Apr</span>
+                  <span>May</span>
+                  <span>Jun</span>
+                  <span>Jul</span>
+                  <span>Aug</span>
+                </div>
               </div>
             </div>
           </div>
@@ -124,62 +327,33 @@
       </div>
     </div>
 
-    <!-- Right Chart Panel -->
-    <div class="chart-panel">
-      <div class="panel-header">
-        <h3 class="panel-title">Monthly Turnover Trend</h3>
-        <p class="panel-subtitle">Turnover ratio over time</p>
+    <!-- Other Tab Contents -->
+    <div *ngIf="activeTab === 'abc'" class="tab-content">
+      <div class="tab-placeholder">
+        <h3>ABC Analysis</h3>
+        <p>This tab shows detailed ABC analysis. Switch to Overview tab to see the ABC data.</p>
       </div>
-      <div class="chart-container">
-        <div class="line-chart">
-          <div class="y-axis">
-            <span>3.6</span>
-            <span>2.7</span>
-            <span>1.8</span>
-            <span>0.9</span>
-            <span>0</span>
-          </div>
-          <div class="chart-area">
-            <div class="grid-lines">
-              <div class="grid-line"></div>
-              <div class="grid-line"></div>
-              <div class="grid-line"></div>
-              <div class="grid-line"></div>
-              <div class="grid-line"></div>
-            </div>
-            <svg class="trend-line" viewBox="0 0 400 200" preserveAspectRatio="none">
-              <path d="M0,40 L67,160 L133,80 L200,120 L267,60 L333,100 L400,80" 
-                    stroke="#0d9488" 
-                    stroke-width="3" 
-                    fill="none" 
-                    stroke-linecap="round" 
-                    stroke-linejoin="round"/>
-              <circle cx="0" cy="40" r="4" fill="#0d9488"/>
-              <circle cx="67" cy="160" r="4" fill="#0d9488"/>
-              <circle cx="133" cy="80" r="4" fill="#0d9488"/>
-              <circle cx="200" cy="120" r="4" fill="#0d9488"/>
-              <circle cx="267" cy="60" r="4" fill="#0d9488"/>
-              <circle cx="333" cy="100" r="4" fill="#0d9488"/>
-              <circle cx="400" cy="80" r="4" fill="#0d9488"/>
-            </svg>
-            <div class="x-axis">
-              <span>Mar</span>
-              <span>Apr</span>
-              <span>May</span>
-              <span>Jun</span>
-              <span>Jul</span>
-              <span>Aug</span>
-            </div>
-          </div>
-        </div>
+    </div>
+
+    <div *ngIf="activeTab === 'demand'" class="tab-content">
+      <div class="tab-placeholder">
+        <h3>Demand Forecast</h3>
+        <p>Demand forecasting analytics will be implemented here.</p>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'aging'" class="tab-content">
+      <div class="tab-placeholder">
+        <h3>Stock Aging</h3>
+        <p>Stock aging analysis will be implemented here.</p>
       </div>
     </div>
   </div>
 
   <!-- Voice Assistant Button -->
-  <button class="voice-assistant">
+  <button class="voice-assistant" (click)="refreshData()" title="Refresh Data">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
     </svg>
   </button>
 </div>

@@ -1,0 +1,161 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <h2 class="modal-title">Purchase Order Details</h2>
+        <div class="po-number">PO-{{ purchaseOrder?.po_number }}</div>
+      </div>
+      <button class="close-button" (click)="onClose()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <!-- Status and Basic Info -->
+      <div class="info-section">
+        <div class="section-header">
+          <h3>Basic Information</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Status</label>
+            <span class="status-badge" [ngClass]="getStatusClass(purchaseOrder?.status || '')">
+              {{ getStatusLabel(purchaseOrder?.status || '') }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Order Date</label>
+            <span>{{ formatDate(purchaseOrder?.order_date) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Expected Date</label>
+            <span>{{ formatDate(purchaseOrder?.expected_date) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Total Value</label>
+            <span class="total-value">{{ formatCurrency(purchaseOrder?.total) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supplier Information -->
+      <div class="info-section">
+        <div class="section-header">
+          <h3>Supplier Details</h3>
+        </div>
+        <div class="supplier-info">
+          <div class="supplier-card">
+            <div class="supplier-header">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+              <div class="supplier-details">
+                <div class="supplier-name">{{ purchaseOrder?.supplier?.name || 'Unknown Supplier' }}</div>
+                <div class="supplier-id">ID: {{ purchaseOrder?.supplier_id }}</div>
+              </div>
+            </div>
+            <div class="supplier-contact">
+              <div class="contact-item">
+                <label>Email:</label>
+                <span>{{ purchaseOrder?.supplier?.email || 'N/A' }}</span>
+              </div>
+              <div class="contact-item">
+                <label>Phone:</label>
+                <span>{{ purchaseOrder?.supplier?.phone || 'N/A' }}</span>
+              </div>
+              <div class="contact-item">
+                <label>Address:</label>
+                <span>{{ purchaseOrder?.supplier?.address || 'N/A' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items List -->
+      <div class="info-section">
+        <div class="section-header">
+          <h3>Order Items ({{ itemsCount }})</h3>
+          <div class="items-summary">
+            <span>Total Quantity: {{ calculateItemsTotal(purchaseOrder?.items || []) }}</span>
+            <span>Total Value: {{ formatCurrency(calculateTotalValue(purchaseOrder?.items || [])) }}</span>
+          </div>
+        </div>
+        
+        <div class="items-table-container" *ngIf="hasItems">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Part Number</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Unit Cost</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of (purchaseOrder?.items || [])">
+                <td class="item-name">{{ item?.part?.name || item?.part_number || 'N/A' }}</td>
+                <td class="part-number">{{ item?.part_number || 'N/A' }}</td>
+                <td class="description">{{ item?.description || 'No description' }}</td>
+                <td class="quantity">{{ item?.ordered_qty || 0 }}</td>
+                <td class="unit-cost">{{ formatCurrency(item?.unit_cost) }}</td>
+                <td class="item-total">{{ formatCurrency((item?.ordered_qty || 0) * (item?.unit_cost || 0)) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="no-items" *ngIf="!hasItems">
+          <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+          </svg>
+          <p>No items in this purchase order</p>
+        </div>
+      </div>
+
+      <!-- Additional Information -->
+      <div class="info-section">
+        <div class="section-header">
+          <h3>Additional Information</h3>
+        </div>
+        <div class="additional-info">
+          <div class="info-item">
+            <label>Notes</label>
+            <span class="notes">{{ purchaseOrder?.notes || 'No notes available' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Terms & Conditions</label>
+            <span class="terms">{{ purchaseOrder?.terms || 'Standard terms apply' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Created By</label>
+            <span>{{ purchaseOrder?.created_by || 'System' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Created Date</label>
+            <span>{{ formatDate(purchaseOrder?.created_at) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onClose()">
+        Close
+      </button>
+      <button class="btn btn-primary" (click)="onEdit()" *ngIf="purchaseOrder?.status === 'draft'">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+        </svg>
+        Edit Purchase Order
+      </button>
+    </div>
+  </div>
+</div>

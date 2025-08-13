@@ -1,6 +1,6 @@
 import {
   InventoryAnalyticsService
-} from "./chunk-AUIJHXYG.js";
+} from "./chunk-ESHGZUZD.js";
 import {
   DefaultValueAccessor,
   FormBuilder,
@@ -2247,4 +2247,4 @@ var PartsCatalogComponent = class _PartsCatalogComponent {
 export {
   PartsCatalogComponent
 };
-//# sourceMappingURL=chunk-IFAP6L73.js.map
+//# sourceMappingURL=chunk-MOASPWDJ.js.map

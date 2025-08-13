@@ -34,6 +34,9 @@ var InventoryAnalyticsService = class _InventoryAnalyticsService {
   getDashboardData() {
     return this.http.get(`${this.apiUrl}/inventory/dashboard/overview`, this.getAuthHeaders());
   }
+  getInventoryAnalytics() {
+    return this.http.get(`${this.apiUrl}/inventory/analytics/dashboard`, this.getAuthHeaders());
+  }
   getAbcAnalysis() {
     return this.http.get(`${this.apiUrl}/inventory/analytics/abc-analysis`, this.getAuthHeaders());
   }
@@ -189,4 +192,4 @@ var InventoryAnalyticsService = class _InventoryAnalyticsService {
 export {
   InventoryAnalyticsService
 };
-//# sourceMappingURL=chunk-AUIJHXYG.js.map
+//# sourceMappingURL=chunk-ESHGZUZD.js.map

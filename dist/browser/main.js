@@ -5280,7 +5280,7 @@ var routes = [
   // Public asset view route (no authentication required)
   {
     path: "public/asset/:id",
-    loadComponent: () => import("./chunk-KXTNB6D5.js").then((m) => m.PublicAssetViewComponent)
+    loadComponent: () => import("./chunk-E35NKJEO.js").then((m) => m.PublicAssetViewComponent)
   },
   {
     path: "",
@@ -5293,19 +5293,19 @@ var routes = [
       },
       {
         path: "locations",
-        loadChildren: () => import("./chunk-EUPAFIRI.js").then((m) => m.LocationsModule)
+        loadChildren: () => import("./chunk-TCEZ5CRF.js").then((m) => m.LocationsModule)
       },
       {
         path: "assets",
-        loadChildren: () => import("./chunk-GREL656P.js").then((m) => m.AssetsModule)
+        loadChildren: () => import("./chunk-KSVFWSET.js").then((m) => m.AssetsModule)
       },
       {
         path: "roles",
-        loadChildren: () => import("./chunk-IXGTEZMW.js").then((m) => m.RolesModule)
+        loadChildren: () => import("./chunk-LTXJMKGG.js").then((m) => m.RolesModule)
       },
       {
         path: "teams",
-        loadChildren: () => import("./chunk-FLULB3QS.js").then((m) => m.TeamsModule)
+        loadChildren: () => import("./chunk-IFNWCLMX.js").then((m) => m.TeamsModule)
       },
       {
         path: "work-orders",
@@ -5313,7 +5313,7 @@ var routes = [
       },
       {
         path: "inventory",
-        loadChildren: () => import("./chunk-UXXIGQYW.js").then((m) => m.InventoryModule)
+        loadChildren: () => import("./chunk-5RRBVTLL.js").then((m) => m.InventoryModule)
       }
     ]
   },

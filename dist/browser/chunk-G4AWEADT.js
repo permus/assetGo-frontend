@@ -15584,351 +15584,351 @@ var PublicAssetViewComponent = class _PublicAssetViewComponent {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(PublicAssetViewComponent, [{
     type: Component,
-    args: [{ selector: "app-public-asset-view", standalone: true, imports: [CommonModule, RouterModule], template: `<div class="min-h-screen bg-gray-50">
-  <!-- Header -->
-  <div class="bg-white shadow-sm border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-2">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
-            <span class="text-xl font-semibold text-gray-900">AssetGo</span>
-          </div>
-          <div class="text-sm text-gray-500">Public Asset View</div>
-        </div>
-        <div class="flex items-center space-x-4">
-          <a href="/" class="text-blue-600 hover:text-blue-700 font-medium">Back to Home</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Loading State -->
-    <div *ngIf="loading" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Loading asset details...</p>
-      </div>
-    </div>
-
-    <!-- Error State -->
-    <div *ngIf="error && !loading" class="bg-red-50 border border-red-200 rounded-lg p-6">
-      <div class="flex items-center space-x-3">
-        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <div>
-          <h3 class="text-lg font-medium text-red-800">Error Loading Asset</h3>
-          <p class="text-red-700">{{ error }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Asset Content -->
-    <div *ngIf="asset && !loading" class="space-y-8">
-      <!-- Asset Header -->
-      <div class="bg-white rounded-lg shadow-sm border p-6">
-        <div class="flex items-start justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
-              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-              </svg>
-            </div>
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">{{ asset.name }}</h1>
-              <p class="text-gray-600 mt-1">{{ asset.description || 'No description available' }}</p>
-              <div class="flex items-center space-x-4 mt-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getStatusColorFromAssetStatus(asset.asset_status) }}">
-                  {{ asset.asset_status?.name || asset.status || 'Unknown' }}
-                </span>
-                <span class="text-sm text-gray-500">ID: {{ asset.id }}</span>
-                <button 
-                  *ngIf="asset.id"
-                  (click)="copyAssetId()"
-                  class="text-blue-600 hover:text-blue-700 text-sm">
-                  Copy ID
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Basic Information -->
-      <div class="bg-white rounded-lg shadow-sm border">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Asset Name -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Asset Name</label>
-              <p class="text-gray-900">{{ asset.name || 'N/A' }}</p>
-            </div>
-
-            <!-- Description -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-              <p class="text-gray-900">{{ asset.description || 'N/A' }}</p>
-            </div>
-
-            <!-- Category -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <div class="flex items-center space-x-2">
-                <img 
-                  *ngIf="asset.category?.icon" 
-                  [src]="asset.category.icon" 
-                  [alt]="asset.category.name"
-                  (error)="onCategoryIconError($event, asset.category)"
-                  class="w-5 h-5">
-                <span class="text-gray-900">{{ asset.category?.name || 'N/A' }}</span>
-              </div>
-            </div>
-
-            <!-- Current Status -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Current Status</label>
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getStatusColorFromAssetStatus(asset.asset_status) }}">
-                {{ asset.asset_status?.name || asset.status || 'N/A' }}
-              </span>
-            </div>
-
-            <!-- Location -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-              <p class="text-gray-900">{{ asset.location?.name || 'N/A' }}</p>
-            </div>
-
-            <!-- Department -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-              <p class="text-gray-900">{{ asset.department?.name || 'N/A' }}</p>
-            </div>
-
-            <!-- Creation Date -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Created</label>
-              <p class="text-gray-900">{{ formatDate(asset.created_at) }}</p>
-            </div>
-
-            <!-- Last Modified -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Last Modified</label>
-              <p class="text-gray-900">{{ formatDate(asset.updated_at) }}</p>
-            </div>
-
-            <!-- Asset ID/Barcode -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Asset ID</label>
-              <div class="flex items-center space-x-2">
-                <p class="text-gray-900">{{ asset.id || 'N/A' }}</p>
-                <button 
-                  *ngIf="asset.id"
-                  (click)="copyAssetId()"
-                  class="text-blue-600 hover:text-blue-700 text-sm">
-                  Copy
-                </button>
-              </div>
-            </div>
-
-            <!-- Serial Number -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Serial Number</label>
-              <div class="flex items-center space-x-2">
-                <p class="text-gray-900">{{ asset.serial_number || 'N/A' }}</p>
-                <button 
-                  *ngIf="asset.serial_number"
-                  (click)="copySerialNumber()"
-                  class="text-blue-600 hover:text-blue-700 text-sm">
-                  Copy
-                </button>
-              </div>
-            </div>
-
-            <!-- QR Code -->
-            <div class="col-span-full">
-              <label class="block text-sm font-medium text-gray-700 mb-2">QR Code</label>
-              <div class="flex items-center space-x-4">
-                <!-- Generated QR Code -->
-                <div *ngIf="qrCodeDataUrl" class="flex flex-col items-center space-y-2">
-                  <img [src]="qrCodeDataUrl" alt="QR Code" class="w-32 h-32 border border-gray-200 rounded-lg">
-                  <div class="flex space-x-2">
-                    <button 
-                      (click)="downloadQRCode()"
-                      class="text-blue-600 hover:text-blue-700 text-sm">
-                      Download
-                    </button>
-                    <button 
-                      (click)="copyPublicUrl()"
-                      class="text-blue-600 hover:text-blue-700 text-sm">
-                      Copy URL
-                    </button>
-                  </div>
-                </div>
-                
-                <!-- Server QR Code (fallback) -->
-                <div *ngIf="!qrCodeDataUrl && asset.qr_code_url" class="flex flex-col items-center space-y-2">
-                  <img [src]="asset.qr_code_url" alt="QR Code" class="w-32 h-32 border border-gray-200 rounded-lg">
-                  <div class="flex space-x-2">
-                    <button 
-                      (click)="downloadQRCode()"
-                      class="text-blue-600 hover:text-blue-700 text-sm">
-                      Download
-                    </button>
-                    <button 
-                      (click)="copyQRCodeUrl()"
-                      class="text-blue-600 hover:text-blue-700 text-sm">
-                      Copy URL
-                    </button>
-                  </div>
-                </div>
-                
-                <!-- Loading state -->
-                <div *ngIf="qrCodeLoading" class="flex flex-col items-center space-y-2">
-                  <div class="w-32 h-32 border border-gray-200 rounded-lg flex items-center justify-center">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  </div>
-                  <span class="text-sm text-gray-500">Generating QR Code...</span>
-                </div>
-                
-                <!-- Error state -->
-                <div *ngIf="!qrCodeDataUrl && !asset.qr_code_url && !qrCodeLoading" class="flex flex-col items-center space-y-2">
-                  <div class="w-32 h-32 border border-gray-200 rounded-lg flex items-center justify-center bg-gray-50">
-                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
-                  <span class="text-sm text-gray-500">QR Code not available</span>
-                </div>
-              </div>
-              
-              <!-- QR Code Information -->
-              <div class="mt-3 text-xs text-gray-500">
-                <p>Scan this QR code to access this asset's public page</p>
-                <p *ngIf="asset.id" class="mt-1">Public URL: {{ windowLocation }}/public/asset/{{ asset.id }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Asset Details -->
-      <div class="bg-white rounded-lg shadow-sm border">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">Asset Details</h2>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Asset Type -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Asset Type</label>
-              <p class="text-gray-900">{{ getAssetTypeName(asset.asset_type) }}</p>
-            </div>
-
-            <!-- Model -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>
-              <p class="text-gray-900">{{ asset.model || 'N/A' }}</p>
-            </div>
-
-            <!-- Manufacturer -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturer</label>
-              <p class="text-gray-900">{{ asset.manufacturer || 'N/A' }}</p>
-            </div>
-
-            <!-- Purchase Date -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
-              <p class="text-gray-900">{{ formatDate(asset.purchase_date) }}</p>
-            </div>
-
-            <!-- Purchase Price -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Price</label>
-              <p class="text-gray-900">{{ asset.purchase_price ? '$' + asset.purchase_price : 'N/A' }}</p>
-            </div>
-
-            <!-- Depreciation -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Depreciation</label>
-              <p class="text-gray-900">{{ asset.depreciation || 'N/A' }}</p>
-            </div>
-
-            <!-- Warranty -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Warranty</label>
-              <p class="text-gray-900">{{ asset.warranty || 'N/A' }}</p>
-            </div>
-
-            <!-- Insurance -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Insurance</label>
-              <p class="text-gray-900">{{ asset.insurance || 'N/A' }}</p>
-            </div>
-
-            <!-- Health Score -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Health Score</label>
-              <p class="text-gray-900">{{ asset.health_score || 'N/A' }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-
-      <!-- Images Gallery -->
-      <div *ngIf="asset.images && asset.images.length > 0" class="bg-white rounded-lg shadow-sm border">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">Images</h2>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div 
-              *ngFor="let image of asset.images; let i = index"
-              (click)="viewFullImage(image)"
-              class="relative group cursor-pointer">
-              <img 
-                [src]="image" 
-                [alt]="'Asset image ' + (i + 1)"
-                (error)="onImageError($event)"
-                class="w-full h-32 object-cover rounded-lg group-hover:opacity-75 transition-opacity">
-              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">
-                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Image Modal -->
-  <div *ngIf="selectedImageUrl" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" (click)="closeImageModal()">
-    <div class="relative max-w-4xl max-h-full p-4" (click)="$event.stopPropagation()">
-      <button 
-        (click)="closeImageModal()"
-        class="absolute top-4 right-4 text-white hover:text-gray-300 z-10">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-      <img 
-        [src]="selectedImageUrl" 
-        alt="Full size image"
-        class="max-w-full max-h-full object-contain">
-    </div>
-  </div>
+    args: [{ selector: "app-public-asset-view", standalone: true, imports: [CommonModule, RouterModule], template: `<div class="min-h-screen bg-gray-50">\r
+  <!-- Header -->\r
+  <div class="bg-white shadow-sm border-b">\r
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">\r
+      <div class="flex items-center justify-between h-16">\r
+        <div class="flex items-center space-x-4">\r
+          <div class="flex items-center space-x-2">\r
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>\r
+            </svg>\r
+            <span class="text-xl font-semibold text-gray-900">AssetGo</span>\r
+          </div>\r
+          <div class="text-sm text-gray-500">Public Asset View</div>\r
+        </div>\r
+        <div class="flex items-center space-x-4">\r
+          <a href="/" class="text-blue-600 hover:text-blue-700 font-medium">Back to Home</a>\r
+        </div>\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Main Content -->\r
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">\r
+    <!-- Loading State -->\r
+    <div *ngIf="loading" class="flex items-center justify-center py-12">\r
+      <div class="text-center">\r
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>\r
+        <p class="mt-4 text-gray-600">Loading asset details...</p>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Error State -->\r
+    <div *ngIf="error && !loading" class="bg-red-50 border border-red-200 rounded-lg p-6">\r
+      <div class="flex items-center space-x-3">\r
+        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+        </svg>\r
+        <div>\r
+          <h3 class="text-lg font-medium text-red-800">Error Loading Asset</h3>\r
+          <p class="text-red-700">{{ error }}</p>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Asset Content -->\r
+    <div *ngIf="asset && !loading" class="space-y-8">\r
+      <!-- Asset Header -->\r
+      <div class="bg-white rounded-lg shadow-sm border p-6">\r
+        <div class="flex items-start justify-between">\r
+          <div class="flex items-center space-x-4">\r
+            <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">\r
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>\r
+              </svg>\r
+            </div>\r
+            <div>\r
+              <h1 class="text-2xl font-bold text-gray-900">{{ asset.name }}</h1>\r
+              <p class="text-gray-600 mt-1">{{ asset.description || 'No description available' }}</p>\r
+              <div class="flex items-center space-x-4 mt-2">\r
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getStatusColorFromAssetStatus(asset.asset_status) }}">\r
+                  {{ asset.asset_status?.name || asset.status || 'Unknown' }}\r
+                </span>\r
+                <span class="text-sm text-gray-500">ID: {{ asset.id }}</span>\r
+                <button \r
+                  *ngIf="asset.id"\r
+                  (click)="copyAssetId()"\r
+                  class="text-blue-600 hover:text-blue-700 text-sm">\r
+                  Copy ID\r
+                </button>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Basic Information -->\r
+      <div class="bg-white rounded-lg shadow-sm border">\r
+        <div class="px-6 py-4 border-b border-gray-200">\r
+          <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>\r
+        </div>\r
+        <div class="p-6">\r
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">\r
+            <!-- Asset Name -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Asset Name</label>\r
+              <p class="text-gray-900">{{ asset.name || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Description -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>\r
+              <p class="text-gray-900">{{ asset.description || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Category -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>\r
+              <div class="flex items-center space-x-2">\r
+                <img \r
+                  *ngIf="asset.category?.icon" \r
+                  [src]="asset.category.icon" \r
+                  [alt]="asset.category.name"\r
+                  (error)="onCategoryIconError($event, asset.category)"\r
+                  class="w-5 h-5">\r
+                <span class="text-gray-900">{{ asset.category?.name || 'N/A' }}</span>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Current Status -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Current Status</label>\r
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getStatusColorFromAssetStatus(asset.asset_status) }}">\r
+                {{ asset.asset_status?.name || asset.status || 'N/A' }}\r
+              </span>\r
+            </div>\r
+\r
+            <!-- Location -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>\r
+              <p class="text-gray-900">{{ asset.location?.name || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Department -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>\r
+              <p class="text-gray-900">{{ asset.department?.name || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Creation Date -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Created</label>\r
+              <p class="text-gray-900">{{ formatDate(asset.created_at) }}</p>\r
+            </div>\r
+\r
+            <!-- Last Modified -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Last Modified</label>\r
+              <p class="text-gray-900">{{ formatDate(asset.updated_at) }}</p>\r
+            </div>\r
+\r
+            <!-- Asset ID/Barcode -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Asset ID</label>\r
+              <div class="flex items-center space-x-2">\r
+                <p class="text-gray-900">{{ asset.id || 'N/A' }}</p>\r
+                <button \r
+                  *ngIf="asset.id"\r
+                  (click)="copyAssetId()"\r
+                  class="text-blue-600 hover:text-blue-700 text-sm">\r
+                  Copy\r
+                </button>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Serial Number -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Serial Number</label>\r
+              <div class="flex items-center space-x-2">\r
+                <p class="text-gray-900">{{ asset.serial_number || 'N/A' }}</p>\r
+                <button \r
+                  *ngIf="asset.serial_number"\r
+                  (click)="copySerialNumber()"\r
+                  class="text-blue-600 hover:text-blue-700 text-sm">\r
+                  Copy\r
+                </button>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- QR Code -->\r
+            <div class="col-span-full">\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">QR Code</label>\r
+              <div class="flex items-center space-x-4">\r
+                <!-- Generated QR Code -->\r
+                <div *ngIf="qrCodeDataUrl" class="flex flex-col items-center space-y-2">\r
+                  <img [src]="qrCodeDataUrl" alt="QR Code" class="w-32 h-32 border border-gray-200 rounded-lg">\r
+                  <div class="flex space-x-2">\r
+                    <button \r
+                      (click)="downloadQRCode()"\r
+                      class="text-blue-600 hover:text-blue-700 text-sm">\r
+                      Download\r
+                    </button>\r
+                    <button \r
+                      (click)="copyPublicUrl()"\r
+                      class="text-blue-600 hover:text-blue-700 text-sm">\r
+                      Copy URL\r
+                    </button>\r
+                  </div>\r
+                </div>\r
+                \r
+                <!-- Server QR Code (fallback) -->\r
+                <div *ngIf="!qrCodeDataUrl && asset.qr_code_url" class="flex flex-col items-center space-y-2">\r
+                  <img [src]="asset.qr_code_url" alt="QR Code" class="w-32 h-32 border border-gray-200 rounded-lg">\r
+                  <div class="flex space-x-2">\r
+                    <button \r
+                      (click)="downloadQRCode()"\r
+                      class="text-blue-600 hover:text-blue-700 text-sm">\r
+                      Download\r
+                    </button>\r
+                    <button \r
+                      (click)="copyQRCodeUrl()"\r
+                      class="text-blue-600 hover:text-blue-700 text-sm">\r
+                      Copy URL\r
+                    </button>\r
+                  </div>\r
+                </div>\r
+                \r
+                <!-- Loading state -->\r
+                <div *ngIf="qrCodeLoading" class="flex flex-col items-center space-y-2">\r
+                  <div class="w-32 h-32 border border-gray-200 rounded-lg flex items-center justify-center">\r
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>\r
+                  </div>\r
+                  <span class="text-sm text-gray-500">Generating QR Code...</span>\r
+                </div>\r
+                \r
+                <!-- Error state -->\r
+                <div *ngIf="!qrCodeDataUrl && !asset.qr_code_url && !qrCodeLoading" class="flex flex-col items-center space-y-2">\r
+                  <div class="w-32 h-32 border border-gray-200 rounded-lg flex items-center justify-center bg-gray-50">\r
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+                    </svg>\r
+                  </div>\r
+                  <span class="text-sm text-gray-500">QR Code not available</span>\r
+                </div>\r
+              </div>\r
+              \r
+              <!-- QR Code Information -->\r
+              <div class="mt-3 text-xs text-gray-500">\r
+                <p>Scan this QR code to access this asset's public page</p>\r
+                <p *ngIf="asset.id" class="mt-1">Public URL: {{ windowLocation }}/public/asset/{{ asset.id }}</p>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Asset Details -->\r
+      <div class="bg-white rounded-lg shadow-sm border">\r
+        <div class="px-6 py-4 border-b border-gray-200">\r
+          <h2 class="text-lg font-semibold text-gray-900">Asset Details</h2>\r
+        </div>\r
+        <div class="p-6">\r
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">\r
+            <!-- Asset Type -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Asset Type</label>\r
+              <p class="text-gray-900">{{ getAssetTypeName(asset.asset_type) }}</p>\r
+            </div>\r
+\r
+            <!-- Model -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>\r
+              <p class="text-gray-900">{{ asset.model || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Manufacturer -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Manufacturer</label>\r
+              <p class="text-gray-900">{{ asset.manufacturer || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Purchase Date -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>\r
+              <p class="text-gray-900">{{ formatDate(asset.purchase_date) }}</p>\r
+            </div>\r
+\r
+            <!-- Purchase Price -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Price</label>\r
+              <p class="text-gray-900">{{ asset.purchase_price ? '$' + asset.purchase_price : 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Depreciation -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Depreciation</label>\r
+              <p class="text-gray-900">{{ asset.depreciation || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Warranty -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Warranty</label>\r
+              <p class="text-gray-900">{{ asset.warranty || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Insurance -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Insurance</label>\r
+              <p class="text-gray-900">{{ asset.insurance || 'N/A' }}</p>\r
+            </div>\r
+\r
+            <!-- Health Score -->\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-2">Health Score</label>\r
+              <p class="text-gray-900">{{ asset.health_score || 'N/A' }}</p>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+\r
+\r
+      <!-- Images Gallery -->\r
+      <div *ngIf="asset.images && asset.images.length > 0" class="bg-white rounded-lg shadow-sm border">\r
+        <div class="px-6 py-4 border-b border-gray-200">\r
+          <h2 class="text-lg font-semibold text-gray-900">Images</h2>\r
+        </div>\r
+        <div class="p-6">\r
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">\r
+            <div \r
+              *ngFor="let image of asset.images; let i = index"\r
+              (click)="viewFullImage(image)"\r
+              class="relative group cursor-pointer">\r
+              <img \r
+                [src]="image" \r
+                [alt]="'Asset image ' + (i + 1)"\r
+                (error)="onImageError($event)"\r
+                class="w-full h-32 object-cover rounded-lg group-hover:opacity-75 transition-opacity">\r
+              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">\r
+                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>\r
+                </svg>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Image Modal -->\r
+  <div *ngIf="selectedImageUrl" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" (click)="closeImageModal()">\r
+    <div class="relative max-w-4xl max-h-full p-4" (click)="$event.stopPropagation()">\r
+      <button \r
+        (click)="closeImageModal()"\r
+        class="absolute top-4 right-4 text-white hover:text-gray-300 z-10">\r
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\r
+        </svg>\r
+      </button>\r
+      <img \r
+        [src]="selectedImageUrl" \r
+        alt="Full size image"\r
+        class="max-w-full max-h-full object-contain">\r
+    </div>\r
+  </div>\r
 </div> `, styles: ["/* src/app/assets/components/public-asset-view/public-asset-view.component.scss */\n.activity-history-container::-webkit-scrollbar {\n  width: 6px;\n}\n.activity-history-container::-webkit-scrollbar-track {\n  background: #f1f5f9;\n  border-radius: 3px;\n}\n.activity-history-container::-webkit-scrollbar-thumb {\n  background: #cbd5e1;\n  border-radius: 3px;\n}\n.activity-history-container::-webkit-scrollbar-thumb:hover {\n  background: #94a3b8;\n}\n.image-gallery-item {\n  transition: transform 0.2s ease-in-out;\n}\n.image-gallery-item:hover {\n  transform: scale(1.02);\n}\n.modal-backdrop {\n  -webkit-backdrop-filter: blur(4px);\n  backdrop-filter: blur(4px);\n}\n/*# sourceMappingURL=public-asset-view.component.css.map */\n"] }]
   }], () => [{ type: ActivatedRoute }, { type: Router }, { type: AssetService }, { type: Location }, { type: PdfExportService }], { dateInputs: [{
     type: ViewChildren,
@@ -16123,4 +16123,4 @@ jspdf/dist/jspdf.es.min.js:
    * http://opensource.org/licenses/mit-license
    *)
 */
-//# sourceMappingURL=chunk-ZCDUEML3.js.map
+//# sourceMappingURL=chunk-G4AWEADT.js.map

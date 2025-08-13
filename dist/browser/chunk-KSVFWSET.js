@@ -5,7 +5,7 @@ import {
   PdfExportService,
   PublicAssetViewComponent,
   require_browser
-} from "./chunk-ZCDUEML3.js";
+} from "./chunk-G4AWEADT.js";
 import "./chunk-7YWLATDR.js";
 import {
   AssetService
@@ -30863,1639 +30863,1639 @@ var AssetViewComponent = class _AssetViewComponent {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(AssetViewComponent, [{
     type: Component,
-    args: [{ selector: "app-asset-view", standalone: true, imports: [CommonModule, RouterModule, ReactiveFormsModule, TransferAssetModalComponent], template: `<!-- Asset View Page -->
-<div class="min-h-screen bg-gray-50 asset-view-container">
-  <!-- Header -->
-  <div class="bg-white border-b border-gray-200 px-6 py-4 print-hide">
-    <div class="flex items-center justify-between">
-      <!-- Back Button and Breadcrumb -->
-      <div class="flex items-center space-x-4">
-        <!-- Breadcrumb -->
-        <nav class="flex" aria-label="Breadcrumb">
-          <ol class="flex items-center space-x-2">
-            <li>
-              <a routerLink="/assets/list" class="text-gray-500 hover:text-gray-700 transition-colors">Assets</a>
-            </li>
-            <li>
-              <svg class="w-4 h-4 text-gray-400 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </li>
-            <li class="text-gray-900 font-medium">{{asset?.name || 'Asset Details'}}</li>
-          </ol>
-        </nav>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="flex items-center space-x-3">
-        <button
-          (click)="editAsset()"
-          class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-          </svg>
-          <span>Edit Asset</span>
-        </button>
-
-        <!-- 3-Dot Menu -->
-        <div class="relative" (click)="$event.stopPropagation()">
-          <button
-            (click)="showActionsDropdown = !showActionsDropdown"
-            class="flex items-center justify-center w-10 h-10 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="12" cy="5" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="12" cy="19" r="2" />
-            </svg>
-          </button>
-
-          <!-- Dropdown Menu -->
-          <div *ngIf="showActionsDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-            <button
-              (click)="transferAsset(); showActionsDropdown = false"
-              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">
-              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-              </svg>
-              <span class="text-gray-700">Transfer Asset</span>
-            </button>
-
-            <button
-              (click)="duplicateAsset(); showActionsDropdown = false"
-              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">
-              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-              </svg>
-              <span class="text-gray-700">Duplicate</span>
-            </button>
-
-            <div class="border-t border-gray-100 my-2"></div>
-
-            <button
-              (click)="printAsset(); showActionsDropdown = false"
-              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">
-              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-              </svg>
-              <span class="text-gray-700">Print</span>
-            </button>
-
-            <button
-              (click)="exportAsset(); showActionsDropdown = false"
-              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">
-              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
-              </svg>
-              <span class="text-gray-700">Export</span>
-            </button>
-
-            <button
-              (click)="sharePublicUrl(); showActionsDropdown = false"
-              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">
-              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
-              </svg>
-              <span class="text-gray-700">Share Public URL</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="loading" class="flex items-center justify-center py-20">
-    <div class="text-center">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-        <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Asset</h3>
-      <p class="text-sm text-gray-500">Please wait while we fetch the asset details...</p>
-    </div>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="error && !loading" class="flex items-center justify-center py-20">
-    <div class="text-center">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-        </svg>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Asset</h3>
-      <p class="text-sm text-gray-500 mb-4">{{error}}</p>
-      <button
-        (click)="goBack()"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-        Back to Assets
-      </button>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div *ngIf="asset && !loading" class="px-6 py-6">
-    <!-- Asset Header -->
-    <div class="bg-white rounded-lg p-6 mb-6 shadow-sm border border-gray-200">
-      <div class="flex items-start justify-between mb-4">
-        <div class="flex items-center space-x-4">
-          <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getAssetTypeIcon()"></path>
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{asset.name}}</h1>
-            <div class="flex items-center space-x-4">
-              <span
-                *ngIf="asset.asset_status"
-                [style.background-color]="asset.asset_status.color + '20'"
-                [style.color]="asset.asset_status.color"
-                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
-                {{asset.asset_status.name}}
-              </span>
-              <span class="text-gray-500">{{getAssetTypeName(asset.type)}}</span>
-              <span class="text-gray-500">\u2022</span>
-              <span class="text-gray-500">{{asset.category?.name || 'General'}}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Asset ID with Copy -->
-        <div class="text-right">
-          <div class="flex items-center space-x-2 mb-2">
-            <span class="text-sm text-gray-500">Asset ID:</span>
-            <button
-              (click)="copyAssetId()"
-              class="flex items-center space-x-1 px-2 py-1 text-sm font-mono bg-gray-100 rounded hover:bg-gray-200 transition-colors">
-              <span>{{asset.asset_id || asset.id}}</span>
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-              </svg>
-            </button>
-          </div>
-          <div *ngIf="asset.serial_number" class="flex items-center space-x-2">
-            <span class="text-sm text-gray-500">Serial:</span>
-            <button
-              (click)="copySerialNumber()"
-              class="flex items-center space-x-1 px-2 py-1 text-sm font-mono bg-gray-100 rounded hover:bg-gray-200 transition-colors">
-              <span>{{asset.serial_number}}</span>
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left Column -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- Image Gallery -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <h2 class="text-lg font-semibold text-gray-900">Asset Images</h2>
-          </div>
-
-          <div *ngIf="asset.images && asset.images.length > 0; else noImages">
-            <!-- Main Image Display -->
-            <div class="mb-4">
-              <div class="relative bg-gray-100 rounded-lg overflow-hidden" style="height: 400px;">
-                <img
-                  [src]="selectedImageUrl || asset.images[0].image_url"
-                  [alt]="asset.name"
-                  class="w-full h-full object-contain bg-white cursor-pointer"
-                  (click)="viewFullImage(selectedImageUrl || asset.images[0].image_url)"
-                  (error)="onImageError($event)">
-
-                <!-- Navigation Arrows -->
-                <button
-                  *ngIf="asset.images.length > 1"
-                  (click)="previousImage()"
-                  class="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                  </svg>
-                </button>
-
-                <button
-                  *ngIf="asset.images.length > 1"
-                  (click)="nextImage()"
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </button>
-
-                <!-- Image Counter -->
-                <div class="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                  {{currentImageIndex + 1}} / {{asset.images.length}}
-                </div>
-              </div>
-            </div>
-
-            <!-- Thumbnail Gallery -->
-            <div *ngIf="asset.images.length > 1" class="grid grid-cols-6 gap-2">
-              <div
-                *ngFor="let image of asset.images; let i = index"
-                (click)="selectImage(i)"
-                class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 transition-all"
-                [class.border-blue-500]="i === currentImageIndex"
-                [class.border-gray-200]="i !== currentImageIndex">
-                <img
-                  [src]="image.image_url"
-                  [alt]="'Asset image ' + (i + 1)"
-                  class="w-full h-full object-cover"
-                  (error)="onImageError($event)">
-              </div>
-            </div>
-          </div>
-
-          <ng-template #noImages>
-            <div class="text-center py-12 bg-gray-50 rounded-lg">
-              <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              <h3 class="text-lg font-medium text-gray-900 mb-2">No Images Available</h3>
-              <p class="text-gray-600">No images have been uploaded for this asset.</p>
-            </div>
-          </ng-template>
-        </div>
-
-        <!-- Basic Information -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-6">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column -->
-            <div class="space-y-6">
-              <!-- Asset Name -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Asset Name</h4>
-                <p class="text-lg font-semibold text-gray-900">{{asset?.name || 'Unnamed Asset'}}</p>
-              </div>
-
-              <!-- Description -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Description</h4>
-                <div class="relative">
-                  <p class="text-gray-600 leading-relaxed" [class.line-clamp-3]="!descriptionExpanded">
-                    {{asset?.description || 'No description available'}}
-                  </p>
-                  <button
-                    *ngIf="asset?.description && asset.description.length > 150"
-                    (click)="descriptionExpanded = !descriptionExpanded"
-                    class="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2">
-                    {{descriptionExpanded ? 'Show Less' : 'Show More'}}
-                  </button>
-                </div>
-              </div>
-
-              <!-- Category with Icon -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Category</h4>
-                <div class="flex items-center space-x-3">
-                  <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <img
-                      *ngIf="asset?.category?.icon && !asset.category.iconError"
-                      [src]="asset.category.icon"
-                      [alt]="asset.category.name"
-                      class="w-5 h-5"
-                      (error)="onCategoryIconError($event, asset.category)">
-                    <svg
-                      *ngIf="!asset?.category?.icon || asset.category.iconError"
-                      class="w-5 h-5 text-blue-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                    </svg>
-                  </div>
-                  <span class="text-gray-900 font-medium">{{asset?.category?.name || 'Uncategorized'}}</span>
-                </div>
-              </div>
-
-              <!-- Current Status with Badge -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Status</h4>
-                <div *ngIf="asset.asset_status" class="flex items-center space-x-2">
-                  <span
-                    [style.background-color]="asset.asset_status.color + '20'"
-                    [style.color]="asset.asset_status.color"
-                    class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium">
-                    {{asset.asset_status.name}}
-                  </span>
-                </div>
-                <span *ngIf="!asset.asset_status" class="text-gray-900">Not specified</span>
-              </div>
-            </div>
-
-            <!-- Middle Column -->
-            <div class="space-y-6">
-              <!-- Asset ID/Barcode -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Asset ID</h4>
-                <div class="flex items-center space-x-2">
-                  <span class="text-gray-900 font-mono text-lg">{{asset?.asset_id || 'N/A'}}</span>
-                  <button
-                    (click)="copyAssetId()"
-                    class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                    title="Copy Asset ID">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Location with Link -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Location</h4>
-                <div class="flex items-center space-x-2">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  </svg>
-                  <a
-                    *ngIf="asset?.location?.id"
-                    [routerLink]="['/locations', asset.location.id]"
-                    class="text-blue-600 hover:underline cursor-pointer">
-                    {{asset.location.name}}
-                  </a>
-                  <span *ngIf="!asset?.location?.id" class="text-gray-900">{{asset?.location?.name || 'No location assigned'}}</span>
-                </div>
-              </div>
-
-              <!-- Department -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Department</h4>
-                <span class="text-gray-900">{{asset?.department?.name || 'Not assigned'}}</span>
-              </div>
-
-              <!-- Creation Date -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Created</h4>
-                <div class="flex items-center space-x-2">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                  <span class="text-gray-900">{{asset?.created_at | date:'MMM d, y'}}</span>
-                </div>
-              </div>
-
-              <!-- Last Modified Date -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Last Modified</h4>
-                <div class="flex items-center space-x-2">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  <span class="text-gray-900">{{asset?.updated_at | date:'MMM d, y'}}</span>
-                </div>
-              </div>
-
-              <!-- Parent Asset -->
-              <div *ngIf="asset?.parent">
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Parent Asset</h4>
-                <a [routerLink]="['/assets/preview', asset.parent.id]" class="text-blue-600 hover:underline cursor-pointer">
-                  {{asset.parent.name}} ({{asset.parent.asset_id}})
-                </a>
-              </div>
-            </div>
-
-            <!-- Right Column - QR Code and Barcode -->
-            <div class="space-y-6">
-              <!-- QR Code Display -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">QR Code</h4>
-                <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
-                  <div class="w-32 h-32 bg-white rounded-lg p-2 shadow-sm border border-gray-200 flex items-center justify-center">
-                    <!-- Generated QR Code -->
-                    <img *ngIf="qrCodeDataUrl" [src]="qrCodeDataUrl" alt="QR Code" class="w-full h-full object-contain">
-                    
-                    <!-- Server QR Code (fallback) -->
-                    <img *ngIf="!qrCodeDataUrl && asset?.qr_code_url" [src]="asset.qr_code_url" alt="QR Code" class="w-full h-full object-contain">
-                    
-                    <!-- Loading state -->
-                    <div *ngIf="qrCodeLoading" class="flex items-center justify-center">
-                      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    </div>
-                    
-                    <!-- Default placeholder -->
-                    <div *ngIf="!qrCodeDataUrl && !asset?.qr_code_url && !qrCodeLoading && asset?.id" class="text-center">
-                      <svg class="w-24 h-24 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 11h6v6H3v-6zm2 2v2h2v-2H5zm8 2h6v6h-6v-6zm2 2v2h2v-2h-2z"/>
-                      </svg>
-                      <p class="text-xs text-gray-500 mt-2 font-mono">{{asset.asset_id || asset.id}}</p>
-                    </div>
-                    
-                    <!-- Error state -->
-                    <div *ngIf="!qrCodeDataUrl && !asset?.qr_code_url && !qrCodeLoading && !asset?.id" class="text-center text-gray-400">
-                      <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                      </svg>
-                      <p class="text-xs mt-2">No Asset ID</p>
-                    </div>
-                  </div>
-                  
-                  <!-- QR Code Actions -->
-                  <div class="mt-3 flex space-x-2">
-                    <button
-                      *ngIf="asset?.id"
-                      (click)="downloadQRCode()"
-                      class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                      Download
-                    </button>
-                    <button
-                      *ngIf="asset?.id"
-                      (click)="copyPublicUrl()"
-                      class="text-sm text-green-600 hover:text-green-700 font-medium">
-                      Copy URL
-                    </button>
-                  </div>
-                  
-                  <!-- QR Code Information -->
-                  <div class="mt-2 text-xs text-gray-500 text-center">
-                    <p>Scan to access public page</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Barcode Display -->
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Barcode</h4>
-                <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center">
-                  <div class="w-full bg-white rounded-lg p-2 shadow-sm border border-gray-200 flex items-center justify-center">
-                    <!-- Server Barcode -->
-                    <img *ngIf="asset?.barcode_url" [src]="asset.barcode_url" alt="Barcode" class="w-full h-20 object-contain">
-                    
-                    <!-- Generated Barcode (fallback) -->
-                    <img *ngIf="!asset?.barcode_url && barcodeDataUrl" [src]="barcodeDataUrl" alt="Barcode" class="w-full h-20 object-contain">
-                    
-                    <!-- Loading state -->
-                    <div *ngIf="barcodeLoading" class="flex items-center justify-center py-4">
-                      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    </div>
-                    
-                    <!-- Default placeholder -->
-                    <div *ngIf="!asset?.barcode_url && !barcodeDataUrl && !barcodeLoading && asset?.asset_id" class="text-center py-4">
-                      <svg class="w-16 h-16 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                      </svg>
-                      <p class="text-xs text-gray-500 mt-2 font-mono">{{asset.asset_id}}</p>
-                    </div>
-                    
-                    <!-- Error state -->
-                    <div *ngIf="!asset?.barcode_url && !barcodeDataUrl && !barcodeLoading && !asset?.asset_id" class="text-center text-gray-400 py-4">
-                      <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                      </svg>
-                      <p class="text-xs mt-2">No Asset ID</p>
-                    </div>
-                  </div>
-                  
-                  <!-- Barcode Actions -->
-                  <div class="mt-3 flex space-x-2">
-                    <button
-                      *ngIf="asset?.asset_id"
-                      (click)="downloadBarcode()"
-                      class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                      Download
-                    </button>
-                    <button
-                      *ngIf="asset?.asset_id"
-                      (click)="copyAssetId()"
-                      class="text-sm text-green-600 hover:text-green-700 font-medium">
-                      Copy ID
-                    </button>
-                  </div>
-                  
-                  <!-- Barcode Information -->
-                  <div class="mt-2 text-xs text-gray-500 text-center">
-                    <p>Scan for asset identification</p>
-                    <p *ngIf="asset?.asset_id" class="mt-1 font-mono">{{asset.asset_id}}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Technical Specifications -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <h2 class="text-lg font-semibold text-gray-900">Technical Specifications</h2>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Asset Status</h4>
-                <div *ngIf="asset.asset_status" class="flex items-center space-x-2">
-                  <span
-                    [style.background-color]="asset.asset_status.color + '20'"
-                    [style.color]="asset.asset_status.color"
-                    class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium">
-                    {{asset.asset_status.name}}
-                  </span>
-                  <span *ngIf="asset.asset_status.description" class="text-xs text-gray-500">
-                    {{asset.asset_status.description}}
-                  </span>
-                </div>
-                <span *ngIf="!asset.asset_status" class="text-gray-900">Not specified</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Manufacturer</h4>
-                <span class="text-gray-900">{{asset.manufacturer || 'Not specified'}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Model</h4>
-                <span class="text-gray-900">{{asset.model || 'Not specified'}}</span>
-              </div>
-
-              <div *ngIf="asset.serial_number">
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Serial Number</h4>
-                <div class="flex items-center space-x-2">
-                  <span class="text-gray-900 font-mono">{{asset.serial_number}}</span>
-                  <button
-                    (click)="copySerialNumber()"
-                    class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Brand</h4>
-                <span class="text-gray-900">{{asset.brand || 'Not specified'}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Capacity</h4>
-                <span class="text-gray-900">{{asset.capacity || 'Not specified'}}</span>
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Dimensions</h4>
-                <span class="text-gray-900">{{asset.dimensions || 'Not specified'}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Weight</h4>
-                <span class="text-gray-900">{{asset.weight || 'Not specified'}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Power Requirements</h4>
-                <span class="text-gray-900">{{asset.power_requirements || 'Not specified'}}</span>
-              </div>
-
-              <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-1">Operating Conditions</h4>
-                <span class="text-gray-900">{{asset.operating_conditions || 'Standard conditions'}}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Additional Specifications -->
-          <div *ngIf="asset.specifications" class="mt-6 pt-6 border-t border-gray-200">
-            <h4 class="text-sm font-medium text-gray-700 mb-3">Additional Specifications</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div *ngFor="let spec of asset.specifications | keyvalue" class="flex justify-between">
-                <span class="text-sm text-gray-600">{{spec.key}}:</span>
-                <span class="text-sm text-gray-900 font-medium">{{spec.value}}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Health & Performance Chart -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-              </div>
-              <h2 class="text-lg font-semibold text-gray-900">Health & Performance</h2>
-            </div>
-            <div class="flex items-center space-x-2">
-              <button
-                (click)="refreshHealthPerformanceChart()"
-                class="flex items-center space-x-2 px-3 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                <span>Refresh</span>
-              </button>
-              <button
-                (click)="forceCreateHealthPerformanceChart()"
-                class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>Debug</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Summary Metrics -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" *ngIf="healthPerformanceChartData?.chart_data?.metrics">
-            <div class="bg-green-50 rounded-lg p-4">
-              <div class="text-sm text-gray-600 mb-1">Average Health Score</div>
-              <div class="text-2xl font-bold text-green-600">{{healthPerformanceChartData.chart_data.metrics.average_health_score}}%</div>
-            </div>
-            <div class="bg-blue-50 rounded-lg p-4">
-              <div class="text-sm text-gray-600 mb-1">Average Performance</div>
-              <div class="text-2xl font-bold text-blue-600">{{healthPerformanceChartData.chart_data.metrics.average_performance_score}}%</div>
-            </div>
-            <div class="bg-orange-50 rounded-lg p-4">
-              <div class="text-sm text-gray-600 mb-1">Total Maintenance</div>
-              <div class="text-2xl font-bold text-orange-600">{{healthPerformanceChartData.chart_data.metrics.total_maintenance_count}}</div>
-            </div>
-          </div>
-
-          <!-- Health & Performance Chart -->
-          <div class="space-y-4">
-            <div class="text-center">
-              <h3 class="text-sm font-medium text-gray-700">Health & Performance Timeline (Last 12 Months)</h3>
-            </div>
-            
-            <!-- Loading State -->
-            <div *ngIf="healthPerformanceChartLoading" class="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
-              <div class="text-center">
-                <div class="inline-flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mb-2">
-                  <svg class="animate-spin w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </div>
-                <p class="text-sm text-gray-500">Loading health & performance data...</p>
-              </div>
-            </div>
-
-            <!-- Error State -->
-            <div *ngIf="healthPerformanceChartError && !healthPerformanceChartLoading" class="flex items-center justify-center h-64 bg-red-50 rounded-lg">
-              <div class="text-center">
-                <div class="text-red-600 text-sm mb-2">{{healthPerformanceChartError}}</div>
-                <button
-                  (click)="loadHealthPerformanceChart()"
-                  class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                  Try Again
-                </button>
-              </div>
-            </div>
-
-            <!-- Chart Canvas -->
-            <div *ngIf="!healthPerformanceChartLoading && !healthPerformanceChartError" class="relative h-64 bg-white border border-gray-200 rounded-lg p-4">
-              <canvas id="healthPerformanceChart" width="400" height="200"></canvas>
-            </div>
-
-            <!-- Chart Legend -->
-            <div *ngIf="!healthPerformanceChartLoading && !healthPerformanceChartError" class="text-center text-xs text-gray-500">
-              Green: Health Score | Blue: Performance Score | Orange: Maintenance Count
-            </div>
-
-            <!-- Trend Indicators -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4" *ngIf="healthPerformanceChartData?.chart_data?.metrics">
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-sm text-gray-600">Health Trend</div>
-                <div class="text-lg font-semibold" [ngClass]="healthPerformanceChartData.chart_data.metrics.health_trend >= 0 ? 'text-green-600' : 'text-red-600'">
-                  {{healthPerformanceChartData.chart_data.metrics.health_trend >= 0 ? '+' : ''}}{{healthPerformanceChartData.chart_data.metrics.health_trend}}%
-                </div>
-              </div>
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-sm text-gray-600">Performance Trend</div>
-                <div class="text-lg font-semibold" [ngClass]="healthPerformanceChartData.chart_data.metrics.performance_trend >= 0 ? 'text-green-600' : 'text-red-600'">
-                  {{healthPerformanceChartData.chart_data.metrics.performance_trend >= 0 ? '+' : ''}}{{healthPerformanceChartData.chart_data.metrics.performance_trend}}%
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Asset Depreciation Chart -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-                </svg>
-              </div>
-              <h2 class="text-lg font-semibold text-gray-900">Asset Depreciation</h2>
-            </div>
-            <div class="flex items-center space-x-2">
-              <button
-                (click)="refreshDepreciationChart()"
-                class="flex items-center space-x-2 px-3 py-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                <span>Refresh</span>
-              </button>
-              <button
-                (click)="forceCreateChart()"
-                class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>Debug</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Summary Values -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-gray-50 rounded-lg p-4">
-              <div class="text-sm text-gray-600 mb-1">Original Value</div>
-              <div class="text-2xl font-bold text-gray-900">\${{formatCurrency(asset?.purchase_price || 0)}}</div>
-            </div>
-            <div class="bg-blue-50 rounded-lg p-4">
-              <div class="text-sm text-gray-600 mb-1">Current Value</div>
-              <div class="text-2xl font-bold text-blue-600">\${{formatCurrency(calculateCurrentValue())}}</div>
-            </div>
-          </div>
-
-          <!-- Depreciation Chart -->
-          <div class="space-y-4">
-            <div class="text-center">
-              <h3 class="text-sm font-medium text-gray-700">Depreciation Timeline (straight-line method)</h3>
-            </div>
-            
-            <!-- Loading State -->
-            <div *ngIf="depreciationChartLoading" class="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
-              <div class="text-center">
-                <div class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mb-2">
-                  <svg class="animate-spin w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </div>
-                <p class="text-sm text-gray-500">Loading chart data...</p>
-              </div>
-            </div>
-
-            <!-- Error State -->
-            <div *ngIf="depreciationChartError && !depreciationChartLoading" class="flex items-center justify-center h-64 bg-red-50 rounded-lg">
-              <div class="text-center">
-                <div class="text-red-600 text-sm mb-2">{{depreciationChartError}}</div>
-                <button
-                  (click)="loadDepreciationChart()"
-                  class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                  Try Again
-                </button>
-              </div>
-            </div>
-
-            <!-- Chart Canvas -->
-            <div *ngIf="!depreciationChartLoading && !depreciationChartError" class="relative h-64 bg-white border border-gray-200 rounded-lg p-4">
-              <canvas id="depreciationChart" width="400" height="200"></canvas>
-            </div>
-
-            <!-- Chart Legend -->
-            <div *ngIf="!depreciationChartLoading && !depreciationChartError" class="text-center text-xs text-gray-500">
-              Blue line: Asset Value | Red line: Accumulated Depreciation
-            </div>
-
-            <!-- Depreciation Details -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-sm text-gray-600">Annual Depreciation</div>
-                <div class="text-lg font-semibold text-gray-900">\${{formatCurrency(calculateAnnualDepreciation())}}</div>
-              </div>
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-sm text-gray-600">Depreciation Rate</div>
-                <div class="text-lg font-semibold text-gray-900">{{calculateDepreciationRate()}}%</div>
-              </div>
-              <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <div class="text-sm text-gray-600">Years Remaining</div>
-                <div class="text-lg font-semibold text-gray-900">{{calculateRemainingYears()}}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-
-      <!-- Right Column -->
-      <div class="space-y-6">
-
-        <!-- Activity Timeline -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
-          </div>
-
-          <!-- Loading State -->
-          <div *ngIf="activityLoading" class="flex items-center justify-center py-8">
-            <div class="text-center">
-              <div class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mb-2">
-                <svg class="animate-spin w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
-              <p class="text-sm text-gray-500">Loading activities...</p>
-            </div>
-          </div>
-
-          <!-- Error State -->
-          <div *ngIf="activityError && !activityLoading" class="text-center py-8">
-            <div class="text-red-600 text-sm mb-2">{{activityError}}</div>
-            <button
-              (click)="loadActivityHistory()"
-              class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-              Try Again
-            </button>
-          </div>
-
-          <!-- Activities List -->
-          <div *ngIf="!activityLoading && !activityError" class="space-y-4">
-            <div *ngFor="let activity of activities" class="flex items-start space-x-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" [ngClass]="getActivityColor(activity.action)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getActivityIcon(activity.action)"></path>
-                </svg>
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between mb-1">
-                  <h4 class="font-medium text-gray-900 capitalize">{{activity.action}}</h4>
-                  <span class="text-xs text-gray-500">{{activity.time_ago}}</span>
-                </div>
-                <p class="text-sm text-gray-600 mb-1">{{activity.comment || 'No comment'}}</p>
-                <div *ngIf="formatActivityBeforeAfter(activity.before, activity.after)" class="text-xs text-gray-500 bg-gray-50 p-2 rounded border">
-                  {{formatActivityBeforeAfter(activity.before, activity.after)}}
-                </div>
-                <div *ngIf="activity.user" class="text-xs text-gray-500 mt-1">
-                  <strong>By:</strong> {{getUserDisplayName(activity.user)}}
-                </div>
-              </div>
-            </div>
-
-            <!-- No Activities -->
-            <div *ngIf="activities.length === 0" class="text-center py-8">
-              <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <h3 class="text-lg font-medium text-gray-900 mb-2">No Recent Activity</h3>
-              <p class="text-gray-600">No activity has been recorded for this asset yet.</p>
-            </div>
-          </div>
-
-          <div class="text-center mt-6">
-            <button
-              (click)="showFullActivityHistory()"
-              class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-              View Full Activity History
-            </button>
-          </div>
-        </div>
-
-        <!-- Related Assets -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-              </svg>
-              <h2 class="text-lg font-semibold text-gray-900">Related Assets</h2>
-            </div>
-            
-            <!-- Filter Dropdown -->
-            <div class="relative">
-              <button
-                (click)="showRelatedFilterDropdown = !showRelatedFilterDropdown"
-                class="flex items-center space-x-2 px-3 py-1 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <span>{{getRelatedFilterDisplayName(selectedRelatedFilter)}}</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-              
-              <!-- Filter Options -->
-              <div *ngIf="showRelatedFilterDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                <button
-                  *ngFor="let filter of ['all', 'category', 'location', 'department', 'manufacturer', 'parent', 'children', 'siblings', 'similar']"
-                  (click)="onRelatedFilterChange(filter); showRelatedFilterDropdown = false"
-                  class="w-full flex items-center px-4 py-2 text-left hover:bg-gray-50 transition-colors"
-                  [class.text-blue-600]="selectedRelatedFilter === filter"
-                  [class.bg-blue-50]="selectedRelatedFilter === filter">
-                  <span class="text-sm">{{getRelatedFilterDisplayName(filter)}}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Loading State -->
-          <div *ngIf="relatedAssetsLoading" class="flex items-center justify-center py-8">
-            <div class="text-center">
-              <div class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mb-2">
-                <svg class="animate-spin w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
-              <p class="text-sm text-gray-500">Loading related assets...</p>
-            </div>
-          </div>
-
-          <!-- Error State -->
-          <div *ngIf="relatedAssetsError && !relatedAssetsLoading" class="text-center py-8">
-            <div class="text-red-600 text-sm mb-2">{{relatedAssetsError}}</div>
-            <button
-              (click)="loadRelatedAssets()"
-              class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-              Try Again
-            </button>
-          </div>
-
-          <!-- Related Assets List -->
-          <div *ngIf="!relatedAssetsLoading && !relatedAssetsError" class="space-y-3">
-            <div *ngFor="let relatedAsset of relatedAssets" class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                 (click)="navigateToRelatedAsset(relatedAsset.id)">
-              <!-- Asset Image or Icon -->
-              <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <img *ngIf="relatedAsset.images && relatedAsset.images.length > 0" 
-                     [src]="relatedAsset.images[0].image_url" 
-                     [alt]="relatedAsset.name"
-                     class="w-full h-full object-cover rounded-lg"
-                     (error)="onImageError($event)">
-                <svg *ngIf="!relatedAsset.images || relatedAsset.images.length === 0" 
-                     class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
-              </div>
-              
-              <!-- Asset Details -->
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between mb-1">
-                  <h4 class="font-medium text-gray-900 truncate">{{relatedAsset.name}}</h4>
-                  <span class="text-xs text-gray-500">{{relatedAsset.asset_id}}</span>
-                </div>
-                <div class="flex items-center space-x-2 mb-1">
-                  <span class="text-xs text-gray-600">{{relatedAsset.category?.name || 'General'}}</span>
-                  <span class="text-gray-400">\u2022</span>
-                  <span class="text-xs text-gray-600">{{relatedAsset.asset_type?.name || relatedAsset.type}}</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <span class="text-xs px-2 py-1 rounded-full font-medium" 
-                        [ngClass]="getRelatedAssetStatusColor(relatedAsset.asset_status || relatedAsset.status)">
-                    {{relatedAsset.asset_status?.name || relatedAsset.status}}
-                  </span>
-                  <span *ngIf="relatedAsset.health_score" class="text-xs text-gray-500">
-                    Health: {{relatedAsset.health_score}}%
-                  </span>
-                </div>
-              </div>
-              
-              <!-- Arrow Icon -->
-              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </div>
-
-            <!-- No Related Assets -->
-            <div *ngIf="relatedAssets.length === 0" class="text-center py-8">
-              <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-              </svg>
-              <h3 class="text-lg font-medium text-gray-900 mb-2">No Related Assets</h3>
-              <p class="text-gray-600">No related assets found for this item.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Maintenance Schedule -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              <h2 class="text-lg font-semibold text-gray-900">Maintenance Schedule</h2>
-            </div>
-            <button
-              (click)="addMaintenanceSchedule()"
-              class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              <span>Add</span>
-            </button>
-          </div>
-
-          <!-- Maintenance Overview -->
-          <div class="grid grid-cols-1 gap-4 mb-6">
-            <div class="bg-green-50 rounded-lg p-4">
-              <div class="flex items-center space-x-2">
-                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <div>
-                  <div class="text-sm text-green-600">Last Maintenance</div>
-                  <div class="font-semibold text-green-800">{{mockMaintenanceData.lastMaintenance || 'Not recorded'}}</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-blue-50 rounded-lg p-4">
-              <div class="flex items-center space-x-2">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <div>
-                  <div class="text-sm text-blue-600">Next Due</div>
-                  <div class="font-semibold text-blue-800">{{mockMaintenanceData.nextMaintenance || 'Not scheduled'}}</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-purple-50 rounded-lg p-4">
-              <div class="flex items-center space-x-2">
-                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                <div>
-                  <div class="text-sm text-purple-600">Frequency</div>
-                  <div class="font-semibold text-purple-800">{{mockMaintenanceData.interval}}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Maintenance Schedules List -->
-          <div *ngIf="maintenanceLoading" class="text-center py-6">
-            <div class="inline-flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full">
-              <svg class="animate-spin w-3 h-3 text-blue-600" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </div>
-            <p class="text-xs text-gray-500 mt-1">Loading...</p>
-          </div>
-
-          <div *ngIf="!maintenanceLoading && maintenanceSchedules.length > 0" class="space-y-3">
-            <div *ngFor="let schedule of maintenanceSchedules" class="border border-gray-200 rounded-lg p-3">
-              <div class="flex items-center justify-between mb-2">
-                <h4 class="font-medium text-gray-900 text-sm">{{schedule.schedule_type}}</h4>
-                <div class="flex items-center space-x-1">
-                  <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getScheduleStatusColor(schedule.status) + '-100 text-' + getScheduleStatusColor(schedule.status) + '-800'">
-                    {{schedule.status}}
-                  </span>
-                  <button
-                    (click)="editMaintenanceSchedule(schedule)"
-                    class="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                  </button>
-                  <button
-                    (click)="deleteMaintenanceSchedule(schedule)"
-                    class="p-1 text-gray-400 hover:text-red-600 transition-colors">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              <div class="space-y-1 text-xs">
-                <div>
-                  <span class="text-gray-600">Next Due:</span>
-                  <span class="ml-1 text-gray-900">{{formatDate(schedule.next_due)}}</span>
-                </div>
-                <div>
-                  <span class="text-gray-600">Frequency:</span>
-                  <span class="ml-1 text-gray-900">{{schedule.frequency || 'Not specified'}}</span>
-                </div>
-              </div>
-              <div *ngIf="schedule.notes" class="mt-2 text-xs text-gray-600">
-                {{schedule.notes}}
-              </div>
-            </div>
-          </div>
-
-          <div *ngIf="!maintenanceLoading && maintenanceSchedules.length === 0" class="text-center py-6">
-            <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <h3 class="text-sm font-medium text-gray-900 mb-1">No Maintenance Schedules</h3>
-            <p class="text-xs text-gray-600 mb-3">Create maintenance schedules to track asset upkeep.</p>
-            <button
-              (click)="addMaintenanceSchedule()"
-              class="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors">
-              Add First Schedule
-            </button>
-          </div>
-        </div>
-
-        <!-- Financial Information -->
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <div class="flex items-center space-x-2 mb-4">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-            </svg>
-            <h2 class="text-lg font-semibold text-gray-900">Financial Information</h2>
-          </div>
-
-          <div class="space-y-4">
-            <!-- Purchase Information -->
-            <div class="bg-gray-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-gray-700 mb-3">Purchase Details</h4>
-              <div class="space-y-2">
-                <div>
-                  <span class="text-xs text-gray-600">Purchase Price</span>
-                  <div class="text-lg font-semibold text-gray-900">
-                    {{mockFinancialData.purchaseCost | currency:'USD':'symbol':'1.2-2'}}
-                  </div>
-                </div>
-                <div>
-                  <span class="text-xs text-gray-600">Purchase Date</span>
-                  <div class="text-sm text-gray-900">{{asset.purchase_date | date:'MMM d, y'}}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Current Value -->
-            <div class="bg-blue-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-gray-700 mb-3">Current Value</h4>
-              <div class="space-y-2">
-                <div>
-                  <span class="text-xs text-gray-600">Book Value</span>
-                  <div class="text-lg font-semibold text-gray-900">
-                    {{mockFinancialData.currentValue | currency:'USD':'symbol':'1.2-2'}}
-                  </div>
-                </div>
-                <div>
-                  <span class="text-xs text-gray-600">Market Value</span>
-                  <div class="text-sm text-gray-900">{{mockFinancialData.currentValue * 0.95 | currency:'USD':'symbol':'1.2-2'}}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Depreciation -->
-            <div class="bg-orange-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-gray-700 mb-3">Depreciation</h4>
-              <div class="space-y-2">
-                <div>
-                  <span class="text-xs text-gray-600">Method</span>
-                  <div class="text-sm text-gray-900">{{mockFinancialData.depreciationMethod}}</div>
-                </div>
-                <div>
-                  <span class="text-xs text-gray-600">Useful Life</span>
-                  <div class="text-sm text-gray-900">{{mockFinancialData.usefulLife}} years</div>
-                </div>
-                <div>
-                  <span class="text-xs text-gray-600">Annual Rate</span>
-                  <div class="text-sm text-gray-900">{{calculateDepreciationRate()}}%</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Performance Metrics -->
-            <div class="bg-green-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-gray-700 mb-3">Performance</h4>
-              <div class="space-y-2">
-                <div>
-                  <span class="text-xs text-gray-600">Total Cost of Ownership</span>
-                  <div class="text-lg font-semibold text-gray-900">
-                    {{calculateTotalCostOfOwnership() | currency:'USD':'symbol':'1.2-2'}}
-                  </div>
-                </div>
-                <div>
-                  <span class="text-xs text-gray-600">ROI</span>
-                  <div class="text-sm text-gray-900" [class.text-green-600]="calculateROI() > 0" [class.text-red-600]="calculateROI() < 0">
-                    {{calculateROI()}}%
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Warranty Information -->
-            <div class="bg-purple-50 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-gray-700 mb-3">Warranty & Insurance</h4>
-              <div class="space-y-2">
-                <div>
-                  <span class="text-xs text-gray-600">Warranty Status</span>
-                  <div class="flex items-center space-x-2 mt-1">
-                    <span [class]="getWarrantyStatusClass(asset.warranty)">
-                      {{getWarrantyStatus(asset.warranty)}}
-                    </span>
-                    <span *ngIf="asset.warranty" class="text-xs text-gray-500">
-                      (Expires: {{asset.warranty | date:'MMM d, y'}})
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <span class="text-xs text-gray-600">Insurance Value</span>
-                  <div class="text-sm text-gray-900">{{asset.insurance_value || 'Not specified'}}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Maintenance Schedule Modals -->
-  <!-- Add Maintenance Modal -->
-  <div *ngIf="showAddMaintenanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg max-w-md w-full p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">Add Maintenance Schedule</h3>
-        <button
-          (click)="closeMaintenanceModals()"
-          class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-
-      <form [formGroup]="maintenanceForm" (ngSubmit)="saveMaintenanceSchedule()">
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Type</label>
-            <select formControlName="schedule_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Select type</option>
-              <option value="Preventive">Preventive Maintenance</option>
-              <option value="Inspection">Inspection</option>
-              <option value="Calibration">Calibration</option>
-              <option value="Cleaning">Cleaning</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Next Due Date</label>
-            <input
-              #dateInput
-              type="text"
-              formControlName="next_due"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Select date">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Last Done Date</label>
-            <input
-              #dateInput
-              type="text"
-              formControlName="last_done"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Select date">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>
-            <select formControlName="frequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Select frequency</option>
-              <option value="Weekly">Weekly</option>
-              <option value="Monthly">Monthly</option>
-              <option value="Quarterly">Quarterly</option>
-              <option value="Semi-Annual">Semi-Annual</option>
-              <option value="Annual">Annual</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-            <textarea
-              formControlName="notes"
-              rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Additional notes..."></textarea>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-end space-x-3 mt-6">
-          <button
-            type="button"
-            (click)="closeMaintenanceModals()"
-            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
-            Cancel
-          </button>
-          <button
-            type="submit"
-            [disabled]="maintenanceForm.invalid"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">
-            Save Schedule
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Edit Maintenance Modal -->
-  <div *ngIf="showEditMaintenanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg max-w-md w-full p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900">Edit Maintenance Schedule</h3>
-        <button
-          (click)="closeMaintenanceModals()"
-          class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-
-      <form [formGroup]="maintenanceForm" (ngSubmit)="saveMaintenanceSchedule()">
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Type</label>
-            <select formControlName="schedule_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Select type</option>
-              <option value="Preventive">Preventive Maintenance</option>
-              <option value="Inspection">Inspection</option>
-              <option value="Calibration">Calibration</option>
-              <option value="Cleaning">Cleaning</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Next Due Date</label>
-            <input
-              #dateInput
-              type="text"
-              formControlName="next_due"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Select date">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Last Done Date</label>
-            <input
-              #dateInput
-              type="text"
-              formControlName="last_done"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Select date">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>
-            <select formControlName="frequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Select frequency</option>
-              <option value="Weekly">Weekly</option>
-              <option value="Monthly">Monthly</option>
-              <option value="Quarterly">Quarterly</option>
-              <option value="Semi-Annual">Semi-Annual</option>
-              <option value="Annual">Annual</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select formControlName="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="Scheduled">Scheduled</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Overdue">Overdue</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-            <textarea
-              formControlName="notes"
-              rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Additional notes..."></textarea>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-end space-x-3 mt-6">
-          <button
-            type="button"
-            (click)="closeMaintenanceModals()"
-            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
-            Cancel
-          </button>
-          <button
-            type="submit"
-            [disabled]="maintenanceForm.invalid"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">
-            Update Schedule
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Full Activity History Modal -->
-  <div *ngIf="showActivityHistoryModal" class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <div class="flex items-center space-x-3">
-          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <h3 class="text-xl font-semibold text-gray-900">Full Activity History</h3>
-        </div>
-        <button
-          (click)="closeActivityHistoryModal()"
-          class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Modal Content with Scroll -->
-      <div class="flex-1 overflow-auto p-6">
-        <!-- Search and Filters -->
-        <div class="mb-6 space-y-4">
-          <!-- Search Bar -->
-          <div class="flex space-x-4">
-            <div class="flex-1">
-              <input
-                type="text"
-                placeholder="Search activities..."
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                (input)="onActivityHistorySearch($any($event.target).value)">
-            </div>
-            <button
-              (click)="clearActivityHistoryFilters()"
-              class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
-              Clear Filters
-            </button>
-          </div>
-
-          <!-- Filter Options -->
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Action Type</label>
-              <select
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                (change)="onActivityHistoryFilter('action', $any($event.target).value)">
-                <option value="">All Actions</option>
-                <option value="created">Created</option>
-                <option value="updated">Updated</option>
-                <option value="deleted">Deleted</option>
-                <option value="transferred">Transferred</option>
-                <option value="maintenance">Maintenance</option>
-                <option value="imported">Imported</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Date From</label>
-              <input
-                type="date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                (change)="onActivityHistoryFilter('date_from', $any($event.target).value)">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
-              <input
-                type="date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                (change)="onActivityHistoryFilter('date_to', $any($event.target).value)">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
-              <select
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                (change)="onActivityHistorySort('created_at', $any($event.target).value)">
-                <option value="desc">Newest First</option>
-                <option value="asc">Oldest First</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div *ngIf="activityHistoryLoading" class="flex items-center justify-center py-12">
-          <div class="text-center">
-            <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
-              <svg class="animate-spin w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </div>
-            <p class="text-gray-500">Loading activity history...</p>
-          </div>
-        </div>
-
-        <!-- Error State -->
-        <div *ngIf="activityHistoryError && !activityHistoryLoading" class="text-center py-12">
-          <div class="text-red-600 mb-4">{{activityHistoryError}}</div>
-          <button
-            (click)="loadFullActivityHistory()"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            Try Again
-          </button>
-        </div>
-
-        <!-- Activities List -->
-        <div *ngIf="!activityHistoryLoading && !activityHistoryError" class="space-y-4 max-h-[60vh] overflow-y-auto">
-          <div *ngFor="let activity of fullActivityHistory" class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" [ngClass]="getActivityColor(activity.action)">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getActivityIcon(activity.action)"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <div class="flex items-center justify-between mb-2">
-                <h4 class="font-semibold text-gray-900 capitalize">{{activity.action}}</h4>
-                <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">{{activity.time_ago}}</span>
-              </div>
-              <p class="text-sm text-gray-600 mb-2">{{activity.comment || 'No comment'}}</p>
-              <div *ngIf="formatActivityBeforeAfter(activity.before, activity.after)" class="text-xs text-gray-500 bg-white p-3 rounded border">
-                <div class="font-medium mb-1">Changes:</div>
-                <div class="text-gray-600">
-                  {{formatActivityBeforeAfter(activity.before, activity.after)}}
-                </div>
-              </div>
-              <div *ngIf="activity.user" class="text-xs text-gray-500 mt-2">
-                <strong>By:</strong> {{getUserDisplayName(activity.user)}}
-              </div>
-            </div>
-          </div>
-
-          <!-- No Activities -->
-          <div *ngIf="fullActivityHistory.length === 0" class="text-center py-12">
-            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">No Activity Found</h3>
-            <p class="text-gray-600">No activity matches your current filters.</p>
-          </div>
-        </div>
-
-        <!-- Pagination -->
-        <div *ngIf="activityHistoryPagination && fullActivityHistory.length > 0" class="mt-6 flex items-center justify-between">
-          <div class="text-sm text-gray-600">
-            Showing {{activityHistoryPagination.from || 0}} to {{activityHistoryPagination.to || 0}} of {{activityHistoryPagination.total || 0}} activities
-          </div>
-          <div class="flex space-x-2">
-            <button
-              *ngIf="activityHistoryPagination.prev_page_url"
-              (click)="onActivityHistoryPageChange(activityHistoryPagination.current_page - 1)"
-              class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors">
-              Previous
-            </button>
-            <button
-              *ngIf="activityHistoryPagination.next_page_url"
-              (click)="onActivityHistoryPageChange(activityHistoryPagination.current_page + 1)"
-              class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors">
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
-        <div class="text-sm text-gray-600">
-          Total Activities: {{activityHistoryPagination?.total || fullActivityHistory.length}}
-        </div>
-        <button
-          (click)="closeActivityHistoryModal()"
-          class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Transfer Asset Modal -->
-  <app-transfer-asset-modal
-    [isOpen]="showTransferModal"
-    [asset]="asset"
-    (closeModal)="onTransferModalClose()"
-    (transferComplete)="onTransferComplete($event)"
-  ></app-transfer-asset-modal>
-</div>
+    args: [{ selector: "app-asset-view", standalone: true, imports: [CommonModule, RouterModule, ReactiveFormsModule, TransferAssetModalComponent], template: `<!-- Asset View Page -->\r
+<div class="min-h-screen bg-gray-50 asset-view-container">\r
+  <!-- Header -->\r
+  <div class="bg-white border-b border-gray-200 px-6 py-4 print-hide">\r
+    <div class="flex items-center justify-between">\r
+      <!-- Back Button and Breadcrumb -->\r
+      <div class="flex items-center space-x-4">\r
+        <!-- Breadcrumb -->\r
+        <nav class="flex" aria-label="Breadcrumb">\r
+          <ol class="flex items-center space-x-2">\r
+            <li>\r
+              <a routerLink="/assets/list" class="text-gray-500 hover:text-gray-700 transition-colors">Assets</a>\r
+            </li>\r
+            <li>\r
+              <svg class="w-4 h-4 text-gray-400 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>\r
+              </svg>\r
+            </li>\r
+            <li class="text-gray-900 font-medium">{{asset?.name || 'Asset Details'}}</li>\r
+          </ol>\r
+        </nav>\r
+      </div>\r
+\r
+      <!-- Quick Actions -->\r
+      <div class="flex items-center space-x-3">\r
+        <button\r
+          (click)="editAsset()"\r
+          class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">\r
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>\r
+          </svg>\r
+          <span>Edit Asset</span>\r
+        </button>\r
+\r
+        <!-- 3-Dot Menu -->\r
+        <div class="relative" (click)="$event.stopPropagation()">\r
+          <button\r
+            (click)="showActionsDropdown = !showActionsDropdown"\r
+            class="flex items-center justify-center w-10 h-10 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">\r
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <circle cx="12" cy="5" r="2" />\r
+              <circle cx="12" cy="12" r="2" />\r
+              <circle cx="12" cy="19" r="2" />\r
+            </svg>\r
+          </button>\r
+\r
+          <!-- Dropdown Menu -->\r
+          <div *ngIf="showActionsDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">\r
+            <button\r
+              (click)="transferAsset(); showActionsDropdown = false"\r
+              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">\r
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>\r
+              </svg>\r
+              <span class="text-gray-700">Transfer Asset</span>\r
+            </button>\r
+\r
+            <button\r
+              (click)="duplicateAsset(); showActionsDropdown = false"\r
+              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">\r
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>\r
+              </svg>\r
+              <span class="text-gray-700">Duplicate</span>\r
+            </button>\r
+\r
+            <div class="border-t border-gray-100 my-2"></div>\r
+\r
+            <button\r
+              (click)="printAsset(); showActionsDropdown = false"\r
+              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">\r
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>\r
+              </svg>\r
+              <span class="text-gray-700">Print</span>\r
+            </button>\r
+\r
+            <button\r
+              (click)="exportAsset(); showActionsDropdown = false"\r
+              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">\r
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>\r
+              </svg>\r
+              <span class="text-gray-700">Export</span>\r
+            </button>\r
+\r
+            <button\r
+              (click)="sharePublicUrl(); showActionsDropdown = false"\r
+              class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors">\r
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>\r
+              </svg>\r
+              <span class="text-gray-700">Share Public URL</span>\r
+            </button>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Loading State -->\r
+  <div *ngIf="loading" class="flex items-center justify-center py-20">\r
+    <div class="text-center">\r
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">\r
+        <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">\r
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+        </svg>\r
+      </div>\r
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Asset</h3>\r
+      <p class="text-sm text-gray-500">Please wait while we fetch the asset details...</p>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Error State -->\r
+  <div *ngIf="error && !loading" class="flex items-center justify-center py-20">\r
+    <div class="text-center">\r
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">\r
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>\r
+        </svg>\r
+      </div>\r
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Asset</h3>\r
+      <p class="text-sm text-gray-500 mb-4">{{error}}</p>\r
+      <button\r
+        (click)="goBack()"\r
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">\r
+        Back to Assets\r
+      </button>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Main Content -->\r
+  <div *ngIf="asset && !loading" class="px-6 py-6">\r
+    <!-- Asset Header -->\r
+    <div class="bg-white rounded-lg p-6 mb-6 shadow-sm border border-gray-200">\r
+      <div class="flex items-start justify-between mb-4">\r
+        <div class="flex items-center space-x-4">\r
+          <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">\r
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getAssetTypeIcon()"></path>\r
+            </svg>\r
+          </div>\r
+          <div>\r
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{asset.name}}</h1>\r
+            <div class="flex items-center space-x-4">\r
+              <span\r
+                *ngIf="asset.asset_status"\r
+                [style.background-color]="asset.asset_status.color + '20'"\r
+                [style.color]="asset.asset_status.color"\r
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">\r
+                {{asset.asset_status.name}}\r
+              </span>\r
+              <span class="text-gray-500">{{getAssetTypeName(asset.type)}}</span>\r
+              <span class="text-gray-500">\u2022</span>\r
+              <span class="text-gray-500">{{asset.category?.name || 'General'}}</span>\r
+            </div>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Asset ID with Copy -->\r
+        <div class="text-right">\r
+          <div class="flex items-center space-x-2 mb-2">\r
+            <span class="text-sm text-gray-500">Asset ID:</span>\r
+            <button\r
+              (click)="copyAssetId()"\r
+              class="flex items-center space-x-1 px-2 py-1 text-sm font-mono bg-gray-100 rounded hover:bg-gray-200 transition-colors">\r
+              <span>{{asset.asset_id || asset.id}}</span>\r
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>\r
+              </svg>\r
+            </button>\r
+          </div>\r
+          <div *ngIf="asset.serial_number" class="flex items-center space-x-2">\r
+            <span class="text-sm text-gray-500">Serial:</span>\r
+            <button\r
+              (click)="copySerialNumber()"\r
+              class="flex items-center space-x-1 px-2 py-1 text-sm font-mono bg-gray-100 rounded hover:bg-gray-200 transition-colors">\r
+              <span>{{asset.serial_number}}</span>\r
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>\r
+              </svg>\r
+            </button>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Main Content Grid -->\r
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">\r
+      <!-- Left Column -->\r
+      <div class="lg:col-span-2 space-y-6">\r
+        <!-- Image Gallery -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center space-x-2 mb-4">\r
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>\r
+            </svg>\r
+            <h2 class="text-lg font-semibold text-gray-900">Asset Images</h2>\r
+          </div>\r
+\r
+          <div *ngIf="asset.images && asset.images.length > 0; else noImages">\r
+            <!-- Main Image Display -->\r
+            <div class="mb-4">\r
+              <div class="relative bg-gray-100 rounded-lg overflow-hidden" style="height: 400px;">\r
+                <img\r
+                  [src]="selectedImageUrl || asset.images[0].image_url"\r
+                  [alt]="asset.name"\r
+                  class="w-full h-full object-contain bg-white cursor-pointer"\r
+                  (click)="viewFullImage(selectedImageUrl || asset.images[0].image_url)"\r
+                  (error)="onImageError($event)">\r
+\r
+                <!-- Navigation Arrows -->\r
+                <button\r
+                  *ngIf="asset.images.length > 1"\r
+                  (click)="previousImage()"\r
+                  class="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">\r
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>\r
+                  </svg>\r
+                </button>\r
+\r
+                <button\r
+                  *ngIf="asset.images.length > 1"\r
+                  (click)="nextImage()"\r
+                  class="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-50 text-white rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all">\r
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>\r
+                  </svg>\r
+                </button>\r
+\r
+                <!-- Image Counter -->\r
+                <div class="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">\r
+                  {{currentImageIndex + 1}} / {{asset.images.length}}\r
+                </div>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Thumbnail Gallery -->\r
+            <div *ngIf="asset.images.length > 1" class="grid grid-cols-6 gap-2">\r
+              <div\r
+                *ngFor="let image of asset.images; let i = index"\r
+                (click)="selectImage(i)"\r
+                class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 transition-all"\r
+                [class.border-blue-500]="i === currentImageIndex"\r
+                [class.border-gray-200]="i !== currentImageIndex">\r
+                <img\r
+                  [src]="image.image_url"\r
+                  [alt]="'Asset image ' + (i + 1)"\r
+                  class="w-full h-full object-cover"\r
+                  (error)="onImageError($event)">\r
+              </div>\r
+            </div>\r
+          </div>\r
+\r
+          <ng-template #noImages>\r
+            <div class="text-center py-12 bg-gray-50 rounded-lg">\r
+              <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>\r
+              </svg>\r
+              <h3 class="text-lg font-medium text-gray-900 mb-2">No Images Available</h3>\r
+              <p class="text-gray-600">No images have been uploaded for this asset.</p>\r
+            </div>\r
+          </ng-template>\r
+        </div>\r
+\r
+        <!-- Basic Information -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center space-x-2 mb-6">\r
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>\r
+            </svg>\r
+            <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>\r
+          </div>\r
+\r
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">\r
+            <!-- Left Column -->\r
+            <div class="space-y-6">\r
+              <!-- Asset Name -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Asset Name</h4>\r
+                <p class="text-lg font-semibold text-gray-900">{{asset?.name || 'Unnamed Asset'}}</p>\r
+              </div>\r
+\r
+              <!-- Description -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Description</h4>\r
+                <div class="relative">\r
+                  <p class="text-gray-600 leading-relaxed" [class.line-clamp-3]="!descriptionExpanded">\r
+                    {{asset?.description || 'No description available'}}\r
+                  </p>\r
+                  <button\r
+                    *ngIf="asset?.description && asset.description.length > 150"\r
+                    (click)="descriptionExpanded = !descriptionExpanded"\r
+                    class="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2">\r
+                    {{descriptionExpanded ? 'Show Less' : 'Show More'}}\r
+                  </button>\r
+                </div>\r
+              </div>\r
+\r
+              <!-- Category with Icon -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Category</h4>\r
+                <div class="flex items-center space-x-3">\r
+                  <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">\r
+                    <img\r
+                      *ngIf="asset?.category?.icon && !asset.category.iconError"\r
+                      [src]="asset.category.icon"\r
+                      [alt]="asset.category.name"\r
+                      class="w-5 h-5"\r
+                      (error)="onCategoryIconError($event, asset.category)">\r
+                    <svg\r
+                      *ngIf="!asset?.category?.icon || asset.category.iconError"\r
+                      class="w-5 h-5 text-blue-600"\r
+                      fill="none"\r
+                      stroke="currentColor"\r
+                      viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>\r
+                    </svg>\r
+                  </div>\r
+                  <span class="text-gray-900 font-medium">{{asset?.category?.name || 'Uncategorized'}}</span>\r
+                </div>\r
+              </div>\r
+\r
+              <!-- Current Status with Badge -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Status</h4>\r
+                <div *ngIf="asset.asset_status" class="flex items-center space-x-2">\r
+                  <span\r
+                    [style.background-color]="asset.asset_status.color + '20'"\r
+                    [style.color]="asset.asset_status.color"\r
+                    class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium">\r
+                    {{asset.asset_status.name}}\r
+                  </span>\r
+                </div>\r
+                <span *ngIf="!asset.asset_status" class="text-gray-900">Not specified</span>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Middle Column -->\r
+            <div class="space-y-6">\r
+              <!-- Asset ID/Barcode -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Asset ID</h4>\r
+                <div class="flex items-center space-x-2">\r
+                  <span class="text-gray-900 font-mono text-lg">{{asset?.asset_id || 'N/A'}}</span>\r
+                  <button\r
+                    (click)="copyAssetId()"\r
+                    class="p-1 text-gray-400 hover:text-gray-600 transition-colors"\r
+                    title="Copy Asset ID">\r
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>\r
+                    </svg>\r
+                  </button>\r
+                </div>\r
+              </div>\r
+\r
+              <!-- Location with Link -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Location</h4>\r
+                <div class="flex items-center space-x-2">\r
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>\r
+                  </svg>\r
+                  <a\r
+                    *ngIf="asset?.location?.id"\r
+                    [routerLink]="['/locations', asset.location.id]"\r
+                    class="text-blue-600 hover:underline cursor-pointer">\r
+                    {{asset.location.name}}\r
+                  </a>\r
+                  <span *ngIf="!asset?.location?.id" class="text-gray-900">{{asset?.location?.name || 'No location assigned'}}</span>\r
+                </div>\r
+              </div>\r
+\r
+              <!-- Department -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Department</h4>\r
+                <span class="text-gray-900">{{asset?.department?.name || 'Not assigned'}}</span>\r
+              </div>\r
+\r
+              <!-- Creation Date -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Created</h4>\r
+                <div class="flex items-center space-x-2">\r
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>\r
+                  </svg>\r
+                  <span class="text-gray-900">{{asset?.created_at | date:'MMM d, y'}}</span>\r
+                </div>\r
+              </div>\r
+\r
+              <!-- Last Modified Date -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Last Modified</h4>\r
+                <div class="flex items-center space-x-2">\r
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+                  </svg>\r
+                  <span class="text-gray-900">{{asset?.updated_at | date:'MMM d, y'}}</span>\r
+                </div>\r
+              </div>\r
+\r
+              <!-- Parent Asset -->\r
+              <div *ngIf="asset?.parent">\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Parent Asset</h4>\r
+                <a [routerLink]="['/assets/preview', asset.parent.id]" class="text-blue-600 hover:underline cursor-pointer">\r
+                  {{asset.parent.name}} ({{asset.parent.asset_id}})\r
+                </a>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Right Column - QR Code and Barcode -->\r
+            <div class="space-y-6">\r
+              <!-- QR Code Display -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">QR Code</h4>\r
+                <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center">\r
+                  <div class="w-32 h-32 bg-white rounded-lg p-2 shadow-sm border border-gray-200 flex items-center justify-center">\r
+                    <!-- Generated QR Code -->\r
+                    <img *ngIf="qrCodeDataUrl" [src]="qrCodeDataUrl" alt="QR Code" class="w-full h-full object-contain">\r
+                    \r
+                    <!-- Server QR Code (fallback) -->\r
+                    <img *ngIf="!qrCodeDataUrl && asset?.qr_code_url" [src]="asset.qr_code_url" alt="QR Code" class="w-full h-full object-contain">\r
+                    \r
+                    <!-- Loading state -->\r
+                    <div *ngIf="qrCodeLoading" class="flex items-center justify-center">\r
+                      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>\r
+                    </div>\r
+                    \r
+                    <!-- Default placeholder -->\r
+                    <div *ngIf="!qrCodeDataUrl && !asset?.qr_code_url && !qrCodeLoading && asset?.id" class="text-center">\r
+                      <svg class="w-24 h-24 text-gray-400" fill="currentColor" viewBox="0 0 24 24">\r
+                        <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 11h6v6H3v-6zm2 2v2h2v-2H5zm8 2h6v6h-6v-6zm2 2v2h2v-2h-2z"/>\r
+                      </svg>\r
+                      <p class="text-xs text-gray-500 mt-2 font-mono">{{asset.asset_id || asset.id}}</p>\r
+                    </div>\r
+                    \r
+                    <!-- Error state -->\r
+                    <div *ngIf="!qrCodeDataUrl && !asset?.qr_code_url && !qrCodeLoading && !asset?.id" class="text-center text-gray-400">\r
+                      <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>\r
+                      </svg>\r
+                      <p class="text-xs mt-2">No Asset ID</p>\r
+                    </div>\r
+                  </div>\r
+                  \r
+                  <!-- QR Code Actions -->\r
+                  <div class="mt-3 flex space-x-2">\r
+                    <button\r
+                      *ngIf="asset?.id"\r
+                      (click)="downloadQRCode()"\r
+                      class="text-sm text-blue-600 hover:text-blue-700 font-medium">\r
+                      Download\r
+                    </button>\r
+                    <button\r
+                      *ngIf="asset?.id"\r
+                      (click)="copyPublicUrl()"\r
+                      class="text-sm text-green-600 hover:text-green-700 font-medium">\r
+                      Copy URL\r
+                    </button>\r
+                  </div>\r
+                  \r
+                  <!-- QR Code Information -->\r
+                  <div class="mt-2 text-xs text-gray-500 text-center">\r
+                    <p>Scan to access public page</p>\r
+                  </div>\r
+                </div>\r
+              </div>\r
+\r
+              <!-- Barcode Display -->\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Barcode</h4>\r
+                <div class="bg-gray-50 rounded-lg p-4 flex flex-col items-center">\r
+                  <div class="w-full bg-white rounded-lg p-2 shadow-sm border border-gray-200 flex items-center justify-center">\r
+                    <!-- Server Barcode -->\r
+                    <img *ngIf="asset?.barcode_url" [src]="asset.barcode_url" alt="Barcode" class="w-full h-20 object-contain">\r
+                    \r
+                    <!-- Generated Barcode (fallback) -->\r
+                    <img *ngIf="!asset?.barcode_url && barcodeDataUrl" [src]="barcodeDataUrl" alt="Barcode" class="w-full h-20 object-contain">\r
+                    \r
+                    <!-- Loading state -->\r
+                    <div *ngIf="barcodeLoading" class="flex items-center justify-center py-4">\r
+                      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>\r
+                    </div>\r
+                    \r
+                    <!-- Default placeholder -->\r
+                    <div *ngIf="!asset?.barcode_url && !barcodeDataUrl && !barcodeLoading && asset?.asset_id" class="text-center py-4">\r
+                      <svg class="w-16 h-16 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>\r
+                      </svg>\r
+                      <p class="text-xs text-gray-500 mt-2 font-mono">{{asset.asset_id}}</p>\r
+                    </div>\r
+                    \r
+                    <!-- Error state -->\r
+                    <div *ngIf="!asset?.barcode_url && !barcodeDataUrl && !barcodeLoading && !asset?.asset_id" class="text-center text-gray-400 py-4">\r
+                      <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>\r
+                      </svg>\r
+                      <p class="text-xs mt-2">No Asset ID</p>\r
+                    </div>\r
+                  </div>\r
+                  \r
+                  <!-- Barcode Actions -->\r
+                  <div class="mt-3 flex space-x-2">\r
+                    <button\r
+                      *ngIf="asset?.asset_id"\r
+                      (click)="downloadBarcode()"\r
+                      class="text-sm text-blue-600 hover:text-blue-700 font-medium">\r
+                      Download\r
+                    </button>\r
+                    <button\r
+                      *ngIf="asset?.asset_id"\r
+                      (click)="copyAssetId()"\r
+                      class="text-sm text-green-600 hover:text-green-700 font-medium">\r
+                      Copy ID\r
+                    </button>\r
+                  </div>\r
+                  \r
+                  <!-- Barcode Information -->\r
+                  <div class="mt-2 text-xs text-gray-500 text-center">\r
+                    <p>Scan for asset identification</p>\r
+                    <p *ngIf="asset?.asset_id" class="mt-1 font-mono">{{asset.asset_id}}</p>\r
+                  </div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Technical Specifications -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center space-x-2 mb-4">\r
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>\r
+            </svg>\r
+            <h2 class="text-lg font-semibold text-gray-900">Technical Specifications</h2>\r
+          </div>\r
+\r
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">\r
+            <div class="space-y-4">\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Asset Status</h4>\r
+                <div *ngIf="asset.asset_status" class="flex items-center space-x-2">\r
+                  <span\r
+                    [style.background-color]="asset.asset_status.color + '20'"\r
+                    [style.color]="asset.asset_status.color"\r
+                    class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium">\r
+                    {{asset.asset_status.name}}\r
+                  </span>\r
+                  <span *ngIf="asset.asset_status.description" class="text-xs text-gray-500">\r
+                    {{asset.asset_status.description}}\r
+                  </span>\r
+                </div>\r
+                <span *ngIf="!asset.asset_status" class="text-gray-900">Not specified</span>\r
+              </div>\r
+\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Manufacturer</h4>\r
+                <span class="text-gray-900">{{asset.manufacturer || 'Not specified'}}</span>\r
+              </div>\r
+\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Model</h4>\r
+                <span class="text-gray-900">{{asset.model || 'Not specified'}}</span>\r
+              </div>\r
+\r
+              <div *ngIf="asset.serial_number">\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Serial Number</h4>\r
+                <div class="flex items-center space-x-2">\r
+                  <span class="text-gray-900 font-mono">{{asset.serial_number}}</span>\r
+                  <button\r
+                    (click)="copySerialNumber()"\r
+                    class="p-1 text-gray-400 hover:text-gray-600 transition-colors">\r
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>\r
+                    </svg>\r
+                  </button>\r
+                </div>\r
+              </div>\r
+\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Brand</h4>\r
+                <span class="text-gray-900">{{asset.brand || 'Not specified'}}</span>\r
+              </div>\r
+\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Capacity</h4>\r
+                <span class="text-gray-900">{{asset.capacity || 'Not specified'}}</span>\r
+              </div>\r
+            </div>\r
+\r
+            <div class="space-y-4">\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Dimensions</h4>\r
+                <span class="text-gray-900">{{asset.dimensions || 'Not specified'}}</span>\r
+              </div>\r
+\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Weight</h4>\r
+                <span class="text-gray-900">{{asset.weight || 'Not specified'}}</span>\r
+              </div>\r
+\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Power Requirements</h4>\r
+                <span class="text-gray-900">{{asset.power_requirements || 'Not specified'}}</span>\r
+              </div>\r
+\r
+              <div>\r
+                <h4 class="text-sm font-medium text-gray-700 mb-1">Operating Conditions</h4>\r
+                <span class="text-gray-900">{{asset.operating_conditions || 'Standard conditions'}}</span>\r
+              </div>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Additional Specifications -->\r
+          <div *ngIf="asset.specifications" class="mt-6 pt-6 border-t border-gray-200">\r
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Additional Specifications</h4>\r
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">\r
+              <div *ngFor="let spec of asset.specifications | keyvalue" class="flex justify-between">\r
+                <span class="text-sm text-gray-600">{{spec.key}}:</span>\r
+                <span class="text-sm text-gray-900 font-medium">{{spec.value}}</span>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Health & Performance Chart -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center justify-between mb-6">\r
+            <div class="flex items-center space-x-2">\r
+              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">\r
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>\r
+                </svg>\r
+              </div>\r
+              <h2 class="text-lg font-semibold text-gray-900">Health & Performance</h2>\r
+            </div>\r
+            <div class="flex items-center space-x-2">\r
+              <button\r
+                (click)="refreshHealthPerformanceChart()"\r
+                class="flex items-center space-x-2 px-3 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors">\r
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>\r
+                </svg>\r
+                <span>Refresh</span>\r
+              </button>\r
+              <button\r
+                (click)="forceCreateHealthPerformanceChart()"\r
+                class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">\r
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+                </svg>\r
+                <span>Debug</span>\r
+              </button>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Summary Metrics -->\r
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" *ngIf="healthPerformanceChartData?.chart_data?.metrics">\r
+            <div class="bg-green-50 rounded-lg p-4">\r
+              <div class="text-sm text-gray-600 mb-1">Average Health Score</div>\r
+              <div class="text-2xl font-bold text-green-600">{{healthPerformanceChartData.chart_data.metrics.average_health_score}}%</div>\r
+            </div>\r
+            <div class="bg-blue-50 rounded-lg p-4">\r
+              <div class="text-sm text-gray-600 mb-1">Average Performance</div>\r
+              <div class="text-2xl font-bold text-blue-600">{{healthPerformanceChartData.chart_data.metrics.average_performance_score}}%</div>\r
+            </div>\r
+            <div class="bg-orange-50 rounded-lg p-4">\r
+              <div class="text-sm text-gray-600 mb-1">Total Maintenance</div>\r
+              <div class="text-2xl font-bold text-orange-600">{{healthPerformanceChartData.chart_data.metrics.total_maintenance_count}}</div>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Health & Performance Chart -->\r
+          <div class="space-y-4">\r
+            <div class="text-center">\r
+              <h3 class="text-sm font-medium text-gray-700">Health & Performance Timeline (Last 12 Months)</h3>\r
+            </div>\r
+            \r
+            <!-- Loading State -->\r
+            <div *ngIf="healthPerformanceChartLoading" class="flex items-center justify-center h-64 bg-gray-50 rounded-lg">\r
+              <div class="text-center">\r
+                <div class="inline-flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mb-2">\r
+                  <svg class="animate-spin w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24">\r
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+                  </svg>\r
+                </div>\r
+                <p class="text-sm text-gray-500">Loading health & performance data...</p>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Error State -->\r
+            <div *ngIf="healthPerformanceChartError && !healthPerformanceChartLoading" class="flex items-center justify-center h-64 bg-red-50 rounded-lg">\r
+              <div class="text-center">\r
+                <div class="text-red-600 text-sm mb-2">{{healthPerformanceChartError}}</div>\r
+                <button\r
+                  (click)="loadHealthPerformanceChart()"\r
+                  class="text-blue-600 hover:text-blue-700 text-sm font-medium">\r
+                  Try Again\r
+                </button>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Chart Canvas -->\r
+            <div *ngIf="!healthPerformanceChartLoading && !healthPerformanceChartError" class="relative h-64 bg-white border border-gray-200 rounded-lg p-4">\r
+              <canvas id="healthPerformanceChart" width="400" height="200"></canvas>\r
+            </div>\r
+\r
+            <!-- Chart Legend -->\r
+            <div *ngIf="!healthPerformanceChartLoading && !healthPerformanceChartError" class="text-center text-xs text-gray-500">\r
+              Green: Health Score | Blue: Performance Score | Orange: Maintenance Count\r
+            </div>\r
+\r
+            <!-- Trend Indicators -->\r
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4" *ngIf="healthPerformanceChartData?.chart_data?.metrics">\r
+              <div class="text-center p-3 bg-gray-50 rounded-lg">\r
+                <div class="text-sm text-gray-600">Health Trend</div>\r
+                <div class="text-lg font-semibold" [ngClass]="healthPerformanceChartData.chart_data.metrics.health_trend >= 0 ? 'text-green-600' : 'text-red-600'">\r
+                  {{healthPerformanceChartData.chart_data.metrics.health_trend >= 0 ? '+' : ''}}{{healthPerformanceChartData.chart_data.metrics.health_trend}}%\r
+                </div>\r
+              </div>\r
+              <div class="text-center p-3 bg-gray-50 rounded-lg">\r
+                <div class="text-sm text-gray-600">Performance Trend</div>\r
+                <div class="text-lg font-semibold" [ngClass]="healthPerformanceChartData.chart_data.metrics.performance_trend >= 0 ? 'text-green-600' : 'text-red-600'">\r
+                  {{healthPerformanceChartData.chart_data.metrics.performance_trend >= 0 ? '+' : ''}}{{healthPerformanceChartData.chart_data.metrics.performance_trend}}%\r
+                </div>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Asset Depreciation Chart -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center justify-between mb-4">\r
+            <div class="flex items-center space-x-2">\r
+              <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">\r
+                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>\r
+                </svg>\r
+              </div>\r
+              <h2 class="text-lg font-semibold text-gray-900">Asset Depreciation</h2>\r
+            </div>\r
+            <div class="flex items-center space-x-2">\r
+              <button\r
+                (click)="refreshDepreciationChart()"\r
+                class="flex items-center space-x-2 px-3 py-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors">\r
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>\r
+                </svg>\r
+                <span>Refresh</span>\r
+              </button>\r
+              <button\r
+                (click)="forceCreateChart()"\r
+                class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">\r
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+                </svg>\r
+                <span>Debug</span>\r
+              </button>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Summary Values -->\r
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">\r
+            <div class="bg-gray-50 rounded-lg p-4">\r
+              <div class="text-sm text-gray-600 mb-1">Original Value</div>\r
+              <div class="text-2xl font-bold text-gray-900">\${{formatCurrency(asset?.purchase_price || 0)}}</div>\r
+            </div>\r
+            <div class="bg-blue-50 rounded-lg p-4">\r
+              <div class="text-sm text-gray-600 mb-1">Current Value</div>\r
+              <div class="text-2xl font-bold text-blue-600">\${{formatCurrency(calculateCurrentValue())}}</div>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Depreciation Chart -->\r
+          <div class="space-y-4">\r
+            <div class="text-center">\r
+              <h3 class="text-sm font-medium text-gray-700">Depreciation Timeline (straight-line method)</h3>\r
+            </div>\r
+            \r
+            <!-- Loading State -->\r
+            <div *ngIf="depreciationChartLoading" class="flex items-center justify-center h-64 bg-gray-50 rounded-lg">\r
+              <div class="text-center">\r
+                <div class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mb-2">\r
+                  <svg class="animate-spin w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">\r
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+                  </svg>\r
+                </div>\r
+                <p class="text-sm text-gray-500">Loading chart data...</p>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Error State -->\r
+            <div *ngIf="depreciationChartError && !depreciationChartLoading" class="flex items-center justify-center h-64 bg-red-50 rounded-lg">\r
+              <div class="text-center">\r
+                <div class="text-red-600 text-sm mb-2">{{depreciationChartError}}</div>\r
+                <button\r
+                  (click)="loadDepreciationChart()"\r
+                  class="text-blue-600 hover:text-blue-700 text-sm font-medium">\r
+                  Try Again\r
+                </button>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Chart Canvas -->\r
+            <div *ngIf="!depreciationChartLoading && !depreciationChartError" class="relative h-64 bg-white border border-gray-200 rounded-lg p-4">\r
+              <canvas id="depreciationChart" width="400" height="200"></canvas>\r
+            </div>\r
+\r
+            <!-- Chart Legend -->\r
+            <div *ngIf="!depreciationChartLoading && !depreciationChartError" class="text-center text-xs text-gray-500">\r
+              Blue line: Asset Value | Red line: Accumulated Depreciation\r
+            </div>\r
+\r
+            <!-- Depreciation Details -->\r
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">\r
+              <div class="text-center p-3 bg-gray-50 rounded-lg">\r
+                <div class="text-sm text-gray-600">Annual Depreciation</div>\r
+                <div class="text-lg font-semibold text-gray-900">\${{formatCurrency(calculateAnnualDepreciation())}}</div>\r
+              </div>\r
+              <div class="text-center p-3 bg-gray-50 rounded-lg">\r
+                <div class="text-sm text-gray-600">Depreciation Rate</div>\r
+                <div class="text-lg font-semibold text-gray-900">{{calculateDepreciationRate()}}%</div>\r
+              </div>\r
+              <div class="text-center p-3 bg-gray-50 rounded-lg">\r
+                <div class="text-sm text-gray-600">Years Remaining</div>\r
+                <div class="text-lg font-semibold text-gray-900">{{calculateRemainingYears()}}</div>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+\r
+\r
+      <!-- Right Column -->\r
+      <div class="space-y-6">\r
+\r
+        <!-- Activity Timeline -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center space-x-2 mb-4">\r
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+            </svg>\r
+            <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>\r
+          </div>\r
+\r
+          <!-- Loading State -->\r
+          <div *ngIf="activityLoading" class="flex items-center justify-center py-8">\r
+            <div class="text-center">\r
+              <div class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mb-2">\r
+                <svg class="animate-spin w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">\r
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+                </svg>\r
+              </div>\r
+              <p class="text-sm text-gray-500">Loading activities...</p>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Error State -->\r
+          <div *ngIf="activityError && !activityLoading" class="text-center py-8">\r
+            <div class="text-red-600 text-sm mb-2">{{activityError}}</div>\r
+            <button\r
+              (click)="loadActivityHistory()"\r
+              class="text-blue-600 hover:text-blue-700 text-sm font-medium">\r
+              Try Again\r
+            </button>\r
+          </div>\r
+\r
+          <!-- Activities List -->\r
+          <div *ngIf="!activityLoading && !activityError" class="space-y-4">\r
+            <div *ngFor="let activity of activities" class="flex items-start space-x-3">\r
+              <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" [ngClass]="getActivityColor(activity.action)">\r
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getActivityIcon(activity.action)"></path>\r
+                </svg>\r
+              </div>\r
+              <div class="flex-1">\r
+                <div class="flex items-center justify-between mb-1">\r
+                  <h4 class="font-medium text-gray-900 capitalize">{{activity.action}}</h4>\r
+                  <span class="text-xs text-gray-500">{{activity.time_ago}}</span>\r
+                </div>\r
+                <p class="text-sm text-gray-600 mb-1">{{activity.comment || 'No comment'}}</p>\r
+                <div *ngIf="formatActivityBeforeAfter(activity.before, activity.after)" class="text-xs text-gray-500 bg-gray-50 p-2 rounded border">\r
+                  {{formatActivityBeforeAfter(activity.before, activity.after)}}\r
+                </div>\r
+                <div *ngIf="activity.user" class="text-xs text-gray-500 mt-1">\r
+                  <strong>By:</strong> {{getUserDisplayName(activity.user)}}\r
+                </div>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- No Activities -->\r
+            <div *ngIf="activities.length === 0" class="text-center py-8">\r
+              <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+              </svg>\r
+              <h3 class="text-lg font-medium text-gray-900 mb-2">No Recent Activity</h3>\r
+              <p class="text-gray-600">No activity has been recorded for this asset yet.</p>\r
+            </div>\r
+          </div>\r
+\r
+          <div class="text-center mt-6">\r
+            <button\r
+              (click)="showFullActivityHistory()"\r
+              class="text-blue-600 hover:text-blue-700 text-sm font-medium">\r
+              View Full Activity History\r
+            </button>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Related Assets -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center justify-between mb-4">\r
+            <div class="flex items-center space-x-2">\r
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>\r
+              </svg>\r
+              <h2 class="text-lg font-semibold text-gray-900">Related Assets</h2>\r
+            </div>\r
+            \r
+            <!-- Filter Dropdown -->\r
+            <div class="relative">\r
+              <button\r
+                (click)="showRelatedFilterDropdown = !showRelatedFilterDropdown"\r
+                class="flex items-center space-x-2 px-3 py-1 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">\r
+                <span>{{getRelatedFilterDisplayName(selectedRelatedFilter)}}</span>\r
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>\r
+                </svg>\r
+              </button>\r
+              \r
+              <!-- Filter Options -->\r
+              <div *ngIf="showRelatedFilterDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">\r
+                <button\r
+                  *ngFor="let filter of ['all', 'category', 'location', 'department', 'manufacturer', 'parent', 'children', 'siblings', 'similar']"\r
+                  (click)="onRelatedFilterChange(filter); showRelatedFilterDropdown = false"\r
+                  class="w-full flex items-center px-4 py-2 text-left hover:bg-gray-50 transition-colors"\r
+                  [class.text-blue-600]="selectedRelatedFilter === filter"\r
+                  [class.bg-blue-50]="selectedRelatedFilter === filter">\r
+                  <span class="text-sm">{{getRelatedFilterDisplayName(filter)}}</span>\r
+                </button>\r
+              </div>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Loading State -->\r
+          <div *ngIf="relatedAssetsLoading" class="flex items-center justify-center py-8">\r
+            <div class="text-center">\r
+              <div class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mb-2">\r
+                <svg class="animate-spin w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">\r
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+                </svg>\r
+              </div>\r
+              <p class="text-sm text-gray-500">Loading related assets...</p>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Error State -->\r
+          <div *ngIf="relatedAssetsError && !relatedAssetsLoading" class="text-center py-8">\r
+            <div class="text-red-600 text-sm mb-2">{{relatedAssetsError}}</div>\r
+            <button\r
+              (click)="loadRelatedAssets()"\r
+              class="text-blue-600 hover:text-blue-700 text-sm font-medium">\r
+              Try Again\r
+            </button>\r
+          </div>\r
+\r
+          <!-- Related Assets List -->\r
+          <div *ngIf="!relatedAssetsLoading && !relatedAssetsError" class="space-y-3">\r
+            <div *ngFor="let relatedAsset of relatedAssets" class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"\r
+                 (click)="navigateToRelatedAsset(relatedAsset.id)">\r
+              <!-- Asset Image or Icon -->\r
+              <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">\r
+                <img *ngIf="relatedAsset.images && relatedAsset.images.length > 0" \r
+                     [src]="relatedAsset.images[0].image_url" \r
+                     [alt]="relatedAsset.name"\r
+                     class="w-full h-full object-cover rounded-lg"\r
+                     (error)="onImageError($event)">\r
+                <svg *ngIf="!relatedAsset.images || relatedAsset.images.length === 0" \r
+                     class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>\r
+                </svg>\r
+              </div>\r
+              \r
+              <!-- Asset Details -->\r
+              <div class="flex-1 min-w-0">\r
+                <div class="flex items-center justify-between mb-1">\r
+                  <h4 class="font-medium text-gray-900 truncate">{{relatedAsset.name}}</h4>\r
+                  <span class="text-xs text-gray-500">{{relatedAsset.asset_id}}</span>\r
+                </div>\r
+                <div class="flex items-center space-x-2 mb-1">\r
+                  <span class="text-xs text-gray-600">{{relatedAsset.category?.name || 'General'}}</span>\r
+                  <span class="text-gray-400">\u2022</span>\r
+                  <span class="text-xs text-gray-600">{{relatedAsset.asset_type?.name || relatedAsset.type}}</span>\r
+                </div>\r
+                <div class="flex items-center space-x-2">\r
+                  <span class="text-xs px-2 py-1 rounded-full font-medium" \r
+                        [ngClass]="getRelatedAssetStatusColor(relatedAsset.asset_status || relatedAsset.status)">\r
+                    {{relatedAsset.asset_status?.name || relatedAsset.status}}\r
+                  </span>\r
+                  <span *ngIf="relatedAsset.health_score" class="text-xs text-gray-500">\r
+                    Health: {{relatedAsset.health_score}}%\r
+                  </span>\r
+                </div>\r
+              </div>\r
+              \r
+              <!-- Arrow Icon -->\r
+              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>\r
+              </svg>\r
+            </div>\r
+\r
+            <!-- No Related Assets -->\r
+            <div *ngIf="relatedAssets.length === 0" class="text-center py-8">\r
+              <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>\r
+              </svg>\r
+              <h3 class="text-lg font-medium text-gray-900 mb-2">No Related Assets</h3>\r
+              <p class="text-gray-600">No related assets found for this item.</p>\r
+            </div>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Maintenance Schedule -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center justify-between mb-4">\r
+            <div class="flex items-center space-x-2">\r
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>\r
+              </svg>\r
+              <h2 class="text-lg font-semibold text-gray-900">Maintenance Schedule</h2>\r
+            </div>\r
+            <button\r
+              (click)="addMaintenanceSchedule()"\r
+              class="flex items-center space-x-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">\r
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>\r
+              </svg>\r
+              <span>Add</span>\r
+            </button>\r
+          </div>\r
+\r
+          <!-- Maintenance Overview -->\r
+          <div class="grid grid-cols-1 gap-4 mb-6">\r
+            <div class="bg-green-50 rounded-lg p-4">\r
+              <div class="flex items-center space-x-2">\r
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+                </svg>\r
+                <div>\r
+                  <div class="text-sm text-green-600">Last Maintenance</div>\r
+                  <div class="font-semibold text-green-800">{{mockMaintenanceData.lastMaintenance || 'Not recorded'}}</div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+\r
+            <div class="bg-blue-50 rounded-lg p-4">\r
+              <div class="flex items-center space-x-2">\r
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+                </svg>\r
+                <div>\r
+                  <div class="text-sm text-blue-600">Next Due</div>\r
+                  <div class="font-semibold text-blue-800">{{mockMaintenanceData.nextMaintenance || 'Not scheduled'}}</div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+\r
+            <div class="bg-purple-50 rounded-lg p-4">\r
+              <div class="flex items-center space-x-2">\r
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>\r
+                </svg>\r
+                <div>\r
+                  <div class="text-sm text-purple-600">Frequency</div>\r
+                  <div class="font-semibold text-purple-800">{{mockMaintenanceData.interval}}</div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- Maintenance Schedules List -->\r
+          <div *ngIf="maintenanceLoading" class="text-center py-6">\r
+            <div class="inline-flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full">\r
+              <svg class="animate-spin w-3 h-3 text-blue-600" fill="none" viewBox="0 0 24 24">\r
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+              </svg>\r
+            </div>\r
+            <p class="text-xs text-gray-500 mt-1">Loading...</p>\r
+          </div>\r
+\r
+          <div *ngIf="!maintenanceLoading && maintenanceSchedules.length > 0" class="space-y-3">\r
+            <div *ngFor="let schedule of maintenanceSchedules" class="border border-gray-200 rounded-lg p-3">\r
+              <div class="flex items-center justify-between mb-2">\r
+                <h4 class="font-medium text-gray-900 text-sm">{{schedule.schedule_type}}</h4>\r
+                <div class="flex items-center space-x-1">\r
+                  <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getScheduleStatusColor(schedule.status) + '-100 text-' + getScheduleStatusColor(schedule.status) + '-800'">\r
+                    {{schedule.status}}\r
+                  </span>\r
+                  <button\r
+                    (click)="editMaintenanceSchedule(schedule)"\r
+                    class="p-1 text-gray-400 hover:text-blue-600 transition-colors">\r
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>\r
+                    </svg>\r
+                  </button>\r
+                  <button\r
+                    (click)="deleteMaintenanceSchedule(schedule)"\r
+                    class="p-1 text-gray-400 hover:text-red-600 transition-colors">\r
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>\r
+                    </svg>\r
+                  </button>\r
+                </div>\r
+              </div>\r
+              <div class="space-y-1 text-xs">\r
+                <div>\r
+                  <span class="text-gray-600">Next Due:</span>\r
+                  <span class="ml-1 text-gray-900">{{formatDate(schedule.next_due)}}</span>\r
+                </div>\r
+                <div>\r
+                  <span class="text-gray-600">Frequency:</span>\r
+                  <span class="ml-1 text-gray-900">{{schedule.frequency || 'Not specified'}}</span>\r
+                </div>\r
+              </div>\r
+              <div *ngIf="schedule.notes" class="mt-2 text-xs text-gray-600">\r
+                {{schedule.notes}}\r
+              </div>\r
+            </div>\r
+          </div>\r
+\r
+          <div *ngIf="!maintenanceLoading && maintenanceSchedules.length === 0" class="text-center py-6">\r
+            <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>\r
+            </svg>\r
+            <h3 class="text-sm font-medium text-gray-900 mb-1">No Maintenance Schedules</h3>\r
+            <p class="text-xs text-gray-600 mb-3">Create maintenance schedules to track asset upkeep.</p>\r
+            <button\r
+              (click)="addMaintenanceSchedule()"\r
+              class="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors">\r
+              Add First Schedule\r
+            </button>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Financial Information -->\r
+        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">\r
+          <div class="flex items-center space-x-2 mb-4">\r
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>\r
+            </svg>\r
+            <h2 class="text-lg font-semibold text-gray-900">Financial Information</h2>\r
+          </div>\r
+\r
+          <div class="space-y-4">\r
+            <!-- Purchase Information -->\r
+            <div class="bg-gray-50 rounded-lg p-4">\r
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Purchase Details</h4>\r
+              <div class="space-y-2">\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Purchase Price</span>\r
+                  <div class="text-lg font-semibold text-gray-900">\r
+                    {{mockFinancialData.purchaseCost | currency:'USD':'symbol':'1.2-2'}}\r
+                  </div>\r
+                </div>\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Purchase Date</span>\r
+                  <div class="text-sm text-gray-900">{{asset.purchase_date | date:'MMM d, y'}}</div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Current Value -->\r
+            <div class="bg-blue-50 rounded-lg p-4">\r
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Current Value</h4>\r
+              <div class="space-y-2">\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Book Value</span>\r
+                  <div class="text-lg font-semibold text-gray-900">\r
+                    {{mockFinancialData.currentValue | currency:'USD':'symbol':'1.2-2'}}\r
+                  </div>\r
+                </div>\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Market Value</span>\r
+                  <div class="text-sm text-gray-900">{{mockFinancialData.currentValue * 0.95 | currency:'USD':'symbol':'1.2-2'}}</div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Depreciation -->\r
+            <div class="bg-orange-50 rounded-lg p-4">\r
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Depreciation</h4>\r
+              <div class="space-y-2">\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Method</span>\r
+                  <div class="text-sm text-gray-900">{{mockFinancialData.depreciationMethod}}</div>\r
+                </div>\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Useful Life</span>\r
+                  <div class="text-sm text-gray-900">{{mockFinancialData.usefulLife}} years</div>\r
+                </div>\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Annual Rate</span>\r
+                  <div class="text-sm text-gray-900">{{calculateDepreciationRate()}}%</div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Performance Metrics -->\r
+            <div class="bg-green-50 rounded-lg p-4">\r
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Performance</h4>\r
+              <div class="space-y-2">\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Total Cost of Ownership</span>\r
+                  <div class="text-lg font-semibold text-gray-900">\r
+                    {{calculateTotalCostOfOwnership() | currency:'USD':'symbol':'1.2-2'}}\r
+                  </div>\r
+                </div>\r
+                <div>\r
+                  <span class="text-xs text-gray-600">ROI</span>\r
+                  <div class="text-sm text-gray-900" [class.text-green-600]="calculateROI() > 0" [class.text-red-600]="calculateROI() < 0">\r
+                    {{calculateROI()}}%\r
+                  </div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+\r
+            <!-- Warranty Information -->\r
+            <div class="bg-purple-50 rounded-lg p-4">\r
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Warranty & Insurance</h4>\r
+              <div class="space-y-2">\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Warranty Status</span>\r
+                  <div class="flex items-center space-x-2 mt-1">\r
+                    <span [class]="getWarrantyStatusClass(asset.warranty)">\r
+                      {{getWarrantyStatus(asset.warranty)}}\r
+                    </span>\r
+                    <span *ngIf="asset.warranty" class="text-xs text-gray-500">\r
+                      (Expires: {{asset.warranty | date:'MMM d, y'}})\r
+                    </span>\r
+                  </div>\r
+                </div>\r
+                <div>\r
+                  <span class="text-xs text-gray-600">Insurance Value</span>\r
+                  <div class="text-sm text-gray-900">{{asset.insurance_value || 'Not specified'}}</div>\r
+                </div>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+\r
+\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Maintenance Schedule Modals -->\r
+  <!-- Add Maintenance Modal -->\r
+  <div *ngIf="showAddMaintenanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">\r
+    <div class="bg-white rounded-lg max-w-md w-full p-6">\r
+      <div class="flex items-center justify-between mb-4">\r
+        <h3 class="text-lg font-semibold text-gray-900">Add Maintenance Schedule</h3>\r
+        <button\r
+          (click)="closeMaintenanceModals()"\r
+          class="p-2 hover:bg-gray-100 rounded-lg transition-colors">\r
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\r
+          </svg>\r
+        </button>\r
+      </div>\r
+\r
+      <form [formGroup]="maintenanceForm" (ngSubmit)="saveMaintenanceSchedule()">\r
+        <div class="space-y-4">\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Type</label>\r
+            <select formControlName="schedule_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">\r
+              <option value="">Select type</option>\r
+              <option value="Preventive">Preventive Maintenance</option>\r
+              <option value="Inspection">Inspection</option>\r
+              <option value="Calibration">Calibration</option>\r
+              <option value="Cleaning">Cleaning</option>\r
+            </select>\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Next Due Date</label>\r
+            <input\r
+              #dateInput\r
+              type="text"\r
+              formControlName="next_due"\r
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+              placeholder="Select date">\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Last Done Date</label>\r
+            <input\r
+              #dateInput\r
+              type="text"\r
+              formControlName="last_done"\r
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+              placeholder="Select date">\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>\r
+            <select formControlName="frequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">\r
+              <option value="">Select frequency</option>\r
+              <option value="Weekly">Weekly</option>\r
+              <option value="Monthly">Monthly</option>\r
+              <option value="Quarterly">Quarterly</option>\r
+              <option value="Semi-Annual">Semi-Annual</option>\r
+              <option value="Annual">Annual</option>\r
+            </select>\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>\r
+            <textarea\r
+              formControlName="notes"\r
+              rows="3"\r
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+              placeholder="Additional notes..."></textarea>\r
+          </div>\r
+        </div>\r
+\r
+        <div class="flex items-center justify-end space-x-3 mt-6">\r
+          <button\r
+            type="button"\r
+            (click)="closeMaintenanceModals()"\r
+            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">\r
+            Cancel\r
+          </button>\r
+          <button\r
+            type="submit"\r
+            [disabled]="maintenanceForm.invalid"\r
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">\r
+            Save Schedule\r
+          </button>\r
+        </div>\r
+      </form>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Edit Maintenance Modal -->\r
+  <div *ngIf="showEditMaintenanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">\r
+    <div class="bg-white rounded-lg max-w-md w-full p-6">\r
+      <div class="flex items-center justify-between mb-4">\r
+        <h3 class="text-lg font-semibold text-gray-900">Edit Maintenance Schedule</h3>\r
+        <button\r
+          (click)="closeMaintenanceModals()"\r
+          class="p-2 hover:bg-gray-100 rounded-lg transition-colors">\r
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\r
+          </svg>\r
+        </button>\r
+      </div>\r
+\r
+      <form [formGroup]="maintenanceForm" (ngSubmit)="saveMaintenanceSchedule()">\r
+        <div class="space-y-4">\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Type</label>\r
+            <select formControlName="schedule_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">\r
+              <option value="">Select type</option>\r
+              <option value="Preventive">Preventive Maintenance</option>\r
+              <option value="Inspection">Inspection</option>\r
+              <option value="Calibration">Calibration</option>\r
+              <option value="Cleaning">Cleaning</option>\r
+            </select>\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Next Due Date</label>\r
+            <input\r
+              #dateInput\r
+              type="text"\r
+              formControlName="next_due"\r
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+              placeholder="Select date">\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Last Done Date</label>\r
+            <input\r
+              #dateInput\r
+              type="text"\r
+              formControlName="last_done"\r
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+              placeholder="Select date">\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>\r
+            <select formControlName="frequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">\r
+              <option value="">Select frequency</option>\r
+              <option value="Weekly">Weekly</option>\r
+              <option value="Monthly">Monthly</option>\r
+              <option value="Quarterly">Quarterly</option>\r
+              <option value="Semi-Annual">Semi-Annual</option>\r
+              <option value="Annual">Annual</option>\r
+            </select>\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>\r
+            <select formControlName="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">\r
+              <option value="Scheduled">Scheduled</option>\r
+              <option value="In Progress">In Progress</option>\r
+              <option value="Completed">Completed</option>\r
+              <option value="Overdue">Overdue</option>\r
+            </select>\r
+          </div>\r
+\r
+          <div>\r
+            <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>\r
+            <textarea\r
+              formControlName="notes"\r
+              rows="3"\r
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+              placeholder="Additional notes..."></textarea>\r
+          </div>\r
+        </div>\r
+\r
+        <div class="flex items-center justify-end space-x-3 mt-6">\r
+          <button\r
+            type="button"\r
+            (click)="closeMaintenanceModals()"\r
+            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">\r
+            Cancel\r
+          </button>\r
+          <button\r
+            type="submit"\r
+            [disabled]="maintenanceForm.invalid"\r
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">\r
+            Update Schedule\r
+          </button>\r
+        </div>\r
+      </form>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Full Activity History Modal -->\r
+  <div *ngIf="showActivityHistoryModal" class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4">\r
+    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">\r
+      <!-- Modal Header -->\r
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">\r
+        <div class="flex items-center space-x-3">\r
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+          </svg>\r
+          <h3 class="text-xl font-semibold text-gray-900">Full Activity History</h3>\r
+        </div>\r
+        <button\r
+          (click)="closeActivityHistoryModal()"\r
+          class="p-2 hover:bg-gray-100 rounded-lg transition-colors">\r
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\r
+          </svg>\r
+        </button>\r
+      </div>\r
+\r
+      <!-- Modal Content with Scroll -->\r
+      <div class="flex-1 overflow-auto p-6">\r
+        <!-- Search and Filters -->\r
+        <div class="mb-6 space-y-4">\r
+          <!-- Search Bar -->\r
+          <div class="flex space-x-4">\r
+            <div class="flex-1">\r
+              <input\r
+                type="text"\r
+                placeholder="Search activities..."\r
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+                (input)="onActivityHistorySearch($any($event.target).value)">\r
+            </div>\r
+            <button\r
+              (click)="clearActivityHistoryFilters()"\r
+              class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">\r
+              Clear Filters\r
+            </button>\r
+          </div>\r
+\r
+          <!-- Filter Options -->\r
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-1">Action Type</label>\r
+              <select\r
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+                (change)="onActivityHistoryFilter('action', $any($event.target).value)">\r
+                <option value="">All Actions</option>\r
+                <option value="created">Created</option>\r
+                <option value="updated">Updated</option>\r
+                <option value="deleted">Deleted</option>\r
+                <option value="transferred">Transferred</option>\r
+                <option value="maintenance">Maintenance</option>\r
+                <option value="imported">Imported</option>\r
+              </select>\r
+            </div>\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date From</label>\r
+              <input\r
+                type="date"\r
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+                (change)="onActivityHistoryFilter('date_from', $any($event.target).value)">\r
+            </div>\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date To</label>\r
+              <input\r
+                type="date"\r
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+                (change)="onActivityHistoryFilter('date_to', $any($event.target).value)">\r
+            </div>\r
+            <div>\r
+              <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>\r
+              <select\r
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"\r
+                (change)="onActivityHistorySort('created_at', $any($event.target).value)">\r
+                <option value="desc">Newest First</option>\r
+                <option value="asc">Oldest First</option>\r
+              </select>\r
+            </div>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Loading State -->\r
+        <div *ngIf="activityHistoryLoading" class="flex items-center justify-center py-12">\r
+          <div class="text-center">\r
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">\r
+              <svg class="animate-spin w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24">\r
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+              </svg>\r
+            </div>\r
+            <p class="text-gray-500">Loading activity history...</p>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Error State -->\r
+        <div *ngIf="activityHistoryError && !activityHistoryLoading" class="text-center py-12">\r
+          <div class="text-red-600 mb-4">{{activityHistoryError}}</div>\r
+          <button\r
+            (click)="loadFullActivityHistory()"\r
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">\r
+            Try Again\r
+          </button>\r
+        </div>\r
+\r
+        <!-- Activities List -->\r
+        <div *ngIf="!activityHistoryLoading && !activityHistoryError" class="space-y-4 max-h-[60vh] overflow-y-auto">\r
+          <div *ngFor="let activity of fullActivityHistory" class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">\r
+            <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" [ngClass]="getActivityColor(activity.action)">\r
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getActivityIcon(activity.action)"></path>\r
+              </svg>\r
+            </div>\r
+            <div class="flex-1">\r
+              <div class="flex items-center justify-between mb-2">\r
+                <h4 class="font-semibold text-gray-900 capitalize">{{activity.action}}</h4>\r
+                <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">{{activity.time_ago}}</span>\r
+              </div>\r
+              <p class="text-sm text-gray-600 mb-2">{{activity.comment || 'No comment'}}</p>\r
+              <div *ngIf="formatActivityBeforeAfter(activity.before, activity.after)" class="text-xs text-gray-500 bg-white p-3 rounded border">\r
+                <div class="font-medium mb-1">Changes:</div>\r
+                <div class="text-gray-600">\r
+                  {{formatActivityBeforeAfter(activity.before, activity.after)}}\r
+                </div>\r
+              </div>\r
+              <div *ngIf="activity.user" class="text-xs text-gray-500 mt-2">\r
+                <strong>By:</strong> {{getUserDisplayName(activity.user)}}\r
+              </div>\r
+            </div>\r
+          </div>\r
+\r
+          <!-- No Activities -->\r
+          <div *ngIf="fullActivityHistory.length === 0" class="text-center py-12">\r
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+            </svg>\r
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Activity Found</h3>\r
+            <p class="text-gray-600">No activity matches your current filters.</p>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- Pagination -->\r
+        <div *ngIf="activityHistoryPagination && fullActivityHistory.length > 0" class="mt-6 flex items-center justify-between">\r
+          <div class="text-sm text-gray-600">\r
+            Showing {{activityHistoryPagination.from || 0}} to {{activityHistoryPagination.to || 0}} of {{activityHistoryPagination.total || 0}} activities\r
+          </div>\r
+          <div class="flex space-x-2">\r
+            <button\r
+              *ngIf="activityHistoryPagination.prev_page_url"\r
+              (click)="onActivityHistoryPageChange(activityHistoryPagination.current_page - 1)"\r
+              class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors">\r
+              Previous\r
+            </button>\r
+            <button\r
+              *ngIf="activityHistoryPagination.next_page_url"\r
+              (click)="onActivityHistoryPageChange(activityHistoryPagination.current_page + 1)"\r
+              class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors">\r
+              Next\r
+            </button>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Modal Footer -->\r
+      <div class="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">\r
+        <div class="text-sm text-gray-600">\r
+          Total Activities: {{activityHistoryPagination?.total || fullActivityHistory.length}}\r
+        </div>\r
+        <button\r
+          (click)="closeActivityHistoryModal()"\r
+          class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">\r
+          Close\r
+        </button>\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Transfer Asset Modal -->\r
+  <app-transfer-asset-modal\r
+    [isOpen]="showTransferModal"\r
+    [asset]="asset"\r
+    (closeModal)="onTransferModalClose()"\r
+    (transferComplete)="onTransferComplete($event)"\r
+  ></app-transfer-asset-modal>\r
+</div>\r
 `, styles: ["/* src/app/assets/components/asset-view/asset-view.component.scss */\n.asset-header {\n  background:\n    linear-gradient(\n      135deg,\n      #f8fafc 0%,\n      #f1f5f9 100%);\n}\n.asset-image-container {\n  background:\n    linear-gradient(\n      135deg,\n      #dbeafe 0%,\n      #bfdbfe 100%);\n  border-radius: 0.5rem;\n  min-height: 16rem;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.info-card {\n  transition: all 0.2s ease-in-out;\n}\n.info-card:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);\n}\n.health-score-bar {\n  background:\n    linear-gradient(\n      90deg,\n      #10b981 0%,\n      #059669 100%);\n  transition: width 0.3s ease-in-out;\n}\n.chart-placeholder {\n  background:\n    linear-gradient(\n      135deg,\n      #f9fafb 0%,\n      #f3f4f6 100%);\n  border: 2px dashed #d1d5db;\n  border-radius: 0.5rem;\n}\n.chart-placeholder:hover {\n  border-color: #3b82f6;\n  background:\n    linear-gradient(\n      135deg,\n      #eff6ff 0%,\n      #dbeafe 100%);\n}\n.ai-button {\n  transition: all 0.15s ease-in-out;\n}\n.ai-button:hover {\n  transform: scale(1.02);\n}\n.ai-button:active {\n  transform: scale(0.98);\n}\n.action-button {\n  transition: all 0.2s ease-in-out;\n}\n.action-button:hover {\n  background-color: #f3f4f6;\n  border-radius: 0.5rem;\n  padding: 0.5rem 1rem;\n  margin: -0.5rem -1rem;\n}\n.status-badge {\n  font-weight: 600;\n  font-size: 0.75rem;\n  padding: 0.25rem 0.5rem;\n  border-radius: 9999px;\n}\n.section-icon {\n  transition: all 0.2s ease-in-out;\n}\n.section-icon:hover {\n  transform: scale(1.1);\n}\n.empty-state {\n  background:\n    linear-gradient(\n      135deg,\n      #f9fafb 0%,\n      #f3f4f6 100%);\n  border: 2px dashed #d1d5db;\n  border-radius: 1rem;\n}\n.empty-state:hover {\n  border-color: #3b82f6;\n  background:\n    linear-gradient(\n      135deg,\n      #eff6ff 0%,\n      #dbeafe 100%);\n}\n.loading-spinner {\n  animation: spin 1s linear infinite;\n}\n@keyframes spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n@media (max-width: 768px) {\n  .grid-cols-2 {\n    grid-template-columns: 1fr;\n  }\n  .lg\\:col-span-2 {\n    grid-column: span 1;\n  }\n  .asset-header {\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 1rem;\n  }\n  .action-buttons {\n    width: 100%;\n    justify-content: space-between;\n  }\n}\n@media print {\n  .bg-white.border-b,\n  .flex.items-center.justify-between,\n  .bg-white.rounded-lg.p-6.shadow-sm.border.border-gray-200:has(button),\n  button,\n  .relative,\n  .dropdown,\n  .modal,\n  .fixed,\n  nav,\n  .breadcrumb,\n  .actions-dropdown,\n  .quick-actions,\n  .print-hide {\n    display: none !important;\n  }\n  .bg-white.rounded-lg.p-6.shadow-sm.border.border-gray-200 {\n    border: 1px solid #ddd !important;\n    box-shadow: none !important;\n    margin-bottom: 20px !important;\n    page-break-inside: avoid;\n  }\n  .grid.grid-cols-1.lg\\\\:grid-cols-3 {\n    display: block !important;\n  }\n  .lg\\\\:col-span-2 {\n    width: 100% !important;\n  }\n  body {\n    margin: 0 !important;\n    padding: 20px !important;\n    background: white !important;\n  }\n  * {\n    color: black !important;\n    background: white !important;\n  }\n  .asset-image-container {\n    border: 1px solid #000 !important;\n    background: white !important;\n    max-width: 100% !important;\n  }\n  .qr-section,\n  .barcode-section {\n    text-align: center !important;\n    page-break-inside: avoid;\n  }\n  table {\n    width: 100% !important;\n    border-collapse: collapse !important;\n  }\n  th,\n  td {\n    border: 1px solid #ddd !important;\n    padding: 8px !important;\n  }\n  h1,\n  h2,\n  h3,\n  h4,\n  h5,\n  h6 {\n    color: black !important;\n    page-break-after: avoid;\n  }\n  .status-badge {\n    border: 1px solid #000 !important;\n    background: white !important;\n    color: black !important;\n  }\n}\nbutton:focus,\na:focus {\n  outline: 2px solid #3b82f6;\n  outline-offset: 2px;\n}\n* {\n  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;\n}\n.asset-view {\n  scrollbar-width: thin;\n  scrollbar-color: #cbd5e1 #f1f5f9;\n}\n.asset-view::-webkit-scrollbar {\n  width: 6px;\n}\n.asset-view::-webkit-scrollbar-track {\n  background: #f1f5f9;\n  border-radius: 3px;\n}\n.asset-view::-webkit-scrollbar-thumb {\n  background: #cbd5e1;\n  border-radius: 3px;\n}\n.asset-view::-webkit-scrollbar-thumb:hover {\n  background: #94a3b8;\n}\n:host ::ng-deep .flatpickr-calendar {\n  border-radius: 0.5rem;\n  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);\n  border: 1px solid #e5e7eb;\n}\n:host ::ng-deep .flatpickr-day {\n  border-radius: 0.375rem;\n}\n:host ::ng-deep .flatpickr-day:hover {\n  background-color: #eff6ff;\n  border-color: #3b82f6;\n}\n:host ::ng-deep .flatpickr-day.selected {\n  background-color: #3b82f6;\n  border-color: #3b82f6;\n}\n:host ::ng-deep .flatpickr-day.today {\n  border-color: #3b82f6;\n  color: #3b82f6;\n}\n:host ::ng-deep .flatpickr-months {\n  background-color: #f8fafc;\n  border-radius: 0.5rem 0.5rem 0 0;\n}\n:host ::ng-deep .flatpickr-current-month {\n  color: #1f2937;\n  font-weight: 600;\n}\n:host ::ng-deep .flatpickr-weekday {\n  color: #6b7280;\n  font-weight: 500;\n}\n.value-display {\n  font-variant-numeric: tabular-nums;\n}\n.section-header {\n  border-bottom: 1px solid #f3f4f6;\n  padding-bottom: 0.75rem;\n  margin-bottom: 1rem;\n}\n.info-grid {\n  display: grid;\n  gap: 1.5rem;\n}\n@media (min-width: 768px) {\n  .info-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n.ai-section {\n  background:\n    linear-gradient(\n      135deg,\n      #faf5ff 0%,\n      #f3e8ff 100%);\n  border: 1px solid #e9d5ff;\n}\n.financial-section {\n  background:\n    linear-gradient(\n      135deg,\n      #f0fdf4 0%,\n      #dcfce7 100%);\n  border: 1px solid #bbf7d0;\n}\n.technical-section {\n  background:\n    linear-gradient(\n      135deg,\n      #eff6ff 0%,\n      #dbeafe 100%);\n  border: 1px solid #bfdbfe;\n}\n/*# sourceMappingURL=asset-view.component.css.map */\n"] }]
   }], () => [{ type: ActivatedRoute }, { type: Router }, { type: AssetService }, { type: Location }, { type: PdfExportService }, { type: FormBuilder }, { type: ChangeDetectorRef }], { dateInputs: [{
     type: ViewChildren,
@@ -36630,4 +36630,4 @@ chart.js/dist/chart.js:
    * Released under the MIT License
    *)
 */
-//# sourceMappingURL=chunk-GREL656P.js.map
+//# sourceMappingURL=chunk-KSVFWSET.js.map

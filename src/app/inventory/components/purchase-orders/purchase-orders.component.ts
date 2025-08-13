@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CreatePurchaseOrderModalComponent } from '../create-purchase-order-modal/create-purchase-order-modal.component';
@@ -13,11 +13,14 @@ import { InventoryAnalyticsService, PurchaseOrder, PurchaseOrdersResponse } from
   templateUrl: './purchase-orders.component.html',
   styleUrls: ['./purchase-orders.component.scss']
 })
-export class PurchaseOrdersComponent implements OnInit {
+export class PurchaseOrdersComponent implements OnInit, OnDestroy {
   showCreatePOModal = false;
   showViewPOModal = false;
   showReceiveItemsModal = false;
   selectedPurchaseOrder: PurchaseOrder | null = null;
+  
+  // Dropdown state
+  openDropdownId: number | null = null;
   
   // Data properties
   purchaseOrders: PurchaseOrder[] = [];
@@ -49,6 +52,97 @@ export class PurchaseOrdersComponent implements OnInit {
   ngOnInit(): void {
     this.loadPurchaseOrders();
     this.loadOverviewStats();
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', this.onDocumentClick.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('click', this.onDocumentClick.bind(this));
+  }
+
+  // Dropdown functionality
+  toggleDropdown(event: Event, poId?: number): void {
+    event.stopPropagation();
+    if (poId) {
+      this.openDropdownId = this.openDropdownId === poId ? null : poId;
+    }
+  }
+
+  onDocumentClick(event: Event): void {
+    if (!(event.target as Element).closest('.dropdown-container')) {
+      this.openDropdownId = null;
+    }
+  }
+
+  // New action methods
+  viewPurchaseOrder(po: PurchaseOrder): void {
+    this.openViewPOModal(po);
+    this.openDropdownId = null;
+  }
+
+  approvePurchaseOrder(po: PurchaseOrder): void {
+    console.log('Approving Purchase Order:', po.po_number);
+    
+    if (!po.id) {
+      this.error = 'Purchase Order ID is missing';
+      return;
+    }
+    
+    // Here you would call the API to approve the PO
+    this.inventoryService.updatePurchaseOrder(po.id, { status: 'approved' } as any).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          console.log('Purchase Order approved successfully');
+          this.loadPurchaseOrders();
+          this.loadOverviewStats();
+        } else {
+          this.error = 'Failed to approve purchase order';
+        }
+      },
+      error: (err: any) => {
+        this.error = 'Error approving purchase order: ' + err.message;
+      }
+    });
+    
+    this.openDropdownId = null;
+  }
+
+  sendEmail(po: PurchaseOrder): void {
+    console.log('Sending email for Purchase Order:', po.po_number);
+    
+    // Here you would implement email functionality
+    // This could open a modal to compose email or trigger an email service
+    alert(`Email functionality for PO ${po.po_number} would be implemented here.`);
+    
+    this.openDropdownId = null;
+  }
+
+  markAsOrdered(po: PurchaseOrder): void {
+    console.log('Marking Purchase Order as Ordered:', po.po_number);
+    
+    if (!po.id) {
+      this.error = 'Purchase Order ID is missing';
+      return;
+    }
+    
+    // Here you would call the API to mark the PO as ordered
+    this.inventoryService.updatePurchaseOrder(po.id, { status: 'ordered' } as any).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          console.log('Purchase Order marked as ordered successfully');
+          this.loadPurchaseOrders();
+          this.loadOverviewStats();
+        } else {
+          this.error = 'Failed to mark purchase order as ordered';
+        }
+      },
+      error: (err: any) => {
+        this.error = 'Error marking purchase order as ordered: ' + err.message;
+      }
+    });
+    
+    this.openDropdownId = null;
   }
 
   loadPurchaseOrders(): void {
@@ -205,17 +299,45 @@ export class PurchaseOrdersComponent implements OnInit {
     }
   }
 
-  formatCurrency(amount: number): string {
-    return `AED ${amount.toFixed(2)}`;
+  formatCurrency(amount: any): string {
+    // Convert to number and handle invalid values
+    const numAmount = Number(amount);
+    
+    // Check if it's a valid number
+    if (isNaN(numAmount) || !isFinite(numAmount)) {
+      return 'AED 0.00';
+    }
+    
+    return `AED ${numAmount.toFixed(2)}`;
   }
 
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString();
+  formatDate(dateString: any): string {
+    // Handle null, undefined, or invalid date strings
+    if (!dateString) {
+      return 'N/A';
+    }
+    
+    try {
+      const date = new Date(dateString);
+      
+      // Check if it's a valid date
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+      
+      return date.toLocaleDateString();
+    } catch (error) {
+      return 'Invalid Date';
+    }
   }
 
   calculateItemsTotal(items: any[]): number {
-    if (!items || items.length === 0) return 0;
-    return items.reduce((sum, item) => sum + (item.ordered_qty || 0), 0);
+    if (!items || !Array.isArray(items) || items.length === 0) return 0;
+    
+    return items.reduce((sum, item) => {
+      const qty = Number(item?.ordered_qty) || 0;
+      return sum + (isNaN(qty) ? 0 : qty);
+    }, 0);
   }
 
   getMinValue(a: number, b: number): number {

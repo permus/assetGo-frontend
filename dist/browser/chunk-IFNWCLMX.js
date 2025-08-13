@@ -193,7 +193,7 @@ var TeamDeleteConfirmationModalComponent = class _TeamDeleteConfirmationModalCom
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TeamDeleteConfirmationModalComponent, [{
     type: Component,
-    args: [{ selector: "app-team-delete-confirmation-modal", standalone: true, imports: [CommonModule, FormsModule], template: '<div class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50" (click)="onBackdropClick($event)">\n  <div class="relative mx-auto p-6  w-[500px] rounded-lg bg-white">\n    <div class="mt-3">\n      <!-- Header -->\n      <div class="flex items-center justify-between mb-6">\n        <div class="flex items-center">\n          <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">\n            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>\n          </svg>\n          <h3 class="text-xl font-semibold text-gray-900">Remove Team Member</h3>\n        </div>\n        <button\n          (click)="onClose()"\n          class="text-gray-400 hover:text-gray-600 focus:outline-none">\n          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">\n            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\n          </svg>\n        </button>\n      </div>\n\n      <!-- Deletion Reason Section -->\n      <div class="mb-6">\n        <label for="deleteReason" class="block text-sm font-medium text-gray-700 mb-2">\n          Deletion Reason (Optional)\n        </label>\n        <textarea\n          id="deleteReason"\n          [(ngModel)]="deleteReason"\n          rows="4"\n          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"\n          placeholder="Enter reason for removing this team member..."></textarea>\n        <p class="mt-1 text-xs text-gray-500">This will be recorded in the audit trail.</p>\n      </div>\n\n      <!-- Confirmation Section -->\n      <div class="text-center mb-6">\n        <!-- Large Trash Icon -->\n        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">\n          <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\n            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>\n          </svg>\n        </div>\n\n        <!-- Confirmation Question -->\n        <h3 class="text-lg font-medium text-gray-900 mb-2">\n          Are you sure you want to remove <strong>"{{ teamMember?.first_name }} {{ teamMember?.last_name }}"</strong>?\n        </h3>\n        \n        <!-- Warning Message -->\n        <p class="text-sm text-gray-600 mb-4">\n          This action cannot be undone. The team member will be permanently removed from the system.\n        </p>\n\n        <!-- Important Warning Box -->\n        <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-4">\n          <div class="flex items-center">\n            <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\n              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>\n            </svg>\n            <span class="text-sm font-medium text-red-800">\n              Warning: This action will permanently remove the team member and all associated data.\n            </span>\n          </div>\n        </div>\n      </div>\n\n      <!-- Actions -->\n      <div class="flex justify-end space-x-3">\n        <button\n          (click)="onClose()"\n          class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">\n          Cancel\n        </button>\n        <button\n          (click)="onConfirmDelete()"\n          class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">\n          Remove Member\n        </button>\n      </div>\n    </div>\n  </div>\n</div>\n', styles: ["/* src/app/teams/components/team-delete-confirmation-modal/team-delete-confirmation-modal.component.scss */\n.modal-backdrop {\n  -webkit-backdrop-filter: blur(4px);\n  backdrop-filter: blur(4px);\n}\n.modal-content {\n  animation: slideIn 0.3s ease-out;\n}\n@keyframes slideIn {\n  from {\n    opacity: 0;\n    transform: translateY(-20px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n/*# sourceMappingURL=team-delete-confirmation-modal.component.css.map */\n"] }]
+    args: [{ selector: "app-team-delete-confirmation-modal", standalone: true, imports: [CommonModule, FormsModule], template: '<div class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50" (click)="onBackdropClick($event)">\r\n  <div class="relative mx-auto p-6  w-[500px] rounded-lg bg-white">\r\n    <div class="mt-3">\r\n      <!-- Header -->\r\n      <div class="flex items-center justify-between mb-6">\r\n        <div class="flex items-center">\r\n          <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r\n            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>\r\n          </svg>\r\n          <h3 class="text-xl font-semibold text-gray-900">Remove Team Member</h3>\r\n        </div>\r\n        <button\r\n          (click)="onClose()"\r\n          class="text-gray-400 hover:text-gray-600 focus:outline-none">\r\n          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r\n            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\r\n          </svg>\r\n        </button>\r\n      </div>\r\n\r\n      <!-- Deletion Reason Section -->\r\n      <div class="mb-6">\r\n        <label for="deleteReason" class="block text-sm font-medium text-gray-700 mb-2">\r\n          Deletion Reason (Optional)\r\n        </label>\r\n        <textarea\r\n          id="deleteReason"\r\n          [(ngModel)]="deleteReason"\r\n          rows="4"\r\n          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"\r\n          placeholder="Enter reason for removing this team member..."></textarea>\r\n        <p class="mt-1 text-xs text-gray-500">This will be recorded in the audit trail.</p>\r\n      </div>\r\n\r\n      <!-- Confirmation Section -->\r\n      <div class="text-center mb-6">\r\n        <!-- Large Trash Icon -->\r\n        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">\r\n          <svg class="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r\n            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>\r\n          </svg>\r\n        </div>\r\n\r\n        <!-- Confirmation Question -->\r\n        <h3 class="text-lg font-medium text-gray-900 mb-2">\r\n          Are you sure you want to remove <strong>"{{ teamMember?.first_name }} {{ teamMember?.last_name }}"</strong>?\r\n        </h3>\r\n        \r\n        <!-- Warning Message -->\r\n        <p class="text-sm text-gray-600 mb-4">\r\n          This action cannot be undone. The team member will be permanently removed from the system.\r\n        </p>\r\n\r\n        <!-- Important Warning Box -->\r\n        <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-4">\r\n          <div class="flex items-center">\r\n            <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r\n              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>\r\n            </svg>\r\n            <span class="text-sm font-medium text-red-800">\r\n              Warning: This action will permanently remove the team member and all associated data.\r\n            </span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n      <!-- Actions -->\r\n      <div class="flex justify-end space-x-3">\r\n        <button\r\n          (click)="onClose()"\r\n          class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">\r\n          Cancel\r\n        </button>\r\n        <button\r\n          (click)="onConfirmDelete()"\r\n          class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">\r\n          Remove Member\r\n        </button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n', styles: ["/* src/app/teams/components/team-delete-confirmation-modal/team-delete-confirmation-modal.component.scss */\n.modal-backdrop {\n  -webkit-backdrop-filter: blur(4px);\n  backdrop-filter: blur(4px);\n}\n.modal-content {\n  animation: slideIn 0.3s ease-out;\n}\n@keyframes slideIn {\n  from {\n    opacity: 0;\n    transform: translateY(-20px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n/*# sourceMappingURL=team-delete-confirmation-modal.component.css.map */\n"] }]
   }], null, { teamMember: [{
     type: Input
   }], cancelled: [{
@@ -682,158 +682,158 @@ var TeamFormModalComponent = class _TeamFormModalComponent {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TeamFormModalComponent, [{
     type: Component,
-    args: [{ selector: "app-team-form-modal", standalone: true, imports: [CommonModule, ReactiveFormsModule, FormsModule], template: `<!-- Modal Backdrop -->
-<div class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50" (click)="onBackdropClick($event)">
-  <!-- Modal Content -->
-  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 transform transition-all">
-    <!-- Modal Header -->
-    <div class="px-6 py-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-900">
-          {{ isEditMode ? 'Edit Team Member' : 'Invite New Team Member' }}
-        </h3>
-        <button
-          (click)="onCancel()"
-          class="text-gray-400 hover:text-gray-600 transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Modal Body -->
-    <div class="px-6 py-4">
-      <form [formGroup]="teamMemberForm" (ngSubmit)="onSubmit()">
-        <!-- Error Message -->
-        <div *ngIf="error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <div class="flex">
-            <svg class="w-5 h-5 text-red-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <p class="ml-2 text-sm text-red-700">{{ error }}</p>
-          </div>
-        </div>
-
-        <!-- First Name -->
-        <div class="mb-4">
-          <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
-            First Name *
-          </label>
-          <input
-            id="first_name"
-            type="text"
-            formControlName="first_name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-            placeholder="Enter first name"
-            [class.border-red-300]="teamMemberForm.get('first_name')?.invalid && (teamMemberForm.get('first_name')?.dirty || teamMemberForm.get('first_name')?.touched)">
-          <p *ngIf="getFieldError('first_name')" class="mt-1 text-sm text-red-600">
-            {{ getFieldError('first_name') }}
-          </p>
-        </div>
-
-        <!-- Last Name -->
-        <div class="mb-4">
-          <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
-            Last Name *
-          </label>
-          <input
-            id="last_name"
-            type="text"
-            formControlName="last_name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-            placeholder="Enter last name"
-            [class.border-red-300]="teamMemberForm.get('last_name')?.invalid && (teamMemberForm.get('last_name')?.dirty || teamMemberForm.get('last_name')?.touched)">
-          <p *ngIf="getFieldError('last_name')" class="mt-1 text-sm text-red-600">
-            {{ getFieldError('last_name') }}
-          </p>
-        </div>
-
-        <!-- Email -->
-        <div class="mb-4">
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-            Email *
-          </label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-            placeholder="Enter email address"
-            [class.border-red-300]="teamMemberForm.get('email')?.invalid && (teamMemberForm.get('email')?.dirty || teamMemberForm.get('email')?.touched)">
-          <p *ngIf="getFieldError('email')" class="mt-1 text-sm text-red-600">
-            {{ getFieldError('email') }}
-          </p>
-        </div>
-
-        <!-- Team Role -->
-        <div class="mb-4">
-          <label for="role_id" class="block text-sm font-medium text-gray-700 mb-2">
-            Team Role *
-          </label>
-          <select
-            id="role_id"
-            formControlName="role_id"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-            [class.border-red-300]="teamMemberForm.get('role_id')?.invalid && (teamMemberForm.get('role_id')?.dirty || teamMemberForm.get('role_id')?.touched)">
-            <option value="">Select a role</option>
-            <option *ngFor="let role of availableRoles" [value]="role.id">
-              {{ role.name }}
-            </option>
-          </select>
-          <p *ngIf="getFieldError('role_id')" class="mt-1 text-sm text-red-600">
-            {{ getFieldError('role_id') }}
-          </p>
-          <p *ngIf="rolesError" class="mt-1 text-sm text-red-600">
-            {{ rolesError }}
-          </p>
-        </div>
-
-        <!-- Hourly Rate -->
-        <div class="mb-6">
-          <label for="hourly_rate" class="block text-sm font-medium text-gray-700 mb-2">
-            Hourly Rate (Optional)
-          </label>
-          <input
-            id="hourly_rate"
-            type="number"
-            formControlName="hourly_rate"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-            placeholder="Enter hourly rate"
-            min="0"
-            step="0.01"
-            [class.border-red-300]="teamMemberForm.get('hourly_rate')?.invalid && (teamMemberForm.get('hourly_rate')?.dirty || teamMemberForm.get('hourly_rate')?.touched)">
-          <p *ngIf="getFieldError('hourly_rate')" class="mt-1 text-sm text-red-600">
-            {{ getFieldError('hourly_rate') }}
-          </p>
-          <p class="mt-1 text-xs text-gray-500">
-            Optional hourly rate for this team member
-          </p>
-        </div>
-
-        <!-- Modal Actions -->
-        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-          <button
-            type="button"
-            (click)="onCancel()"
-            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-            Cancel
-          </button>
-          <button
-            type="submit"
-            [disabled]="teamMemberForm.invalid || loading"
-            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            <svg *ngIf="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            {{ isEditMode ? 'Update Team Member' : 'Send Invitation' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+    args: [{ selector: "app-team-form-modal", standalone: true, imports: [CommonModule, ReactiveFormsModule, FormsModule], template: `<!-- Modal Backdrop -->\r
+<div class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50" (click)="onBackdropClick($event)">\r
+  <!-- Modal Content -->\r
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 transform transition-all">\r
+    <!-- Modal Header -->\r
+    <div class="px-6 py-4 border-b border-gray-200">\r
+      <div class="flex items-center justify-between">\r
+        <h3 class="text-lg font-semibold text-gray-900">\r
+          {{ isEditMode ? 'Edit Team Member' : 'Invite New Team Member' }}\r
+        </h3>\r
+        <button\r
+          (click)="onCancel()"\r
+          class="text-gray-400 hover:text-gray-600 transition-colors">\r
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\r
+          </svg>\r
+        </button>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Modal Body -->\r
+    <div class="px-6 py-4">\r
+      <form [formGroup]="teamMemberForm" (ngSubmit)="onSubmit()">\r
+        <!-- Error Message -->\r
+        <div *ngIf="error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">\r
+          <div class="flex">\r
+            <svg class="w-5 h-5 text-red-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+            </svg>\r
+            <p class="ml-2 text-sm text-red-700">{{ error }}</p>\r
+          </div>\r
+        </div>\r
+\r
+        <!-- First Name -->\r
+        <div class="mb-4">\r
+          <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">\r
+            First Name *\r
+          </label>\r
+          <input\r
+            id="first_name"\r
+            type="text"\r
+            formControlName="first_name"\r
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"\r
+            placeholder="Enter first name"\r
+            [class.border-red-300]="teamMemberForm.get('first_name')?.invalid && (teamMemberForm.get('first_name')?.dirty || teamMemberForm.get('first_name')?.touched)">\r
+          <p *ngIf="getFieldError('first_name')" class="mt-1 text-sm text-red-600">\r
+            {{ getFieldError('first_name') }}\r
+          </p>\r
+        </div>\r
+\r
+        <!-- Last Name -->\r
+        <div class="mb-4">\r
+          <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">\r
+            Last Name *\r
+          </label>\r
+          <input\r
+            id="last_name"\r
+            type="text"\r
+            formControlName="last_name"\r
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"\r
+            placeholder="Enter last name"\r
+            [class.border-red-300]="teamMemberForm.get('last_name')?.invalid && (teamMemberForm.get('last_name')?.dirty || teamMemberForm.get('last_name')?.touched)">\r
+          <p *ngIf="getFieldError('last_name')" class="mt-1 text-sm text-red-600">\r
+            {{ getFieldError('last_name') }}\r
+          </p>\r
+        </div>\r
+\r
+        <!-- Email -->\r
+        <div class="mb-4">\r
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">\r
+            Email *\r
+          </label>\r
+          <input\r
+            id="email"\r
+            type="email"\r
+            formControlName="email"\r
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"\r
+            placeholder="Enter email address"\r
+            [class.border-red-300]="teamMemberForm.get('email')?.invalid && (teamMemberForm.get('email')?.dirty || teamMemberForm.get('email')?.touched)">\r
+          <p *ngIf="getFieldError('email')" class="mt-1 text-sm text-red-600">\r
+            {{ getFieldError('email') }}\r
+          </p>\r
+        </div>\r
+\r
+        <!-- Team Role -->\r
+        <div class="mb-4">\r
+          <label for="role_id" class="block text-sm font-medium text-gray-700 mb-2">\r
+            Team Role *\r
+          </label>\r
+          <select\r
+            id="role_id"\r
+            formControlName="role_id"\r
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"\r
+            [class.border-red-300]="teamMemberForm.get('role_id')?.invalid && (teamMemberForm.get('role_id')?.dirty || teamMemberForm.get('role_id')?.touched)">\r
+            <option value="">Select a role</option>\r
+            <option *ngFor="let role of availableRoles" [value]="role.id">\r
+              {{ role.name }}\r
+            </option>\r
+          </select>\r
+          <p *ngIf="getFieldError('role_id')" class="mt-1 text-sm text-red-600">\r
+            {{ getFieldError('role_id') }}\r
+          </p>\r
+          <p *ngIf="rolesError" class="mt-1 text-sm text-red-600">\r
+            {{ rolesError }}\r
+          </p>\r
+        </div>\r
+\r
+        <!-- Hourly Rate -->\r
+        <div class="mb-6">\r
+          <label for="hourly_rate" class="block text-sm font-medium text-gray-700 mb-2">\r
+            Hourly Rate (Optional)\r
+          </label>\r
+          <input\r
+            id="hourly_rate"\r
+            type="number"\r
+            formControlName="hourly_rate"\r
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"\r
+            placeholder="Enter hourly rate"\r
+            min="0"\r
+            step="0.01"\r
+            [class.border-red-300]="teamMemberForm.get('hourly_rate')?.invalid && (teamMemberForm.get('hourly_rate')?.dirty || teamMemberForm.get('hourly_rate')?.touched)">\r
+          <p *ngIf="getFieldError('hourly_rate')" class="mt-1 text-sm text-red-600">\r
+            {{ getFieldError('hourly_rate') }}\r
+          </p>\r
+          <p class="mt-1 text-xs text-gray-500">\r
+            Optional hourly rate for this team member\r
+          </p>\r
+        </div>\r
+\r
+        <!-- Modal Actions -->\r
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">\r
+          <button\r
+            type="button"\r
+            (click)="onCancel()"\r
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">\r
+            Cancel\r
+          </button>\r
+          <button\r
+            type="submit"\r
+            [disabled]="teamMemberForm.invalid || loading"\r
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">\r
+            <svg *ngIf="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24">\r
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\r
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\r
+            </svg>\r
+            {{ isEditMode ? 'Update Team Member' : 'Send Invitation' }}\r
+          </button>\r
+        </div>\r
+      </form>\r
+    </div>\r
+  </div>\r
+</div>\r
 `, styles: ["/* src/app/teams/components/team-form-modal/team-form-modal.component.scss */\n.modal-enter {\n  opacity: 0;\n  transform: scale(0.9);\n}\n.modal-enter-active {\n  opacity: 1;\n  transform: scale(1);\n  transition: opacity 0.2s ease-out, transform 0.2s ease-out;\n}\n.modal-exit {\n  opacity: 1;\n  transform: scale(1);\n}\n.modal-exit-active {\n  opacity: 0;\n  transform: scale(0.9);\n  transition: opacity 0.2s ease-in, transform 0.2s ease-in;\n}\n.backdrop-enter {\n  opacity: 0;\n}\n.backdrop-enter-active {\n  opacity: 1;\n  transition: opacity 0.2s ease-out;\n}\n.backdrop-exit {\n  opacity: 1;\n}\n.backdrop-exit-active {\n  opacity: 0;\n  transition: opacity 0.2s ease-in;\n}\ninput:focus,\ntextarea:focus {\n  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);\n}\nbutton:not(:disabled):hover {\n  transform: translateY(-1px);\n  transition: transform 0.1s ease-in-out;\n}\n@keyframes spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n.animate-spin {\n  animation: spin 1s linear infinite;\n}\n/*# sourceMappingURL=team-form-modal.component.css.map */\n"] }]
   }], () => [{ type: FormBuilder }, { type: TeamService }, { type: RoleService }], { teamMember: [{
     type: Input
@@ -1502,283 +1502,283 @@ var TeamListComponent = class _TeamListComponent {
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TeamListComponent, [{
     type: Component,
-    args: [{ selector: "app-team-list", standalone: true, imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent], template: `<div class="team-list-page min-h-screen bg-gray-50 p-6">
-  <!-- Page Title and Subtitle + Actions -->
-  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-900 mb-1">Team Members</h1>
-      <p class="text-gray-600 text-base">Manage your team members and their roles within your organization</p>
-    </div>
-    <div class="flex items-center space-x-3 mt-4 md:mt-0">
-      <button (click)="createTeamMember()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-        </svg>
-        Invite Team Member
-      </button>
-    </div>
-  </div>
-
-  <!-- Statistics Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" *ngIf="statistics">
-    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <div class="flex items-center">
-        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-          </svg>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Total Team Members</p>
-          <p class="text-2xl font-bold text-gray-900">{{ statistics.total_team_members }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <div class="flex items-center">
-        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Active Members</p>
-          <p class="text-2xl font-bold text-gray-900">{{ statistics.active_team_members }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <div class="flex items-center">
-        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-          <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Pending Invitations</p>
-          <p class="text-2xl font-bold text-gray-900">{{ statistics.pending_team_members }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Filters and View Type -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-    <!-- Left: Search and Filters -->
-    <div class="flex-1 flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:space-x-3">
-      <!-- Search -->
-      <div class="relative w-full md:w-80">
-        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-        <input
-          type="text"
-          placeholder="Search team members by name or email..."
-          class="w-full pl-10 pr-4 py-2 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-          [(ngModel)]="searchTerm"
-          (input)="onSearchChange()" />
-      </div>
-
-      <!-- Sort Dropdown -->
-      <div class="relative" (click)="$event.stopPropagation()">
-        <button
-          type="button"
-          (click)="toggleSortDropdown()"
-          class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all min-w-[180px]"
-          [class.border-blue-500]="showSortDropdown">
-          <div class="flex items-center justify-between">
-            <span class="text-sm">
-              {{ selectedSort ? 'Sort by: ' + selectedSort.label : 'Sort by' }}
-            </span>
-            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" 
-                 [class.rotate-180]="showSortDropdown"
-                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </div>
-        </button>
-
-        <!-- Sort Options Dropdown -->
-        <div *ngIf="showSortDropdown" 
-             class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-          <div class="py-1">
-            <div *ngFor="let sort of sortOptions" 
-                 (click)="selectSort(sort)"
-                 class="px-3 py-2 text-sm text-gray-900 hover:bg-blue-50 cursor-pointer transition-colors flex items-center justify-between"
-                 [class.bg-blue-100]="selectedSort?.value === sort.value">
-              <span>{{ sort.label }}</span>
-              <svg *ngIf="selectedSort?.value === sort.value" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sort Direction Toggle -->
-      <button
-        (click)="toggleSortDir()"
-        class="px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
-        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                [attr.d]="selectedSortDir === 'asc' ? 'M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4' : 'M17 8V4m0 0l4 4m-4-4l-4 4M7 16v4m0 0l-4-4m4 4l4-4'"></path>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="loading" class="flex justify-center items-center py-12">
-    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="error && !loading" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-    <div class="flex">
-      <svg class="w-5 h-5 text-red-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      <p class="ml-2 text-sm text-red-700">{{ error }}</p>
-    </div>
-  </div>
-
-  <!-- Team Members Cards -->
-  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div *ngFor="let teamMember of filteredTeamMembers" 
-         class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      
-      <!-- Card Header (Light Blue Background) -->
-      <div class="bg-blue-50 px-6 py-4 relative">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-            </div>
-            <div>
-              <span class="text-sm font-medium text-blue-600">
-                {{ teamMember.email_verified_at ? 'Active' : 'Pending' }}
-              </span>
-            </div>
-          </div>
-          
-          <!-- Options Menu -->
-          <div class="relative">
-            <button
-              (click)="toggleTeamMemberMenu(teamMember.id)"
-              class="text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-              </svg>
-            </button>
-            
-            <!-- Dropdown Menu -->
-            <div *ngIf="teamMember.showMenu" 
-                 class="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
-              <div class="py-1">
-                <!-- Edit Option -->
-                <button
-                  (click)="editTeamMember(teamMember)"
-                  class="flex items-center w-full px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <svg class="w-4 h-4 mr-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                  </svg>
-                  <span>Edit Member</span>
-                </button>
-                
-                <!-- Remove Option -->
-                <button
-                  (click)="deleteTeamMember(teamMember)"
-                  class="flex items-center w-full px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                  <svg class="w-4 h-4 mr-2.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                  </svg>
-                  <span>Remove Member</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card Body (White Background) -->
-      <div class="px-6 py-4">
-        <!-- Member Name -->
-        <h3 class="text-xl font-bold text-gray-900 mb-2">{{ getTeamMemberFullName(teamMember) }}</h3>
-        
-        <!-- Member Email -->
-        <p class="text-gray-600 mb-4">{{ teamMember.email }}</p>
-        
-        <!-- Role Information -->
-        <div class="flex items-center text-sm text-gray-500 mb-3" *ngIf="teamMember.role">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-          </svg>
-          <span>{{ teamMember.role.name }}</span>
-        </div>
-        
-        <!-- Separator Line -->
-        <hr class="my-3 border-gray-200">
-        
-        <!-- Hourly Rate -->
-        <div class="flex items-center text-sm text-gray-500 mb-2" *ngIf="teamMember.hourly_rate">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-          </svg>
-          <span>\${{ teamMember.hourly_rate }}/hour</span>
-        </div>
-        
-        <!-- Created Date -->
-        <div class="flex items-center text-sm text-gray-500">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-          <span>Created {{ teamMember.created_at | date:'MMM d, y' }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!loading && filteredTeamMembers.length === 0" class="text-center py-12">
-    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-    </svg>
-    <h3 class="mt-2 text-sm font-medium text-gray-900">No team members found</h3>
-    <p class="mt-1 text-sm text-gray-500">
-      {{ searchTerm ? 'Try adjusting your search terms.' : 'Get started by inviting your first team member.' }}
-    </p>
-    <div class="mt-6">
-      <button
-        (click)="createTeamMember()"
-        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-        </svg>
-        Invite Team Member
-      </button>
-    </div>
-  </div>
-
-  <!-- Modals -->
-  <app-team-delete-confirmation-modal
-    *ngIf="showDeleteModal"
-    [teamMember]="teamMemberToDelete"
-    (confirmed)="confirmDeleteTeamMember($event)"
-    (cancelled)="closeDeleteModal()">
-  </app-team-delete-confirmation-modal>
-
-  <app-team-form-modal
-    *ngIf="showFormModal"
-    [teamMember]="teamMemberToEdit"
-    [isEditMode]="isEditMode"
-    (teamMemberSaved)="onTeamMemberSaved($event)"
-    (cancelled)="closeFormModal()">
-  </app-team-form-modal>
-</div>
+    args: [{ selector: "app-team-list", standalone: true, imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent], template: `<div class="team-list-page min-h-screen bg-gray-50 p-6">\r
+  <!-- Page Title and Subtitle + Actions -->\r
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">\r
+    <div>\r
+      <h1 class="text-2xl font-bold text-gray-900 mb-1">Team Members</h1>\r
+      <p class="text-gray-600 text-base">Manage your team members and their roles within your organization</p>\r
+    </div>\r
+    <div class="flex items-center space-x-3 mt-4 md:mt-0">\r
+      <button (click)="createTeamMember()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer">\r
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>\r
+        </svg>\r
+        Invite Team Member\r
+      </button>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Statistics Cards -->\r
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" *ngIf="statistics">\r
+    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">\r
+      <div class="flex items-center">\r
+        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">\r
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>\r
+          </svg>\r
+        </div>\r
+        <div class="ml-4">\r
+          <p class="text-sm font-medium text-gray-600">Total Team Members</p>\r
+          <p class="text-2xl font-bold text-gray-900">{{ statistics.total_team_members }}</p>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">\r
+      <div class="flex items-center">\r
+        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">\r
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+          </svg>\r
+        </div>\r
+        <div class="ml-4">\r
+          <p class="text-sm font-medium text-gray-600">Active Members</p>\r
+          <p class="text-2xl font-bold text-gray-900">{{ statistics.active_team_members }}</p>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">\r
+      <div class="flex items-center">\r
+        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">\r
+          <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+          </svg>\r
+        </div>\r
+        <div class="ml-4">\r
+          <p class="text-sm font-medium text-gray-600">Pending Invitations</p>\r
+          <p class="text-2xl font-bold text-gray-900">{{ statistics.pending_team_members }}</p>\r
+        </div>\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Filters and View Type -->\r
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">\r
+    <!-- Left: Search and Filters -->\r
+    <div class="flex-1 flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:space-x-3">\r
+      <!-- Search -->\r
+      <div class="relative w-full md:w-80">\r
+        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>\r
+        </svg>\r
+        <input\r
+          type="text"\r
+          placeholder="Search team members by name or email..."\r
+          class="w-full pl-10 pr-4 py-2 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"\r
+          [(ngModel)]="searchTerm"\r
+          (input)="onSearchChange()" />\r
+      </div>\r
+\r
+      <!-- Sort Dropdown -->\r
+      <div class="relative" (click)="$event.stopPropagation()">\r
+        <button\r
+          type="button"\r
+          (click)="toggleSortDropdown()"\r
+          class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all min-w-[180px]"\r
+          [class.border-blue-500]="showSortDropdown">\r
+          <div class="flex items-center justify-between">\r
+            <span class="text-sm">\r
+              {{ selectedSort ? 'Sort by: ' + selectedSort.label : 'Sort by' }}\r
+            </span>\r
+            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" \r
+                 [class.rotate-180]="showSortDropdown"\r
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>\r
+            </svg>\r
+          </div>\r
+        </button>\r
+\r
+        <!-- Sort Options Dropdown -->\r
+        <div *ngIf="showSortDropdown" \r
+             class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">\r
+          <div class="py-1">\r
+            <div *ngFor="let sort of sortOptions" \r
+                 (click)="selectSort(sort)"\r
+                 class="px-3 py-2 text-sm text-gray-900 hover:bg-blue-50 cursor-pointer transition-colors flex items-center justify-between"\r
+                 [class.bg-blue-100]="selectedSort?.value === sort.value">\r
+              <span>{{ sort.label }}</span>\r
+              <svg *ngIf="selectedSort?.value === sort.value" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>\r
+              </svg>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Sort Direction Toggle -->\r
+      <button\r
+        (click)="toggleSortDir()"\r
+        class="px-3 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">\r
+        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" \r
+                [attr.d]="selectedSortDir === 'asc' ? 'M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4' : 'M17 8V4m0 0l4 4m-4-4l-4 4M7 16v4m0 0l-4-4m4 4l4-4'"></path>\r
+        </svg>\r
+      </button>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Loading State -->\r
+  <div *ngIf="loading" class="flex justify-center items-center py-12">\r
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>\r
+  </div>\r
+\r
+  <!-- Error State -->\r
+  <div *ngIf="error && !loading" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">\r
+    <div class="flex">\r
+      <svg class="w-5 h-5 text-red-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>\r
+      </svg>\r
+      <p class="ml-2 text-sm text-red-700">{{ error }}</p>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Team Members Cards -->\r
+  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">\r
+    <div *ngFor="let teamMember of filteredTeamMembers" \r
+         class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">\r
+      \r
+      <!-- Card Header (Light Blue Background) -->\r
+      <div class="bg-blue-50 px-6 py-4 relative">\r
+        <div class="flex items-center justify-between">\r
+          <div class="flex items-center">\r
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">\r
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>\r
+              </svg>\r
+            </div>\r
+            <div>\r
+              <span class="text-sm font-medium text-blue-600">\r
+                {{ teamMember.email_verified_at ? 'Active' : 'Pending' }}\r
+              </span>\r
+            </div>\r
+          </div>\r
+          \r
+          <!-- Options Menu -->\r
+          <div class="relative">\r
+            <button\r
+              (click)="toggleTeamMemberMenu(teamMember.id)"\r
+              class="text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">\r
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>\r
+              </svg>\r
+            </button>\r
+            \r
+            <!-- Dropdown Menu -->\r
+            <div *ngIf="teamMember.showMenu" \r
+                 class="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-20">\r
+              <div class="py-1">\r
+                <!-- Edit Option -->\r
+                <button\r
+                  (click)="editTeamMember(teamMember)"\r
+                  class="flex items-center w-full px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">\r
+                  <svg class="w-4 h-4 mr-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>\r
+                  </svg>\r
+                  <span>Edit Member</span>\r
+                </button>\r
+                \r
+                <!-- Remove Option -->\r
+                <button\r
+                  (click)="deleteTeamMember(teamMember)"\r
+                  class="flex items-center w-full px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">\r
+                  <svg class="w-4 h-4 mr-2.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>\r
+                  </svg>\r
+                  <span>Remove Member</span>\r
+                </button>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Card Body (White Background) -->\r
+      <div class="px-6 py-4">\r
+        <!-- Member Name -->\r
+        <h3 class="text-xl font-bold text-gray-900 mb-2">{{ getTeamMemberFullName(teamMember) }}</h3>\r
+        \r
+        <!-- Member Email -->\r
+        <p class="text-gray-600 mb-4">{{ teamMember.email }}</p>\r
+        \r
+        <!-- Role Information -->\r
+        <div class="flex items-center text-sm text-gray-500 mb-3" *ngIf="teamMember.role">\r
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>\r
+          </svg>\r
+          <span>{{ teamMember.role.name }}</span>\r
+        </div>\r
+        \r
+        <!-- Separator Line -->\r
+        <hr class="my-3 border-gray-200">\r
+        \r
+        <!-- Hourly Rate -->\r
+        <div class="flex items-center text-sm text-gray-500 mb-2" *ngIf="teamMember.hourly_rate">\r
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>\r
+          </svg>\r
+          <span>\${{ teamMember.hourly_rate }}/hour</span>\r
+        </div>\r
+        \r
+        <!-- Created Date -->\r
+        <div class="flex items-center text-sm text-gray-500">\r
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>\r
+          </svg>\r
+          <span>Created {{ teamMember.created_at | date:'MMM d, y' }}</span>\r
+        </div>\r
+      </div>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Empty State -->\r
+  <div *ngIf="!loading && filteredTeamMembers.length === 0" class="text-center py-12">\r
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>\r
+    </svg>\r
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No team members found</h3>\r
+    <p class="mt-1 text-sm text-gray-500">\r
+      {{ searchTerm ? 'Try adjusting your search terms.' : 'Get started by inviting your first team member.' }}\r
+    </p>\r
+    <div class="mt-6">\r
+      <button\r
+        (click)="createTeamMember()"\r
+        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">\r
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>\r
+        </svg>\r
+        Invite Team Member\r
+      </button>\r
+    </div>\r
+  </div>\r
+\r
+  <!-- Modals -->\r
+  <app-team-delete-confirmation-modal\r
+    *ngIf="showDeleteModal"\r
+    [teamMember]="teamMemberToDelete"\r
+    (confirmed)="confirmDeleteTeamMember($event)"\r
+    (cancelled)="closeDeleteModal()">\r
+  </app-team-delete-confirmation-modal>\r
+\r
+  <app-team-form-modal\r
+    *ngIf="showFormModal"\r
+    [teamMember]="teamMemberToEdit"\r
+    [isEditMode]="isEditMode"\r
+    (teamMemberSaved)="onTeamMemberSaved($event)"\r
+    (cancelled)="closeFormModal()">\r
+  </app-team-form-modal>\r
+</div>\r
 `, styles: ["/* src/app/teams/team-list/team-list.component.scss */\n.team-list-page .team-card {\n  border-radius: 1rem;\n  box-shadow: 0 2px 8px 0 rgba(16, 30, 54, 0.08);\n  overflow: hidden;\n  background: #fff;\n  border: 1px solid #bfdbfe;\n  display: flex;\n  flex-direction: column;\n  transition: box-shadow 0.2s;\n}\n.team-list-page .team-card hr {\n  margin-top: 0.75rem;\n  margin-bottom: 0.75rem;\n  border-color: #e5e7eb;\n}\n.team-list-page .team-card-header {\n  background: #e0edff;\n  height: 8rem;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  border-top-left-radius: 1rem;\n  border-top-right-radius: 1rem;\n  overflow: hidden;\n}\n.team-list-page .dropdown-enter {\n  opacity: 0;\n  transform: translateY(-10px);\n}\n.team-list-page .dropdown-enter-active {\n  opacity: 1;\n  transform: translateY(0);\n  transition: opacity 0.2s, transform 0.2s;\n}\n.team-list-page .dropdown-exit {\n  opacity: 1;\n  transform: translateY(0);\n}\n.team-list-page .dropdown-exit-active {\n  opacity: 0;\n  transform: translateY(-10px);\n  transition: opacity 0.2s, transform 0.2s;\n}\n.team-list-page .team-card:hover {\n  box-shadow: 0 4px 12px 0 rgba(16, 30, 54, 0.12);\n}\n.team-list-page .stat-card {\n  transition: transform 0.2s ease-in-out;\n}\n.team-list-page .stat-card:hover {\n  transform: translateY(-2px);\n}\n.team-list-page .search-input:focus {\n  border-color: #3b82f6;\n  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);\n}\n.team-list-page .btn-primary {\n  transition: all 0.2s ease-in-out;\n}\n.team-list-page .btn-primary:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);\n}\n.team-list-page .table-row:hover {\n  background-color: #f9fafb;\n}\n.team-list-page .loading-spinner {\n  animation: spin 1s linear infinite;\n}\n@keyframes spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n@media (max-width: 768px) {\n  .team-list-page .grid {\n    grid-template-columns: 1fr;\n  }\n  .team-list-page .statistics-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media (max-width: 640px) {\n  .team-list-page .statistics-grid {\n    grid-template-columns: 1fr;\n  }\n}\n/*# sourceMappingURL=team-list.component.css.map */\n"] }]
   }], () => [{ type: TeamService }], { onDocumentClick: [{
     type: HostListener,
@@ -1847,4 +1847,4 @@ var TeamsModule = class _TeamsModule {
 export {
   TeamsModule
 };
-//# sourceMappingURL=chunk-FLULB3QS.js.map
+//# sourceMappingURL=chunk-IFNWCLMX.js.map

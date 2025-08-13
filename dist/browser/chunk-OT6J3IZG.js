@@ -1,6 +1,6 @@
 import {
   InventoryAnalyticsService
-} from "./chunk-AUIJHXYG.js";
+} from "./chunk-ESHGZUZD.js";
 import {
   DefaultValueAccessor,
   FormArrayName,
@@ -37,6 +37,7 @@ import {
   setClassMetadata,
   ɵsetClassDebugInfo,
   ɵɵadvance,
+  ɵɵclassProp,
   ɵɵdefineComponent,
   ɵɵdirectiveInject,
   ɵɵelement,
@@ -50,6 +51,7 @@ import {
   ɵɵpipe,
   ɵɵpipeBind2,
   ɵɵproperty,
+  ɵɵpureFunction0,
   ɵɵresetView,
   ɵɵrestoreView,
   ɵɵtemplate,
@@ -1690,60 +1692,115 @@ var CreatePurchaseOrderModalComponent = class _CreatePurchaseOrderModalComponent
 })();
 
 // src/app/inventory/components/view-purchase-order-modal/view-purchase-order-modal.component.ts
+var _c0 = () => [];
+function ViewPurchaseOrderModalComponent_div_76_tr_17_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "tr")(1, "td", 37);
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "td", 38);
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "td", 39);
+    \u0275\u0275text(6);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "td", 40);
+    \u0275\u0275text(8);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(9, "td", 41);
+    \u0275\u0275text(10);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(11, "td", 42);
+    \u0275\u0275text(12);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const item_r1 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate((item_r1 == null ? null : item_r1.part == null ? null : item_r1.part.name) || (item_r1 == null ? null : item_r1.part_number) || "N/A");
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate((item_r1 == null ? null : item_r1.part_number) || "N/A");
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate((item_r1 == null ? null : item_r1.description) || "No description");
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate((item_r1 == null ? null : item_r1.ordered_qty) || 0);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.formatCurrency(item_r1 == null ? null : item_r1.unit_cost));
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.formatCurrency(((item_r1 == null ? null : item_r1.ordered_qty) || 0) * ((item_r1 == null ? null : item_r1.unit_cost) || 0)));
+  }
+}
+function ViewPurchaseOrderModalComponent_div_76_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 34)(1, "table", 35)(2, "thead")(3, "tr")(4, "th");
+    \u0275\u0275text(5, "Item");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "th");
+    \u0275\u0275text(7, "Part Number");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(8, "th");
+    \u0275\u0275text(9, "Description");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(10, "th");
+    \u0275\u0275text(11, "Quantity");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(12, "th");
+    \u0275\u0275text(13, "Unit Cost");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(14, "th");
+    \u0275\u0275text(15, "Total");
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(16, "tbody");
+    \u0275\u0275template(17, ViewPurchaseOrderModalComponent_div_76_tr_17_Template, 13, 6, "tr", 36);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(17);
+    \u0275\u0275property("ngForOf", (ctx_r1.purchaseOrder == null ? null : ctx_r1.purchaseOrder.items) || \u0275\u0275pureFunction0(1, _c0));
+  }
+}
+function ViewPurchaseOrderModalComponent_div_77_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 43);
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(1, "svg", 44);
+    \u0275\u0275element(2, "path", 45);
+    \u0275\u0275elementEnd();
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(3, "p");
+    \u0275\u0275text(4, "No items in this purchase order");
+    \u0275\u0275elementEnd()();
+  }
+}
+function ViewPurchaseOrderModalComponent_button_106_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 46);
+    \u0275\u0275listener("click", function ViewPurchaseOrderModalComponent_button_106_Template_button_click_0_listener() {
+      \u0275\u0275restoreView(_r3);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.onEdit());
+    });
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(1, "svg", 47);
+    \u0275\u0275element(2, "path", 48);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(3, " Edit Purchase Order ");
+    \u0275\u0275elementEnd();
+  }
+}
 var ViewPurchaseOrderModalComponent = class _ViewPurchaseOrderModalComponent {
-  inventoryService;
   purchaseOrder = null;
   closeModal = new EventEmitter();
   purchaseOrderUpdated = new EventEmitter();
-  isEditing = false;
-  loading = false;
-  error = null;
-  constructor(inventoryService) {
-    this.inventoryService = inventoryService;
+  // Safe getters for template use
+  get hasItems() {
+    return !!(this.purchaseOrder?.items && this.purchaseOrder.items.length > 0);
   }
-  toggleEdit() {
-    this.isEditing = !this.isEditing;
-  }
-  onUpdate(updatedData) {
-    if (!this.purchaseOrder?.id)
-      return;
-    this.loading = true;
-    this.error = null;
-    this.inventoryService.updatePurchaseOrder(this.purchaseOrder.id, updatedData).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.purchaseOrderUpdated.emit(response.data);
-          this.isEditing = false;
-        } else {
-          this.error = "Failed to update purchase order";
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = "Error updating purchase order: " + err.message;
-        this.loading = false;
-      }
-    });
-  }
-  onDelete() {
-    if (!this.purchaseOrder?.id)
-      return;
-    if (confirm("Are you sure you want to delete this purchase order? This action cannot be undone.")) {
-      this.loading = true;
-      this.error = null;
-      this.inventoryService.deletePurchaseOrder(this.purchaseOrder.id).subscribe({
-        next: () => {
-          this.closeModal.emit();
-        },
-        error: (err) => {
-          this.error = "Error deleting purchase order: " + err.message;
-          this.loading = false;
-        }
-      });
-    }
-  }
-  onClose() {
-    this.closeModal.emit();
+  get itemsCount() {
+    return this.purchaseOrder?.items?.length || 0;
   }
   getStatusClass(status) {
     switch (status) {
@@ -1786,28 +1843,399 @@ var ViewPurchaseOrderModalComponent = class _ViewPurchaseOrderModalComponent {
     }
   }
   formatCurrency(amount) {
-    return `AED ${amount.toFixed(2)}`;
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || !isFinite(numAmount)) {
+      return "AED 0.00";
+    }
+    return `AED ${numAmount.toFixed(2)}`;
   }
   formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString();
+    if (!dateString) {
+      return "N/A";
+    }
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return "Invalid Date";
+      }
+      return date.toLocaleDateString();
+    } catch (error) {
+      return "Invalid Date";
+    }
   }
-  canEdit() {
-    return this.purchaseOrder?.status === "draft";
+  calculateItemsTotal(items) {
+    if (!items || !Array.isArray(items) || items.length === 0)
+      return 0;
+    return items.reduce((sum, item) => {
+      const qty = Number(item?.ordered_qty) || 0;
+      return sum + (isNaN(qty) ? 0 : qty);
+    }, 0);
   }
-  canDelete() {
-    return this.purchaseOrder?.status === "draft";
+  calculateTotalValue(items) {
+    if (!items || !Array.isArray(items) || items.length === 0)
+      return 0;
+    return items.reduce((sum, item) => {
+      const qty = Number(item?.ordered_qty) || 0;
+      const price = Number(item?.unit_price) || 0;
+      return sum + qty * price;
+    }, 0);
+  }
+  onClose() {
+    this.closeModal.emit();
+  }
+  onEdit() {
+    if (this.purchaseOrder) {
+      this.purchaseOrderUpdated.emit(this.purchaseOrder);
+    }
+    this.onClose();
   }
   static \u0275fac = function ViewPurchaseOrderModalComponent_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _ViewPurchaseOrderModalComponent)(\u0275\u0275directiveInject(InventoryAnalyticsService));
+    return new (__ngFactoryType__ || _ViewPurchaseOrderModalComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ViewPurchaseOrderModalComponent, selectors: [["app-view-purchase-order-modal"]], inputs: { purchaseOrder: "purchaseOrder" }, outputs: { closeModal: "closeModal", purchaseOrderUpdated: "purchaseOrderUpdated" }, decls: 0, vars: 0, template: function ViewPurchaseOrderModalComponent_Template(rf, ctx) {
-  }, dependencies: [CommonModule, FormsModule], encapsulation: 2 });
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ViewPurchaseOrderModalComponent, selectors: [["app-view-purchase-order-modal"]], inputs: { purchaseOrder: "purchaseOrder" }, outputs: { closeModal: "closeModal", purchaseOrderUpdated: "purchaseOrderUpdated" }, decls: 107, vars: 23, consts: [[1, "modal-overlay", 3, "click"], [1, "modal-content", 3, "click"], [1, "modal-header"], [1, "header-content"], [1, "modal-title"], [1, "po-number"], [1, "close-button", 3, "click"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-5", "h-5"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M6 18L18 6M6 6l12 12"], [1, "modal-body"], [1, "info-section"], [1, "section-header"], [1, "info-grid"], [1, "info-item"], [1, "status-badge", 3, "ngClass"], [1, "total-value"], [1, "supplier-info"], [1, "supplier-card"], [1, "supplier-header"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"], [1, "supplier-details"], [1, "supplier-name"], [1, "supplier-id"], [1, "supplier-contact"], [1, "contact-item"], [1, "items-summary"], ["class", "items-table-container", 4, "ngIf"], ["class", "no-items", 4, "ngIf"], [1, "additional-info"], [1, "notes"], [1, "terms"], [1, "modal-footer"], [1, "btn", "btn-secondary", 3, "click"], ["class", "btn btn-primary", 3, "click", 4, "ngIf"], [1, "items-table-container"], [1, "items-table"], [4, "ngFor", "ngForOf"], [1, "item-name"], [1, "part-number"], [1, "description"], [1, "quantity"], [1, "unit-cost"], [1, "item-total"], [1, "no-items"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-12", "h-12"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"], [1, "btn", "btn-primary", 3, "click"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-4", "h-4"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"]], template: function ViewPurchaseOrderModalComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "div", 0);
+      \u0275\u0275listener("click", function ViewPurchaseOrderModalComponent_Template_div_click_0_listener() {
+        return ctx.onClose();
+      });
+      \u0275\u0275elementStart(1, "div", 1);
+      \u0275\u0275listener("click", function ViewPurchaseOrderModalComponent_Template_div_click_1_listener($event) {
+        return $event.stopPropagation();
+      });
+      \u0275\u0275elementStart(2, "div", 2)(3, "div", 3)(4, "h2", 4);
+      \u0275\u0275text(5, "Purchase Order Details");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(6, "div", 5);
+      \u0275\u0275text(7);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(8, "button", 6);
+      \u0275\u0275listener("click", function ViewPurchaseOrderModalComponent_Template_button_click_8_listener() {
+        return ctx.onClose();
+      });
+      \u0275\u0275namespaceSVG();
+      \u0275\u0275elementStart(9, "svg", 7);
+      \u0275\u0275element(10, "path", 8);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275namespaceHTML();
+      \u0275\u0275elementStart(11, "div", 9)(12, "div", 10)(13, "div", 11)(14, "h3");
+      \u0275\u0275text(15, "Basic Information");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(16, "div", 12)(17, "div", 13)(18, "label");
+      \u0275\u0275text(19, "Status");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(20, "span", 14);
+      \u0275\u0275text(21);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(22, "div", 13)(23, "label");
+      \u0275\u0275text(24, "Order Date");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(25, "span");
+      \u0275\u0275text(26);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(27, "div", 13)(28, "label");
+      \u0275\u0275text(29, "Expected Date");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(30, "span");
+      \u0275\u0275text(31);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(32, "div", 13)(33, "label");
+      \u0275\u0275text(34, "Total Value");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(35, "span", 15);
+      \u0275\u0275text(36);
+      \u0275\u0275elementEnd()()()();
+      \u0275\u0275elementStart(37, "div", 10)(38, "div", 11)(39, "h3");
+      \u0275\u0275text(40, "Supplier Details");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(41, "div", 16)(42, "div", 17)(43, "div", 18);
+      \u0275\u0275namespaceSVG();
+      \u0275\u0275elementStart(44, "svg", 7);
+      \u0275\u0275element(45, "path", 19);
+      \u0275\u0275elementEnd();
+      \u0275\u0275namespaceHTML();
+      \u0275\u0275elementStart(46, "div", 20)(47, "div", 21);
+      \u0275\u0275text(48);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(49, "div", 22);
+      \u0275\u0275text(50);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(51, "div", 23)(52, "div", 24)(53, "label");
+      \u0275\u0275text(54, "Email:");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(55, "span");
+      \u0275\u0275text(56);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(57, "div", 24)(58, "label");
+      \u0275\u0275text(59, "Phone:");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(60, "span");
+      \u0275\u0275text(61);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(62, "div", 24)(63, "label");
+      \u0275\u0275text(64, "Address:");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(65, "span");
+      \u0275\u0275text(66);
+      \u0275\u0275elementEnd()()()()()();
+      \u0275\u0275elementStart(67, "div", 10)(68, "div", 11)(69, "h3");
+      \u0275\u0275text(70);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(71, "div", 25)(72, "span");
+      \u0275\u0275text(73);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(74, "span");
+      \u0275\u0275text(75);
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275template(76, ViewPurchaseOrderModalComponent_div_76_Template, 18, 2, "div", 26)(77, ViewPurchaseOrderModalComponent_div_77_Template, 5, 0, "div", 27);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(78, "div", 10)(79, "div", 11)(80, "h3");
+      \u0275\u0275text(81, "Additional Information");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(82, "div", 28)(83, "div", 13)(84, "label");
+      \u0275\u0275text(85, "Notes");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(86, "span", 29);
+      \u0275\u0275text(87);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(88, "div", 13)(89, "label");
+      \u0275\u0275text(90, "Terms & Conditions");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(91, "span", 30);
+      \u0275\u0275text(92);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(93, "div", 13)(94, "label");
+      \u0275\u0275text(95, "Created By");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(96, "span");
+      \u0275\u0275text(97);
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(98, "div", 13)(99, "label");
+      \u0275\u0275text(100, "Created Date");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(101, "span");
+      \u0275\u0275text(102);
+      \u0275\u0275elementEnd()()()()();
+      \u0275\u0275elementStart(103, "div", 31)(104, "button", 32);
+      \u0275\u0275listener("click", function ViewPurchaseOrderModalComponent_Template_button_click_104_listener() {
+        return ctx.onClose();
+      });
+      \u0275\u0275text(105, " Close ");
+      \u0275\u0275elementEnd();
+      \u0275\u0275template(106, ViewPurchaseOrderModalComponent_button_106_Template, 4, 0, "button", 33);
+      \u0275\u0275elementEnd()()();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance(7);
+      \u0275\u0275textInterpolate1("PO-", ctx.purchaseOrder == null ? null : ctx.purchaseOrder.po_number, "");
+      \u0275\u0275advance(13);
+      \u0275\u0275property("ngClass", ctx.getStatusClass((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.status) || ""));
+      \u0275\u0275advance();
+      \u0275\u0275textInterpolate1(" ", ctx.getStatusLabel((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.status) || ""), " ");
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate(ctx.formatDate(ctx.purchaseOrder == null ? null : ctx.purchaseOrder.order_date));
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate(ctx.formatDate(ctx.purchaseOrder == null ? null : ctx.purchaseOrder.expected_date));
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate(ctx.formatCurrency(ctx.purchaseOrder == null ? null : ctx.purchaseOrder.total));
+      \u0275\u0275advance(12);
+      \u0275\u0275textInterpolate((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.supplier == null ? null : ctx.purchaseOrder.supplier.name) || "Unknown Supplier");
+      \u0275\u0275advance(2);
+      \u0275\u0275textInterpolate1("ID: ", ctx.purchaseOrder == null ? null : ctx.purchaseOrder.supplier_id, "");
+      \u0275\u0275advance(6);
+      \u0275\u0275textInterpolate((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.supplier == null ? null : ctx.purchaseOrder.supplier.email) || "N/A");
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.supplier == null ? null : ctx.purchaseOrder.supplier.phone) || "N/A");
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.supplier == null ? null : ctx.purchaseOrder.supplier.address) || "N/A");
+      \u0275\u0275advance(4);
+      \u0275\u0275textInterpolate1("Order Items (", ctx.itemsCount, ")");
+      \u0275\u0275advance(3);
+      \u0275\u0275textInterpolate1("Total Quantity: ", ctx.calculateItemsTotal((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.items) || \u0275\u0275pureFunction0(21, _c0)), "");
+      \u0275\u0275advance(2);
+      \u0275\u0275textInterpolate1("Total Value: ", ctx.formatCurrency(ctx.calculateTotalValue((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.items) || \u0275\u0275pureFunction0(22, _c0))), "");
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", ctx.hasItems);
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", !ctx.hasItems);
+      \u0275\u0275advance(10);
+      \u0275\u0275textInterpolate((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.notes) || "No notes available");
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.terms) || "Standard terms apply");
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate((ctx.purchaseOrder == null ? null : ctx.purchaseOrder.created_by) || "System");
+      \u0275\u0275advance(5);
+      \u0275\u0275textInterpolate(ctx.formatDate(ctx.purchaseOrder == null ? null : ctx.purchaseOrder.created_at));
+      \u0275\u0275advance(4);
+      \u0275\u0275property("ngIf", (ctx.purchaseOrder == null ? null : ctx.purchaseOrder.status) === "draft");
+    }
+  }, dependencies: [CommonModule, NgClass, NgForOf, NgIf], styles: ['\n\n.modal-overlay[_ngcontent-%COMP%] {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 1000;\n  padding: 1rem;\n}\n.modal-content[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);\n  max-width: 900px;\n  width: 100%;\n  max-height: 90vh;\n  overflow-y: auto;\n  display: flex;\n  flex-direction: column;\n}\n.modal-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  padding: 1.5rem 1.5rem 1rem 1.5rem;\n  border-bottom: 1px solid #e5e7eb;\n}\n.modal-header[_ngcontent-%COMP%]   .header-content[_ngcontent-%COMP%] {\n  flex: 1;\n}\n.modal-header[_ngcontent-%COMP%]   .header-content[_ngcontent-%COMP%]   .modal-title[_ngcontent-%COMP%] {\n  font-size: 1.5rem;\n  font-weight: 700;\n  color: #111827;\n  margin: 0 0 0.5rem 0;\n}\n.modal-header[_ngcontent-%COMP%]   .header-content[_ngcontent-%COMP%]   .po-number[_ngcontent-%COMP%] {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #3b82f6;\n  font-family: "Courier New", monospace;\n}\n.modal-header[_ngcontent-%COMP%]   .close-button[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  background: none;\n  color: #6b7280;\n  cursor: pointer;\n  border-radius: 0.375rem;\n  transition: all 0.2s;\n}\n.modal-header[_ngcontent-%COMP%]   .close-button[_ngcontent-%COMP%]:hover {\n  background-color: #f3f4f6;\n  color: #374151;\n}\n.modal-body[_ngcontent-%COMP%] {\n  flex: 1;\n  padding: 1.5rem;\n  overflow-y: auto;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%] {\n  margin-bottom: 2rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]:last-child {\n  margin-bottom: 0;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .section-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 1rem;\n  padding-bottom: 0.75rem;\n  border-bottom: 2px solid #f3f4f6;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .section-header[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #111827;\n  margin: 0;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .section-header[_ngcontent-%COMP%]   .items-summary[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  font-size: 0.875rem;\n  color: #6b7280;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .section-header[_ngcontent-%COMP%]   .items-summary[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-weight: 500;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n  gap: 1rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 0.25rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  font-weight: 500;\n  color: #6b7280;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 1rem;\n  color: #111827;\n  font-weight: 500;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   span.total-value[_ngcontent-%COMP%] {\n  font-weight: 700;\n  color: #10b981;\n  font-size: 1.125rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   .status-badge[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  padding: 0.25rem 0.75rem;\n  border-radius: 9999px;\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-transform: capitalize;\n  width: fit-content;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   .status-badge.status-draft[_ngcontent-%COMP%] {\n  background-color: #f3f4f6;\n  color: #374151;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   .status-badge.status-pending[_ngcontent-%COMP%] {\n  background-color: #fef3c7;\n  color: #92400e;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   .status-badge.status-approved[_ngcontent-%COMP%] {\n  background-color: #d1fae5;\n  color: #065f46;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   .status-badge.status-ordered[_ngcontent-%COMP%] {\n  background-color: #dbeafe;\n  color: #1e40af;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   .status-badge.status-rejected[_ngcontent-%COMP%] {\n  background-color: #fee2e2;\n  color: #991b1b;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   .status-badge.status-closed[_ngcontent-%COMP%] {\n  background-color: #e5e7eb;\n  color: #374151;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   .status-badge.status-cancelled[_ngcontent-%COMP%] {\n  background-color: #fef2f2;\n  color: #7f1d1d;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%] {\n  background-color: #f9fafb;\n  border: 1px solid #e5e7eb;\n  border-radius: 0.5rem;\n  padding: 1rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-header[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  margin-bottom: 1rem;\n  padding-bottom: 0.75rem;\n  border-bottom: 1px solid #e5e7eb;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-header[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  color: #6b7280;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-header[_ngcontent-%COMP%]   .supplier-details[_ngcontent-%COMP%]   .supplier-name[_ngcontent-%COMP%] {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #111827;\n  margin-bottom: 0.25rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-header[_ngcontent-%COMP%]   .supplier-details[_ngcontent-%COMP%]   .supplier-id[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  color: #6b7280;\n  font-family: "Courier New", monospace;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-contact[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n  gap: 0.75rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-contact[_ngcontent-%COMP%]   .contact-item[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 0.25rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-contact[_ngcontent-%COMP%]   .contact-item[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 0.75rem;\n  font-weight: 500;\n  color: #6b7280;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-contact[_ngcontent-%COMP%]   .contact-item[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  color: #111827;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%] {\n  overflow-x: auto;\n  border: 1px solid #e5e7eb;\n  border-radius: 0.5rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%] {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 0.875rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%] {\n  background-color: #f9fafb;\n  border-bottom: 1px solid #e5e7eb;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th[_ngcontent-%COMP%] {\n  padding: 0.75rem;\n  text-align: left;\n  font-weight: 600;\n  color: #374151;\n  white-space: nowrap;\n  border-bottom: 1px solid #e5e7eb;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%] {\n  border-bottom: 1px solid #f3f4f6;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]:last-child {\n  border-bottom: none;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]:hover {\n  background-color: #f9fafb;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td[_ngcontent-%COMP%] {\n  padding: 0.75rem;\n  color: #111827;\n  vertical-align: top;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.item-name[_ngcontent-%COMP%] {\n  font-weight: 600;\n  color: #3b82f6;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.part-number[_ngcontent-%COMP%] {\n  font-family: "Courier New", monospace;\n  color: #6b7280;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.description[_ngcontent-%COMP%] {\n  max-width: 200px;\n  color: #6b7280;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.quantity[_ngcontent-%COMP%] {\n  font-weight: 500;\n  text-align: center;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.unit-price[_ngcontent-%COMP%] {\n  font-weight: 500;\n  text-align: right;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.item-total[_ngcontent-%COMP%] {\n  font-weight: 600;\n  color: #10b981;\n  text-align: right;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .no-items[_ngcontent-%COMP%] {\n  text-align: center;\n  padding: 2rem;\n  color: #6b7280;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .no-items[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  color: #d1d5db;\n  margin: 0 auto 1rem auto;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .no-items[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 1rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .additional-info[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .additional-info[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 0.25rem;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .additional-info[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 0.875rem;\n  font-weight: 500;\n  color: #6b7280;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .additional-info[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 1rem;\n  color: #111827;\n  font-weight: 500;\n}\n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .additional-info[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   span.notes[_ngcontent-%COMP%], \n.modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .additional-info[_ngcontent-%COMP%]   .info-item[_ngcontent-%COMP%]   span.terms[_ngcontent-%COMP%] {\n  color: #6b7280;\n  font-style: italic;\n}\n.modal-footer[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: flex-end;\n  gap: 1rem;\n  padding: 1rem 1.5rem 1.5rem 1.5rem;\n  border-top: 1px solid #e5e7eb;\n  background-color: #f9fafb;\n}\n.modal-footer[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n  border: none;\n  white-space: nowrap;\n}\n.modal-footer[_ngcontent-%COMP%]   .btn.btn-secondary[_ngcontent-%COMP%] {\n  background-color: white;\n  color: #374151;\n  border: 1px solid #d1d5db;\n}\n.modal-footer[_ngcontent-%COMP%]   .btn.btn-secondary[_ngcontent-%COMP%]:hover {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.modal-footer[_ngcontent-%COMP%]   .btn.btn-primary[_ngcontent-%COMP%] {\n  background-color: #3b82f6;\n  color: white;\n}\n.modal-footer[_ngcontent-%COMP%]   .btn.btn-primary[_ngcontent-%COMP%]:hover {\n  background-color: #2563eb;\n}\n.modal-footer[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 1rem;\n  height: 1rem;\n}\n@media (max-width: 768px) {\n  .modal-content[_ngcontent-%COMP%] {\n    max-width: 95vw;\n    margin: 0.5rem;\n  }\n  .modal-header[_ngcontent-%COMP%] {\n    padding: 1rem;\n  }\n  .modal-header[_ngcontent-%COMP%]   .header-content[_ngcontent-%COMP%]   .modal-title[_ngcontent-%COMP%] {\n    font-size: 1.25rem;\n  }\n  .modal-header[_ngcontent-%COMP%]   .header-content[_ngcontent-%COMP%]   .po-number[_ngcontent-%COMP%] {\n    font-size: 1rem;\n  }\n  .modal-body[_ngcontent-%COMP%] {\n    padding: 1rem;\n  }\n  .modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .section-header[_ngcontent-%COMP%] {\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 0.5rem;\n  }\n  .modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .section-header[_ngcontent-%COMP%]   .items-summary[_ngcontent-%COMP%] {\n    flex-direction: column;\n    gap: 0.25rem;\n  }\n  .modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .info-grid[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-card[_ngcontent-%COMP%]   .supplier-contact[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%] {\n    font-size: 0.75rem;\n  }\n  .modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th[_ngcontent-%COMP%], \n   .modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .items-table-container[_ngcontent-%COMP%]   .items-table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   td[_ngcontent-%COMP%] {\n    padding: 0.5rem;\n  }\n  .modal-body[_ngcontent-%COMP%]   .info-section[_ngcontent-%COMP%]   .additional-info[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .modal-footer[_ngcontent-%COMP%] {\n    padding: 1rem;\n    flex-direction: column;\n  }\n  .modal-footer[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n    width: 100%;\n    justify-content: center;\n  }\n}\n@media (max-width: 480px) {\n  .modal-overlay[_ngcontent-%COMP%] {\n    padding: 0.5rem;\n  }\n  .modal-content[_ngcontent-%COMP%] {\n    max-width: 100vw;\n    margin: 0;\n    border-radius: 0;\n    max-height: 100vh;\n  }\n  .modal-header[_ngcontent-%COMP%] {\n    border-radius: 0;\n  }\n  .modal-footer[_ngcontent-%COMP%] {\n    border-radius: 0;\n  }\n}\n/*# sourceMappingURL=view-purchase-order-modal.component.css.map */'] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ViewPurchaseOrderModalComponent, [{
     type: Component,
-    args: [{ selector: "app-view-purchase-order-modal", standalone: true, imports: [CommonModule, FormsModule], template: "" }]
-  }], () => [{ type: InventoryAnalyticsService }], { purchaseOrder: [{
+    args: [{ selector: "app-view-purchase-order-modal", standalone: true, imports: [CommonModule], template: `<div class="modal-overlay" (click)="onClose()">\r
+  <div class="modal-content" (click)="$event.stopPropagation()">\r
+    <!-- Modal Header -->\r
+    <div class="modal-header">\r
+      <div class="header-content">\r
+        <h2 class="modal-title">Purchase Order Details</h2>\r
+        <div class="po-number">PO-{{ purchaseOrder?.po_number }}</div>\r
+      </div>\r
+      <button class="close-button" (click)="onClose()">\r
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\r
+        </svg>\r
+      </button>\r
+    </div>\r
+\r
+    <!-- Modal Body -->\r
+    <div class="modal-body">\r
+      <!-- Status and Basic Info -->\r
+      <div class="info-section">\r
+        <div class="section-header">\r
+          <h3>Basic Information</h3>\r
+        </div>\r
+        <div class="info-grid">\r
+          <div class="info-item">\r
+            <label>Status</label>\r
+            <span class="status-badge" [ngClass]="getStatusClass(purchaseOrder?.status || '')">\r
+              {{ getStatusLabel(purchaseOrder?.status || '') }}\r
+            </span>\r
+          </div>\r
+          <div class="info-item">\r
+            <label>Order Date</label>\r
+            <span>{{ formatDate(purchaseOrder?.order_date) }}</span>\r
+          </div>\r
+          <div class="info-item">\r
+            <label>Expected Date</label>\r
+            <span>{{ formatDate(purchaseOrder?.expected_date) }}</span>\r
+          </div>\r
+          <div class="info-item">\r
+            <label>Total Value</label>\r
+            <span class="total-value">{{ formatCurrency(purchaseOrder?.total) }}</span>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Supplier Information -->\r
+      <div class="info-section">\r
+        <div class="section-header">\r
+          <h3>Supplier Details</h3>\r
+        </div>\r
+        <div class="supplier-info">\r
+          <div class="supplier-card">\r
+            <div class="supplier-header">\r
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>\r
+              </svg>\r
+              <div class="supplier-details">\r
+                <div class="supplier-name">{{ purchaseOrder?.supplier?.name || 'Unknown Supplier' }}</div>\r
+                <div class="supplier-id">ID: {{ purchaseOrder?.supplier_id }}</div>\r
+              </div>\r
+            </div>\r
+            <div class="supplier-contact">\r
+              <div class="contact-item">\r
+                <label>Email:</label>\r
+                <span>{{ purchaseOrder?.supplier?.email || 'N/A' }}</span>\r
+              </div>\r
+              <div class="contact-item">\r
+                <label>Phone:</label>\r
+                <span>{{ purchaseOrder?.supplier?.phone || 'N/A' }}</span>\r
+              </div>\r
+              <div class="contact-item">\r
+                <label>Address:</label>\r
+                <span>{{ purchaseOrder?.supplier?.address || 'N/A' }}</span>\r
+              </div>\r
+            </div>\r
+          </div>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Items List -->\r
+      <div class="info-section">\r
+        <div class="section-header">\r
+          <h3>Order Items ({{ itemsCount }})</h3>\r
+          <div class="items-summary">\r
+            <span>Total Quantity: {{ calculateItemsTotal(purchaseOrder?.items || []) }}</span>\r
+            <span>Total Value: {{ formatCurrency(calculateTotalValue(purchaseOrder?.items || [])) }}</span>\r
+          </div>\r
+        </div>\r
+        \r
+        <div class="items-table-container" *ngIf="hasItems">\r
+          <table class="items-table">\r
+            <thead>\r
+              <tr>\r
+                <th>Item</th>\r
+                <th>Part Number</th>\r
+                <th>Description</th>\r
+                <th>Quantity</th>\r
+                <th>Unit Cost</th>\r
+                <th>Total</th>\r
+              </tr>\r
+            </thead>\r
+            <tbody>\r
+              <tr *ngFor="let item of (purchaseOrder?.items || [])">\r
+                <td class="item-name">{{ item?.part?.name || item?.part_number || 'N/A' }}</td>\r
+                <td class="part-number">{{ item?.part_number || 'N/A' }}</td>\r
+                <td class="description">{{ item?.description || 'No description' }}</td>\r
+                <td class="quantity">{{ item?.ordered_qty || 0 }}</td>\r
+                <td class="unit-cost">{{ formatCurrency(item?.unit_cost) }}</td>\r
+                <td class="item-total">{{ formatCurrency((item?.ordered_qty || 0) * (item?.unit_cost || 0)) }}</td>\r
+              </tr>\r
+            </tbody>\r
+          </table>\r
+        </div>\r
+        \r
+        <div class="no-items" *ngIf="!hasItems">\r
+          <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>\r
+          </svg>\r
+          <p>No items in this purchase order</p>\r
+        </div>\r
+      </div>\r
+\r
+      <!-- Additional Information -->\r
+      <div class="info-section">\r
+        <div class="section-header">\r
+          <h3>Additional Information</h3>\r
+        </div>\r
+        <div class="additional-info">\r
+          <div class="info-item">\r
+            <label>Notes</label>\r
+            <span class="notes">{{ purchaseOrder?.notes || 'No notes available' }}</span>\r
+          </div>\r
+          <div class="info-item">\r
+            <label>Terms & Conditions</label>\r
+            <span class="terms">{{ purchaseOrder?.terms || 'Standard terms apply' }}</span>\r
+          </div>\r
+          <div class="info-item">\r
+            <label>Created By</label>\r
+            <span>{{ purchaseOrder?.created_by || 'System' }}</span>\r
+          </div>\r
+          <div class="info-item">\r
+            <label>Created Date</label>\r
+            <span>{{ formatDate(purchaseOrder?.created_at) }}</span>\r
+          </div>\r
+        </div>\r
+      </div>\r
+    </div>\r
+\r
+    <!-- Modal Footer -->\r
+    <div class="modal-footer">\r
+      <button class="btn btn-secondary" (click)="onClose()">\r
+        Close\r
+      </button>\r
+      <button class="btn btn-primary" (click)="onEdit()" *ngIf="purchaseOrder?.status === 'draft'">\r
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>\r
+        </svg>\r
+        Edit Purchase Order\r
+      </button>\r
+    </div>\r
+  </div>\r
+</div>\r
+`, styles: ['/* src/app/inventory/components/view-purchase-order-modal/view-purchase-order-modal.component.scss */\n.modal-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 1000;\n  padding: 1rem;\n}\n.modal-content {\n  background-color: white;\n  border-radius: 0.75rem;\n  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);\n  max-width: 900px;\n  width: 100%;\n  max-height: 90vh;\n  overflow-y: auto;\n  display: flex;\n  flex-direction: column;\n}\n.modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  padding: 1.5rem 1.5rem 1rem 1.5rem;\n  border-bottom: 1px solid #e5e7eb;\n}\n.modal-header .header-content {\n  flex: 1;\n}\n.modal-header .header-content .modal-title {\n  font-size: 1.5rem;\n  font-weight: 700;\n  color: #111827;\n  margin: 0 0 0.5rem 0;\n}\n.modal-header .header-content .po-number {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #3b82f6;\n  font-family: "Courier New", monospace;\n}\n.modal-header .close-button {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  background: none;\n  color: #6b7280;\n  cursor: pointer;\n  border-radius: 0.375rem;\n  transition: all 0.2s;\n}\n.modal-header .close-button:hover {\n  background-color: #f3f4f6;\n  color: #374151;\n}\n.modal-body {\n  flex: 1;\n  padding: 1.5rem;\n  overflow-y: auto;\n}\n.modal-body .info-section {\n  margin-bottom: 2rem;\n}\n.modal-body .info-section:last-child {\n  margin-bottom: 0;\n}\n.modal-body .info-section .section-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 1rem;\n  padding-bottom: 0.75rem;\n  border-bottom: 2px solid #f3f4f6;\n}\n.modal-body .info-section .section-header h3 {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #111827;\n  margin: 0;\n}\n.modal-body .info-section .section-header .items-summary {\n  display: flex;\n  gap: 1rem;\n  font-size: 0.875rem;\n  color: #6b7280;\n}\n.modal-body .info-section .section-header .items-summary span {\n  font-weight: 500;\n}\n.modal-body .info-section .info-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n  gap: 1rem;\n}\n.modal-body .info-section .info-grid .info-item {\n  display: flex;\n  flex-direction: column;\n  gap: 0.25rem;\n}\n.modal-body .info-section .info-grid .info-item label {\n  font-size: 0.875rem;\n  font-weight: 500;\n  color: #6b7280;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.modal-body .info-section .info-grid .info-item span {\n  font-size: 1rem;\n  color: #111827;\n  font-weight: 500;\n}\n.modal-body .info-section .info-grid .info-item span.total-value {\n  font-weight: 700;\n  color: #10b981;\n  font-size: 1.125rem;\n}\n.modal-body .info-section .info-grid .info-item .status-badge {\n  display: inline-flex;\n  align-items: center;\n  padding: 0.25rem 0.75rem;\n  border-radius: 9999px;\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-transform: capitalize;\n  width: fit-content;\n}\n.modal-body .info-section .info-grid .info-item .status-badge.status-draft {\n  background-color: #f3f4f6;\n  color: #374151;\n}\n.modal-body .info-section .info-grid .info-item .status-badge.status-pending {\n  background-color: #fef3c7;\n  color: #92400e;\n}\n.modal-body .info-section .info-grid .info-item .status-badge.status-approved {\n  background-color: #d1fae5;\n  color: #065f46;\n}\n.modal-body .info-section .info-grid .info-item .status-badge.status-ordered {\n  background-color: #dbeafe;\n  color: #1e40af;\n}\n.modal-body .info-section .info-grid .info-item .status-badge.status-rejected {\n  background-color: #fee2e2;\n  color: #991b1b;\n}\n.modal-body .info-section .info-grid .info-item .status-badge.status-closed {\n  background-color: #e5e7eb;\n  color: #374151;\n}\n.modal-body .info-section .info-grid .info-item .status-badge.status-cancelled {\n  background-color: #fef2f2;\n  color: #7f1d1d;\n}\n.modal-body .info-section .supplier-info .supplier-card {\n  background-color: #f9fafb;\n  border: 1px solid #e5e7eb;\n  border-radius: 0.5rem;\n  padding: 1rem;\n}\n.modal-body .info-section .supplier-info .supplier-card .supplier-header {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  margin-bottom: 1rem;\n  padding-bottom: 0.75rem;\n  border-bottom: 1px solid #e5e7eb;\n}\n.modal-body .info-section .supplier-info .supplier-card .supplier-header svg {\n  color: #6b7280;\n}\n.modal-body .info-section .supplier-info .supplier-card .supplier-header .supplier-details .supplier-name {\n  font-size: 1.125rem;\n  font-weight: 600;\n  color: #111827;\n  margin-bottom: 0.25rem;\n}\n.modal-body .info-section .supplier-info .supplier-card .supplier-header .supplier-details .supplier-id {\n  font-size: 0.875rem;\n  color: #6b7280;\n  font-family: "Courier New", monospace;\n}\n.modal-body .info-section .supplier-info .supplier-card .supplier-contact {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n  gap: 0.75rem;\n}\n.modal-body .info-section .supplier-info .supplier-card .supplier-contact .contact-item {\n  display: flex;\n  flex-direction: column;\n  gap: 0.25rem;\n}\n.modal-body .info-section .supplier-info .supplier-card .supplier-contact .contact-item label {\n  font-size: 0.75rem;\n  font-weight: 500;\n  color: #6b7280;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.modal-body .info-section .supplier-info .supplier-card .supplier-contact .contact-item span {\n  font-size: 0.875rem;\n  color: #111827;\n}\n.modal-body .info-section .items-table-container {\n  overflow-x: auto;\n  border: 1px solid #e5e7eb;\n  border-radius: 0.5rem;\n}\n.modal-body .info-section .items-table-container .items-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 0.875rem;\n}\n.modal-body .info-section .items-table-container .items-table thead {\n  background-color: #f9fafb;\n  border-bottom: 1px solid #e5e7eb;\n}\n.modal-body .info-section .items-table-container .items-table thead th {\n  padding: 0.75rem;\n  text-align: left;\n  font-weight: 600;\n  color: #374151;\n  white-space: nowrap;\n  border-bottom: 1px solid #e5e7eb;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr {\n  border-bottom: 1px solid #f3f4f6;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr:last-child {\n  border-bottom: none;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr:hover {\n  background-color: #f9fafb;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr td {\n  padding: 0.75rem;\n  color: #111827;\n  vertical-align: top;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr td.item-name {\n  font-weight: 600;\n  color: #3b82f6;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr td.part-number {\n  font-family: "Courier New", monospace;\n  color: #6b7280;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr td.description {\n  max-width: 200px;\n  color: #6b7280;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr td.quantity {\n  font-weight: 500;\n  text-align: center;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr td.unit-price {\n  font-weight: 500;\n  text-align: right;\n}\n.modal-body .info-section .items-table-container .items-table tbody tr td.item-total {\n  font-weight: 600;\n  color: #10b981;\n  text-align: right;\n}\n.modal-body .info-section .no-items {\n  text-align: center;\n  padding: 2rem;\n  color: #6b7280;\n}\n.modal-body .info-section .no-items svg {\n  color: #d1d5db;\n  margin: 0 auto 1rem auto;\n}\n.modal-body .info-section .no-items p {\n  margin: 0;\n  font-size: 1rem;\n}\n.modal-body .info-section .additional-info {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1rem;\n}\n.modal-body .info-section .additional-info .info-item {\n  display: flex;\n  flex-direction: column;\n  gap: 0.25rem;\n}\n.modal-body .info-section .additional-info .info-item label {\n  font-size: 0.875rem;\n  font-weight: 500;\n  color: #6b7280;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.modal-body .info-section .additional-info .info-item span {\n  font-size: 1rem;\n  color: #111827;\n  font-weight: 500;\n}\n.modal-body .info-section .additional-info .info-item span.notes,\n.modal-body .info-section .additional-info .info-item span.terms {\n  color: #6b7280;\n  font-style: italic;\n}\n.modal-footer {\n  display: flex;\n  justify-content: flex-end;\n  gap: 1rem;\n  padding: 1rem 1.5rem 1.5rem 1.5rem;\n  border-top: 1px solid #e5e7eb;\n  background-color: #f9fafb;\n}\n.modal-footer .btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n  border: none;\n  white-space: nowrap;\n}\n.modal-footer .btn.btn-secondary {\n  background-color: white;\n  color: #374151;\n  border: 1px solid #d1d5db;\n}\n.modal-footer .btn.btn-secondary:hover {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.modal-footer .btn.btn-primary {\n  background-color: #3b82f6;\n  color: white;\n}\n.modal-footer .btn.btn-primary:hover {\n  background-color: #2563eb;\n}\n.modal-footer .btn svg {\n  width: 1rem;\n  height: 1rem;\n}\n@media (max-width: 768px) {\n  .modal-content {\n    max-width: 95vw;\n    margin: 0.5rem;\n  }\n  .modal-header {\n    padding: 1rem;\n  }\n  .modal-header .header-content .modal-title {\n    font-size: 1.25rem;\n  }\n  .modal-header .header-content .po-number {\n    font-size: 1rem;\n  }\n  .modal-body {\n    padding: 1rem;\n  }\n  .modal-body .info-section .section-header {\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 0.5rem;\n  }\n  .modal-body .info-section .section-header .items-summary {\n    flex-direction: column;\n    gap: 0.25rem;\n  }\n  .modal-body .info-section .info-grid {\n    grid-template-columns: 1fr;\n  }\n  .modal-body .info-section .supplier-info .supplier-card .supplier-contact {\n    grid-template-columns: 1fr;\n  }\n  .modal-body .info-section .items-table-container .items-table {\n    font-size: 0.75rem;\n  }\n  .modal-body .info-section .items-table-container .items-table thead th,\n  .modal-body .info-section .items-table-container .items-table tbody td {\n    padding: 0.5rem;\n  }\n  .modal-body .info-section .additional-info {\n    grid-template-columns: 1fr;\n  }\n  .modal-footer {\n    padding: 1rem;\n    flex-direction: column;\n  }\n  .modal-footer .btn {\n    width: 100%;\n    justify-content: center;\n  }\n}\n@media (max-width: 480px) {\n  .modal-overlay {\n    padding: 0.5rem;\n  }\n  .modal-content {\n    max-width: 100vw;\n    margin: 0;\n    border-radius: 0;\n    max-height: 100vh;\n  }\n  .modal-header {\n    border-radius: 0;\n  }\n  .modal-footer {\n    border-radius: 0;\n  }\n}\n/*# sourceMappingURL=view-purchase-order-modal.component.css.map */\n'] }]
+  }], null, { purchaseOrder: [{
     type: Input
   }], closeModal: [{
     type: Output
@@ -1816,7 +2244,7 @@ var ViewPurchaseOrderModalComponent = class _ViewPurchaseOrderModalComponent {
   }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ViewPurchaseOrderModalComponent, { className: "ViewPurchaseOrderModalComponent", filePath: "src/app/inventory/components/view-purchase-order-modal/view-purchase-order-modal.component.ts", lineNumber: 13 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ViewPurchaseOrderModalComponent, { className: "ViewPurchaseOrderModalComponent", filePath: "src/app/inventory/components/view-purchase-order-modal/view-purchase-order-modal.component.ts", lineNumber: 12 });
 })();
 
 // src/app/inventory/components/receive-items-modal/receive-items-modal.component.ts
@@ -2411,36 +2839,40 @@ function PurchaseOrdersComponent_div_81_div_7_Template(rf, ctx) {
     \u0275\u0275elementEnd()();
   }
 }
-function PurchaseOrdersComponent_div_81_div_8_tr_21_button_32_Template(rf, ctx) {
+function PurchaseOrdersComponent_div_81_div_8_tr_21_button_37_Template(rf, ctx) {
   if (rf & 1) {
     const _r6 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "button", 98);
-    \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_8_tr_21_button_32_Template_button_click_0_listener() {
+    \u0275\u0275elementStart(0, "button", 97);
+    \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_8_tr_21_button_37_Template_button_click_0_listener() {
       \u0275\u0275restoreView(_r6);
       const po_r5 = \u0275\u0275nextContext().$implicit;
       const ctx_r1 = \u0275\u0275nextContext(3);
-      return \u0275\u0275resetView(ctx_r1.openViewPOModal(po_r5));
-    });
-    \u0275\u0275namespaceSVG();
-    \u0275\u0275elementStart(1, "svg", 34);
-    \u0275\u0275element(2, "path", 99);
-    \u0275\u0275elementEnd()();
-  }
-}
-function PurchaseOrdersComponent_div_81_div_8_tr_21_button_33_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r7 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "button", 100);
-    \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_8_tr_21_button_33_Template_button_click_0_listener() {
-      \u0275\u0275restoreView(_r7);
-      const po_r5 = \u0275\u0275nextContext().$implicit;
-      const ctx_r1 = \u0275\u0275nextContext(3);
-      return \u0275\u0275resetView(ctx_r1.openReceiveItemsModal(po_r5));
+      return \u0275\u0275resetView(ctx_r1.approvePurchaseOrder(po_r5));
     });
     \u0275\u0275namespaceSVG();
     \u0275\u0275elementStart(1, "svg", 34);
     \u0275\u0275element(2, "path", 11);
-    \u0275\u0275elementEnd()();
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(3, " Approve ");
+    \u0275\u0275elementEnd();
+  }
+}
+function PurchaseOrdersComponent_div_81_div_8_tr_21_button_42_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r7 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 97);
+    \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_8_tr_21_button_42_Template_button_click_0_listener() {
+      \u0275\u0275restoreView(_r7);
+      const po_r5 = \u0275\u0275nextContext().$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.markAsOrdered(po_r5));
+    });
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(1, "svg", 34);
+    \u0275\u0275element(2, "path", 102);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(3, " Mark as Ordered ");
+    \u0275\u0275elementEnd();
   }
 }
 function PurchaseOrdersComponent_div_81_div_8_tr_21_Template(rf, ctx) {
@@ -2473,18 +2905,45 @@ function PurchaseOrdersComponent_div_81_div_8_tr_21_Template(rf, ctx) {
     \u0275\u0275elementStart(23, "td", 90)(24, "div", 91);
     \u0275\u0275text(25);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(26, "td", 92)(27, "div", 33)(28, "button", 93);
-    \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_8_tr_21_Template_button_click_28_listener() {
+    \u0275\u0275elementStart(26, "td", 92)(27, "div", 93)(28, "button", 94);
+    \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_8_tr_21_Template_button_click_28_listener($event) {
       const po_r5 = \u0275\u0275restoreView(_r4).$implicit;
       const ctx_r1 = \u0275\u0275nextContext(3);
-      return \u0275\u0275resetView(ctx_r1.openViewPOModal(po_r5));
+      return \u0275\u0275resetView(po_r5.id && ctx_r1.toggleDropdown($event, po_r5.id));
     });
     \u0275\u0275namespaceSVG();
     \u0275\u0275elementStart(29, "svg", 34);
-    \u0275\u0275element(30, "path", 94)(31, "path", 95);
+    \u0275\u0275element(30, "path", 95);
     \u0275\u0275elementEnd()();
-    \u0275\u0275template(32, PurchaseOrdersComponent_div_81_div_8_tr_21_button_32_Template, 3, 0, "button", 96)(33, PurchaseOrdersComponent_div_81_div_8_tr_21_button_33_Template, 3, 0, "button", 97);
-    \u0275\u0275elementEnd()()();
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(31, "div", 96)(32, "button", 97);
+    \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_8_tr_21_Template_button_click_32_listener() {
+      const po_r5 = \u0275\u0275restoreView(_r4).$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.viewPurchaseOrder(po_r5));
+    });
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(33, "svg", 34);
+    \u0275\u0275element(34, "path", 98)(35, "path", 99);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(36, " View Details ");
+    \u0275\u0275elementEnd();
+    \u0275\u0275template(37, PurchaseOrdersComponent_div_81_div_8_tr_21_button_37_Template, 4, 0, "button", 100);
+    \u0275\u0275namespaceHTML();
+    \u0275\u0275elementStart(38, "button", 97);
+    \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_8_tr_21_Template_button_click_38_listener() {
+      const po_r5 = \u0275\u0275restoreView(_r4).$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.sendEmail(po_r5));
+    });
+    \u0275\u0275namespaceSVG();
+    \u0275\u0275elementStart(39, "svg", 34);
+    \u0275\u0275element(40, "path", 101);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(41, " Send Email ");
+    \u0275\u0275elementEnd();
+    \u0275\u0275template(42, PurchaseOrdersComponent_div_81_div_8_tr_21_button_42_Template, 4, 0, "button", 100);
+    \u0275\u0275elementEnd()()()();
   }
   if (rf & 2) {
     const po_r5 = ctx.$implicit;
@@ -2509,10 +2968,12 @@ function PurchaseOrdersComponent_div_81_div_8_tr_21_Template(rf, ctx) {
     \u0275\u0275textInterpolate1(" ", ctx_r1.calculateItemsTotal(po_r5.items), " total qty ");
     \u0275\u0275advance(3);
     \u0275\u0275textInterpolate(ctx_r1.formatCurrency(po_r5.total));
-    \u0275\u0275advance(7);
-    \u0275\u0275property("ngIf", po_r5.status === "draft");
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", po_r5.status === "ordered");
+    \u0275\u0275advance(6);
+    \u0275\u0275classProp("show", po_r5.id && ctx_r1.openDropdownId === po_r5.id);
+    \u0275\u0275advance(6);
+    \u0275\u0275property("ngIf", po_r5.status === "pending");
+    \u0275\u0275advance(5);
+    \u0275\u0275property("ngIf", po_r5.status === "approved");
   }
 }
 function PurchaseOrdersComponent_div_81_div_8_Template(rf, ctx) {
@@ -2542,7 +3003,7 @@ function PurchaseOrdersComponent_div_81_div_8_Template(rf, ctx) {
     \u0275\u0275text(19, "Actions");
     \u0275\u0275elementEnd()()();
     \u0275\u0275elementStart(20, "tbody");
-    \u0275\u0275template(21, PurchaseOrdersComponent_div_81_div_8_tr_21_Template, 34, 12, "tr", 74);
+    \u0275\u0275template(21, PurchaseOrdersComponent_div_81_div_8_tr_21_Template, 43, 14, "tr", 74);
     \u0275\u0275elementEnd()()();
   }
   if (rf & 2) {
@@ -2554,10 +3015,10 @@ function PurchaseOrdersComponent_div_81_div_8_Template(rf, ctx) {
 function PurchaseOrdersComponent_div_81_div_9_Template(rf, ctx) {
   if (rf & 1) {
     const _r8 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 101)(1, "div", 102);
+    \u0275\u0275elementStart(0, "div", 103)(1, "div", 104);
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "div", 103)(4, "button", 104);
+    \u0275\u0275elementStart(3, "div", 105)(4, "button", 106);
     \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_9_Template_button_click_4_listener() {
       \u0275\u0275restoreView(_r8);
       const ctx_r1 = \u0275\u0275nextContext(2);
@@ -2565,7 +3026,7 @@ function PurchaseOrdersComponent_div_81_div_9_Template(rf, ctx) {
     });
     \u0275\u0275text(5, " Previous ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "button", 104);
+    \u0275\u0275elementStart(6, "button", 106);
     \u0275\u0275listener("click", function PurchaseOrdersComponent_div_81_div_9_Template_button_click_6_listener() {
       \u0275\u0275restoreView(_r8);
       const ctx_r1 = \u0275\u0275nextContext(2);
@@ -2612,7 +3073,7 @@ function PurchaseOrdersComponent_div_81_Template(rf, ctx) {
 function PurchaseOrdersComponent_app_create_purchase_order_modal_82_Template(rf, ctx) {
   if (rf & 1) {
     const _r9 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "app-create-purchase-order-modal", 105);
+    \u0275\u0275elementStart(0, "app-create-purchase-order-modal", 107);
     \u0275\u0275listener("closeModal", function PurchaseOrdersComponent_app_create_purchase_order_modal_82_Template_app_create_purchase_order_modal_closeModal_0_listener() {
       \u0275\u0275restoreView(_r9);
       const ctx_r1 = \u0275\u0275nextContext();
@@ -2628,7 +3089,7 @@ function PurchaseOrdersComponent_app_create_purchase_order_modal_82_Template(rf,
 function PurchaseOrdersComponent_app_view_purchase_order_modal_83_Template(rf, ctx) {
   if (rf & 1) {
     const _r10 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "app-view-purchase-order-modal", 106);
+    \u0275\u0275elementStart(0, "app-view-purchase-order-modal", 108);
     \u0275\u0275listener("closeModal", function PurchaseOrdersComponent_app_view_purchase_order_modal_83_Template_app_view_purchase_order_modal_closeModal_0_listener() {
       \u0275\u0275restoreView(_r10);
       const ctx_r1 = \u0275\u0275nextContext();
@@ -2648,7 +3109,7 @@ function PurchaseOrdersComponent_app_view_purchase_order_modal_83_Template(rf, c
 function PurchaseOrdersComponent_app_receive_items_modal_84_Template(rf, ctx) {
   if (rf & 1) {
     const _r11 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "app-receive-items-modal", 107);
+    \u0275\u0275elementStart(0, "app-receive-items-modal", 109);
     \u0275\u0275listener("closeModal", function PurchaseOrdersComponent_app_receive_items_modal_84_Template_app_receive_items_modal_closeModal_0_listener() {
       \u0275\u0275restoreView(_r11);
       const ctx_r1 = \u0275\u0275nextContext();
@@ -2671,6 +3132,8 @@ var PurchaseOrdersComponent = class _PurchaseOrdersComponent {
   showViewPOModal = false;
   showReceiveItemsModal = false;
   selectedPurchaseOrder = null;
+  // Dropdown state
+  openDropdownId = null;
   // Data properties
   purchaseOrders = [];
   loading = false;
@@ -2698,6 +3161,76 @@ var PurchaseOrdersComponent = class _PurchaseOrdersComponent {
   ngOnInit() {
     this.loadPurchaseOrders();
     this.loadOverviewStats();
+    document.addEventListener("click", this.onDocumentClick.bind(this));
+  }
+  ngOnDestroy() {
+    document.removeEventListener("click", this.onDocumentClick.bind(this));
+  }
+  // Dropdown functionality
+  toggleDropdown(event, poId) {
+    event.stopPropagation();
+    if (poId) {
+      this.openDropdownId = this.openDropdownId === poId ? null : poId;
+    }
+  }
+  onDocumentClick(event) {
+    if (!event.target.closest(".dropdown-container")) {
+      this.openDropdownId = null;
+    }
+  }
+  // New action methods
+  viewPurchaseOrder(po) {
+    this.openViewPOModal(po);
+    this.openDropdownId = null;
+  }
+  approvePurchaseOrder(po) {
+    console.log("Approving Purchase Order:", po.po_number);
+    if (!po.id) {
+      this.error = "Purchase Order ID is missing";
+      return;
+    }
+    this.inventoryService.updatePurchaseOrder(po.id, { status: "approved" }).subscribe({
+      next: (response) => {
+        if (response.success) {
+          console.log("Purchase Order approved successfully");
+          this.loadPurchaseOrders();
+          this.loadOverviewStats();
+        } else {
+          this.error = "Failed to approve purchase order";
+        }
+      },
+      error: (err) => {
+        this.error = "Error approving purchase order: " + err.message;
+      }
+    });
+    this.openDropdownId = null;
+  }
+  sendEmail(po) {
+    console.log("Sending email for Purchase Order:", po.po_number);
+    alert(`Email functionality for PO ${po.po_number} would be implemented here.`);
+    this.openDropdownId = null;
+  }
+  markAsOrdered(po) {
+    console.log("Marking Purchase Order as Ordered:", po.po_number);
+    if (!po.id) {
+      this.error = "Purchase Order ID is missing";
+      return;
+    }
+    this.inventoryService.updatePurchaseOrder(po.id, { status: "ordered" }).subscribe({
+      next: (response) => {
+        if (response.success) {
+          console.log("Purchase Order marked as ordered successfully");
+          this.loadPurchaseOrders();
+          this.loadOverviewStats();
+        } else {
+          this.error = "Failed to mark purchase order as ordered";
+        }
+      },
+      error: (err) => {
+        this.error = "Error marking purchase order as ordered: " + err.message;
+      }
+    });
+    this.openDropdownId = null;
   }
   loadPurchaseOrders() {
     this.loading = true;
@@ -2844,15 +3377,33 @@ var PurchaseOrdersComponent = class _PurchaseOrdersComponent {
     }
   }
   formatCurrency(amount) {
-    return `AED ${amount.toFixed(2)}`;
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || !isFinite(numAmount)) {
+      return "AED 0.00";
+    }
+    return `AED ${numAmount.toFixed(2)}`;
   }
   formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString();
+    if (!dateString) {
+      return "N/A";
+    }
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return "Invalid Date";
+      }
+      return date.toLocaleDateString();
+    } catch (error) {
+      return "Invalid Date";
+    }
   }
   calculateItemsTotal(items) {
-    if (!items || items.length === 0)
+    if (!items || !Array.isArray(items) || items.length === 0)
       return 0;
-    return items.reduce((sum, item) => sum + (item.ordered_qty || 0), 0);
+    return items.reduce((sum, item) => {
+      const qty = Number(item?.ordered_qty) || 0;
+      return sum + (isNaN(qty) ? 0 : qty);
+    }, 0);
   }
   getMinValue(a, b) {
     return Math.min(a, b);
@@ -2864,7 +3415,7 @@ var PurchaseOrdersComponent = class _PurchaseOrdersComponent {
   static \u0275fac = function PurchaseOrdersComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _PurchaseOrdersComponent)(\u0275\u0275directiveInject(InventoryAnalyticsService));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _PurchaseOrdersComponent, selectors: [["app-purchase-orders"]], decls: 85, vars: 12, consts: [[1, "purchase-orders"], [1, "overview-cards-row"], [1, "overview-card", "total-pos"], [1, "card-content"], [1, "card-value"], [1, "card-label"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "card-icon"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"], [1, "overview-card", "pending"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"], [1, "overview-card", "approved"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M5 13l4 4L19 7"], [1, "overview-card", "total-value"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"], [1, "control-bar"], [1, "search-controls"], [1, "search-container"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "search-icon"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"], ["type", "text", "placeholder", "Search purchase orders...", 1, "search-input", 3, "ngModelChange", "input", "ngModel"], [1, "status-dropdown"], [1, "status-select", 3, "ngModelChange", "change", "ngModel"], ["value", ""], ["value", "draft"], ["value", "pending"], ["value", "approved"], ["value", "ordered"], ["value", "rejected"], ["value", "closed"], ["value", "cancelled"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "dropdown-arrow"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M19 9l-7 7-7-7"], [1, "btn", "btn-outline", 3, "click"], [1, "action-buttons"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-4", "h-4"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"], [1, "btn", "btn-secondary"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"], [1, "btn", "btn-primary", 3, "click"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 4v16m8-8H4"], ["class", "loading-state", 4, "ngIf"], ["class", "error-state", 4, "ngIf"], ["class", "purchase-orders-table", 4, "ngIf"], [3, "closeModal", "createPurchaseOrder", 4, "ngIf"], [3, "purchaseOrder", "closeModal", "purchaseOrderUpdated", 4, "ngIf"], [3, "purchaseOrder", "closeModal", "itemsReceived", 4, "ngIf"], [1, "loading-state"], [1, "loading-spinner"], [1, "error-state"], [1, "error-icon"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-8", "h-8"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"], [1, "error-message"], [1, "purchase-orders-table"], [1, "table-header"], [1, "table-title"], [1, "table-actions"], [1, "text-sm", "text-gray-500"], ["class", "empty-state", 4, "ngIf"], ["class", "table-wrapper", 4, "ngIf"], ["class", "pagination", 4, "ngIf"], [1, "empty-state"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "empty-icon"], [1, "empty-title"], [1, "empty-description"], [1, "table-wrapper"], [1, "th-po-number"], [1, "th-supplier"], [1, "th-order-date"], [1, "th-expected-date"], [1, "th-status"], [1, "th-items"], [1, "th-total"], [1, "th-actions"], ["class", "table-row", 4, "ngFor", "ngForOf"], [1, "table-row"], [1, "td-po-number"], [1, "po-number"], [1, "td-supplier"], [1, "supplier-info"], [1, "supplier-name"], [1, "supplier-id"], [1, "td-order-date"], [1, "td-expected-date"], [1, "td-status"], [1, "status-badge", 3, "ngClass"], [1, "td-items"], [1, "items-info"], [1, "items-count"], [1, "items-summary"], [1, "td-total"], [1, "total-amount"], [1, "td-actions"], ["title", "View Details", 1, "btn", "btn-sm", "btn-outline", 3, "click"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M15 12a3 3 0 11-6 0 3 3 0 016 0z"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"], ["class", "btn btn-sm btn-outline", "title", "Edit", 3, "click", 4, "ngIf"], ["class", "btn btn-sm btn-outline", "title", "Receive Items", 3, "click", 4, "ngIf"], ["title", "Edit", 1, "btn", "btn-sm", "btn-outline", 3, "click"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"], ["title", "Receive Items", 1, "btn", "btn-sm", "btn-outline", 3, "click"], [1, "pagination"], [1, "pagination-info"], [1, "pagination-buttons"], [1, "btn", "btn-outline", 3, "click", "disabled"], [3, "closeModal", "createPurchaseOrder"], [3, "closeModal", "purchaseOrderUpdated", "purchaseOrder"], [3, "closeModal", "itemsReceived", "purchaseOrder"]], template: function PurchaseOrdersComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _PurchaseOrdersComponent, selectors: [["app-purchase-orders"]], decls: 85, vars: 12, consts: [[1, "purchase-orders"], [1, "overview-cards-row"], [1, "overview-card", "total-pos"], [1, "card-content"], [1, "card-value"], [1, "card-label"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "card-icon"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"], [1, "overview-card", "pending"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"], [1, "overview-card", "approved"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M5 13l4 4L19 7"], [1, "overview-card", "total-value"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"], [1, "control-bar"], [1, "search-controls"], [1, "search-container"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "search-icon"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"], ["type", "text", "placeholder", "Search purchase orders...", 1, "search-input", 3, "ngModelChange", "input", "ngModel"], [1, "status-dropdown"], [1, "status-select", 3, "ngModelChange", "change", "ngModel"], ["value", ""], ["value", "draft"], ["value", "pending"], ["value", "approved"], ["value", "ordered"], ["value", "rejected"], ["value", "closed"], ["value", "cancelled"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "dropdown-arrow"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M19 9l-7 7-7-7"], [1, "btn", "btn-outline", 3, "click"], [1, "action-buttons"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-4", "h-4"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"], [1, "btn", "btn-secondary"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"], [1, "btn", "btn-primary", 3, "click"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 4v16m8-8H4"], ["class", "loading-state", 4, "ngIf"], ["class", "error-state", 4, "ngIf"], ["class", "purchase-orders-table", 4, "ngIf"], [3, "closeModal", "createPurchaseOrder", 4, "ngIf"], [3, "purchaseOrder", "closeModal", "purchaseOrderUpdated", 4, "ngIf"], [3, "purchaseOrder", "closeModal", "itemsReceived", 4, "ngIf"], [1, "loading-state"], [1, "loading-spinner"], [1, "error-state"], [1, "error-icon"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "w-8", "h-8"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"], [1, "error-message"], [1, "purchase-orders-table"], [1, "table-header"], [1, "table-title"], [1, "table-actions"], [1, "text-sm", "text-gray-500"], ["class", "empty-state", 4, "ngIf"], ["class", "table-wrapper", 4, "ngIf"], ["class", "pagination", 4, "ngIf"], [1, "empty-state"], ["fill", "none", "stroke", "currentColor", "viewBox", "0 0 24 24", 1, "empty-icon"], [1, "empty-title"], [1, "empty-description"], [1, "table-wrapper"], [1, "th-po-number"], [1, "th-supplier"], [1, "th-order-date"], [1, "th-expected-date"], [1, "th-status"], [1, "th-items"], [1, "th-total"], [1, "th-actions"], ["class", "table-row", 4, "ngFor", "ngForOf"], [1, "table-row"], [1, "td-po-number"], [1, "po-number"], [1, "td-supplier"], [1, "supplier-info"], [1, "supplier-name"], [1, "supplier-id"], [1, "td-order-date"], [1, "td-expected-date"], [1, "td-status"], [1, "status-badge", 3, "ngClass"], [1, "td-items"], [1, "items-info"], [1, "items-count"], [1, "items-summary"], [1, "td-total"], [1, "total-amount"], [1, "td-actions"], [1, "dropdown-container"], [1, "dropdown-trigger", 3, "click"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"], [1, "dropdown-menu"], [1, "dropdown-item", 3, "click"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M15 12a3 3 0 11-6 0 3 3 0 016 0z"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"], ["class", "dropdown-item", 3, "click", 4, "ngIf"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"], ["stroke-linecap", "round", "stroke-linejoin", "round", "stroke-width", "2", "d", "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"], [1, "pagination"], [1, "pagination-info"], [1, "pagination-buttons"], [1, "btn", "btn-outline", 3, "click", "disabled"], [3, "closeModal", "createPurchaseOrder"], [3, "closeModal", "purchaseOrderUpdated", "purchaseOrder"], [3, "closeModal", "itemsReceived", "purchaseOrder"]], template: function PurchaseOrdersComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0)(1, "div", 1)(2, "div", 2)(3, "div", 3)(4, "div", 4);
       \u0275\u0275text(5);
@@ -3034,7 +3585,7 @@ var PurchaseOrdersComponent = class _PurchaseOrdersComponent {
       \u0275\u0275advance();
       \u0275\u0275property("ngIf", ctx.showReceiveItemsModal);
     }
-  }, dependencies: [CommonModule, NgClass, NgForOf, NgIf, FormsModule, NgSelectOption, \u0275NgSelectMultipleOption, DefaultValueAccessor, SelectControlValueAccessor, NgControlStatus, NgModel, CreatePurchaseOrderModalComponent, ViewPurchaseOrderModalComponent, ReceiveItemsModalComponent], styles: ["\n\n.purchase-orders[_ngcontent-%COMP%] {\n  padding: 1.5rem;\n  background-color: #f9fafb;\n  min-height: 100vh;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1.5rem;\n  margin-bottom: 2rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);\n  position: relative;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-content[_ngcontent-%COMP%]   .card-value[_ngcontent-%COMP%] {\n  font-size: 2rem;\n  font-weight: 700;\n  color: #111827;\n  line-height: 1;\n  margin-bottom: 0.5rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-content[_ngcontent-%COMP%]   .card-label[_ngcontent-%COMP%] {\n  font-size: 1rem;\n  color: #374151;\n  font-weight: 600;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 1.5rem;\n  right: 1.5rem;\n  width: 2rem;\n  height: 2rem;\n  color: #9ca3af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card.total-pos[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  color: #3b82f6;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card.pending[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  color: #f59e0b;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card.approved[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  color: #10b981;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card.total-value[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  color: #8b5cf6;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 1.5rem;\n  margin-bottom: 2rem;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n  flex-wrap: wrap;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  align-items: center;\n  flex: 1;\n  min-width: 300px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%] {\n  position: relative;\n  flex: 1;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%]   .search-icon[_ngcontent-%COMP%] {\n  position: absolute;\n  left: 0.75rem;\n  top: 50%;\n  transform: translateY(-50%);\n  width: 1.25rem;\n  height: 1.25rem;\n  color: #9ca3af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%]   .search-input[_ngcontent-%COMP%] {\n  width: 100%;\n  padding: 0.75rem 0.75rem 0.75rem 2.5rem;\n  border: 1px solid #d1d5db;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  background-color: #f9fafb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%]   .search-input[_ngcontent-%COMP%]:focus {\n  outline: none;\n  border-color: #3b82f6;\n  background-color: white;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%] {\n  position: relative;\n  min-width: 150px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%]   .status-select[_ngcontent-%COMP%] {\n  width: 100%;\n  padding: 0.75rem 2.5rem 0.75rem 1rem;\n  border: 1px solid #d1d5db;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  background-color: white;\n  appearance: none;\n  cursor: pointer;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%]   .status-select[_ngcontent-%COMP%]:focus {\n  outline: none;\n  border-color: #3b82f6;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%]   .dropdown-arrow[_ngcontent-%COMP%] {\n  position: absolute;\n  right: 0.75rem;\n  top: 50%;\n  transform: translateY(-50%);\n  width: 1rem;\n  height: 1rem;\n  color: #6b7280;\n  pointer-events: none;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 0.75rem;\n  align-items: center;\n  flex-wrap: wrap;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n  border: none;\n  white-space: nowrap;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn.btn-secondary[_ngcontent-%COMP%] {\n  background-color: white;\n  color: #374151;\n  border: 1px solid #d1d5db;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn.btn-secondary[_ngcontent-%COMP%]:hover {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn.btn-primary[_ngcontent-%COMP%] {\n  background-color: #3b82f6;\n  color: white;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn.btn-primary[_ngcontent-%COMP%]:hover {\n  background-color: #2563eb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 1rem;\n  height: 1rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 4rem 2rem;\n  text-align: center;\n  margin-bottom: 2rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-icon[_ngcontent-%COMP%] {\n  width: 4rem;\n  height: 4rem;\n  color: #9ca3af;\n  margin: 0 auto 1.5rem auto;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-title[_ngcontent-%COMP%] {\n  font-size: 1.5rem;\n  font-weight: 600;\n  color: #111827;\n  margin: 0 0 0.75rem 0;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-description[_ngcontent-%COMP%] {\n  font-size: 1rem;\n  color: #6b7280;\n  margin: 0 0 2rem 0;\n  max-width: 400px;\n  margin-left: auto;\n  margin-right: auto;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  background-color: #2563eb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 1rem;\n  height: 1rem;\n}\n@media (max-width: 768px) {\n  .purchase-orders[_ngcontent-%COMP%] {\n    padding: 1rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%] {\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 1rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%] {\n    padding: 1rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-content[_ngcontent-%COMP%]   .card-value[_ngcontent-%COMP%] {\n    font-size: 1.5rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-content[_ngcontent-%COMP%]   .card-label[_ngcontent-%COMP%] {\n    font-size: 0.875rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n    width: 1.5rem;\n    height: 1.5rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%] {\n    padding: 1rem;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%] {\n    flex-direction: column;\n    min-width: auto;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%] {\n    min-width: auto;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%] {\n    min-width: auto;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%] {\n    justify-content: stretch;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n    flex: 1;\n    justify-content: center;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%] {\n    padding: 2rem 1rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-icon[_ngcontent-%COMP%] {\n    width: 3rem;\n    height: 3rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-title[_ngcontent-%COMP%] {\n    font-size: 1.25rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-description[_ngcontent-%COMP%] {\n    font-size: 0.875rem;\n  }\n}\n@media (max-width: 480px) {\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%] {\n    flex-direction: column;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n    width: 100%;\n  }\n}\n/*# sourceMappingURL=purchase-orders.component.css.map */"] });
+  }, dependencies: [CommonModule, NgClass, NgForOf, NgIf, FormsModule, NgSelectOption, \u0275NgSelectMultipleOption, DefaultValueAccessor, SelectControlValueAccessor, NgControlStatus, NgModel, CreatePurchaseOrderModalComponent, ViewPurchaseOrderModalComponent, ReceiveItemsModalComponent], styles: ['\n\n.purchase-orders[_ngcontent-%COMP%] {\n  padding: 1.5rem;\n  background-color: #f9fafb;\n  min-height: 100vh;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1.5rem;\n  margin-bottom: 2rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);\n  position: relative;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-content[_ngcontent-%COMP%]   .card-value[_ngcontent-%COMP%] {\n  font-size: 2rem;\n  font-weight: 700;\n  color: #111827;\n  line-height: 1;\n  margin-bottom: 0.5rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-content[_ngcontent-%COMP%]   .card-label[_ngcontent-%COMP%] {\n  font-size: 1rem;\n  color: #374151;\n  font-weight: 600;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 1.5rem;\n  right: 1.5rem;\n  width: 2rem;\n  height: 2rem;\n  color: #9ca3af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card.total-pos[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  color: #3b82f6;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card.pending[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  color: #f59e0b;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card.approved[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  color: #10b981;\n}\n.purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card.total-value[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n  color: #8b5cf6;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 1.5rem;\n  margin-bottom: 2rem;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n  flex-wrap: wrap;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 1rem;\n  align-items: center;\n  flex: 1;\n  min-width: 300px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%] {\n  position: relative;\n  flex: 1;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%]   .search-icon[_ngcontent-%COMP%] {\n  position: absolute;\n  left: 0.75rem;\n  top: 50%;\n  transform: translateY(-50%);\n  width: 1.25rem;\n  height: 1.25rem;\n  color: #9ca3af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%]   .search-input[_ngcontent-%COMP%] {\n  width: 100%;\n  padding: 0.75rem 0.75rem 0.75rem 2.5rem;\n  border: 1px solid #d1d5db;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  background-color: #f9fafb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%]   .search-input[_ngcontent-%COMP%]:focus {\n  outline: none;\n  border-color: #3b82f6;\n  background-color: white;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%] {\n  position: relative;\n  min-width: 150px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%]   .status-select[_ngcontent-%COMP%] {\n  width: 100%;\n  padding: 0.75rem 2.5rem 0.75rem 1rem;\n  border: 1px solid #d1d5db;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  background-color: white;\n  appearance: none;\n  cursor: pointer;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%]   .status-select[_ngcontent-%COMP%]:focus {\n  outline: none;\n  border-color: #3b82f6;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%]   .dropdown-arrow[_ngcontent-%COMP%] {\n  position: absolute;\n  right: 0.75rem;\n  top: 50%;\n  transform: translateY(-50%);\n  width: 1rem;\n  height: 1rem;\n  color: #6b7280;\n  pointer-events: none;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 0.75rem;\n  align-items: center;\n  flex-wrap: wrap;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n  border: none;\n  white-space: nowrap;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn.btn-secondary[_ngcontent-%COMP%] {\n  background-color: white;\n  color: #374151;\n  border: 1px solid #d1d5db;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn.btn-secondary[_ngcontent-%COMP%]:hover {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn.btn-primary[_ngcontent-%COMP%] {\n  background-color: #3b82f6;\n  color: white;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn.btn-primary[_ngcontent-%COMP%]:hover {\n  background-color: #2563eb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 1rem;\n  height: 1rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .loading-state[_ngcontent-%COMP%], \n.purchase-orders[_ngcontent-%COMP%]   .error-state[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 3rem 2rem;\n  text-align: center;\n  margin-bottom: 2rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .loading-state[_ngcontent-%COMP%]   .loading-spinner[_ngcontent-%COMP%], \n.purchase-orders[_ngcontent-%COMP%]   .error-state[_ngcontent-%COMP%]   .loading-spinner[_ngcontent-%COMP%] {\n  width: 3rem;\n  height: 3rem;\n  border: 3px solid #f3f4f6;\n  border-top: 3px solid #3b82f6;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 1s linear infinite;\n  margin: 0 auto 1rem auto;\n}\n.purchase-orders[_ngcontent-%COMP%]   .loading-state[_ngcontent-%COMP%]   .error-icon[_ngcontent-%COMP%], \n.purchase-orders[_ngcontent-%COMP%]   .error-state[_ngcontent-%COMP%]   .error-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n  margin: 0 auto 1rem auto;\n}\n.purchase-orders[_ngcontent-%COMP%]   .loading-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%], \n.purchase-orders[_ngcontent-%COMP%]   .error-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  color: #6b7280;\n  font-size: 1.125rem;\n  margin: 0 0 1.5rem 0;\n}\n.purchase-orders[_ngcontent-%COMP%]   .loading-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%], \n.purchase-orders[_ngcontent-%COMP%]   .error-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders[_ngcontent-%COMP%]   .loading-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover, \n.purchase-orders[_ngcontent-%COMP%]   .error-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  background-color: #2563eb;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);\n  overflow: hidden;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-header[_ngcontent-%COMP%] {\n  padding: 1.5rem;\n  border-bottom: 1px solid #e5e7eb;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-header[_ngcontent-%COMP%]   .table-title[_ngcontent-%COMP%] {\n  font-size: 1.25rem;\n  font-weight: 600;\n  color: #111827;\n  margin: 0;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-header[_ngcontent-%COMP%]   .table-actions[_ngcontent-%COMP%] {\n  color: #6b7280;\n  font-size: 0.875rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%] {\n  overflow-x: auto;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%] {\n  background-color: #f9fafb;\n  border-bottom: 1px solid #e5e7eb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th[_ngcontent-%COMP%] {\n  padding: 1rem;\n  text-align: left;\n  font-size: 0.875rem;\n  font-weight: 600;\n  color: #374151;\n  border-bottom: 1px solid #e5e7eb;\n  white-space: nowrap;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-po-number[_ngcontent-%COMP%] {\n  min-width: 140px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-supplier[_ngcontent-%COMP%] {\n  min-width: 180px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-order-date[_ngcontent-%COMP%] {\n  min-width: 120px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-expected-date[_ngcontent-%COMP%] {\n  min-width: 120px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-status[_ngcontent-%COMP%] {\n  min-width: 100px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-items[_ngcontent-%COMP%] {\n  min-width: 120px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-total[_ngcontent-%COMP%] {\n  min-width: 120px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-actions[_ngcontent-%COMP%] {\n  min-width: 120px;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%] {\n  border-bottom: 1px solid #f3f4f6;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]:last-child {\n  border-bottom: none;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]:hover {\n  background-color: #f9fafb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td[_ngcontent-%COMP%] {\n  padding: 1rem;\n  font-size: 0.875rem;\n  color: #111827;\n  vertical-align: top;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-po-number[_ngcontent-%COMP%]   .po-number[_ngcontent-%COMP%] {\n  font-weight: 600;\n  color: #3b82f6;\n  font-family: "Courier New", monospace;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-supplier[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-name[_ngcontent-%COMP%] {\n  font-weight: 500;\n  margin-bottom: 0.25rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-supplier[_ngcontent-%COMP%]   .supplier-info[_ngcontent-%COMP%]   .supplier-id[_ngcontent-%COMP%] {\n  font-size: 0.75rem;\n  color: #6b7280;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-order-date[_ngcontent-%COMP%], \n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-expected-date[_ngcontent-%COMP%] {\n  color: #374151;\n  font-weight: 500;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-status[_ngcontent-%COMP%]   .status-badge[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  padding: 0.25rem 0.75rem;\n  border-radius: 9999px;\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-transform: capitalize;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-status[_ngcontent-%COMP%]   .status-badge.status-draft[_ngcontent-%COMP%] {\n  background-color: #f3f4f6;\n  color: #374151;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-status[_ngcontent-%COMP%]   .status-badge.status-pending[_ngcontent-%COMP%] {\n  background-color: #fef3c7;\n  color: #92400e;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-status[_ngcontent-%COMP%]   .status-badge.status-approved[_ngcontent-%COMP%] {\n  background-color: #d1fae5;\n  color: #065f46;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-status[_ngcontent-%COMP%]   .status-badge.status-ordered[_ngcontent-%COMP%] {\n  background-color: #dbeafe;\n  color: #1e40af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-status[_ngcontent-%COMP%]   .status-badge.status-rejected[_ngcontent-%COMP%] {\n  background-color: #fee2e2;\n  color: #991b1b;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-status[_ngcontent-%COMP%]   .status-badge.status-closed[_ngcontent-%COMP%] {\n  background-color: #e5e7eb;\n  color: #374151;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-status[_ngcontent-%COMP%]   .status-badge.status-cancelled[_ngcontent-%COMP%] {\n  background-color: #fef2f2;\n  color: #7f1d1d;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-items[_ngcontent-%COMP%]   .items-info[_ngcontent-%COMP%]   .items-count[_ngcontent-%COMP%] {\n  font-weight: 500;\n  margin-bottom: 0.25rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-items[_ngcontent-%COMP%]   .items-info[_ngcontent-%COMP%]   .items-summary[_ngcontent-%COMP%] {\n  font-size: 0.75rem;\n  color: #6b7280;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-total[_ngcontent-%COMP%]   .total-amount[_ngcontent-%COMP%] {\n  font-weight: 600;\n  color: #10b981;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%] {\n  position: relative;\n  display: inline-block;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-trigger[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  padding: 0;\n  border-radius: 0.375rem;\n  border: 1px solid #d1d5db;\n  background-color: white;\n  color: #374151;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-trigger[_ngcontent-%COMP%]:hover {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-trigger[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 1rem;\n  height: 1rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-menu[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 100%;\n  right: 0;\n  z-index: 50;\n  min-width: 160px;\n  background-color: white;\n  border: 1px solid #e5e7eb;\n  border-radius: 0.5rem;\n  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);\n  opacity: 0;\n  visibility: hidden;\n  transform: translateY(-8px);\n  transition: all 0.2s ease;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-menu.show[_ngcontent-%COMP%] {\n  opacity: 1;\n  visibility: visible;\n  transform: translateY(0);\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-menu[_ngcontent-%COMP%]   .dropdown-item[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  width: 100%;\n  padding: 0.75rem 1rem;\n  border: none;\n  background: none;\n  color: #374151;\n  font-size: 0.875rem;\n  text-align: left;\n  cursor: pointer;\n  transition: background-color 0.2s;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-menu[_ngcontent-%COMP%]   .dropdown-item[_ngcontent-%COMP%]:first-child {\n  border-top-left-radius: 0.5rem;\n  border-top-right-radius: 0.5rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-menu[_ngcontent-%COMP%]   .dropdown-item[_ngcontent-%COMP%]:last-child {\n  border-bottom-left-radius: 0.5rem;\n  border-bottom-right-radius: 0.5rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-menu[_ngcontent-%COMP%]   .dropdown-item[_ngcontent-%COMP%]:hover {\n  background-color: #f9fafb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   tr[_ngcontent-%COMP%]   td.td-actions[_ngcontent-%COMP%]   .dropdown-container[_ngcontent-%COMP%]   .dropdown-menu[_ngcontent-%COMP%]   .dropdown-item[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 1rem;\n  height: 1rem;\n  color: #6b7280;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .pagination[_ngcontent-%COMP%] {\n  padding: 1.5rem;\n  border-top: 1px solid #e5e7eb;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 1rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .pagination[_ngcontent-%COMP%]   .pagination-info[_ngcontent-%COMP%] {\n  color: #6b7280;\n  font-size: 0.875rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .pagination[_ngcontent-%COMP%]   .pagination-buttons[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 0.5rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .pagination[_ngcontent-%COMP%]   .pagination-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  padding: 0.5rem 1rem;\n  border: 1px solid #d1d5db;\n  background-color: white;\n  color: #374151;\n  border-radius: 0.375rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .pagination[_ngcontent-%COMP%]   .pagination-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover:not(:disabled) {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .pagination[_ngcontent-%COMP%]   .pagination-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%] {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 4rem 2rem;\n  text-align: center;\n  margin-bottom: 2rem;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-icon[_ngcontent-%COMP%] {\n  width: 4rem;\n  height: 4rem;\n  color: #9ca3af;\n  margin: 0 auto 1.5rem auto;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-title[_ngcontent-%COMP%] {\n  font-size: 1.5rem;\n  font-weight: 600;\n  color: #111827;\n  margin: 0 0 0.75rem 0;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-description[_ngcontent-%COMP%] {\n  font-size: 1rem;\n  color: #6b7280;\n  margin: 0 0 2rem 0;\n  max-width: 400px;\n  margin-left: auto;\n  margin-right: auto;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  background-color: #2563eb;\n}\n.purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  width: 1rem;\n  height: 1rem;\n}\n@media (max-width: 1024px) {\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-po-number[_ngcontent-%COMP%] {\n    min-width: 120px;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-supplier[_ngcontent-%COMP%] {\n    min-width: 160px;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-order-date[_ngcontent-%COMP%] {\n    min-width: 100px;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-expected-date[_ngcontent-%COMP%] {\n    min-width: 100px;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-status[_ngcontent-%COMP%] {\n    min-width: 80px;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-items[_ngcontent-%COMP%] {\n    min-width: 100px;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-total[_ngcontent-%COMP%] {\n    min-width: 100px;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th.th-actions[_ngcontent-%COMP%] {\n    min-width: 100px;\n  }\n}\n@media (max-width: 768px) {\n  .purchase-orders[_ngcontent-%COMP%] {\n    padding: 1rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%] {\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 1rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%] {\n    padding: 1rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-content[_ngcontent-%COMP%]   .card-value[_ngcontent-%COMP%] {\n    font-size: 1.5rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-content[_ngcontent-%COMP%]   .card-label[_ngcontent-%COMP%] {\n    font-size: 0.875rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%]   .overview-card[_ngcontent-%COMP%]   .card-icon[_ngcontent-%COMP%] {\n    width: 1.5rem;\n    height: 1.5rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%] {\n    padding: 1rem;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%] {\n    flex-direction: column;\n    min-width: auto;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .search-container[_ngcontent-%COMP%] {\n    min-width: auto;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .search-controls[_ngcontent-%COMP%]   .status-dropdown[_ngcontent-%COMP%] {\n    min-width: auto;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%] {\n    justify-content: stretch;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n    flex: 1;\n    justify-content: center;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-header[_ngcontent-%COMP%] {\n    padding: 1rem;\n    flex-direction: column;\n    gap: 0.5rem;\n    align-items: flex-start;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   thead[_ngcontent-%COMP%]   th[_ngcontent-%COMP%] {\n    padding: 0.75rem 0.5rem;\n    font-size: 0.75rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%]   tbody[_ngcontent-%COMP%]   td[_ngcontent-%COMP%] {\n    padding: 0.75rem 0.5rem;\n    font-size: 0.75rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .pagination[_ngcontent-%COMP%] {\n    padding: 1rem;\n    flex-direction: column;\n    align-items: stretch;\n    gap: 0.75rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .pagination[_ngcontent-%COMP%]   .pagination-buttons[_ngcontent-%COMP%] {\n    justify-content: center;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%] {\n    padding: 2rem 1rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-icon[_ngcontent-%COMP%] {\n    width: 3rem;\n    height: 3rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-title[_ngcontent-%COMP%] {\n    font-size: 1.25rem;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .empty-state[_ngcontent-%COMP%]   .empty-description[_ngcontent-%COMP%] {\n    font-size: 0.875rem;\n  }\n}\n@media (max-width: 480px) {\n  .purchase-orders[_ngcontent-%COMP%]   .overview-cards-row[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%] {\n    flex-direction: column;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .control-bar[_ngcontent-%COMP%]   .action-buttons[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n    width: 100%;\n  }\n  .purchase-orders[_ngcontent-%COMP%]   .purchase-orders-table[_ngcontent-%COMP%]   .table-wrapper[_ngcontent-%COMP%]   table[_ngcontent-%COMP%] {\n    min-width: 600px;\n  }\n}\n/*# sourceMappingURL=purchase-orders.component.css.map */'] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(PurchaseOrdersComponent, [{
@@ -3244,23 +3795,43 @@ var PurchaseOrdersComponent = class _PurchaseOrdersComponent {
               <div class="total-amount">{{ formatCurrency(po.total) }}</div>\r
             </td>\r
             <td class="td-actions">\r
-              <div class="action-buttons">\r
-                <button class="btn btn-sm btn-outline" title="View Details" (click)="openViewPOModal(po)">\r
+              <div class="dropdown-container">\r
+                <button class="dropdown-trigger" (click)="po.id && toggleDropdown($event, po.id)">\r
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>\r
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>\r
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>\r
                   </svg>\r
                 </button>\r
-                <button class="btn btn-sm btn-outline" title="Edit" *ngIf="po.status === 'draft'" (click)="openViewPOModal(po)">\r
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>\r
-                  </svg>\r
-                </button>\r
-                <button class="btn btn-sm btn-outline" title="Receive Items" *ngIf="po.status === 'ordered'" (click)="openReceiveItemsModal(po)">\r
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>\r
-                  </svg>\r
-                </button>\r
+                \r
+                <div class="dropdown-menu" [class.show]="po.id && openDropdownId === po.id">\r
+                  <button class="dropdown-item" (click)="viewPurchaseOrder(po)">\r
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>\r
+                    </svg>\r
+                    View Details\r
+                  </button>\r
+                  \r
+                  <button class="dropdown-item" (click)="approvePurchaseOrder(po)" *ngIf="po.status === 'pending'">\r
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>\r
+                    </svg>\r
+                    Approve\r
+                  </button>\r
+                  \r
+                  <button class="dropdown-item" (click)="sendEmail(po)">\r
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>\r
+                    </svg>\r
+                    Send Email\r
+                  </button>\r
+                  \r
+                  <button class="dropdown-item" (click)="markAsOrdered(po)" *ngIf="po.status === 'approved'">\r
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">\r
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>\r
+                    </svg>\r
+                    Mark as Ordered\r
+                  </button>\r
+                </div>\r
               </div>\r
             </td>\r
           </tr>\r
@@ -3313,7 +3884,7 @@ var PurchaseOrdersComponent = class _PurchaseOrdersComponent {
     (itemsReceived)="onItemsReceived()">\r
   </app-receive-items-modal>\r
 </div>\r
-`, styles: ["/* src/app/inventory/components/purchase-orders/purchase-orders.component.scss */\n.purchase-orders {\n  padding: 1.5rem;\n  background-color: #f9fafb;\n  min-height: 100vh;\n}\n.purchase-orders .overview-cards-row {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1.5rem;\n  margin-bottom: 2rem;\n}\n.purchase-orders .overview-cards-row .overview-card {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);\n  position: relative;\n}\n.purchase-orders .overview-cards-row .overview-card .card-content .card-value {\n  font-size: 2rem;\n  font-weight: 700;\n  color: #111827;\n  line-height: 1;\n  margin-bottom: 0.5rem;\n}\n.purchase-orders .overview-cards-row .overview-card .card-content .card-label {\n  font-size: 1rem;\n  color: #374151;\n  font-weight: 600;\n}\n.purchase-orders .overview-cards-row .overview-card .card-icon {\n  position: absolute;\n  top: 1.5rem;\n  right: 1.5rem;\n  width: 2rem;\n  height: 2rem;\n  color: #9ca3af;\n}\n.purchase-orders .overview-cards-row .overview-card.total-pos .card-icon {\n  color: #3b82f6;\n}\n.purchase-orders .overview-cards-row .overview-card.pending .card-icon {\n  color: #f59e0b;\n}\n.purchase-orders .overview-cards-row .overview-card.approved .card-icon {\n  color: #10b981;\n}\n.purchase-orders .overview-cards-row .overview-card.total-value .card-icon {\n  color: #8b5cf6;\n}\n.purchase-orders .control-bar {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 1.5rem;\n  margin-bottom: 2rem;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n  flex-wrap: wrap;\n}\n.purchase-orders .control-bar .search-controls {\n  display: flex;\n  gap: 1rem;\n  align-items: center;\n  flex: 1;\n  min-width: 300px;\n}\n.purchase-orders .control-bar .search-controls .search-container {\n  position: relative;\n  flex: 1;\n}\n.purchase-orders .control-bar .search-controls .search-container .search-icon {\n  position: absolute;\n  left: 0.75rem;\n  top: 50%;\n  transform: translateY(-50%);\n  width: 1.25rem;\n  height: 1.25rem;\n  color: #9ca3af;\n}\n.purchase-orders .control-bar .search-controls .search-container .search-input {\n  width: 100%;\n  padding: 0.75rem 0.75rem 0.75rem 2.5rem;\n  border: 1px solid #d1d5db;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  background-color: #f9fafb;\n}\n.purchase-orders .control-bar .search-controls .search-container .search-input:focus {\n  outline: none;\n  border-color: #3b82f6;\n  background-color: white;\n}\n.purchase-orders .control-bar .search-controls .status-dropdown {\n  position: relative;\n  min-width: 150px;\n}\n.purchase-orders .control-bar .search-controls .status-dropdown .status-select {\n  width: 100%;\n  padding: 0.75rem 2.5rem 0.75rem 1rem;\n  border: 1px solid #d1d5db;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  background-color: white;\n  appearance: none;\n  cursor: pointer;\n}\n.purchase-orders .control-bar .search-controls .status-dropdown .status-select:focus {\n  outline: none;\n  border-color: #3b82f6;\n}\n.purchase-orders .control-bar .search-controls .status-dropdown .dropdown-arrow {\n  position: absolute;\n  right: 0.75rem;\n  top: 50%;\n  transform: translateY(-50%);\n  width: 1rem;\n  height: 1rem;\n  color: #6b7280;\n  pointer-events: none;\n}\n.purchase-orders .control-bar .action-buttons {\n  display: flex;\n  gap: 0.75rem;\n  align-items: center;\n  flex-wrap: wrap;\n}\n.purchase-orders .control-bar .action-buttons .btn {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n  border: none;\n  white-space: nowrap;\n}\n.purchase-orders .control-bar .action-buttons .btn.btn-secondary {\n  background-color: white;\n  color: #374151;\n  border: 1px solid #d1d5db;\n}\n.purchase-orders .control-bar .action-buttons .btn.btn-secondary:hover {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.purchase-orders .control-bar .action-buttons .btn.btn-primary {\n  background-color: #3b82f6;\n  color: white;\n}\n.purchase-orders .control-bar .action-buttons .btn.btn-primary:hover {\n  background-color: #2563eb;\n}\n.purchase-orders .control-bar .action-buttons .btn svg {\n  width: 1rem;\n  height: 1rem;\n}\n.purchase-orders .empty-state {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 4rem 2rem;\n  text-align: center;\n  margin-bottom: 2rem;\n}\n.purchase-orders .empty-state .empty-icon {\n  width: 4rem;\n  height: 4rem;\n  color: #9ca3af;\n  margin: 0 auto 1.5rem auto;\n}\n.purchase-orders .empty-state .empty-title {\n  font-size: 1.5rem;\n  font-weight: 600;\n  color: #111827;\n  margin: 0 0 0.75rem 0;\n}\n.purchase-orders .empty-state .empty-description {\n  font-size: 1rem;\n  color: #6b7280;\n  margin: 0 0 2rem 0;\n  max-width: 400px;\n  margin-left: auto;\n  margin-right: auto;\n}\n.purchase-orders .empty-state .btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders .empty-state .btn:hover {\n  background-color: #2563eb;\n}\n.purchase-orders .empty-state .btn svg {\n  width: 1rem;\n  height: 1rem;\n}\n@media (max-width: 768px) {\n  .purchase-orders {\n    padding: 1rem;\n  }\n  .purchase-orders .overview-cards-row {\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 1rem;\n  }\n  .purchase-orders .overview-cards-row .overview-card {\n    padding: 1rem;\n  }\n  .purchase-orders .overview-cards-row .overview-card .card-content .card-value {\n    font-size: 1.5rem;\n  }\n  .purchase-orders .overview-cards-row .overview-card .card-content .card-label {\n    font-size: 0.875rem;\n  }\n  .purchase-orders .overview-cards-row .overview-card .card-icon {\n    width: 1.5rem;\n    height: 1.5rem;\n  }\n  .purchase-orders .control-bar {\n    padding: 1rem;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .purchase-orders .control-bar .search-controls {\n    flex-direction: column;\n    min-width: auto;\n  }\n  .purchase-orders .control-bar .search-controls .search-container {\n    min-width: auto;\n  }\n  .purchase-orders .control-bar .search-controls .status-dropdown {\n    min-width: auto;\n  }\n  .purchase-orders .control-bar .action-buttons {\n    justify-content: stretch;\n  }\n  .purchase-orders .control-bar .action-buttons .btn {\n    flex: 1;\n    justify-content: center;\n  }\n  .purchase-orders .empty-state {\n    padding: 2rem 1rem;\n  }\n  .purchase-orders .empty-state .empty-icon {\n    width: 3rem;\n    height: 3rem;\n  }\n  .purchase-orders .empty-state .empty-title {\n    font-size: 1.25rem;\n  }\n  .purchase-orders .empty-state .empty-description {\n    font-size: 0.875rem;\n  }\n}\n@media (max-width: 480px) {\n  .purchase-orders .overview-cards-row {\n    grid-template-columns: 1fr;\n  }\n  .purchase-orders .control-bar .action-buttons {\n    flex-direction: column;\n  }\n  .purchase-orders .control-bar .action-buttons .btn {\n    width: 100%;\n  }\n}\n/*# sourceMappingURL=purchase-orders.component.css.map */\n"] }]
+`, styles: ['/* src/app/inventory/components/purchase-orders/purchase-orders.component.scss */\n.purchase-orders {\n  padding: 1.5rem;\n  background-color: #f9fafb;\n  min-height: 100vh;\n}\n.purchase-orders .overview-cards-row {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1.5rem;\n  margin-bottom: 2rem;\n}\n.purchase-orders .overview-cards-row .overview-card {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 1.5rem;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);\n  position: relative;\n}\n.purchase-orders .overview-cards-row .overview-card .card-content .card-value {\n  font-size: 2rem;\n  font-weight: 700;\n  color: #111827;\n  line-height: 1;\n  margin-bottom: 0.5rem;\n}\n.purchase-orders .overview-cards-row .overview-card .card-content .card-label {\n  font-size: 1rem;\n  color: #374151;\n  font-weight: 600;\n}\n.purchase-orders .overview-cards-row .overview-card .card-icon {\n  position: absolute;\n  top: 1.5rem;\n  right: 1.5rem;\n  width: 2rem;\n  height: 2rem;\n  color: #9ca3af;\n}\n.purchase-orders .overview-cards-row .overview-card.total-pos .card-icon {\n  color: #3b82f6;\n}\n.purchase-orders .overview-cards-row .overview-card.pending .card-icon {\n  color: #f59e0b;\n}\n.purchase-orders .overview-cards-row .overview-card.approved .card-icon {\n  color: #10b981;\n}\n.purchase-orders .overview-cards-row .overview-card.total-value .card-icon {\n  color: #8b5cf6;\n}\n.purchase-orders .control-bar {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 1.5rem;\n  margin-bottom: 2rem;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n  flex-wrap: wrap;\n}\n.purchase-orders .control-bar .search-controls {\n  display: flex;\n  gap: 1rem;\n  align-items: center;\n  flex: 1;\n  min-width: 300px;\n}\n.purchase-orders .control-bar .search-controls .search-container {\n  position: relative;\n  flex: 1;\n}\n.purchase-orders .control-bar .search-controls .search-container .search-icon {\n  position: absolute;\n  left: 0.75rem;\n  top: 50%;\n  transform: translateY(-50%);\n  width: 1.25rem;\n  height: 1.25rem;\n  color: #9ca3af;\n}\n.purchase-orders .control-bar .search-controls .search-container .search-input {\n  width: 100%;\n  padding: 0.75rem 0.75rem 0.75rem 2.5rem;\n  border: 1px solid #d1d5db;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  background-color: #f9fafb;\n}\n.purchase-orders .control-bar .search-controls .search-container .search-input:focus {\n  outline: none;\n  border-color: #3b82f6;\n  background-color: white;\n}\n.purchase-orders .control-bar .search-controls .status-dropdown {\n  position: relative;\n  min-width: 150px;\n}\n.purchase-orders .control-bar .search-controls .status-dropdown .status-select {\n  width: 100%;\n  padding: 0.75rem 2.5rem 0.75rem 1rem;\n  border: 1px solid #d1d5db;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  background-color: white;\n  appearance: none;\n  cursor: pointer;\n}\n.purchase-orders .control-bar .search-controls .status-dropdown .status-select:focus {\n  outline: none;\n  border-color: #3b82f6;\n}\n.purchase-orders .control-bar .search-controls .status-dropdown .dropdown-arrow {\n  position: absolute;\n  right: 0.75rem;\n  top: 50%;\n  transform: translateY(-50%);\n  width: 1rem;\n  height: 1rem;\n  color: #6b7280;\n  pointer-events: none;\n}\n.purchase-orders .control-bar .action-buttons {\n  display: flex;\n  gap: 0.75rem;\n  align-items: center;\n  flex-wrap: wrap;\n}\n.purchase-orders .control-bar .action-buttons .btn {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n  border: none;\n  white-space: nowrap;\n}\n.purchase-orders .control-bar .action-buttons .btn.btn-secondary {\n  background-color: white;\n  color: #374151;\n  border: 1px solid #d1d5db;\n}\n.purchase-orders .control-bar .action-buttons .btn.btn-secondary:hover {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.purchase-orders .control-bar .action-buttons .btn.btn-primary {\n  background-color: #3b82f6;\n  color: white;\n}\n.purchase-orders .control-bar .action-buttons .btn.btn-primary:hover {\n  background-color: #2563eb;\n}\n.purchase-orders .control-bar .action-buttons .btn svg {\n  width: 1rem;\n  height: 1rem;\n}\n.purchase-orders .loading-state,\n.purchase-orders .error-state {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 3rem 2rem;\n  text-align: center;\n  margin-bottom: 2rem;\n}\n.purchase-orders .loading-state .loading-spinner,\n.purchase-orders .error-state .loading-spinner {\n  width: 3rem;\n  height: 3rem;\n  border: 3px solid #f3f4f6;\n  border-top: 3px solid #3b82f6;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n  margin: 0 auto 1rem auto;\n}\n.purchase-orders .loading-state .error-icon,\n.purchase-orders .error-state .error-icon {\n  color: #ef4444;\n  margin: 0 auto 1rem auto;\n}\n.purchase-orders .loading-state p,\n.purchase-orders .error-state p {\n  color: #6b7280;\n  font-size: 1.125rem;\n  margin: 0 0 1.5rem 0;\n}\n.purchase-orders .loading-state .btn,\n.purchase-orders .error-state .btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders .loading-state .btn:hover,\n.purchase-orders .error-state .btn:hover {\n  background-color: #2563eb;\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.purchase-orders .purchase-orders-table {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);\n  overflow: hidden;\n}\n.purchase-orders .purchase-orders-table .table-header {\n  padding: 1.5rem;\n  border-bottom: 1px solid #e5e7eb;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.purchase-orders .purchase-orders-table .table-header .table-title {\n  font-size: 1.25rem;\n  font-weight: 600;\n  color: #111827;\n  margin: 0;\n}\n.purchase-orders .purchase-orders-table .table-header .table-actions {\n  color: #6b7280;\n  font-size: 0.875rem;\n}\n.purchase-orders .purchase-orders-table .table-wrapper {\n  overflow-x: auto;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table {\n  width: 100%;\n  border-collapse: collapse;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead {\n  background-color: #f9fafb;\n  border-bottom: 1px solid #e5e7eb;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th {\n  padding: 1rem;\n  text-align: left;\n  font-size: 0.875rem;\n  font-weight: 600;\n  color: #374151;\n  border-bottom: 1px solid #e5e7eb;\n  white-space: nowrap;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th.th-po-number {\n  min-width: 140px;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th.th-supplier {\n  min-width: 180px;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th.th-order-date {\n  min-width: 120px;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th.th-expected-date {\n  min-width: 120px;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th.th-status {\n  min-width: 100px;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th.th-items {\n  min-width: 120px;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th.th-total {\n  min-width: 120px;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table thead th.th-actions {\n  min-width: 120px;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr {\n  border-bottom: 1px solid #f3f4f6;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr:last-child {\n  border-bottom: none;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr:hover {\n  background-color: #f9fafb;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td {\n  padding: 1rem;\n  font-size: 0.875rem;\n  color: #111827;\n  vertical-align: top;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-po-number .po-number {\n  font-weight: 600;\n  color: #3b82f6;\n  font-family: "Courier New", monospace;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-supplier .supplier-info .supplier-name {\n  font-weight: 500;\n  margin-bottom: 0.25rem;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-supplier .supplier-info .supplier-id {\n  font-size: 0.75rem;\n  color: #6b7280;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-order-date,\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-expected-date {\n  color: #374151;\n  font-weight: 500;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-status .status-badge {\n  display: inline-flex;\n  align-items: center;\n  padding: 0.25rem 0.75rem;\n  border-radius: 9999px;\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-transform: capitalize;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-status .status-badge.status-draft {\n  background-color: #f3f4f6;\n  color: #374151;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-status .status-badge.status-pending {\n  background-color: #fef3c7;\n  color: #92400e;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-status .status-badge.status-approved {\n  background-color: #d1fae5;\n  color: #065f46;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-status .status-badge.status-ordered {\n  background-color: #dbeafe;\n  color: #1e40af;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-status .status-badge.status-rejected {\n  background-color: #fee2e2;\n  color: #991b1b;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-status .status-badge.status-closed {\n  background-color: #e5e7eb;\n  color: #374151;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-status .status-badge.status-cancelled {\n  background-color: #fef2f2;\n  color: #7f1d1d;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-items .items-info .items-count {\n  font-weight: 500;\n  margin-bottom: 0.25rem;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-items .items-info .items-summary {\n  font-size: 0.75rem;\n  color: #6b7280;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-total .total-amount {\n  font-weight: 600;\n  color: #10b981;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container {\n  position: relative;\n  display: inline-block;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-trigger {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  padding: 0;\n  border-radius: 0.375rem;\n  border: 1px solid #d1d5db;\n  background-color: white;\n  color: #374151;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-trigger:hover {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-trigger svg {\n  width: 1rem;\n  height: 1rem;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-menu {\n  position: absolute;\n  top: 100%;\n  right: 0;\n  z-index: 50;\n  min-width: 160px;\n  background-color: white;\n  border: 1px solid #e5e7eb;\n  border-radius: 0.5rem;\n  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);\n  opacity: 0;\n  visibility: hidden;\n  transform: translateY(-8px);\n  transition: all 0.2s ease;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-menu.show {\n  opacity: 1;\n  visibility: visible;\n  transform: translateY(0);\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-menu .dropdown-item {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  width: 100%;\n  padding: 0.75rem 1rem;\n  border: none;\n  background: none;\n  color: #374151;\n  font-size: 0.875rem;\n  text-align: left;\n  cursor: pointer;\n  transition: background-color 0.2s;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-menu .dropdown-item:first-child {\n  border-top-left-radius: 0.5rem;\n  border-top-right-radius: 0.5rem;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-menu .dropdown-item:last-child {\n  border-bottom-left-radius: 0.5rem;\n  border-bottom-right-radius: 0.5rem;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-menu .dropdown-item:hover {\n  background-color: #f9fafb;\n}\n.purchase-orders .purchase-orders-table .table-wrapper table tbody tr td.td-actions .dropdown-container .dropdown-menu .dropdown-item svg {\n  width: 1rem;\n  height: 1rem;\n  color: #6b7280;\n}\n.purchase-orders .purchase-orders-table .pagination {\n  padding: 1.5rem;\n  border-top: 1px solid #e5e7eb;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 1rem;\n}\n.purchase-orders .purchase-orders-table .pagination .pagination-info {\n  color: #6b7280;\n  font-size: 0.875rem;\n}\n.purchase-orders .purchase-orders-table .pagination .pagination-buttons {\n  display: flex;\n  gap: 0.5rem;\n}\n.purchase-orders .purchase-orders-table .pagination .pagination-buttons .btn {\n  display: inline-flex;\n  align-items: center;\n  padding: 0.5rem 1rem;\n  border: 1px solid #d1d5db;\n  background-color: white;\n  color: #374151;\n  border-radius: 0.375rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders .purchase-orders-table .pagination .pagination-buttons .btn:hover:not(:disabled) {\n  background-color: #f9fafb;\n  border-color: #9ca3af;\n}\n.purchase-orders .purchase-orders-table .pagination .pagination-buttons .btn:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n.purchase-orders .empty-state {\n  background-color: white;\n  border-radius: 0.75rem;\n  border: 1px solid #e5e7eb;\n  padding: 4rem 2rem;\n  text-align: center;\n  margin-bottom: 2rem;\n}\n.purchase-orders .empty-state .empty-icon {\n  width: 4rem;\n  height: 4rem;\n  color: #9ca3af;\n  margin: 0 auto 1.5rem auto;\n}\n.purchase-orders .empty-state .empty-title {\n  font-size: 1.5rem;\n  font-weight: 600;\n  color: #111827;\n  margin: 0 0 0.75rem 0;\n}\n.purchase-orders .empty-state .empty-description {\n  font-size: 1rem;\n  color: #6b7280;\n  margin: 0 0 2rem 0;\n  max-width: 400px;\n  margin-left: auto;\n  margin-right: auto;\n}\n.purchase-orders .empty-state .btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  padding: 0.75rem 1.5rem;\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n  border-radius: 0.5rem;\n  font-size: 0.875rem;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.purchase-orders .empty-state .btn:hover {\n  background-color: #2563eb;\n}\n.purchase-orders .empty-state .btn svg {\n  width: 1rem;\n  height: 1rem;\n}\n@media (max-width: 1024px) {\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th.th-po-number {\n    min-width: 120px;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th.th-supplier {\n    min-width: 160px;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th.th-order-date {\n    min-width: 100px;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th.th-expected-date {\n    min-width: 100px;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th.th-status {\n    min-width: 80px;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th.th-items {\n    min-width: 100px;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th.th-total {\n    min-width: 100px;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th.th-actions {\n    min-width: 100px;\n  }\n}\n@media (max-width: 768px) {\n  .purchase-orders {\n    padding: 1rem;\n  }\n  .purchase-orders .overview-cards-row {\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 1rem;\n  }\n  .purchase-orders .overview-cards-row .overview-card {\n    padding: 1rem;\n  }\n  .purchase-orders .overview-cards-row .overview-card .card-content .card-value {\n    font-size: 1.5rem;\n  }\n  .purchase-orders .overview-cards-row .overview-card .card-content .card-label {\n    font-size: 0.875rem;\n  }\n  .purchase-orders .overview-cards-row .overview-card .card-icon {\n    width: 1.5rem;\n    height: 1.5rem;\n  }\n  .purchase-orders .control-bar {\n    padding: 1rem;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .purchase-orders .control-bar .search-controls {\n    flex-direction: column;\n    min-width: auto;\n  }\n  .purchase-orders .control-bar .search-controls .search-container {\n    min-width: auto;\n  }\n  .purchase-orders .control-bar .search-controls .status-dropdown {\n    min-width: auto;\n  }\n  .purchase-orders .control-bar .action-buttons {\n    justify-content: stretch;\n  }\n  .purchase-orders .control-bar .action-buttons .btn {\n    flex: 1;\n    justify-content: center;\n  }\n  .purchase-orders .purchase-orders-table .table-header {\n    padding: 1rem;\n    flex-direction: column;\n    gap: 0.5rem;\n    align-items: flex-start;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table thead th {\n    padding: 0.75rem 0.5rem;\n    font-size: 0.75rem;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table tbody td {\n    padding: 0.75rem 0.5rem;\n    font-size: 0.75rem;\n  }\n  .purchase-orders .purchase-orders-table .pagination {\n    padding: 1rem;\n    flex-direction: column;\n    align-items: stretch;\n    gap: 0.75rem;\n  }\n  .purchase-orders .purchase-orders-table .pagination .pagination-buttons {\n    justify-content: center;\n  }\n  .purchase-orders .empty-state {\n    padding: 2rem 1rem;\n  }\n  .purchase-orders .empty-state .empty-icon {\n    width: 3rem;\n    height: 3rem;\n  }\n  .purchase-orders .empty-state .empty-title {\n    font-size: 1.25rem;\n  }\n  .purchase-orders .empty-state .empty-description {\n    font-size: 0.875rem;\n  }\n}\n@media (max-width: 480px) {\n  .purchase-orders .overview-cards-row {\n    grid-template-columns: 1fr;\n  }\n  .purchase-orders .control-bar .action-buttons {\n    flex-direction: column;\n  }\n  .purchase-orders .control-bar .action-buttons .btn {\n    width: 100%;\n  }\n  .purchase-orders .purchase-orders-table .table-wrapper table {\n    min-width: 600px;\n  }\n}\n/*# sourceMappingURL=purchase-orders.component.css.map */\n'] }]
   }], () => [{ type: InventoryAnalyticsService }], null);
 })();
 (() => {
@@ -3322,4 +3893,4 @@ var PurchaseOrdersComponent = class _PurchaseOrdersComponent {
 export {
   PurchaseOrdersComponent
 };
-//# sourceMappingURL=chunk-CSL7OO7Z.js.map
+//# sourceMappingURL=chunk-OT6J3IZG.js.map

@@ -1,6 +1,6 @@
 import {
   InventoryAnalyticsService
-} from "./chunk-AUIJHXYG.js";
+} from "./chunk-ESHGZUZD.js";
 import {
   DefaultValueAccessor,
   FormsModule,
@@ -3392,4 +3392,4 @@ var StockLevelsComponent = class _StockLevelsComponent {
 export {
   StockLevelsComponent
 };
-//# sourceMappingURL=chunk-WJHRXFDI.js.map
+//# sourceMappingURL=chunk-T5VREHPW.js.map

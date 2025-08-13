@@ -1,6 +1,6 @@
 import {
   InventoryAnalyticsService
-} from "./chunk-AUIJHXYG.js";
+} from "./chunk-ESHGZUZD.js";
 import {
   DefaultValueAccessor,
   FormsModule,
@@ -891,4 +891,4 @@ var TransactionsComponent = class _TransactionsComponent {
 export {
   TransactionsComponent
 };
-//# sourceMappingURL=chunk-NHWAAQJI.js.map
+//# sourceMappingURL=chunk-BSSTESCX.js.map
