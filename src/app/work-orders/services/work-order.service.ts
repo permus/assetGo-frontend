@@ -53,6 +53,9 @@ export interface WorkOrder {
   estimated_hours: number | null;
   actual_hours: number | null;
   notes: string | null;
+  category: string | null;
+  tags: string | null;
+  team: any | null;
   meta: any;
   created_at: string;
   updated_at: string;
@@ -94,6 +97,9 @@ export interface CreateWorkOrderRequest {
   asset_id?: number;
   location_id?: number;
   assigned_to?: number;
+  team_id?: number;
+  category?: string;
+  tags?: string;
   estimated_hours?: number;
   notes?: string;
 }

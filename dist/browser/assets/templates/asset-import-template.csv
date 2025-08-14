@@ -1,6 +1,0 @@
-Asset Name,Description,Category,Type,Serial Number,Model,Manufacturer,Purchase Date,Purchase Price,Depreciation,Location,Department,Warranty,Insurance,Health Score,Status
-Sample Asset 1,Office computer for accounting,Equipment,Computer,SN001,Dell OptiPlex,Dell,2024-01-15,1200.00,10.00,,IT,2 years,Basic coverage,95,Active
-Sample Asset 2,Executive desk for management,Furniture,Desk,SN002,Executive Desk,OfficeMax,2024-02-20,800.00,5.00,,HR,1 year,None,100,Active
-Sample Asset 3,Company vehicle for deliveries,Vehicle,Car,SN003,Toyota Camry,Toyota,2024-03-10,25000.00,15.00,,Operations,3 years,Full coverage,85,Active
-Sample Asset 4,Network printer needs repair,Equipment,Printer,SN004,HP LaserJet,HP,2023-12-01,500.00,8.00,,IT,1 year,Basic coverage,60,Maintenance
-Sample Asset 5,Old office chair for storage,Furniture,Chair,SN005,Ergonomic Chair,OfficeMax,2022-06-15,300.00,3.00,,Facilities,None,None,70,Inactive 

@@ -1,6 +1,27 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkOrder } from '../../services/work-order.service';
+
+// Interfaces for nested objects
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  user_type: string;
+  email: string;
+}
+
+interface Asset {
+  id: number;
+  name: string;
+  asset_id: string;
+}
+
+interface Location {
+  id: number;
+  name: string;
+  full_path: string;
+}
 
 @Component({
   selector: 'app-work-order-card',
@@ -10,59 +31,88 @@ import { WorkOrder } from '../../services/work-order.service';
 })
 export class WorkOrderCardComponent {
   @Input() workOrder!: WorkOrder;
+  @Input() isListView = false;
+  @Output() editRequested = new EventEmitter<WorkOrder>();
 
   constructor(private router: Router) {}
 
-  getStatusLabel(status: WorkOrder['status']): string {
-    const statusMap = {
+  getStatusLabel(status: string): string {
+    const statusMap: { [key: string]: string } = {
       'open': 'Open',
-      'in-progress': 'In Progress',
+      'in_progress': 'In Progress',
       'completed': 'Completed',
-      'cancelled': 'Cancelled'
+      'cancelled': 'Cancelled',
+      'pending': 'Pending'
     };
     return statusMap[status] || status;
   }
 
-  getPriorityLabel(priority: WorkOrder['priority']): string {
-    const priorityMap = {
+  getPriorityLabel(priority: string): string {
+    const priorityMap: { [key: string]: string } = {
       'low': 'Low',
       'medium': 'Medium',
       'high': 'High',
-      'critical': 'Critical'
+      'critical': 'Critical',
+      'urgent': 'Urgent'
     };
     return priorityMap[priority] || priority;
   }
 
   getAssigneeName(): string {
     if (this.workOrder.assigned_to) {
-      // This would need to be implemented based on how you get user details
-      return 'Assigned User';
+      if (typeof this.workOrder.assigned_to === 'object' && this.workOrder.assigned_to !== null) {
+        const assignedTo = this.workOrder.assigned_to as User;
+        const firstName = assignedTo.first_name || '';
+        const lastName = assignedTo.last_name || '';
+        return `${firstName} ${lastName}`.trim() || 'Unassigned';
+      }
+      return String(this.workOrder.assigned_to);
     }
     return 'Unassigned';
   }
 
   getAssetName(): string {
     if (this.workOrder.asset) {
-      return this.workOrder.asset.name || 'Asset';
+      if (typeof this.workOrder.asset === 'object' && this.workOrder.asset !== null) {
+        const asset = this.workOrder.asset as Asset;
+        return asset.name || asset.asset_id || 'No Asset';
+      }
+      return String(this.workOrder.asset);
     }
     return 'No Asset';
   }
 
   getLocationName(): string {
     if (this.workOrder.location) {
-      return this.workOrder.location.name || 'Location';
+      if (typeof this.workOrder.location === 'object' && this.workOrder.location !== null) {
+        const location = this.workOrder.location as Location;
+        return location.name || location.full_path || 'No Location';
+      }
+      return String(this.workOrder.location);
     }
     return 'No Location';
   }
 
   getCreatedBy(): string {
     if (this.workOrder.created_by) {
-      return `${this.workOrder.created_by.first_name} ${this.workOrder.created_by.last_name}`;
+      if (typeof this.workOrder.created_by === 'object' && this.workOrder.created_by !== null) {
+        const createdBy = this.workOrder.created_by as User;
+        const firstName = createdBy.first_name || '';
+        const lastName = createdBy.last_name || '';
+        return `${firstName} ${lastName}`.trim() || 'Unknown';
+      }
+      return String(this.workOrder.created_by);
     }
     return 'Unknown';
   }
 
   viewDetails(): void {
+    // Navigate to work order details
     this.router.navigate(['/work-orders', this.workOrder.id]);
+  }
+
+  editWorkOrder(): void {
+    // Emit edit event to parent component
+    this.editRequested.emit(this.workOrder);
   }
 }

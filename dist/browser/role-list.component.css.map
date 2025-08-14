@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/roles/role-list/role-list.component.scss", "src/app/roles/role-list/role-list.component.scss"],
-  "sourcesContent": ["// Role List Component Styles\r\n// Add any custom styles here if needed\r\n\r\n.table-container {\r\n  overflow-x: auto;\r\n}\r\n\r\n.role-table {\r\n  min-width: 100%;\r\n}\r\n\r\n.role-table th {\r\n  position: sticky;\r\n  top: 0;\r\n  background-color: #f9fafb;\r\n  z-index: 10;\r\n} ", ".table-container {\n  overflow-x: auto;\n}\n\n.role-table {\n  min-width: 100%;\n}\n\n.role-table th {\n  position: sticky;\n  top: 0;\n  background-color: #f9fafb;\n  z-index: 10;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL0Q6L2xhcmFnb24tMjAyNS9sYXJhZ29uL3d3dy9hc3NldEdvLWZyb250ZW5kL3NyYy9hcHAvcm9sZXMvcm9sZS1saXN0L3JvbGUtbGlzdC5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFHQTtFQUNFOzs7QUFHRjtFQUNFOzs7QUFHRjtFQUNFO0VBQ0E7RUFDQTtFQUNBIiwic291cmNlc0NvbnRlbnQiOlsiLy8gUm9sZSBMaXN0IENvbXBvbmVudCBTdHlsZXNcclxuLy8gQWRkIGFueSBjdXN0b20gc3R5bGVzIGhlcmUgaWYgbmVlZGVkXHJcblxyXG4udGFibGUtY29udGFpbmVyIHtcclxuICBvdmVyZmxvdy14OiBhdXRvO1xyXG59XHJcblxyXG4ucm9sZS10YWJsZSB7XHJcbiAgbWluLXdpZHRoOiAxMDAlO1xyXG59XHJcblxyXG4ucm9sZS10YWJsZSB0aCB7XHJcbiAgcG9zaXRpb246IHN0aWNreTtcclxuICB0b3A6IDA7XHJcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Y5ZmFmYjtcclxuICB6LWluZGV4OiAxMDtcclxufSAiXX0= */"],
-  "mappings": ";AAGA,CAAA;AACE,cAAA;ACFF;ADKA,CAAA;AACE,aAAA;ACFF;ADKA,CAJA,WAIA;AACE,YAAA;AACA,OAAA;AACA,oBAAA;AACA,WAAA;ACFF;",
-  "names": []
-}

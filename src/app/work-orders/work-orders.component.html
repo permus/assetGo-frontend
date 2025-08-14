@@ -34,18 +34,7 @@
   </div>
 
   <div class="content">
-    <!-- Test element to debug activeTab -->
-    <div style="background: yellow; color: black; padding: 10px; margin: 10px; border-radius: 5px;">
-      DEBUG: activeTab = {{ activeTab }}
-    </div>
-    
-    <div class="work-orders-content" [class.active]="activeTab === 'work-orders'" 
-         [style.display]="activeTab === 'work-orders' ? 'block' : 'none'"
-         style="border: 2px solid #00ff00; padding: 10px; margin: 10px; background: #f0f0f0;">
-      <!-- Test element to see if this section is visible -->
-      <div style="background: #ffeb3b; color: black; padding: 10px; margin: 10px; border-radius: 5px; font-weight: bold;">
-        WORK ORDERS CONTENT SECTION IS VISIBLE - activeTab: {{ activeTab }}
-      </div>
+    <div class="work-orders-content" [class.active]="activeTab === 'work-orders'">
       
       <app-work-order-stats></app-work-order-stats>
       
@@ -58,12 +47,10 @@
         </button>
       </div>
       
-      <app-work-order-filters (filtersChanged)="onFiltersChanged($event)"></app-work-order-filters>
-      <app-work-order-list></app-work-order-list>
+      <app-work-order-list (createWorkOrderRequested)="openCreateModal()"></app-work-order-list>
     </div>
 
-    <div class="analytics-content" [class.active]="activeTab === 'analytics'"
-         [style.display]="activeTab === 'analytics' ? 'block' : 'none'">
+    <div class="analytics-content" [class.active]="activeTab === 'analytics'">
       <app-work-order-analytics></app-work-order-analytics>
     </div>
   </div>

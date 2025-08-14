@@ -13,6 +13,7 @@ import {
   WorkOrderPreviewComponent
 } from './components';
 import { WorkOrderAnalyticsComponent } from './components/work-order-analytics/work-order-analytics.component';
+import { EditWorkOrderModalComponent } from './components/edit-work-order-modal/edit-work-order-modal.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { WorkOrderAnalyticsComponent } from './components/work-order-analytics/w
     WorkOrderCardComponent,
     WorkOrderFiltersComponent,
     WorkOrderStatsComponent,
-    WorkOrderPreviewComponent
+    WorkOrderPreviewComponent,
+    EditWorkOrderModalComponent
   ],
   imports: [
     CommonModule,
