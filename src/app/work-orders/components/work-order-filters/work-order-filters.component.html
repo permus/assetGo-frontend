@@ -1,120 +1,423 @@
 <div class="filters-section">
   <div class="filters-container" [formGroup]="filterForm">
-    <!-- Search Input -->
-    <div class="search-input">
-      <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-      </svg>
-      <input 
-        class="search-field"
-        type="text"
-        formControlName="search"
-        placeholder="Search work orders..."
-        (input)="onSearch()">
+    <!-- Search Input - Full Width -->
+    <div class="search-input-wrapper">
+      <div class="search-input">
+        <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input
+          class="search-field"
+          type="text"
+          formControlName="search"
+          placeholder="Search work orders by title, description, or asset..."
+          (input)="onSearch()">
+      </div>
     </div>
 
-    <!-- Filter Dropdowns -->
-    <div class="filter-dropdowns">
+    <!-- Filter Grid - 4 Columns -->
+    <div class="filter-grid">
       <!-- Status Dropdown -->
       <div class="filter-dropdown">
-        <button 
-          type="button"
-          class="filter-button"
-          (click)="toggleStatusDropdown()">
-          <span>{{ getStatusLabel() }}</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-        </button>
-        
-        <div class="dropdown-menu" [class.show]="showStatusDropdown">
-          <div 
-            *ngFor="let option of statusOptions" 
-            class="dropdown-item"
-            (click)="selectStatus(option.value)">
-            {{ option.label }}
+          Status
+        </label>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="toggleStatusDropdown()"
+            class="filter-button"
+            [class.active]="showStatusDropdown">
+            <div class="button-content">
+              <span *ngIf="!getStatusLabel() || getStatusLabel() === 'All Status'" class="placeholder-text">All Status</span>
+              <div *ngIf="getStatusLabel() && getStatusLabel() !== 'All Status'" class="selected-option">
+                <div class="status-indicator" [style.background-color]="getStatusColor(getStatusValue()) + '20'">
+                  <svg class="w-4 h-4" [style.color]="getStatusColor(getStatusValue())" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <span class="selected-text">{{ getStatusLabel() }}</span>
+              </div>
+              <svg class="chevron-icon" [class.rotate-180]="showStatusDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div *ngIf="showStatusDropdown" class="dropdown-menu">
+            <div class="dropdown-header">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Select Status
+            </div>
+            <button
+              class="dropdown-option"
+              (click)="selectStatus(null)">
+              <div class="option-content">
+                <div class="option-icon bg-gray-100">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">All Status</div>
+                  <div class="option-description">Show all statuses</div>
+                </div>
+              </div>
+            </button>
+            <button
+              *ngFor="let option of statusOptions"
+              type="button"
+              (click)="selectStatus(option.id)"
+              class="dropdown-option"
+              [class.selected]="getStatusValue() === option.id">
+              <div class="option-content">
+                <div class="option-icon" [style.background-color]="getStatusColor(option.id) + '20'">
+                  <svg class="w-5 h-5" [style.color]="getStatusColor(option.id)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">{{ option.name }}</div>
+                  <div class="option-description">{{ getStatusDescription(option.id) }}</div>
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Priority Dropdown -->
       <div class="filter-dropdown">
-        <button 
-          type="button"
-          class="filter-button"
-          (click)="togglePriorityDropdown()">
-          <span>{{ getPriorityLabel() }}</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
           </svg>
-        </button>
-        
-        <div class="dropdown-menu" [class.show]="showPriorityDropdown">
-          <div 
-            *ngFor="let option of priorityOptions" 
-            class="dropdown-item"
-            (click)="selectPriority(option.value)">
-            {{ option.label }}
+          Priority
+        </label>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="togglePriorityDropdown()"
+            class="filter-button"
+            [class.active]="showPriorityDropdown">
+            <div class="button-content">
+              <span *ngIf="!getPriorityLabel() || getPriorityLabel() === 'All Priority'" class="placeholder-text">All Priority</span>
+              <div *ngIf="getPriorityLabel() && getPriorityLabel() !== 'All Priority'" class="selected-option">
+                <div class="priority-indicator" [style.background-color]="getPriorityColor(getPriorityValue()) + '20'">
+                  <svg class="w-4 h-4" [style.color]="getPriorityColor(getPriorityValue())" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+                <span class="selected-text">{{ getPriorityLabel() }}</span>
+              </div>
+              <svg class="chevron-icon" [class.rotate-180]="showPriorityDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div *ngIf="showPriorityDropdown" class="dropdown-menu">
+            <div class="dropdown-header">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              Select Priority
+            </div>
+            <button
+              class="dropdown-option"
+              (click)="selectPriority(null)">
+              <div class="option-content">
+                <div class="option-icon bg-gray-100">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">All Priority</div>
+                  <div class="option-description">Show all priorities</div>
+                </div>
+              </div>
+            </button>
+            <button
+              *ngFor="let option of priorityOptions"
+              type="button"
+              (click)="selectPriority(option.id)"
+              class="dropdown-option"
+              [class.selected]="getPriorityValue() === option.id">
+              <div class="option-content">
+                <div class="option-icon" [style.background-color]="getPriorityColor(option.id) + '20'">
+                  <svg class="w-5 h-5" [style.color]="getPriorityColor(option.id)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">{{ option.name }}</div>
+                  <div class="option-description">{{ getPriorityDescription(option.id) }}</div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Dropdown -->
+      <div class="filter-dropdown">
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+          Category
+        </label>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="toggleCategoryDropdown()"
+            class="filter-button"
+            [class.active]="showCategoryDropdown">
+            <div class="button-content">
+              <span *ngIf="!getCategoryLabel() || getCategoryLabel() === 'All Categories'" class="placeholder-text">All Categories</span>
+              <div *ngIf="getCategoryLabel() && getCategoryLabel() !== 'All Categories'" class="selected-option">
+                <div class="category-indicator">
+                  <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                  </svg>
+                </div>
+                <span class="selected-text">{{ getCategoryLabel() }}</span>
+              </div>
+              <svg class="chevron-icon" [class.rotate-180]="showCategoryDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div *ngIf="showCategoryDropdown" class="dropdown-menu">
+            <div class="dropdown-header">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              Select Category
+            </div>
+            <button
+              class="dropdown-option"
+              (click)="selectCategory(null)">
+              <div class="option-content">
+                <div class="option-icon bg-gray-100">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">All Categories</div>
+                  <div class="option-description">Show all categories</div>
+                </div>
+              </div>
+            </button>
+            <button
+              *ngFor="let option of categoryOptions"
+              type="button"
+              (click)="selectCategory(option.id)"
+              class="dropdown-option"
+              [class.selected]="getCategoryValue() === option.id">
+              <div class="option-content">
+                <div class="option-icon bg-purple-100">
+                  <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">{{ option.name }}</div>
+                  <div class="option-description">Category</div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Asset Dropdown -->
+      <div class="filter-dropdown">
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          Asset
+        </label>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="toggleAssetDropdown()"
+            class="filter-button"
+            [class.active]="showAssetDropdown">
+            <div class="button-content">
+              <span *ngIf="!getAssetLabel() || getAssetLabel() === 'All Assets'" class="placeholder-text">All Assets</span>
+              <div *ngIf="getAssetLabel() && getAssetLabel() !== 'All Assets'" class="selected-option">
+                <div class="asset-indicator">
+                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                  </svg>
+                </div>
+                <span class="selected-text">{{ getAssetLabel() }}</span>
+              </div>
+              <svg class="chevron-icon" [class.rotate-180]="showAssetDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div *ngIf="showAssetDropdown" class="dropdown-menu">
+            <div class="dropdown-header">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+              Select Asset
+            </div>
+            <button
+              class="dropdown-option"
+              (click)="selectAsset(0)">
+              <div class="option-content">
+                <div class="option-icon bg-gray-100">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">All Assets</div>
+                  <div class="option-description">Show all assets</div>
+                </div>
+              </div>
+            </button>
+            <button
+              *ngFor="let asset of assets"
+              type="button"
+              (click)="selectAsset(asset.id)"
+              class="dropdown-option"
+              [class.selected]="getAssetValue() === asset.id">
+              <div class="option-content">
+                <div class="option-icon bg-blue-100">
+                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">{{ asset.name }}</div>
+                  <div class="option-description">{{ asset.asset_id }}</div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Dropdown -->
+      <div class="filter-dropdown">
+        <label class="filter-label">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          Location
+        </label>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="toggleLocationDropdown()"
+            class="filter-button"
+            [class.active]="showLocationDropdown">
+            <div class="button-content">
+              <span *ngIf="!getLocationLabel() || getLocationLabel() === 'All Locations'" class="placeholder-text">All Locations</span>
+              <div *ngIf="getLocationLabel() && getLocationLabel() !== 'All Locations'" class="selected-option">
+                <div class="location-indicator">
+                  <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                </div>
+                <span class="selected-text">{{ getLocationLabel() }}</span>
+              </div>
+              <svg class="chevron-icon" [class.rotate-180]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div *ngIf="showLocationDropdown" class="dropdown-menu">
+            <div class="dropdown-header">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              Select Location
+            </div>
+            <button
+              class="dropdown-option"
+              (click)="selectLocation(0)">
+              <div class="option-content">
+                <div class="option-icon bg-gray-100">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">All Locations</div>
+                  <div class="option-description">Show all locations</div>
+                </div>
+              </div>
+            </button>
+            <button
+              *ngFor="let location of locations"
+              type="button"
+              (click)="selectLocation(location.id)"
+              class="dropdown-option"
+              [class.selected]="getLocationValue() === location.id">
+              <div class="option-content">
+                <div class="option-icon bg-green-100">
+                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">{{ location.name }}</div>
+                  <div class="option-description">Location</div>
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Advanced Button -->
-    <button 
-      type="button"
-      class="advanced-button"
-      [class.active]="showAdvanced"
-      (click)="toggleAdvanced()">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
-      </svg>
-      Advanced
-      <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showAdvanced" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-      </svg>
-    </button>
-
-    <!-- Advanced Options -->
-    <div class="advanced-options" [class.show]="showAdvanced">
-      <div class="advanced-section">
-        <h4>Sort By</h4>
-        <div class="sort-options">
-          <button 
-            *ngFor="let option of sortOptions"
-            type="button"
-            class="sort-option"
-            [class.active]="sortBy === option.value"
-            (click)="setSortBy(option.value)">
-            {{ option.label }}
-          </button>
-        </div>
-      </div>
+    <!-- Action Buttons Row -->
+    <div class="action-buttons">
+      <button 
+        type="button"
+        class="action-btn secondary"
+        (click)="clearFilters()">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Clear Filters
+      </button>
       
-      <div class="advanced-section">
-        <h4>Sort Order</h4>
-        <button 
-          type="button"
-          class="sort-order-button"
-          (click)="toggleSortOrder()">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path *ngIf="sortOrder === 'asc'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
-            <path *ngIf="sortOrder === 'desc'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
-          </svg>
-          {{ sortOrder === 'asc' ? 'Ascending' : 'Descending' }}
-        </button>
-      </div>
+      <button 
+        type="button"
+        class="action-btn primary"
+        (click)="onSearch()">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        Apply Filters
+      </button>
     </div>
-
-    <!-- Clear Filters -->
-    <button 
-      type="button"
-      class="clear-button"
-      (click)="clearFilters()">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-      Clear
-    </button>
   </div>
 </div>

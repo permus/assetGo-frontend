@@ -3,59 +3,64 @@
 
 	.stats-cards {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 1.5rem;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 1rem;
 		margin-bottom: 1.5rem;
 
 		.stat-card {
-			background: white;
-			border-radius: 12px;
-			padding: 1.5rem;
-			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-			border: 1px solid #e2e8f0;
-			transition: all 0.2s ease;
-			height: 150px;
+			position: relative;
+			background: #ffffff;
+			border-radius: 14px;
+			padding: 16px 18px;
+			border: 1px solid #e5e7eb;
+			box-shadow: 0 4px 16px rgba(2, 6, 23, 0.05);
+			transition: transform 0.2s ease, box-shadow 0.2s ease;
 
 			&:hover {
-				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-				transform: translateY(-1px);
+				transform: translateY(-2px);
+				box-shadow: 0 8px 24px rgba(2, 6, 23, 0.08);
 			}
 
-			.card-row {
+			.card-top {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				height: 100%;
+				margin-bottom: 8px;
 			}
 
-			.left {
-				display: flex;
-				align-items: center;
-				gap: 0.75rem;
-			}
-
-			.icon {
-				width: 1.75rem;
-				height: 1.75rem;
-				&.blue { color: #2563eb; }
-				&.red { color: #dc2626; }
-				&.green { color: #16a34a; }
-			}
-
-			.label {
-				font-size: 1rem;
+			.title {
+				font-size: 14px;
 				font-weight: 600;
-				color: #475569;
+				color: #334155;
 			}
 
-			.count {
-				font-size: 2.25rem;
-				font-weight: 800;
-				color: #111827;
-				&.blue { color: #2563eb; }
-				&.red { color: #dc2626; }
-				&.green { color: #16a34a; }
+			.badge {
+				background: rgba(59,130,246,0.12);
+				border-radius: 10px;
+				padding: 6px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
 			}
+
+			.badge-icon { width: 16px; height: 16px; color: #2563eb; }
+
+			.value {
+				font-size: 28px;
+				font-weight: 800;
+				color: #0f172a;
+				margin: 2px 0 6px;
+			}
+
+			.subtitle {
+				font-size: 13px;
+				color: #6b7280;
+			}
+
+			&.theme-blue { background: #f0f7ff; border-color: #dbeafe; .badge{background: rgba(59,130,246,0.15)} }
+			&.theme-green { background: #effcf4; border-color: #d1fae5; .badge{background: rgba(16,185,129,0.15)} }
+			&.theme-orange { background: #fff7ed; border-color: #fed7aa; .badge{background: rgba(245,158,11,0.15)} }
+			&.theme-purple { background: #f6f3ff; border-color: #ddd6fe; .badge{background: rgba(139,92,246,0.15)} }
 		}
 	}
 
@@ -94,7 +99,7 @@
 @media (max-width: 1024px) {
 	.stats-section {
 		.stats-cards {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(3, 1fr);
 			gap: 1rem;
 		}
 	}
@@ -105,13 +110,7 @@
 		.stats-cards {
 			grid-template-columns: 1fr;
 			gap: 1rem;
-
-			.stat-card {
-				height: 130px;
-				.card-row { align-items: flex-start; padding-top: 0.25rem; }
-				.count { font-size: 1.875rem; }
-				.icon { width: 1.5rem; height: 1.5rem; }
-			}
+			.stat-card { padding: 16px; }
 		}
 	}
 }

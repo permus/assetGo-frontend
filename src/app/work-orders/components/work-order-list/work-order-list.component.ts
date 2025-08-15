@@ -47,6 +47,15 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
   total = 0;
   totalPages = 0;
 
+  // Bulk operations properties
+  selectedWorkOrders: Set<number> = new Set();
+  isBulkMode = false;
+  showBulkActions = false;
+  bulkAction = '';
+  bulkTargetUser: number | null = null;
+  bulkStatus: string = '';
+  bulkPriority: string = '';
+
   // Math object for template access
   Math = Math;
 
@@ -104,11 +113,35 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
       if (filters.priority && filters.priority !== 'all') {
         params.priority = filters.priority;
       }
+      if (filters.asset_id && filters.asset_id !== '') {
+        params.asset_id = filters.asset_id;
+      }
+      if (filters.location_id && filters.location_id !== '') {
+        params.location_id = filters.location_id;
+      }
+      if (filters.assigned_to && filters.assigned_to !== '') {
+        params.assigned_to = filters.assigned_to;
+      }
+      if (filters.is_overdue !== undefined && filters.is_overdue !== false) {
+        params.is_overdue = filters.is_overdue;
+      }
+      if (filters.start_date && filters.start_date !== '') {
+        params.start_date = filters.start_date;
+      }
+      if (filters.end_date && filters.end_date !== '') {
+        params.end_date = filters.end_date;
+      }
+      if (filters.due_start_date && filters.due_start_date !== '') {
+        params.due_start_date = filters.due_start_date;
+      }
+      if (filters.due_end_date && filters.due_end_date !== '') {
+        params.due_end_date = filters.due_end_date;
+      }
       if (filters.sortBy) {
-        params.sort = filters.sortBy;
+        params.sort_by = filters.sortBy;
       }
       if (filters.sortOrder) {
-        params.direction = filters.sortOrder;
+        params.sort_dir = filters.sortOrder;
       }
     }
 
@@ -201,10 +234,131 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
       'low': 'Low',
       'medium': 'Medium',
       'high': 'High',
-      'critical': 'Critical',
-      'urgent': 'Urgent'
+      'critical': 'Critical'
     };
     return priorityMap[priority] || priority;
+  }
+
+  // Bulk operations methods
+  toggleBulkMode(): void {
+    this.isBulkMode = !this.isBulkMode;
+    if (!this.isBulkMode) {
+      this.selectedWorkOrders.clear();
+      this.showBulkActions = false;
+    }
+  }
+
+  toggleWorkOrderSelection(workOrderId: number): void {
+    if (this.selectedWorkOrders.has(workOrderId)) {
+      this.selectedWorkOrders.delete(workOrderId);
+    } else {
+      this.selectedWorkOrders.add(workOrderId);
+    }
+    this.showBulkActions = this.selectedWorkOrders.size > 0;
+  }
+
+  selectAllWorkOrders(): void {
+    this.workOrders.forEach(wo => this.selectedWorkOrders.add(wo.id));
+    this.showBulkActions = true;
+  }
+
+  deselectAllWorkOrders(): void {
+    this.selectedWorkOrders.clear();
+    this.showBulkActions = false;
+  }
+
+  getSelectedCount(): number {
+    return this.selectedWorkOrders.size;
+  }
+
+  isAllSelected(): boolean {
+    return this.workOrders.length > 0 && this.selectedWorkOrders.size === this.workOrders.length;
+  }
+
+  isPartiallySelected(): boolean {
+    return this.selectedWorkOrders.size > 0 && this.selectedWorkOrders.size < this.workOrders.length;
+  }
+
+  toggleSelectAll(): void {
+    if (this.isAllSelected()) {
+      this.deselectAllWorkOrders();
+    } else {
+      this.selectAllWorkOrders();
+    }
+  }
+
+  // Bulk status update
+  updateBulkStatus(status: string): void {
+    if (this.selectedWorkOrders.size === 0) return;
+
+    const workOrderIds = Array.from(this.selectedWorkOrders);
+    const updates = workOrderIds.map(id => ({
+      id,
+      status
+    }));
+
+    // Here you would call the bulk update API
+    console.log('Bulk status update:', updates);
+    
+    // For now, just refresh the list
+    this.refreshWorkOrders();
+    this.selectedWorkOrders.clear();
+    this.showBulkActions = false;
+  }
+
+  // Bulk priority update
+  updateBulkPriority(priority: string): void {
+    if (this.selectedWorkOrders.size === 0) return;
+
+    const workOrderIds = Array.from(this.selectedWorkOrders);
+    const updates = workOrderIds.map(id => ({
+      id,
+      priority
+    }));
+
+    // Here you would call the bulk update API
+    console.log('Bulk priority update:', updates);
+    
+    // For now, just refresh the list
+    this.refreshWorkOrders();
+    this.selectedWorkOrders.clear();
+    this.showBulkActions = false;
+  }
+
+  // Bulk assignment
+  assignBulkWorkOrders(userId: number): void {
+    if (this.selectedWorkOrders.size === 0) return;
+
+    const workOrderIds = Array.from(this.selectedWorkOrders);
+    const updates = workOrderIds.map(id => ({
+      id,
+      assigned_to: userId
+    }));
+
+    // Here you would call the bulk update API
+    console.log('Bulk assignment update:', updates);
+    
+    // For now, just refresh the list
+    this.refreshWorkOrders();
+    this.selectedWorkOrders.clear();
+    this.showBulkActions = false;
+  }
+
+  // Bulk delete
+  deleteBulkWorkOrders(): void {
+    if (this.selectedWorkOrders.size === 0) return;
+
+    if (confirm(`Are you sure you want to delete ${this.selectedWorkOrders.size} work order(s)?`)) {
+      const workOrderIds = Array.from(this.selectedWorkOrders);
+      
+      // Here you would call the bulk delete API
+      console.log('Bulk delete:', workOrderIds);
+      
+      // For now, just refresh the list
+      this.refreshWorkOrders();
+      this.selectedWorkOrders.clear();
+      this.showBulkActions = false;
+    }
   }
 
   getAssigneeName(workOrder: any): string {

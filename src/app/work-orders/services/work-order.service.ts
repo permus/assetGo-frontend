@@ -41,8 +41,9 @@ export interface WorkOrder {
   id: number;
   title: string;
   description: string | null;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  status: 'open' | 'in-progress' | 'completed' | 'cancelled';
+  priority_id: number | null;
+  status_id: number | null;
+  category_id: number | null;
   due_date: string | null;
   completed_at: string | null;
   asset_id: number | null;
@@ -54,7 +55,6 @@ export interface WorkOrder {
   estimated_hours: number | null;
   actual_hours: number | null;
   notes: string | null;
-  category: string | null;
   tags: string | null;
   team: any | null;
   meta: any;
@@ -68,6 +68,11 @@ export interface WorkOrder {
   asset: any | null;
   location: any | null;
   company: WorkOrderCompany;
+  
+  // Relationships (populated by backend)
+  priority?: { id: number; name: string; slug: string };
+  status?: { id: number; name: string; slug: string };
+  category?: { id: number; name: string; slug: string };
 }
 
 export interface WorkOrderListResponse {
@@ -100,13 +105,14 @@ interface ApiResponse<T> {
 export interface CreateWorkOrderRequest {
   title: string;
   description?: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority_id: number;
+  status_id: number;
+  category_id?: number;
   due_date?: string;
   asset_id?: number;
   location_id?: number;
   assigned_to?: number;
   team_id?: number;
-  category?: string;
   tags?: string;
   estimated_hours?: number;
   notes?: string;
@@ -198,8 +204,9 @@ export interface WorkOrderFilters {
 }
 
 export interface WorkOrderSearchParams {
-  status?: string;
-  priority?: string;
+  status_id?: number | null;
+  priority_id?: number | null;
+  category_id?: number | null;
   asset_id?: number;
   location_id?: number;
   assigned_to?: number;
@@ -207,8 +214,8 @@ export interface WorkOrderSearchParams {
   start_date?: string;
   end_date?: string;
   search?: string;
-  sort?: string;
-  direction?: 'asc' | 'desc';
+  sort_by?: string;
+  sort_dir?: 'asc' | 'desc';
   page?: number;
   per_page?: number;
 }

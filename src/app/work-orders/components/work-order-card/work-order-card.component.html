@@ -1,4 +1,13 @@
 <div class="work-order-card" [class.list-view]="isListView">
+  <!-- Bulk Selection Checkbox -->
+  <div class="bulk-selection-checkbox" *ngIf="showBulkSelection">
+    <input 
+      type="checkbox" 
+      [checked]="isSelected"
+      (change)="onSelectionChange($event)"
+      class="bulk-checkbox">
+  </div>
+
   <div class="card-header">
     <div class="title-section">
       <div class="icon">

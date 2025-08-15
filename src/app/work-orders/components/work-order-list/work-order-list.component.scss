@@ -17,12 +17,145 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+
+      .selected-count {
+        font-size: 0.875rem;
+        color: #2563eb;
+        font-weight: 600;
+      }
+    }
+
+    .bulk-operations {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1;
+      margin: 0 2rem;
+
+      .bulk-selection {
+        .select-all-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          font-size: 0.875rem;
+          color: #374151;
+
+          .select-all-checkbox {
+            width: 1rem;
+            height: 1rem;
+            accent-color: #2563eb;
+          }
+
+          .select-all-text {
+            font-weight: 500;
+          }
+        }
+      }
+
+      .bulk-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+
+        .bulk-action-group {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+
+          .bulk-action-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+
+            &:hover {
+              border-color: #9ca3af;
+              background: #f9fafb;
+            }
+
+            svg {
+              width: 1rem;
+              height: 1rem;
+            }
+          }
+        }
+
+        .bulk-delete-btn {
+          padding: 0.5rem 0.75rem;
+          border: 1px solid #ef4444;
+          border-radius: 6px;
+          background: white;
+          color: #ef4444;
+          font-size: 0.75rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          white-space: nowrap;
+
+          &:hover {
+            background: #ef4444;
+            color: white;
+          }
+
+          svg {
+            width: 1rem;
+            height: 1rem;
+          }
+        }
+      }
     }
 
     .header-actions {
       display: flex;
       align-items: center;
       gap: 1rem;
+
+      .bulk-mode-btn {
+        background: none;
+        border: 1px solid #d1d5db;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+
+        &:hover {
+          border-color: #9ca3af;
+          background: #f9fafb;
+          color: #374151;
+        }
+
+        &.active {
+          background: #2563eb;
+          color: white;
+          border-color: #2563eb;
+
+          &:hover {
+            background: #1d4ed8;
+          }
+        }
+
+        svg {
+          width: 1rem;
+          height: 1rem;
+        }
+      }
 
       .refresh-btn {
         background: none;

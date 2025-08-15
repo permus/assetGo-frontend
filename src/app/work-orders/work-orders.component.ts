@@ -1,13 +1,15 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { WorkOrderService, CreateWorkOrderRequest } from './services/work-order.service';
 import { AssetService } from '../assets/services/asset.service';
 import { LocationService } from '../locations/services/location.service';
 import { TeamService } from '../teams/services/team.service';
+import { MetaWorkOrdersService } from '../core/services/meta-work-orders.service';
 import { Subscription } from 'rxjs';
 import { WorkOrderListComponent } from './components/work-order-list/work-order-list.component';
 import { WorkOrderStatsComponent } from './components/work-order-stats/work-order-stats.component';
 import { WorkOrderAnalyticsComponent } from './components/work-order-analytics/work-order-analytics.component';
+import { MetaItem } from '../core/types/work-order.types';
 
 @Component({
   selector: 'app-work-orders',
@@ -35,6 +37,21 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
   locations: any[] = [];
   teamMembers: any[] = [];
   
+  // Metadata options for new standardized select boxes
+  statusOptions: MetaItem[] = [];
+  priorityOptions: MetaItem[] = [];
+  categoryOptions: MetaItem[] = [];
+  
+  // Dropdown states for new standardized select boxes
+  showStatusDropdown = false;
+  showPriorityDropdown = false;
+  showCategoryDropdown = false;
+  
+  // Selected values for new standardized select boxes
+  selectedStatus: MetaItem | null = null;
+  selectedPriority: MetaItem | null = null;
+  selectedCategory: MetaItem | null = null;
+  
   private subscription = new Subscription();
 
   constructor(
@@ -42,16 +59,20 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     private workOrderService: WorkOrderService,
     private assetService: AssetService,
     private locationService: LocationService,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private metaWorkOrdersService: MetaWorkOrdersService
   ) {
     this.workOrderForm = this.fb.group({
       title: ['', Validators.required],
-      priority: ['medium'],
+      status_id: [null, Validators.required],
+      priority_id: [null, Validators.required],
+      category_id: [null],
       due_date: [''],
       description: [''],
       asset_id: [''],
       location_id: [''],
       assigned_to: [''],
+      team_id: [''],
       estimated_hours: [''],
       notes: ['']
     });
@@ -61,6 +82,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     console.log('WorkOrdersComponent: ngOnInit called');
     console.log('WorkOrdersComponent: Initial activeTab:', this.activeTab);
     this.loadSelectData();
+    this.loadMetadataOptions();
   }
 
   ngAfterViewInit(): void {
@@ -72,6 +94,62 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+
+  private loadMetadataOptions(): void {
+    // Ensure we don't reuse any stale cached responses after deploy/code changes
+    this.metaWorkOrdersService.clearAllCache();
+
+    // Load statuses
+    this.subscription.add(
+      this.metaWorkOrdersService.getStatus().subscribe({
+        next: (statuses) => {
+          this.statusOptions = statuses;
+          // Set default status to first available
+          if (statuses.length > 0) {
+            const defaultStatus = statuses.find(s => s.slug === 'open') || statuses[0];
+            this.selectedStatus = defaultStatus;
+            this.workOrderForm.patchValue({ status_id: defaultStatus.id });
+          }
+        },
+        error: (error) => {
+          console.error('Error loading statuses:', error);
+          this.statusOptions = [];
+        }
+      })
+    );
+
+    // Load priorities
+    this.subscription.add(
+      this.metaWorkOrdersService.getPriorities().subscribe({
+        next: (priorities) => {
+          this.priorityOptions = priorities;
+          // Set default priority to medium
+          if (priorities.length > 0) {
+            const defaultPriority = priorities.find(p => p.slug === 'medium') || priorities[0];
+            this.selectedPriority = defaultPriority;
+            this.workOrderForm.patchValue({ priority_id: defaultPriority.id });
+          }
+        },
+        error: (error) => {
+          console.error('Error loading priorities:', error);
+          this.priorityOptions = [];
+        }
+      })
+    );
+
+    // Load categories
+    this.subscription.add(
+      this.metaWorkOrdersService.getCategories().subscribe({
+        next: (categories) => {
+          this.categoryOptions = categories;
+        },
+        error: (error) => {
+          console.error('Error loading categories:', error);
+          this.categoryOptions = [];
+        }
+      })
+    );
   }
 
   private loadSelectData(): void {
@@ -130,6 +208,146 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     );
   }
 
+  // New standardized select box methods
+  toggleStatusDropdown(): void {
+    this.showStatusDropdown = !this.showStatusDropdown;
+    this.showPriorityDropdown = false;
+    this.showCategoryDropdown = false;
+  }
+
+  togglePriorityDropdown(): void {
+    this.showPriorityDropdown = !this.showPriorityDropdown;
+    this.showStatusDropdown = false;
+    this.showCategoryDropdown = false;
+  }
+
+  toggleCategoryDropdown(): void {
+    this.showCategoryDropdown = !this.showCategoryDropdown;
+    this.showStatusDropdown = false;
+    this.showPriorityDropdown = false;
+  }
+
+  selectStatus(status: MetaItem): void {
+    this.selectedStatus = status;
+    this.workOrderForm.patchValue({ status_id: status.id });
+    this.showStatusDropdown = false;
+  }
+
+  selectPriority(priority: MetaItem): void {
+    this.selectedPriority = priority;
+    this.workOrderForm.patchValue({ priority_id: priority.id });
+    this.showPriorityDropdown = false;
+  }
+
+  selectCategory(category: MetaItem | null): void {
+    this.selectedCategory = category;
+    this.workOrderForm.patchValue({ category_id: category?.id || null });
+    this.showCategoryDropdown = false;
+  }
+
+  getStatusLabel(): string {
+    return this.selectedStatus ? this.selectedStatus.name : 'Select status';
+  }
+
+  getPriorityLabel(): string {
+    return this.selectedPriority ? this.selectedPriority.name : 'Select priority';
+  }
+
+  getCategoryLabel(): string {
+    return this.selectedCategory ? this.selectedCategory.name : 'Select category (optional)';
+  }
+
+  getStatusValue(): number | null {
+    return this.selectedStatus ? this.selectedStatus.id : null;
+  }
+
+  getPriorityValue(): number | null {
+    return this.selectedPriority ? this.selectedPriority.id : null;
+  }
+
+  getCategoryValue(): number | null {
+    return this.selectedCategory ? this.selectedCategory.id : null;
+  }
+
+  getStatusColor(): string {
+    if (!this.selectedStatus) return '#6B7280';
+    switch (this.selectedStatus.slug) {
+      case 'open': return '#10B981';
+      case 'in-progress': return '#F59E0B';
+      case 'completed': return '#3B82F6';
+      case 'cancelled': return '#EF4444';
+      case 'on-hold': return '#8B5CF6';
+      default: return '#6B7280';
+    }
+  }
+
+  getPriorityColor(): string {
+    if (!this.selectedPriority) return '#6B7280';
+    switch (this.selectedPriority.slug) {
+      case 'low': return '#10B981';
+      case 'medium': return '#F59E0B';
+      case 'high': return '#F97316';
+      case 'critical': return '#EF4444';
+      case 'ppm': return '#8B5CF6';
+      default: return '#6B7280';
+    }
+  }
+
+  getStatusDescription(): string {
+    if (!this.selectedStatus) return 'Select a status for this work order';
+    switch (this.selectedStatus.slug) {
+      case 'open': return 'Work order is open and ready to be assigned';
+      case 'in-progress': return 'Work order is currently being worked on';
+      case 'completed': return 'Work order has been completed successfully';
+      case 'cancelled': return 'Work order has been cancelled';
+      case 'on-hold': return 'Work order is temporarily on hold';
+      default: return this.selectedStatus.name;
+    }
+  }
+
+  getPriorityDescription(): string {
+    if (!this.selectedPriority) return 'Select a priority level for this work order';
+    switch (this.selectedPriority.slug) {
+      case 'low': return 'Low priority - can be addressed when convenient';
+      case 'medium': return 'Medium priority - should be addressed soon';
+      case 'high': return 'High priority - needs immediate attention';
+      case 'critical': return 'Critical priority - urgent, requires immediate action';
+      case 'ppm': return 'Preventive maintenance - scheduled maintenance task';
+      default: return this.selectedPriority.name;
+    }
+  }
+
+  getCategoryDescription(category: MetaItem): string {
+    // Map category slugs to descriptions
+    switch (category.slug) {
+      case 'preventive-maintenance': return 'Regular scheduled maintenance to prevent breakdowns';
+      case 'corrective-maintenance': return 'Repair work to fix existing problems';
+      case 'emergency-maintenance': return 'Urgent repairs requiring immediate attention';
+      case 'inspection': return 'Regular inspections and assessments';
+      case 'calibration': return 'Equipment calibration and adjustment';
+      case 'cleaning': return 'Cleaning and general upkeep';
+      case 'lubrication': return 'Lubrication and oil changes';
+      case 'filter-replacement': return 'Filter and consumable replacement';
+      case 'belt-replacement': return 'Belt and drive component replacement';
+      case 'electrical': return 'Electrical system maintenance';
+      case 'mechanical': return 'Mechanical system maintenance';
+      case 'plumbing': return 'Plumbing system maintenance';
+      case 'hvac': return 'HVAC system maintenance';
+      default: return 'Maintenance category';
+    }
+  }
+
+  // Close dropdowns when clicking outside
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.status-dropdown') && !target.closest('.priority-dropdown') && !target.closest('.category-dropdown')) {
+      this.showStatusDropdown = false;
+      this.showPriorityDropdown = false;
+      this.showCategoryDropdown = false;
+    }
+  }
+
   setActiveTab(tab: 'work-orders' | 'analytics') {
     console.log('WorkOrdersComponent: setActiveTab called with:', tab);
     this.activeTab = tab;
@@ -145,6 +363,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     this.showCreateModal = true;
     this.resetMessages();
     this.loadSelectData(); // Refresh the select data when opening modal
+    this.loadMetadataOptions(); // Refresh metadata options
   }
 
   closeCreateModal(event?: any) {
@@ -214,11 +433,14 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       const workOrderData: CreateWorkOrderRequest = {
         title: this.workOrderForm.value.title,
         description: this.workOrderForm.value.description || undefined,
-        priority: this.workOrderForm.value.priority,
+        status_id: this.workOrderForm.value.status_id,
+        priority_id: this.workOrderForm.value.priority_id,
+        category_id: this.workOrderForm.value.category_id || undefined,
         due_date: this.workOrderForm.value.due_date || undefined,
         asset_id: this.workOrderForm.value.asset_id || undefined,
         location_id: this.workOrderForm.value.location_id || undefined,
         assigned_to: this.workOrderForm.value.assigned_to || undefined,
+        team_id: this.workOrderForm.value.team_id || undefined,
         estimated_hours: this.workOrderForm.value.estimated_hours || undefined,
         notes: this.workOrderForm.value.notes || undefined
       };
@@ -230,8 +452,12 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
             this.showSuccess();
             this.closeCreateModal();
             this.workOrderForm.reset({
-              priority: 'medium'
+              status_id: this.selectedStatus?.id || null,
+              priority_id: this.selectedPriority?.id || null,
+              category_id: null
             });
+            // Reset selected values
+            this.selectedCategory = null;
             // Refresh the work order list and stats
             if (this.workOrderList) {
               this.workOrderList.refreshWorkOrders();
@@ -287,5 +513,6 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     
     // Refresh select data
     this.loadSelectData();
+    this.loadMetadataOptions();
   }
 }

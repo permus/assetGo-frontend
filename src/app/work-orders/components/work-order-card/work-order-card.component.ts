@@ -32,9 +32,21 @@ interface Location {
 export class WorkOrderCardComponent {
   @Input() workOrder!: WorkOrder;
   @Input() isListView = false;
+  @Input() showBulkSelection = false;
+  @Input() isSelected = false;
   @Output() editRequested = new EventEmitter<WorkOrder>();
+  @Output() selectionChanged = new EventEmitter<{ workOrderId: number; selected: boolean }>();
 
   constructor(private router: Router) {}
+
+  onSelectionChange(event: any): void {
+    const selected = event.target.checked;
+    this.isSelected = selected;
+    this.selectionChanged.emit({
+      workOrderId: this.workOrder.id,
+      selected: selected
+    });
+  }
 
   getStatusLabel(status: string): string {
     const statusMap: { [key: string]: string } = {
