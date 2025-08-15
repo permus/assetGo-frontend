@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -89,6 +90,13 @@ export interface WorkOrderListResponse {
   total: number;
 }
 
+// Generic API response wrapper from backend
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
 export interface CreateWorkOrderRequest {
   title: string;
   description?: string;
@@ -140,77 +148,53 @@ export interface TimeLog {
 
 // New interfaces for enhanced analytics and filtering
 export interface WorkOrderAnalytics {
-  performance_metrics: {
-    average_resolution_time: number;
-    completion_rate: number;
-    overdue_count: number;
-    active_technicians: number;
-    resolution_time_trend: string;
-    overdue_trend: string;
-  };
-  status_distribution: {
-    completed: number;
-    open: number;
-    in_progress: number;
-    on_hold: number;
-    cancelled: number;
-    total: number;
-  };
-  priority_distribution: {
-    critical: number;
-    high: number;
-    medium: number;
-    low: number;
-  };
-  monthly_trends: {
-    created: number[];
-    completed: number[];
-    months: string[];
-  };
-  technician_performance: Array<{
-    name: string;
-    performance_score: number;
-    completed_orders: number;
-    average_resolution_time: number;
+  // KPIs
+  total_work_orders: number;
+  open_work_orders: number;
+  in_progress_work_orders: number;
+  completed_work_orders: number;
+  overdue_work_orders: number;
+  average_resolution_time_days: number;
+  completion_rate_percentage: number;
+  active_technicians: number;
+
+  // Distributions
+  status_distribution: { [key: string]: number };
+  priority_distribution: { [key: string]: number };
+
+  // Trends
+  monthly_performance_trend: Array<{
+    year: number;
+    month: number;
+    created_count: number;
+    completed_count: number;
   }>;
-  insights: Array<{
-    type: 'success' | 'warning' | 'info' | 'optimization';
-    title: string;
-    description: string;
-    tag: string;
-    icon: string;
+  top_technician_performance: Array<{
+    assigned_to: number;
+    completed_count: number;
+    avg_resolution_days: number;
+    assignedTo?: {
+      id: number;
+      first_name: string;
+      last_name: string;
+    };
   }>;
 }
 
 export interface WorkOrderStatistics {
-  total_count: number;
-  status_breakdown: {
-    open: number;
-    in_progress: number;
-    completed: number;
-    cancelled: number;
-  };
-  priority_breakdown: {
-    low: number;
-    medium: number;
-    high: number;
-    critical: number;
-  };
+  status_counts: { [key: string]: number };
+  priority_counts: { [key: string]: number };
   overdue_count: number;
-  completion_rate: number;
-  average_resolution_time: number;
+  recent_created: number;
+  recent_completed: number;
 }
 
 export interface WorkOrderFilters {
-  status_options: string[];
-  priority_options: string[];
-  asset_types: Array<{ id: number; name: string }>;
-  location_options: Array<{ id: number; name: string }>;
-  user_assignments: Array<{ id: number; name: string }>;
-  date_ranges: {
-    min_date: string;
-    max_date: string;
-  };
+  assets: Array<{ id: number; name: string; asset_id: string }>;
+  locations: Array<{ id: number; name: string }>;
+  users: Array<{ id: number; first_name: string; last_name: string }>;
+  status_options: { [key: string]: string };
+  priority_options: { [key: string]: string };
 }
 
 export interface WorkOrderSearchParams {
@@ -288,12 +272,16 @@ export class WorkOrderService {
 
   // Get comprehensive work order analytics
   getWorkOrderAnalytics(): Observable<WorkOrderAnalytics> {
-    return this.http.get<WorkOrderAnalytics>(`${this.apiUrl}/analytics`, this.getAuthHeaders());
+    return this.http
+      .get<ApiResponse<WorkOrderAnalytics>>(`${this.apiUrl}/analytics`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
   }
 
   // Get basic work order statistics
   getWorkOrderStatistics(): Observable<WorkOrderStatistics> {
-    return this.http.get<WorkOrderStatistics>(`${this.apiUrl}/statistics`, this.getAuthHeaders());
+    return this.http
+      .get<ApiResponse<WorkOrderStatistics>>(`${this.apiUrl}/statistics`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
   }
 
   // Get work order count with filters
@@ -309,19 +297,34 @@ export class WorkOrderService {
       });
     }
 
-    return this.http.get<{ count: number }>(
-      `${this.apiUrl}/count`, 
-      { ...this.getAuthHeaders(), params: httpParams }
-    );
+    return this.http
+      .get<ApiResponse<{ count: number }>>(
+        `${this.apiUrl}/count`, 
+        { ...this.getAuthHeaders(), params: httpParams }
+      )
+      .pipe(map((res) => res.data));
   }
 
   // Get available filter options
   getWorkOrderFilters(): Observable<WorkOrderFilters> {
-    return this.http.get<WorkOrderFilters>(`${this.apiUrl}/filters`, this.getAuthHeaders());
+    return this.http
+      .get<ApiResponse<WorkOrderFilters>>(`${this.apiUrl}/filters`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
   }
 
   // Legacy: Get work order statistics (kept for backward compatibility)
+  // Note: This method is deprecated, use getWorkOrderStatistics() instead
   getWorkOrderStats(): Observable<WorkOrderStats> {
-    return this.http.get<WorkOrderStats>(`${this.apiUrl}/count`, this.getAuthHeaders());
+    // For backward compatibility, we'll call the statistics endpoint and transform the data
+    return this.http.get<WorkOrderStatistics>(`${this.apiUrl}/statistics`, this.getAuthHeaders())
+      .pipe(
+        map(stats => ({
+          total: Object.values(stats.status_counts || {}).reduce((sum, count) => sum + count, 0),
+          open: stats.status_counts?.['open'] || 0,
+          inProgress: stats.status_counts?.['in-progress'] || 0,
+          completed: stats.status_counts?.['completed'] || 0,
+          critical: stats.priority_counts?.['critical'] || 0
+        }))
+      );
   }
 }

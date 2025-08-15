@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { WorkOrderService, WorkOrderStats } from '../../services/work-order.service';
+import { WorkOrderService, WorkOrderStatistics } from '../../services/work-order.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./work-order-stats.component.scss']
 })
 export class WorkOrderStatsComponent implements OnInit, OnDestroy {
-  stats: WorkOrderStats | null = null;
+  stats: WorkOrderStatistics | null = null;
   isLoading = true;
   private subscription = new Subscription();
 
@@ -27,8 +27,9 @@ export class WorkOrderStatsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     
     this.subscription.add(
-      this.workOrderService.getWorkOrderStats().subscribe({
+      this.workOrderService.getWorkOrderStatistics().subscribe({
         next: (stats) => {
+          console.log('Work order stats loaded:', stats);
           this.stats = stats;
           this.isLoading = false;
         },
@@ -37,11 +38,11 @@ export class WorkOrderStatsComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           // Fallback to default stats
           this.stats = {
-            total: 0,
-            open: 0,
-            inProgress: 0,
-            completed: 0,
-            critical: 0
+            status_counts: {},
+            priority_counts: {},
+            overdue_count: 0,
+            recent_created: 0,
+            recent_completed: 0
           };
         }
       })
@@ -56,5 +57,42 @@ export class WorkOrderStatsComponent implements OnInit, OnDestroy {
       'check': 'fas fa-check-circle'
     };
     return iconMap[icon] || 'fas fa-circle';
+  }
+
+  getTotalCount(): number {
+    if (!this.stats?.status_counts) return 0;
+    return Object.values(this.stats.status_counts).reduce((sum, count) => sum + count, 0);
+  }
+
+  // Helper methods for template access
+  getStatusCount(status: string): number {
+    return this.stats?.status_counts?.[status] || 0;
+  }
+
+  getPriorityCount(priority: string): number {
+    return this.stats?.priority_counts?.[priority] || 0;
+  }
+
+  getOverdueCount(): number {
+    return this.stats?.overdue_count || 0;
+  }
+
+  getRecentCreated(): number {
+    return this.stats?.recent_created || 0;
+  }
+
+  getRecentCompleted(): number {
+    return this.stats?.recent_completed || 0;
+  }
+
+  // Check if we have any data to show
+  hasData(): boolean {
+    return !!(this.stats && (
+      Object.keys(this.stats.status_counts || {}).length > 0 ||
+      Object.keys(this.stats.priority_counts || {}).length > 0 ||
+      this.stats.overdue_count > 0 ||
+      this.stats.recent_created > 0 ||
+      this.stats.recent_completed > 0
+    ));
   }
 }

@@ -233,6 +233,47 @@
           </div>
         </div>
 
+        <!-- SLA Timeline Card -->
+        <div class="info-card">
+          <h3 class="card-title">SLA Timeline</h3>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <label>SLA Target</label>
+              <p>{{ workOrder && workOrder.due_date ? (workOrder.due_date | date:'MMM d, y') : 'No SLA set' }}</p>
+            </div>
+          </div>
+          <div class="timeline-item" *ngIf="workOrder">
+            <div class="timeline-dot" [style.background-color]="workOrder.is_overdue ? '#ef4444' : '#10b981'"></div>
+            <div class="timeline-content">
+              <label>Status</label>
+              <p>
+                {{ workOrder.is_overdue ? 'Overdue' : 'On Track' }}
+                <span *ngIf="workOrder.days_until_due !== null && workOrder.days_until_due !== undefined">
+                  • {{ workOrder.days_until_due }} days {{ workOrder.is_overdue ? 'over' : 'remaining' }}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assignments Card -->
+        <div class="info-card">
+          <h3 class="card-title">Assignments</h3>
+          <div class="detail-item">
+            <label>Assigned To</label>
+            <p>{{ workOrder && workOrder.assigned_to ? 'User ID: ' + workOrder.assigned_to : 'Unassigned' }}</p>
+          </div>
+          <div class="detail-item">
+            <label>Assigned By</label>
+            <p>{{ workOrder && workOrder.assigned_by ? ('User ID: ' + workOrder.assigned_by) : 'N/A' }}</p>
+          </div>
+          <div class="detail-item">
+            <label>Created By</label>
+            <p>{{ workOrder && workOrder.created_by ? (workOrder.created_by.first_name + ' ' + workOrder.created_by.last_name) : 'Unknown' }}</p>
+          </div>
+        </div>
+
         <!-- Quick Actions Card -->
         <div class="info-card">
           <h3 class="card-title">Quick Actions</h3>

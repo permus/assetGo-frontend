@@ -94,27 +94,27 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
     this.statusChartData = [
       { 
         name: 'Completed', 
-        value: this.analyticsData.status_distribution?.completed || 0, 
+        value: this.analyticsData.status_distribution?.['completed'] || 0, 
         color: '#10b981' 
       },
       { 
         name: 'Open', 
-        value: this.analyticsData.status_distribution?.open || 0, 
+        value: this.analyticsData.status_distribution?.['open'] || 0, 
         color: '#ef4444' 
       },
       { 
         name: 'In Progress', 
-        value: this.analyticsData.status_distribution?.in_progress || 0, 
+        value: this.analyticsData.status_distribution?.['in-progress'] || 0, 
         color: '#3b82f6' 
       },
       { 
         name: 'On Hold', 
-        value: this.analyticsData.status_distribution?.on_hold || 0, 
+        value: this.analyticsData.status_distribution?.['on_hold'] || 0, 
         color: '#f59e0b' 
       },
       { 
         name: 'Cancelled', 
-        value: this.analyticsData.status_distribution?.cancelled || 0, 
+        value: this.analyticsData.status_distribution?.['cancelled'] || 0, 
         color: '#6b7280' 
       }
     ];
@@ -123,44 +123,44 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
     this.priorityChartData = [
       { 
         name: 'Critical', 
-        value: this.analyticsData.priority_distribution?.critical || 0, 
+        value: this.analyticsData.priority_distribution?.['critical'] || 0, 
         color: '#dc2626' 
       },
       { 
         name: 'High', 
-        value: this.analyticsData.priority_distribution?.high || 0, 
+        value: this.analyticsData.priority_distribution?.['high'] || 0, 
         color: '#f59e0b' 
       },
       { 
         name: 'Medium', 
-        value: this.analyticsData.priority_distribution?.medium || 0, 
+        value: this.analyticsData.priority_distribution?.['medium'] || 0, 
         color: '#3b82f6' 
       },
       { 
         name: 'Low', 
-        value: this.analyticsData.priority_distribution?.low || 0, 
+        value: this.analyticsData.priority_distribution?.['low'] || 0, 
         color: '#10b981' 
       }
     ];
 
     // Safely prepare monthly trends data with null checks
-    if (this.analyticsData.monthly_trends?.months && this.analyticsData.monthly_trends.months.length > 0) {
-      this.monthlyTrendData = this.analyticsData.monthly_trends.months.map((month, index) => ({
-        month,
-        created: this.analyticsData!.monthly_trends.created[index] || 0,
-        completed: this.analyticsData!.monthly_trends.completed[index] || 0
+    if (this.analyticsData.monthly_performance_trend && this.analyticsData.monthly_performance_trend.length > 0) {
+      this.monthlyTrendData = this.analyticsData.monthly_performance_trend.map((trend) => ({
+        month: `${trend.year}-${trend.month.toString().padStart(2, '0')}`,
+        created: trend.created_count || 0,
+        completed: trend.completed_count || 0
       }));
     } else {
       this.monthlyTrendData = [];
     }
 
     // Safely prepare technician performance data with null checks
-    if (this.analyticsData.technician_performance && this.analyticsData.technician_performance.length > 0) {
-      this.technicianData = this.analyticsData.technician_performance.map(tech => ({
-        name: tech.name || 'Unknown',
-        score: tech.performance_score || 0,
-        completed: tech.completed_orders || 0,
-        avgTime: tech.average_resolution_time || 0
+    if (this.analyticsData.top_technician_performance && this.analyticsData.top_technician_performance.length > 0) {
+      this.technicianData = this.analyticsData.top_technician_performance.map(tech => ({
+        name: tech.assignedTo ? `${tech.assignedTo.first_name} ${tech.assignedTo.last_name}` : 'Unknown',
+        score: Math.round((tech.completed_count / Math.max(tech.avg_resolution_days, 1)) * 100), // Performance score based on completion rate and speed
+        completed: tech.completed_count || 0,
+        avgTime: tech.avg_resolution_days || 0
       }));
     } else {
       this.technicianData = [];
@@ -171,25 +171,7 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
     this.loadAnalytics();
   }
 
-  getInsightIcon(type: string): string {
-    switch (type) {
-      case 'success': return '✓';
-      case 'warning': return '⚠';
-      case 'info': return 'ℹ';
-      case 'optimization': return '💡';
-      default: return 'ℹ';
-    }
-  }
 
-  getInsightColor(type: string): string {
-    switch (type) {
-      case 'success': return 'text-green-600 bg-green-100';
-      case 'warning': return 'text-yellow-600 bg-yellow-100';
-      case 'info': return 'text-blue-600 bg-blue-100';
-      case 'optimization': return 'text-purple-600 bg-purple-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  }
 
   formatDays(days: number): string {
     if (!days || days <= 0) return '0 days';
@@ -217,22 +199,17 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
   }
 
   get hasMonthlyTrends(): boolean {
-    return !!(this.analyticsData?.monthly_trends?.months && this.analyticsData.monthly_trends.months.length > 0);
+    return !!(this.analyticsData?.monthly_performance_trend && this.analyticsData.monthly_performance_trend.length > 0);
   }
 
   get hasTechnicianData(): boolean {
-    return !!(this.analyticsData?.technician_performance && this.analyticsData.technician_performance.length > 0);
+    return !!(this.analyticsData?.top_technician_performance && this.analyticsData.top_technician_performance.length > 0);
   }
 
-  get hasInsights(): boolean {
-    return !!(this.analyticsData?.insights && this.analyticsData.insights.length > 0);
-  }
+
 
   get totalStatusCount(): number {
-    return this.analyticsData?.status_distribution?.total || 0;
-  }
-
-  get performanceMetrics(): any {
-    return this.analyticsData?.performance_metrics || {};
+    if (!this.analyticsData?.status_distribution) return 0;
+    return Object.values(this.analyticsData.status_distribution).reduce((sum, count) => sum + count, 0);
   }
 }

@@ -17,7 +17,13 @@
 
     <!-- Modal Body -->
     <div class="modal-body">
-      <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
+      <!-- Loading state while form is being initialized -->
+      <div *ngIf="!isFormReady" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading form...</p>
+      </div>
+      
+      <form *ngIf="isFormReady" [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
         <!-- Basic Information -->
         <div class="form-section">
           <h3 class="section-title">Basic Information</h3>
