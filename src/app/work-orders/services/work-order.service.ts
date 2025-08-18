@@ -136,20 +136,24 @@ export interface WorkOrderPreview extends WorkOrder {
 }
 
 export interface WorkOrderComment {
-  id: string;
-  text: string;
-  author: string;
-  timestamp: string;
+  id: number;
+  work_order_id?: number;
+  user?: { id: number; first_name: string; last_name: string; email: string };
+  comment: string;
+  meta?: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TimeLog {
-  id: string;
-  description?: string;
-  startTime: string;
-  endTime?: string;
-  duration: string;
-  author: string;
-  hourlyRate?: number;
+  id: number;
+  description?: string | null;
+  start_time: string;
+  end_time?: string | null;
+  duration_minutes?: number | null;
+  user?: { id: number; first_name: string; last_name: string; email: string };
+  hourly_rate?: number | null;
+  total_cost?: number | null;
 }
 
 // New interfaces for enhanced analytics and filtering
@@ -185,6 +189,14 @@ export interface WorkOrderAnalytics {
       last_name: string;
     };
   }>;
+}
+
+export interface WorkOrderHistoryEvent {
+  type: 'created' | 'updated' | 'comment' | string;
+  title: string;
+  timestamp: string;
+  user?: { id: number; first_name: string; last_name: string; email: string } | null;
+  details?: any;
 }
 
 export interface WorkOrderStatistics {
@@ -238,6 +250,28 @@ export class WorkOrderService {
     };
   }
 
+  // Comments API
+  getComments(workOrderId: number): Observable<WorkOrderComment[]> {
+    return this.http
+      .get<ApiResponse<WorkOrderComment[]>>(`${this.apiUrl}/${workOrderId}/comments`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  addComment(workOrderId: number, comment: string, meta?: any): Observable<WorkOrderComment> {
+    return this.http
+      .post<ApiResponse<WorkOrderComment>>(
+        `${this.apiUrl}/${workOrderId}/comments`,
+        { comment, meta },
+        this.getAuthHeaders()
+      )
+      .pipe(map((res) => res.data));
+  }
+
+  deleteComment(workOrderId: number, commentId: number): Observable<{ success: boolean; message?: string }> {
+    return this.http
+      .delete<{ success: boolean; message?: string }>(`${this.apiUrl}/${workOrderId}/comments/${commentId}`, this.getAuthHeaders());
+  }
+
   // Enhanced: Get all work orders with advanced filtering and search
   getWorkOrders(params?: WorkOrderSearchParams): Observable<WorkOrderListResponse> {
     let httpParams = new HttpParams();
@@ -259,7 +293,16 @@ export class WorkOrderService {
 
   // Get a single work order by ID
   getWorkOrderById(id: string): Observable<WorkOrderPreview> {
-    return this.http.get<WorkOrderPreview>(`${this.apiUrl}/${id}`, this.getAuthHeaders());
+    return this.http
+      .get<ApiResponse<WorkOrderPreview>>(`${this.apiUrl}/${id}`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  // Update status by status_id
+  updateWorkOrderStatus(id: number, status_id: number): Observable<WorkOrder> {
+    return this.http
+      .post<ApiResponse<WorkOrder>>(`${this.apiUrl}/${id}/status`, { status_id }, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
   }
 
   // Create a new work order
@@ -316,6 +359,43 @@ export class WorkOrderService {
   getWorkOrderFilters(): Observable<WorkOrderFilters> {
     return this.http
       .get<ApiResponse<WorkOrderFilters>>(`${this.apiUrl}/filters`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  // History API
+  getWorkOrderHistory(id: number): Observable<WorkOrderHistoryEvent[]> {
+    return this.http
+      .get<ApiResponse<WorkOrderHistoryEvent[]>>(`${this.apiUrl}/${id}/history`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  // Time tracking API
+  getTimeLogs(workOrderId: number): Observable<{ logs: TimeLog[]; totals: { total_minutes: number; total_cost: number } }> {
+    return this.http
+      .get<ApiResponse<{ logs: TimeLog[]; totals: { total_minutes: number; total_cost: number } }>>(
+        `${this.apiUrl}/${workOrderId}/time-logs`,
+        this.getAuthHeaders()
+      )
+      .pipe(map((res) => res.data));
+  }
+
+  startTimer(workOrderId: number, payload: { description?: string; hourly_rate?: number }): Observable<TimeLog> {
+    return this.http
+      .post<ApiResponse<TimeLog>>(
+        `${this.apiUrl}/${workOrderId}/time-logs/start`,
+        payload,
+        this.getAuthHeaders()
+      )
+      .pipe(map((res) => res.data));
+  }
+
+  stopTimer(workOrderId: number): Observable<TimeLog> {
+    return this.http
+      .post<ApiResponse<TimeLog>>(
+        `${this.apiUrl}/${workOrderId}/time-logs/stop`,
+        {},
+        this.getAuthHeaders()
+      )
       .pipe(map((res) => res.data));
   }
 

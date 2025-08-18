@@ -20,11 +20,11 @@
     </div>
     
     <div class="badges">
-      <span class="badge status-badge" [ngClass]="'status-' + workOrder.status">
-        {{ getStatusLabel(workOrder.status) }}
+      <span class="badge status-badge" [ngClass]="'status-' + ($any(workOrder.status)?.slug || workOrder.status || 'open')">
+        {{ getStatusLabel($any(workOrder.status)) }}
       </span>
-      <span class="badge priority-badge" [ngClass]="'priority-' + workOrder.priority">
-        {{ getPriorityLabel(workOrder.priority) }}
+      <span class="badge priority-badge" [ngClass]="'priority-' + ($any(workOrder.priority)?.slug || workOrder.priority || 'medium')">
+        {{ getPriorityLabel($any(workOrder.priority)) }}
       </span>
     </div>
   </div>

@@ -25,6 +25,16 @@ export class MetaWorkOrdersService {
     return this.status$;
   }
 
+  // Helper to find a status id by slug
+  getStatusIdBySlug(slug: string): Observable<number | null> {
+    return this.getStatus().pipe(
+      map((items) => {
+        const found = items.find((s) => s.slug === slug);
+        return found ? found.id : null;
+      })
+    );
+  }
+
   getPriorities(): Observable<MetaItem[]> {
     if (!this.priorities$) {
       this.priorities$ = this.http

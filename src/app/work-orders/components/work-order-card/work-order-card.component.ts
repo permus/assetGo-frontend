@@ -39,6 +39,24 @@ export class WorkOrderCardComponent {
 
   constructor(private router: Router) {}
 
+  private getStatusSlug(status: any): string {
+    if (!status) return 'open';
+    if (typeof status === 'string') return status;
+    if (typeof status === 'object' && status !== null && 'slug' in status) {
+      return (status as { slug: string }).slug;
+    }
+    return String(status);
+  }
+
+  private getPrioritySlug(priority: any): string {
+    if (!priority) return 'medium';
+    if (typeof priority === 'string') return priority;
+    if (typeof priority === 'object' && priority !== null && 'slug' in priority) {
+      return (priority as { slug: string }).slug;
+    }
+    return String(priority);
+  }
+
   onSelectionChange(event: any): void {
     const selected = event.target.checked;
     this.isSelected = selected;
@@ -48,18 +66,21 @@ export class WorkOrderCardComponent {
     });
   }
 
-  getStatusLabel(status: string): string {
+  getStatusLabel(status: string | { id: number; name: string; slug: string } | undefined): string {
+    const slug = this.getStatusSlug(status as any);
     const statusMap: { [key: string]: string } = {
       'open': 'Open',
+      'in-progress': 'In Progress',
       'in_progress': 'In Progress',
       'completed': 'Completed',
       'cancelled': 'Cancelled',
       'pending': 'Pending'
     };
-    return statusMap[status] || status;
+    return statusMap[slug] || slug;
   }
 
-  getPriorityLabel(priority: string): string {
+  getPriorityLabel(priority: string | { id: number; name: string; slug: string } | undefined): string {
+    const slug = this.getPrioritySlug(priority as any);
     const priorityMap: { [key: string]: string } = {
       'low': 'Low',
       'medium': 'Medium',
@@ -67,7 +88,7 @@ export class WorkOrderCardComponent {
       'critical': 'Critical',
       'urgent': 'Urgent'
     };
-    return priorityMap[priority] || priority;
+    return priorityMap[slug] || slug;
   }
 
   getAssigneeName(): string {
