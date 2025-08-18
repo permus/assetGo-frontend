@@ -122,6 +122,30 @@
       align-items: center;
       gap: 1rem;
 
+      .bulk-delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 36px;
+        padding: 0 12px;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fee2e2;
+        transition: background 0.2s ease;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        &:hover:not(:disabled) {
+          background: #fee2e2;
+        }
+
+        svg { width: 16px; height: 16px; }
+      }
+
       .bulk-mode-btn {
         background: none;
         border: 1px solid #d1d5db;

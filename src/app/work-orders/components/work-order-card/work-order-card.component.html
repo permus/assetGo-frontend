@@ -12,8 +12,7 @@
     <div class="title-section">
       <div class="icon">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-1.5a2.5 2.5 0 11-3.536 3.536l-7.5 7.5a2 2 0 102.828 2.828l7.5-7.5a2.5 2.5 0 013.536-3.536z" />
         </svg>
       </div>
       <h3 class="title">{{ workOrder.title }}</h3>
@@ -26,6 +25,7 @@
         <span class="badge priority-badge" [ngClass]="'priority-' + ($any(workOrder.priority)?.slug || workOrder.priority || 'medium')">
           {{ getPriorityLabel($any(workOrder.priority)) }}
         </span>
+        <span *ngIf="getCategoryName()" class="badge category-badge">{{ getCategoryName() }}</span>
       </div>
       <div class="relative" (click)="$event.stopPropagation()">
         <button
@@ -78,56 +78,20 @@
     <p class="description" *ngIf="workOrder.description">
       {{ workOrder.description }}
     </p>
-    
-    <div class="details grid grid-cols-2 gap-1 sm:gap-2 text-xs">
-      <div class="detail-item">
-        <svg class="icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
-        <span class="label">Assignee</span>
-        <span class="value">{{ getAssigneeName() }}</span>
+
+    <div class="meta-row">
+      <div class="meta-item">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        <span>{{ getAssigneeName() || 'Unknown' }}</span>
       </div>
-      
-      <div class="detail-item">
-        <svg class="icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
-        </svg>
-        <span class="label">Asset</span>
-        <span class="value">{{ getAssetName() }}</span>
+      <div class="meta-item">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>{{ workOrder.due_date ? (workOrder.due_date | date:'MMM d, y') : 'N/A' }}</span>
       </div>
-      
-      <div class="detail-item">
-        <svg class="icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-        </svg>
-        <span class="label">Location</span>
-        <span class="value">{{ getLocationName() }}</span>
-      </div>
-      
-      <div class="detail-item">
-        <svg class="icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-        </svg>
-        <span class="label">Due Date</span>
-        <span class="value">{{ workOrder.due_date ? (workOrder.due_date | date:'MMM d, y') : 'Not set' }}</span>
-      </div>
-      
-      <div class="detail-item">
-        <svg class="icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <span class="label">Created</span>
-        <span class="value">{{ workOrder.created_at | date:'MMM d, y' }}</span>
-      </div>
-      
-      <div class="detail-item">
-        <svg class="icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
-        <span class="label">Created By</span>
-        <span class="value">{{ getCreatedBy() }}</span>
-      </div>
+    </div>
+
+    <div class="footer-row">
+      <span>Created {{ workOrder.created_at | date:'MMM d, y' }} by {{ getCreatedBy() || 'Unknown' }}</span>
     </div>
   </div>
 

@@ -147,6 +147,16 @@ export class WorkOrderCardComponent {
     return 'Unknown';
   }
 
+  getCategoryName(): string {
+    const category: any = (this.workOrder as any)?.category;
+    if (!category) return '';
+    if (typeof category === 'object' && category !== null && 'name' in category) {
+      return (category as { name?: string }).name || '';
+    }
+    if (typeof category === 'string') return category;
+    return '';
+  }
+
   viewDetails(): void {
     // Navigate to work order details
     this.router.navigate(['/work-orders', this.workOrder.id]);

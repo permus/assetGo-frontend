@@ -99,6 +99,17 @@
       </div>
 
       <div class="header-actions">
+        <button
+          class="bulk-delete-btn"
+          [disabled]="getSelectedCount() === 0"
+          (click)="openDeleteModalForSelected()"
+          title="Delete Selected">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/>
+            <path d="M8 8l8 8M8 16l8-8" stroke-width="2"/>
+          </svg>
+          Delete
+        </button>
         <!-- Bulk Mode Toggle -->
         <button
           class="bulk-mode-btn"

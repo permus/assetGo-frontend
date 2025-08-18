@@ -436,6 +436,13 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     this.showDeleteConfirmationModal = false;
   }
 
+  openDeleteModalForSelected(): void {
+    if (this.selectedWorkOrders.size === 0) {
+      return;
+    }
+    this.showDeleteConfirmationModal = true;
+  }
+
   deleteSelected(deletionReason?: string): void {
     // deletionReason is currently unused for work orders, but accepted to mirror asset delete API
     const ids = Array.from(this.selectedWorkOrders);

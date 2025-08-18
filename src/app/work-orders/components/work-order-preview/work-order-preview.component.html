@@ -355,17 +355,44 @@
         <!-- Assignments Card -->
         <div class="info-card">
           <h3 class="card-title">Assignments</h3>
-          <div class="detail-item">
-            <label>Assigned To</label>
-            <p>{{ workOrder && workOrder.assigned_to ? 'User ID: ' + workOrder.assigned_to : 'Unassigned' }}</p>
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-sm text-gray-600">Select team members assigned to this work order</div>
+            <button class="action-button" (click)="openAssignmentsModal()">Add Assignment</button>
           </div>
-          <div class="detail-item">
-            <label>Assigned By</label>
-            <p>{{ workOrder && workOrder.assigned_by ? ('User ID: ' + workOrder.assigned_by) : 'N/A' }}</p>
+
+          <div *ngIf="assignments.length === 0" class="text-sm text-gray-500">No assignments yet.</div>
+          <div *ngIf="assignments.length > 0" class="assigned-list">
+            <div class="assigned-item" *ngFor="let a of assignments">
+              <div class="flex items-center gap-2">
+                <div class="avatar-circle">{{ (a.user?.first_name || '?')[0] }}{{ (a.user?.last_name || '')[0] || '' }}</div>
+                <div class="name">{{ a.user?.first_name }} {{ a.user?.last_name }}</div>
+              </div>
+            </div>
           </div>
-          <div class="detail-item">
-            <label>Created By</label>
-            <p>{{ workOrder && workOrder.created_by ? (workOrder.created_by.first_name + ' ' + workOrder.created_by.last_name) : 'Unknown' }}</p>
+        </div>
+
+        <!-- Assignments Modal -->
+        <div class="modal-overlay" *ngIf="showAssignmentsModal" (click)="closeAssignmentsModal()">
+          <div class="modal" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+              <h3>Select Team Members</h3>
+              <button class="close" (click)="closeAssignmentsModal()">×</button>
+            </div>
+            <div class="modal-body">
+              <div class="team-list">
+                <label class="team-row" *ngFor="let m of teamMembers">
+                  <input type="checkbox"
+                         [checked]="selectedUserIds.has(m.id)"
+                         (change)="toggleUserSelection(m.id, $any($event.target).checked)" />
+                  <span class="member-name">{{ m.first_name }} {{ m.last_name }}</span>
+                  <span class="member-email">{{ m.email }}</span>
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="close-btn" (click)="closeAssignmentsModal()">Cancel</button>
+              <button class="submit-comment-button" (click)="saveAssignments()">Save</button>
+            </div>
           </div>
         </div>
 

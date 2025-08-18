@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WorkOrderService, WorkOrderPreview, WorkOrderComment, WorkOrderHistoryEvent } from '../../services/work-order.service';
+import { WorkOrderService, WorkOrderPreview, WorkOrderComment, WorkOrderHistoryEvent, WorkOrderAssignment } from '../../services/work-order.service';
+import { TeamService, TeamMember } from '../../../teams/services/team.service';
 import { MetaWorkOrdersService } from '../../../core/services/meta-work-orders.service';
 import { MetaItem } from '../../../core/types/work-order.types';
 import { Subscription } from 'rxjs';
@@ -34,12 +35,46 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
   private timerHandle: any = null;
   private activeStartTime?: Date;
 
+  // Assignments UI state
+  showAssignmentsModal = false;
+  assignments: WorkOrderAssignment[] = [];
+  teamMembers: TeamMember[] = [];
+  selectedUserIds = new Set<number>();
+
+  openAssignmentsModal(): void {
+    this.showAssignmentsModal = true;
+  }
+
+  closeAssignmentsModal(): void {
+    this.showAssignmentsModal = false;
+  }
+
+  toggleUserSelection(userId: number, checked: boolean): void {
+    if (checked) {
+      this.selectedUserIds.add(userId);
+    } else {
+      this.selectedUserIds.delete(userId);
+    }
+  }
+
+  saveAssignments(): void {
+    if (!this.workOrder) return;
+    const ids = Array.from(this.selectedUserIds.values());
+    this.workOrderService.setAssignments(this.workOrder.id, ids).subscribe({
+      next: (items) => {
+        this.assignments = items || [];
+        this.closeAssignmentsModal();
+      }
+    });
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private workOrderService: WorkOrderService,
     private metaService: MetaWorkOrdersService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private teamService: TeamService
   ) {
     this.commentForm = this.fb.group({
       comment: ['', Validators.required]
@@ -75,6 +110,20 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
       this.workOrderService.getWorkOrderById(id).subscribe({
         next: (workOrder) => {
           this.workOrder = workOrder;
+          // Load assignments
+          this.workOrderService.getAssignments(workOrder.id).subscribe({
+            next: (items) => {
+              this.assignments = items || [];
+              this.selectedUserIds = new Set((this.assignments || []).map(a => a.user_id));
+            }
+          });
+          // Load team members for modal selection
+          this.teamService.getTeamMembers().subscribe({
+            next: (res: any) => {
+              this.teamMembers = res?.data || [];
+            },
+            error: () => { this.teamMembers = []; }
+          });
           // Load existing comments from API to ensure consistent shape
           this.workOrderService.getComments(workOrder.id).subscribe({
             next: (comments) => {

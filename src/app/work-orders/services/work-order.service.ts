@@ -156,6 +156,16 @@ export interface TimeLog {
   total_cost?: number | null;
 }
 
+export interface WorkOrderAssignment {
+  id: number;
+  work_order_id: number;
+  user: { id: number; first_name: string; last_name: string; email: string };
+  user_id: number;
+  assigned_by?: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // New interfaces for enhanced analytics and filtering
 export interface WorkOrderAnalytics {
   // KPIs
@@ -255,6 +265,28 @@ export class WorkOrderService {
     return this.http
       .get<ApiResponse<WorkOrderComment[]>>(`${this.apiUrl}/${workOrderId}/comments`, this.getAuthHeaders())
       .pipe(map((res) => res.data));
+  }
+
+  // Assignments API
+  getAssignments(workOrderId: number): Observable<WorkOrderAssignment[]> {
+    return this.http
+      .get<ApiResponse<WorkOrderAssignment[]>>(`${this.apiUrl}/${workOrderId}/assignments`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  setAssignments(workOrderId: number, userIds: number[]): Observable<WorkOrderAssignment[]> {
+    return this.http
+      .post<ApiResponse<WorkOrderAssignment[]>>(
+        `${this.apiUrl}/${workOrderId}/assignments`,
+        { user_ids: userIds },
+        this.getAuthHeaders()
+      )
+      .pipe(map((res) => res.data));
+  }
+
+  deleteAssignment(workOrderId: number, assignmentId: number): Observable<{ success: boolean; message?: string }> {
+    return this.http
+      .delete<{ success: boolean; message?: string }>(`${this.apiUrl}/${workOrderId}/assignments/${assignmentId}`, this.getAuthHeaders());
   }
 
   addComment(workOrderId: number, comment: string, meta?: any): Observable<WorkOrderComment> {
