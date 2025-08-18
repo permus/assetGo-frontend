@@ -42,6 +42,11 @@ import { trigger, transition, style, animate } from '@angular/animations';
 export class DeleteConfirmationModalComponent {
   @Input() isOpen = false;
   @Input() selectedCount = 0;
+  // Customizable labels so this modal can be reused across entities
+  @Input() entitySingular = 'Asset';
+  @Input() entityPlural = 'Assets';
+  @Input() title: string | null = null;
+  @Input() warningText: string | null = '⚠️ Warning: Only archived assets can be permanently deleted';
   @Output() closeModal = new EventEmitter<void>();
   @Output() confirmDelete = new EventEmitter<string>();
 

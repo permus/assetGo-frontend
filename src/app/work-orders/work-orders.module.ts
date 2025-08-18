@@ -14,6 +14,7 @@ import {
 } from './components';
 import { WorkOrderAnalyticsComponent } from './components/work-order-analytics/work-order-analytics.component';
 import { EditWorkOrderModalComponent } from './components/edit-work-order-modal/edit-work-order-modal.component';
+import { DeleteConfirmationModalComponent } from '../assets/components/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { EditWorkOrderModalComponent } from './components/edit-work-order-modal/
     FormsModule,
     HttpClientModule,
     WorkOrdersRoutingModule,
-    WorkOrderAnalyticsComponent
+    WorkOrderAnalyticsComponent,
+    DeleteConfirmationModalComponent
   ]
 })
 export class WorkOrdersModule { }

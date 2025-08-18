@@ -45,7 +45,7 @@
           Back to Work Orders
         </a>
       </div>
-      
+
       <div class="title-section">
         <div class="title-content">
           <svg class="wrench-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="action-buttons">
           <button class="status-button" [class]="getStatusClass($any(workOrder?.status))">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +171,7 @@
             <label>Tags</label>
             <p>{{ workOrder?.tags }}</p>
           </div>
-          
+
           </div>
         </div>
 
@@ -179,7 +179,7 @@
         <div class="info-card">
           <h3 class="card-title">Time Tracking</h3>
           <p class="card-subtitle">Track time spent on this work order</p>
-          
+
           <div class="current-session">
             <div class="flex items-center justify-between mb-2">
               <div class="text-sm font-medium">Current Session</div>
@@ -193,23 +193,23 @@
             </div>
             <div class="form-group">
               <label>Task Description (Optional)</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 [(ngModel)]="currentSession.description"
                 placeholder="What are you working on?"
                 class="form-input">
             </div>
-            
+
             <div class="form-group">
               <label>Hourly Rate (Optional)</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 [(ngModel)]="currentSession.hourlyRate"
                 placeholder="0"
                 class="form-input">
             </div>
-            
-            <button 
+
+            <button
               (click)="isTimerRunning ? stopTimer() : startTimer()"
               [class]="isTimerRunning ? 'stop-button' : 'start-button'"
               class="timer-button">
@@ -221,7 +221,7 @@
               {{ isTimerRunning ? 'Stop Timer' : 'Start Timer' }}
             </button>
           </div>
-          
+
           <div class="time-summary">
             <div class="total-time">
               <span class="time-label">{{ (totalMinutes / 60) | number:'1.2-2' }} hrs Total Time</span>
@@ -230,7 +230,7 @@
               <span class="cost-label">${{ totalCost | number:'1.2-2' }} Total Cost</span>
             </div>
           </div>
-          
+
           <div class="time-log-history">
             <h4>Time Log History</h4>
             <div *ngIf="timeLogs.length === 0" class="text-sm text-gray-500">No time logs yet.</div>
@@ -260,7 +260,7 @@
         <div class="info-card">
           <h3 class="card-title">Status Update</h3>
           <p class="card-subtitle">Update the work order status and add notes about the progress</p>
-          
+
           <div class="status-section">
             <label>Current Status:</label>
             <div class="current-status" [class]="getStatusClass($any(workOrder?.status))">
@@ -270,7 +270,7 @@
               {{ getStatusLabel($any(workOrder?.status)) }}
             </div>
           </div>
-          
+
           <div class="status-update">
             <label>Update Status:</label>
             <select (change)="onStatusChange($event)" class="form-select">
@@ -285,15 +285,15 @@
         <div class="info-card">
           <h3 class="card-title">Comments</h3>
           <p class="card-subtitle">Activity log and comments for this work order</p>
-          
+
           <form [formGroup]="commentForm" (ngSubmit)="addComment()" class="comment-form">
-            <textarea 
+            <textarea
               formControlName="comment"
               placeholder="Write a comment about the work order progress..."
               class="comment-textarea"></textarea>
             <button type="submit" class="submit-comment-button">Add Comment</button>
           </form>
-          
+
           <div class="comments-list" *ngIf="workOrder && workOrder.comments && workOrder.comments.length > 0">
             <div *ngFor="let comment of workOrder.comments as any" class="comment-entry">
               <div class="comment-info">
@@ -351,29 +351,6 @@
         </div>
 
 
-        <!-- SLA Timeline Card -->
-        <div class="info-card">
-          <h3 class="card-title">SLA Timeline</h3>
-          <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-              <label>SLA Target</label>
-              <p>{{ workOrder && workOrder.due_date ? (workOrder.due_date | date:'MMM d, y') : 'No SLA set' }}</p>
-            </div>
-          </div>
-          <div class="timeline-item" *ngIf="workOrder">
-            <div class="timeline-dot" [style.background-color]="workOrder.is_overdue ? '#ef4444' : '#10b981'"></div>
-            <div class="timeline-content">
-              <label>Status</label>
-              <p>
-                {{ workOrder.is_overdue ? 'Overdue' : 'On Track' }}
-                <span *ngIf="workOrder.days_until_due !== null && workOrder.days_until_due !== undefined">
-                  • {{ workOrder.days_until_due }} days {{ workOrder.is_overdue ? 'over' : 'remaining' }}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
 
         <!-- Assignments Card -->
         <div class="info-card">

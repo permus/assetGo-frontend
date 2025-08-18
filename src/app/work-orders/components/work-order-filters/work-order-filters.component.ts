@@ -78,13 +78,6 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     // Avoid stale cached metadata if user session or API changed
     this.metaService.clearAllCache();
     this.loadFilterOptions();
-    
-    // Listen to form changes and emit filter events
-    this.subscription.add(
-      this.filterForm.valueChanges.subscribe(() => {
-        this.onFilterChange();
-      })
-    );
   }
 
   ngOnDestroy(): void {
@@ -288,12 +281,10 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
 
   setSortBy(value: string): void {
     this.sortBy = value;
-    this.onFilterChange();
   }
 
   toggleSortOrder(): void {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
-    this.onFilterChange();
   }
 
   onSearch(): void {
@@ -338,6 +329,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     this.sortOrder = 'desc';
     this.showAdvanced = false;
     this.showDateRangePicker = false;
+    this.onFilterChange();
   }
 
   // Close dropdowns when clicking outside

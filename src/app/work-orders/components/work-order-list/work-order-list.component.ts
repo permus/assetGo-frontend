@@ -55,6 +55,8 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
   bulkTargetUser: number | null = null;
   bulkStatus: string = '';
   bulkPriority: string = '';
+  // Delete modal state (align with Asset delete flow)
+  showDeleteConfirmationModal = false;
 
   // Math object for template access
   Math = Math;
@@ -107,11 +109,15 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
       if (filters.search && filters.search.trim()) {
         params.search = filters.search.trim();
       }
-      if (filters.status && filters.status !== 'all') {
-        params.status = filters.status;
+      // Use *_id fields coming from filters component
+      if (filters.status_id) {
+        params.status_id = filters.status_id;
       }
-      if (filters.priority && filters.priority !== 'all') {
-        params.priority = filters.priority;
+      if (filters.priority_id) {
+        params.priority_id = filters.priority_id;
+      }
+      if (filters.category_id) {
+        params.category_id = filters.category_id;
       }
       if (filters.asset_id && filters.asset_id !== '') {
         params.asset_id = filters.asset_id;
@@ -253,6 +259,16 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
       this.selectedWorkOrders.delete(workOrderId);
     } else {
       this.selectedWorkOrders.add(workOrderId);
+    }
+    this.showBulkActions = this.selectedWorkOrders.size > 0;
+  }
+
+  onCardSelectionChanged(event: { workOrderId: number; selected: boolean }): void {
+    const { workOrderId, selected } = event;
+    if (selected) {
+      this.selectedWorkOrders.add(workOrderId);
+    } else {
+      this.selectedWorkOrders.delete(workOrderId);
     }
     this.showBulkActions = this.selectedWorkOrders.size > 0;
   }
@@ -406,6 +422,48 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     // Open edit modal
     this.selectedWorkOrder = workOrder;
     this.isEditModalOpen = true;
+  }
+
+  deleteWorkOrder(workOrder: WorkOrder): void {
+    if (!workOrder?.id) { return; }
+    // Match asset flow: select the item and open confirmation modal
+    this.selectedWorkOrders.clear();
+    this.selectedWorkOrders.add(workOrder.id);
+    this.showDeleteConfirmationModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteConfirmationModal = false;
+  }
+
+  deleteSelected(deletionReason?: string): void {
+    // deletionReason is currently unused for work orders, but accepted to mirror asset delete API
+    const ids = Array.from(this.selectedWorkOrders);
+    if (ids.length === 0) {
+      this.showDeleteConfirmationModal = false;
+      return;
+    }
+    this.isLoading = true;
+    let completed = 0;
+    const finalize = () => {
+      completed++;
+      if (completed >= ids.length) {
+        this.showDeleteConfirmationModal = false;
+        this.selectedWorkOrders.clear();
+        this.loadWorkOrders(this.currentPage);
+      }
+    };
+    ids.forEach((id) => {
+      this.subscription.add(
+        this.workOrderService.deleteWorkOrder(id).subscribe({
+          next: () => finalize(),
+          error: (error) => {
+            console.error('Failed to delete work order:', error);
+            finalize();
+          }
+        })
+      );
+    });
   }
 
   closeEditModal(): void {

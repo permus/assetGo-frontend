@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkOrder } from '../../services/work-order.service';
 
@@ -35,9 +35,17 @@ export class WorkOrderCardComponent {
   @Input() showBulkSelection = false;
   @Input() isSelected = false;
   @Output() editRequested = new EventEmitter<WorkOrder>();
+  @Output() deleteRequested = new EventEmitter<WorkOrder>();
   @Output() selectionChanged = new EventEmitter<{ workOrderId: number; selected: boolean }>();
 
   constructor(private router: Router) {}
+
+  showMenu = false;
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showMenu = false;
+  }
 
   private getStatusSlug(status: any): string {
     if (!status) return 'open';
@@ -142,10 +150,21 @@ export class WorkOrderCardComponent {
   viewDetails(): void {
     // Navigate to work order details
     this.router.navigate(['/work-orders', this.workOrder.id]);
+    this.showMenu = false;
   }
 
   editWorkOrder(): void {
     // Emit edit event to parent component
     this.editRequested.emit(this.workOrder);
+    this.showMenu = false;
+  }
+
+  toggleMenu(): void {
+    this.showMenu = !this.showMenu;
+  }
+
+  requestDelete(): void {
+    this.deleteRequested.emit(this.workOrder);
+    this.showMenu = false;
   }
 }

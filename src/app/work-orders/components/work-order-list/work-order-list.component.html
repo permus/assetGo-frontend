@@ -10,11 +10,11 @@
     </div>
   </div>
 
+  <!-- Filters are always rendered so selections persist during loading -->
+  <app-work-order-filters (filtersChanged)="onFiltersChanged($event)"></app-work-order-filters>
+
   <!-- Work Orders Content -->
   <div *ngIf="!isLoading">
-    <!-- Filters -->
-    <app-work-order-filters (filtersChanged)="onFiltersChanged($event)"></app-work-order-filters>
-
     <div class="list-header">
       <div class="orders-count flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
@@ -172,10 +172,11 @@
       <app-work-order-card
         *ngFor="let workOrder of workOrders"
         [workOrder]="workOrder"
-        [showBulkSelection]="isBulkMode"
+        [showBulkSelection]="true"
         [isSelected]="selectedWorkOrders.has(workOrder.id)"
         (editRequested)="editWorkOrder($event)"
-        (selectionChanged)="toggleWorkOrderSelection($event.workOrderId)"
+        (deleteRequested)="deleteWorkOrder($event)"
+        (selectionChanged)="onCardSelectionChanged($event)"
         class="work-order-card-item">
       </app-work-order-card>
     </div>
@@ -325,6 +326,16 @@
         </button>
       </div>
     </div>
+    <!-- Delete Confirmation Modal (shared) -->
+    <app-delete-confirmation-modal
+      [isOpen]="showDeleteConfirmationModal"
+      [selectedCount]="selectedWorkOrders.size"
+      [entitySingular]="'Work Order'"
+      [entityPlural]="'Work Orders'"
+      [warningText]="null"
+      (closeModal)="closeDeleteModal()"
+      (confirmDelete)="deleteSelected($event)">
+    </app-delete-confirmation-modal>
   </div>
 </div>
 
