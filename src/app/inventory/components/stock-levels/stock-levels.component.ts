@@ -91,7 +91,14 @@ export class StockLevelsComponent implements OnInit {
     ).subscribe({
       next: (response) => {
         if (response.success) {
-          this.stockLevels = response.data.data;
+          // Normalize numeric fields (average_cost can come back as a string)
+          this.stockLevels = response.data.data.map((s: any) => ({
+            ...s,
+            average_cost: typeof s.average_cost === 'string' ? parseFloat(s.average_cost) : (s.average_cost ?? 0),
+            on_hand: typeof s.on_hand === 'string' ? parseFloat(s.on_hand) : s.on_hand,
+            available: typeof s.available === 'string' ? parseFloat(s.available) : s.available,
+            reserved: typeof s.reserved === 'string' ? parseFloat(s.reserved) : s.reserved,
+          }));
           this.totalStocks = response.data.total;
           this.totalPages = response.data.last_page;
           this.currentPage = response.data.current_page;
@@ -232,16 +239,26 @@ export class StockLevelsComponent implements OnInit {
   }
 
   onSearchChange(): void {
-    this.currentPage = 1;
-    this.loadStockLevels();
+    // No-op; apply on button click
   }
 
   onLocationFilterChange(): void {
+    // No-op; apply on button click
+  }
+
+  onPartFilterChange(): void {
+    // No-op; apply on button click
+  }
+
+  applyFilters(): void {
     this.currentPage = 1;
     this.loadStockLevels();
   }
 
-  onPartFilterChange(): void {
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedLocationId = null;
+    this.selectedPartId = null;
     this.currentPage = 1;
     this.loadStockLevels();
   }

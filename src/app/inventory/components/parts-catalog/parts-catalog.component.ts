@@ -43,6 +43,7 @@ export class PartsCatalogComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPartsCatalog();
+    this.loadPartsOverview();
   }
 
   loadPartsCatalog(): void {
@@ -85,12 +86,37 @@ export class PartsCatalogComponent implements OnInit {
     );
   }
 
+  loadPartsOverview(): void {
+    this.analyticsService.getPartsOverview().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.summaryData.totalParts = response.data.total_parts;
+          this.summaryData.lowStockItems = response.data.low_stock_count;
+          this.summaryData.totalValue = response.data.total_value;
+        }
+      },
+      error: (err) => {
+        console.error('Error loading parts overview:', err);
+      }
+    });
+  }
+
   onSearchChange(): void {
+    // No-op; apply on button click
+  }
+
+  onStatusFilterChange(): void {
+    // No-op; apply on button click
+  }
+
+  applyFilters(): void {
     this.currentPage = 1;
     this.loadPartsCatalog();
   }
 
-  onStatusFilterChange(): void {
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedStatus = '';
     this.currentPage = 1;
     this.loadPartsCatalog();
   }

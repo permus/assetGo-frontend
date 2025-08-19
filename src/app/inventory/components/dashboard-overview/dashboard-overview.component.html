@@ -109,19 +109,19 @@
         <div class="classification-stats">
           <div class="stat-item">
             <span class="stat-label">Count:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ abcSummary.classA.count }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Value:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ formatCurrency(abcSummary.classA.value) }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Percentage:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ abcSummary.classA.percentage.toFixed(1) }}%</span>
           </div>
         </div>
         <div class="progress-bar">
-          <div class="progress-fill" style="width: 0%"></div>
+          <div class="progress-fill" [style.width.%]="abcSummary.classA.percentage"></div>
         </div>
       </div>
 
@@ -130,19 +130,19 @@
         <div class="classification-stats">
           <div class="stat-item">
             <span class="stat-label">Count:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ abcSummary.classB.count }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Value:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ formatCurrency(abcSummary.classB.value) }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Percentage:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ abcSummary.classB.percentage.toFixed(1) }}%</span>
           </div>
         </div>
         <div class="progress-bar">
-          <div class="progress-fill" style="width: 0%"></div>
+          <div class="progress-fill" [style.width.%]="abcSummary.classB.percentage"></div>
         </div>
       </div>
 
@@ -151,19 +151,19 @@
         <div class="classification-stats">
           <div class="stat-item">
             <span class="stat-label">Count:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ abcSummary.classC.count }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Value:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ formatCurrency(abcSummary.classC.value) }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Percentage:</span>
-            <span class="stat-value">-</span>
+            <span class="stat-value">{{ abcSummary.classC.percentage.toFixed(1) }}%</span>
           </div>
         </div>
         <div class="progress-bar">
-          <div class="progress-fill" style="width: 0%"></div>
+          <div class="progress-fill" [style.width.%]="abcSummary.classC.percentage"></div>
         </div>
       </div>
     </div>

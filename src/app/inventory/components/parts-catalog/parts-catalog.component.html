@@ -71,15 +71,13 @@
             type="text" 
             placeholder="Search parts..." 
             class="search-input"
-            [(ngModel)]="searchTerm"
-            (input)="onSearchChange()">
+            [(ngModel)]="searchTerm">
         </div>
         
         <div class="status-filter">
           <select 
             class="status-select"
-            [(ngModel)]="selectedStatus"
-            (change)="onStatusFilterChange()">
+            [(ngModel)]="selectedStatus">
             <option value="">All Status</option>
             <option *ngFor="let status of getStatusOptions()" [value]="status">
               {{ status | titlecase }}
@@ -129,6 +127,18 @@
             </button>
           </div>
 
+          <button class="btn btn-outline" (click)="clearFilters()" style="margin-left: 0.5rem;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: .5rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Clear Filters
+          </button>
+          <button class="btn btn-primary" (click)="applyFilters()" style="margin-left: 0.5rem;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: .5rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            Apply Filters
+          </button>
           <button class="add-part-btn" (click)="openAddPartModal()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>

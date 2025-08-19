@@ -145,6 +145,27 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
     this.openDropdownId = null;
   }
 
+  closePurchaseOrder(po: PurchaseOrder): void {
+    if (!po.id) {
+      this.error = 'Purchase Order ID is missing';
+      return;
+    }
+    this.inventoryService.updatePurchaseOrder(po.id, { status: 'closed' } as any).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.loadPurchaseOrders();
+          this.loadOverviewStats();
+        } else {
+          this.error = 'Failed to close purchase order';
+        }
+      },
+      error: (err: any) => {
+        this.error = 'Error closing purchase order: ' + err.message;
+      }
+    });
+    this.openDropdownId = null;
+  }
+
   loadPurchaseOrders(): void {
     this.loading = true;
     this.error = null;
@@ -174,15 +195,14 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
   }
 
   loadOverviewStats(): void {
-    // Load stats for overview cards
-    this.inventoryService.getPurchaseOrders(1, 1000).subscribe({
-      next: (response: PurchaseOrdersResponse) => {
+    this.inventoryService.getPurchaseOrdersOverview().subscribe({
+      next: (response) => {
         if (response.success) {
-          const allPOs = response.data.data;
-          this.overviewStats.totalPOs = allPOs.length;
-          this.overviewStats.pending = allPOs.filter(po => po.status === 'pending').length;
-          this.overviewStats.approved = allPOs.filter(po => po.status === 'approved').length;
-          this.overviewStats.totalValue = allPOs.reduce((sum, po) => sum + po.total, 0);
+          const d = response.data;
+          this.overviewStats.totalPOs = d.total_pos;
+          this.overviewStats.pending = d.pending;
+          this.overviewStats.approved = d.approved;
+          this.overviewStats.totalValue = d.total_value;
         }
       },
       error: (err) => {

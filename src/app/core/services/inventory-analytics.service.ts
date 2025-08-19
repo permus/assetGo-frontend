@@ -10,6 +10,17 @@ export interface DashboardData {
   out_of_stock_count: number;
 }
 
+export interface PartsOverviewData {
+  total_parts: number;
+  low_stock_count: number;
+  total_value: number;
+}
+
+export interface PartsOverviewResponse {
+  success: boolean;
+  data: PartsOverviewData;
+}
+
 export interface AbcAnalysisItem {
   part_id: number;
   name: string;
@@ -256,6 +267,24 @@ export interface PurchaseOrdersResponse {
   };
 }
 
+export interface PurchaseOrdersOverviewData {
+  total_pos: number;
+  draft: number;
+  pending: number;
+  approved: number;
+  ordered: number;
+  received: number;
+  closed: number;
+  rejected: number;
+  cancelled: number;
+  total_value: number;
+}
+
+export interface PurchaseOrdersOverviewResponse {
+  success: boolean;
+  data: PurchaseOrdersOverviewData;
+}
+
 export interface PurchaseOrderResponse {
   success: boolean;
   data: PurchaseOrder;
@@ -480,6 +509,13 @@ export class InventoryAnalyticsService {
     );
   }
 
+  getPartsOverview(): Observable<PartsOverviewResponse> {
+    return this.http.get<PartsOverviewResponse>(
+      `${this.apiUrl}/inventory/parts/overview`,
+      this.getAuthHeaders()
+    );
+  }
+
   getPart(partId: number): Observable<PartResponse> {
     return this.http.get<PartResponse>(
       `${this.apiUrl}/inventory/parts/${partId}`,
@@ -700,6 +736,13 @@ export class InventoryAnalyticsService {
   getPurchaseOrderPerformance(): Observable<any> {
     return this.http.get(
       `${this.apiUrl}/inventory/purchase-orders/performance`,
+      this.getAuthHeaders()
+    );
+  }
+
+  getPurchaseOrdersOverview(): Observable<PurchaseOrdersOverviewResponse> {
+    return this.http.get<PurchaseOrdersOverviewResponse>(
+      `${this.apiUrl}/inventory/purchase-orders/overview`,
       this.getAuthHeaders()
     );
   }

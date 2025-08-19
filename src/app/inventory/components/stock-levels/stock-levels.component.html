@@ -83,15 +83,13 @@
             type="text" 
             placeholder="Search parts..." 
             class="search-input"
-            [(ngModel)]="searchTerm"
-            (input)="onSearchChange()">
+            [(ngModel)]="searchTerm">
         </div>
         
         <div class="filter-container">
           <select 
             class="filter-select"
-            [(ngModel)]="selectedLocationId"
-            (change)="onLocationFilterChange()">
+            [(ngModel)]="selectedLocationId">
             <option [value]="null">All Locations</option>
             <option *ngFor="let location of availableLocations" [value]="location.id">
               {{ location.name }}
@@ -102,8 +100,7 @@
         <div class="filter-container">
           <select 
             class="filter-select"
-            [(ngModel)]="selectedPartId"
-            (change)="onPartFilterChange()">
+            [(ngModel)]="selectedPartId">
             <option [value]="null">All Parts</option>
             <option *ngFor="let part of availableParts" [value]="part.id">
               {{ part.part_number }} - {{ part.name }}
@@ -114,6 +111,18 @@
 
       <div class="actions-row">
         <div class="bulk-actions">
+          <button class="btn btn-outline" (click)="clearFilters()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: .5rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Clear Filters
+          </button>
+          <button class="btn btn-primary" (click)="applyFilters()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: .5rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            Apply Filters
+          </button>
           <button class="btn btn-primary" (click)="openAdjustmentModal()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -146,10 +155,9 @@
             <th class="th-on-hand">On Hand</th>
             <th class="th-available">Available</th>
             <th class="th-reserved">Reserved</th>
-            <th class="th-allocated">Allocated</th>
             <th class="th-cost">Average Cost</th>
             <th class="th-status">Status</th>
-            <th class="th-actions">Actions</th>
+            <th class="th-actions" style="min-width: 220px; width: 20%">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -174,13 +182,9 @@
               <span class="quantity reserved" *ngIf="stock.reserved > 0">{{ stock.reserved }}</span>
               <span class="quantity" *ngIf="stock.reserved === 0">-</span>
             </td>
-            <td class="stock-quantity">
-              <span class="quantity allocated" *ngIf="stock.allocated > 0">{{ stock.allocated }}</span>
-              <span class="quantity" *ngIf="stock.allocated === 0">-</span>
-            </td>
             <td class="stock-cost">
-              <span class="cost" *ngIf="stock.average_cost > 0">${{ stock.average_cost.toFixed(2) }}</span>
-              <span class="cost" *ngIf="stock.average_cost === 0">-</span>
+              <span class="cost" *ngIf="stock.average_cost > 0">${{ stock.average_cost | number:'1.2-2' }}</span>
+              <span class="cost" *ngIf="!stock.average_cost || stock.average_cost === 0">-</span>
             </td>
             <td class="stock-status">
               <span class="status-badge" [class]="getStockStatus(stock).class">
@@ -190,7 +194,7 @@
                 {{ getStockStatus(stock).status }}
               </span>
             </td>
-            <td class="stock-actions">
+            <td class="stock-actions" style="min-width: 220px; width: 20%">
               <div class="action-buttons">
                 <button class="action-btn adjust" (click)="openAdjustmentModal(stock)" title="Adjust Stock">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

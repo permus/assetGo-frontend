@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { InventoryAnalyticsService, DashboardData } from '../../../core/services/inventory-analytics.service';
+import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem } from '../../../core/services/inventory-analytics.service';
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -20,10 +20,19 @@ export class DashboardOverviewComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
+  // ABC summary for overview
+  abcSummary = {
+    classA: { count: 0, value: 0, percentage: 0 },
+    classB: { count: 0, value: 0, percentage: 0 },
+    classC: { count: 0, value: 0, percentage: 0 },
+    totalValue: 0
+  };
+
   constructor(private analyticsService: InventoryAnalyticsService) { }
 
   ngOnInit(): void {
     this.loadDashboardData();
+    this.loadAbcSummary();
   }
 
   loadDashboardData(): void {
@@ -49,5 +58,53 @@ export class DashboardOverviewComponent implements OnInit {
 
   refreshData(): void {
     this.loadDashboardData();
+    this.loadAbcSummary();
+  }
+
+  private loadAbcSummary(): void {
+    this.analyticsService.getAbcAnalysis().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.calculateAbcSummary(response.data);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading ABC analysis for overview:', err);
+      }
+    });
+  }
+
+  private calculateAbcSummary(items: AbcAnalysisItem[]): void {
+    const classA = items.filter(i => i.class === 'A');
+    const classB = items.filter(i => i.class === 'B');
+    const classC = items.filter(i => i.class === 'C');
+
+    const totalValue = items.reduce((sum, i) => sum + (i.value || 0), 0);
+    const valueA = classA.reduce((sum, i) => sum + (i.value || 0), 0);
+    const valueB = classB.reduce((sum, i) => sum + (i.value || 0), 0);
+    const valueC = classC.reduce((sum, i) => sum + (i.value || 0), 0);
+
+    this.abcSummary = {
+      classA: {
+        count: classA.length,
+        value: valueA,
+        percentage: totalValue > 0 ? (valueA / totalValue) * 100 : 0
+      },
+      classB: {
+        count: classB.length,
+        value: valueB,
+        percentage: totalValue > 0 ? (valueB / totalValue) * 100 : 0
+      },
+      classC: {
+        count: classC.length,
+        value: valueC,
+        percentage: totalValue > 0 ? (valueC / totalValue) * 100 : 0
+      },
+      totalValue
+    };
+  }
+
+  formatCurrency(amount: number): string {
+    return `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 }

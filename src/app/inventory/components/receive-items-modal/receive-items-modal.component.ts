@@ -18,7 +18,7 @@ export class ReceiveItemsModalComponent implements OnInit {
   receiveForm: FormGroup;
   loading = false;
   error: string | null = null;
-  locations: InventoryLocation[] = [];
+  locations: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -38,11 +38,11 @@ export class ReceiveItemsModalComponent implements OnInit {
   }
 
   loadLocations(): void {
-    this.inventoryService.getLocations(1, 1000).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.locations = response.data.data;
-        }
+    // Request all locations (no hierarchy filter) sorted by name
+    this.inventoryService.getLocations(1, 1000, undefined as unknown as number, 'name', 'asc').subscribe({
+      next: (response: any) => {
+        this.locations = response.data.locations ?? [];
+        console.log(this.locations)
       },
       error: (err) => {
         console.error('Error loading locations:', err);
@@ -135,8 +135,12 @@ export class ReceiveItemsModalComponent implements OnInit {
     return '';
   }
 
-  formatCurrency(amount: number): string {
-    return `AED ${amount.toFixed(2)}`;
+  formatCurrency(amount: any): string {
+    const num = typeof amount === 'number' ? amount : Number(amount);
+    if (!isFinite(num)) {
+      return 'AED 0.00';
+    }
+    return `AED ${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
   getLocationName(locationId: number): string {

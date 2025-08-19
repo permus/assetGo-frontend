@@ -47,7 +47,7 @@
             <select id="location" formControlName="location_id" class="form-select">
               <option value="">Select a location</option>
               <option *ngFor="let location of locations" [value]="location.id">
-                {{ location.name }} ({{ location.code || 'N/A' }})
+                {{ location.name }}
               </option>
             </select>
             <div class="error-message" *ngIf="getFieldError('location_id')">
@@ -69,14 +69,14 @@
                   <span class="remaining">Remaining: {{ item.get('remaining_qty')?.value }}</span>
                 </div>
               </div>
-              
+
               <div class="form-row">
                 <div class="form-field">
                   <label [for]="'receive_qty_' + i" class="field-label">Receive Quantity *</label>
-                  <input 
-                    type="number" 
-                    [id]="'receive_qty_' + i" 
-                    formControlName="receive_qty" 
+                  <input
+                    type="number"
+                    [id]="'receive_qty_' + i"
+                    formControlName="receive_qty"
                     class="form-input"
                     [min]="1"
                     [max]="item.get('remaining_qty')?.value">
@@ -95,23 +95,23 @@
           <div class="form-row">
             <div class="form-field">
               <label for="reference" class="field-label">Reference</label>
-              <input 
-                type="text" 
-                id="reference" 
-                formControlName="reference" 
+              <input
+                type="text"
+                id="reference"
+                formControlName="reference"
                 class="form-input"
                 placeholder="e.g., Delivery Note DN-001">
             </div>
           </div>
-          
+
           <div class="form-row">
             <div class="form-field full-width">
               <label for="notes" class="field-label">Notes</label>
-              <textarea 
-                id="notes" 
-                formControlName="notes" 
-                rows="3" 
-                class="form-textarea" 
+              <textarea
+                id="notes"
+                formControlName="notes"
+                rows="3"
+                class="form-textarea"
                 placeholder="Add any additional notes about this delivery..."></textarea>
             </div>
           </div>
@@ -124,10 +124,10 @@
       <button type="button" class="btn btn-secondary" (click)="onCancel()">
         Cancel
       </button>
-      <button 
-        type="submit" 
-        class="btn btn-primary" 
-        (click)="onSubmit()" 
+      <button
+        type="submit"
+        class="btn btn-primary"
+        (click)="onSubmit()"
         [disabled]="!receiveForm.valid || loading">
         <span *ngIf="loading">Receiving...</span>
         <span *ngIf="!loading">Receive Items</span>
