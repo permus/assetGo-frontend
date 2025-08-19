@@ -37,9 +37,19 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
 
   // Assignments UI state
   showAssignmentsModal = false;
+  showEditModal = false;
+  showAddPartsModal = false;
+  showViewCostsModal = false;
   assignments: WorkOrderAssignment[] = [];
   teamMembers: TeamMember[] = [];
   selectedUserIds = new Set<number>();
+  assignmentStatuses = new Map<number, string>();
+  assignmentStatusOptions: Array<{ value: string; label: string }> = [
+    { value: 'assigned', label: 'Assigned' },
+    { value: 'accepted', label: 'Accepted' },
+    { value: 'declined', label: 'Declined' },
+    { value: 'completed', label: 'Completed' }
+  ];
 
   openAssignmentsModal(): void {
     this.showAssignmentsModal = true;
@@ -48,6 +58,24 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
   closeAssignmentsModal(): void {
     this.showAssignmentsModal = false;
   }
+
+  // Edit modal controls
+  openEditModal(): void {
+    this.showEditModal = true;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+  }
+
+  onWorkOrderUpdated(updated: any): void {
+    this.workOrder = { ...(this.workOrder as any), ...updated } as any;
+    this.showEditModal = false;
+  }
+
+  openAddPartsModal(): void { this.showAddPartsModal = true; }
+  closeAddPartsModal(): void { this.showAddPartsModal = false; }
+  onPartsAdded(): void { this.closeAddPartsModal(); }
 
   toggleUserSelection(userId: number, checked: boolean): void {
     if (checked) {
@@ -66,6 +94,67 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
         this.closeAssignmentsModal();
       }
     });
+  }
+
+  removeAssignment(a: WorkOrderAssignment): void {
+    if (!this.workOrder) return;
+    this.workOrderService.deleteAssignment(this.workOrder.id, a.id).subscribe({
+      next: () => {
+        this.assignments = (this.assignments || []).filter(x => x.id !== a.id);
+        this.selectedUserIds.delete(a.user_id);
+      }
+    });
+  }
+
+  isUserAlreadyAssigned(userId: number): boolean {
+    return (this.assignments || []).some(a => a.user_id === userId);
+  }
+
+  getAssignmentForUser(userId: number): WorkOrderAssignment | undefined {
+    return (this.assignments || []).find(a => a.user_id === userId);
+  }
+
+  removeAssignmentByUser(userId: number): void {
+    const a = this.getAssignmentForUser(userId);
+    if (!a) return;
+    this.removeAssignment(a);
+  }
+
+  onAssignmentStatusChange(a: WorkOrderAssignment, event: any): void {
+    const target = event.target as HTMLSelectElement;
+    if (!this.workOrder || !a || !target?.value) return;
+    const newStatus = target.value;
+    this.assignmentStatuses.set(a.id, newStatus);
+    this.workOrderService.updateAssignmentStatus(this.workOrder.id, a.id, newStatus).subscribe({
+      next: (updated) => {
+        this.assignments = (this.assignments || []).map(x => x.id === updated.id ? { ...x, status: updated.status } as any : x);
+        // Disable the select after status changes away from 'assigned'
+        const shouldDisable = newStatus !== 'assigned';
+        if (shouldDisable) {
+          // No direct DOM refs; we rely on template binding to [disabled]
+        }
+      }
+    });
+  }
+
+  getAssignmentStatusLabel(value: string | null | undefined): string {
+    const v = (value || 'assigned').toLowerCase();
+    const found = this.assignmentStatusOptions.find(o => o.value === v);
+    return found ? found.label : v;
+  }
+
+  getAssignmentStatusClass(value: string | null | undefined): string {
+    const v = (value || 'assigned').toLowerCase();
+    switch (v) {
+      case 'accepted':
+        return 'pill-status accepted';
+      case 'declined':
+        return 'pill-status declined';
+      case 'completed':
+        return 'pill-status completed';
+      default:
+        return 'pill-status assigned';
+    }
   }
 
   constructor(
@@ -115,6 +204,10 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
             next: (items) => {
               this.assignments = items || [];
               this.selectedUserIds = new Set((this.assignments || []).map(a => a.user_id));
+              (this.assignments || []).forEach(a => {
+                const status: string = (a as any).status || 'assigned';
+                this.assignmentStatuses.set(a.id, status);
+              });
             }
           });
           // Load team members for modal selection

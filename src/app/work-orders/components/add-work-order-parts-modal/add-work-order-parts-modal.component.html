@@ -1,0 +1,42 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="close()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Add Parts</h3>
+      <button class="close" (click)="close()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-row">
+        <input class="form-input" [(ngModel)]="query" placeholder="Search parts by name or code" />
+        <button class="btn btn-primary" (click)="search()" [disabled]="loading">Search</button>
+      </div>
+      <div class="results" *ngIf="results.length">
+        <div class="result-row" *ngFor="let p of results">
+          <div class="left">
+            <div class="name">{{ p.name }}</div>
+            <div class="sub">UoM: {{ $any(p).uom || '-' }} • On hand: {{ $any(p).on_hand || '-' }}</div>
+          </div>
+          <div class="right">
+            <button class="btn" (click)="addToCart(p)">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cart" *ngIf="cart.length">
+        <div class="cart-row" *ngFor="let c of cart">
+          <div class="left">{{ c.part.name }}</div>
+          <div class="right">
+            <input class="qty" type="number" [(ngModel)]="c.qty" min="0.001" step="0.001" />
+            <input class="cost" type="number" [(ngModel)]="c.unit_cost" min="0" step="0.01" placeholder="Unit cost" />
+            <button class="icon" (click)="removeFromCart($any(c.part).id)">🗑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="close()">Cancel</button>
+      <button class="btn btn-primary" (click)="save()" [disabled]="cart.length===0">Add to Work Order</button>
+    </div>
+  </div>
+  </div>
+
+

@@ -162,6 +162,20 @@ export interface WorkOrderAssignment {
   user: { id: number; first_name: string; last_name: string; email: string };
   user_id: number;
   assigned_by?: number | null;
+  status?: string; // optional: 'assigned' | 'accepted' | 'declined' | 'completed'
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WorkOrderPartItem {
+  id: number;
+  work_order_id: number;
+  part_id: number;
+  part?: { id: number; name: string; uom?: string };
+  location_id?: number | null;
+  qty: number;
+  unit_cost?: number | null;
+  status: 'reserved' | 'consumed';
   created_at: string;
   updated_at: string;
 }
@@ -287,6 +301,41 @@ export class WorkOrderService {
   deleteAssignment(workOrderId: number, assignmentId: number): Observable<{ success: boolean; message?: string }> {
     return this.http
       .delete<{ success: boolean; message?: string }>(`${this.apiUrl}/${workOrderId}/assignments/${assignmentId}`, this.getAuthHeaders());
+  }
+
+  // Update a single assignment's status
+  updateAssignmentStatus(workOrderId: number, assignmentId: number, status: string): Observable<WorkOrderAssignment> {
+    return this.http
+      .put<ApiResponse<WorkOrderAssignment>>(
+        `${this.apiUrl}/${workOrderId}/assignments/${assignmentId}`,
+        { status },
+        this.getAuthHeaders()
+      )
+      .pipe(map((res) => res.data));
+  }
+
+  // Parts API
+  getParts(workOrderId: number): Observable<WorkOrderPartItem[]> {
+    return this.http
+      .get<ApiResponse<WorkOrderPartItem[]>>(`${this.apiUrl}/${workOrderId}/parts`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  addParts(workOrderId: number, items: Array<{ part_id: number; qty: number; unit_cost?: number; location_id?: number }>): Observable<WorkOrderPartItem[]> {
+    return this.http
+      .post<ApiResponse<WorkOrderPartItem[]>>(`${this.apiUrl}/${workOrderId}/parts`, { items }, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  updatePart(workOrderId: number, partItemId: number, payload: Partial<{ qty: number; unit_cost: number; status: 'reserved' | 'consumed' }>): Observable<WorkOrderPartItem> {
+    return this.http
+      .put<ApiResponse<WorkOrderPartItem>>(`${this.apiUrl}/${workOrderId}/parts/${partItemId}`, payload, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  deletePart(workOrderId: number, partItemId: number): Observable<{ success: boolean }> {
+    return this.http
+      .delete<{ success: boolean }>(`${this.apiUrl}/${workOrderId}/parts/${partItemId}`, this.getAuthHeaders());
   }
 
   addComment(workOrderId: number, comment: string, meta?: any): Observable<WorkOrderComment> {
