@@ -21,7 +21,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
   @ViewChild(WorkOrderListComponent) workOrderList!: WorkOrderListComponent;
   @ViewChild(WorkOrderStatsComponent) workOrderStats!: WorkOrderStatsComponent;
   @ViewChild(WorkOrderAnalyticsComponent) workOrderAnalytics!: WorkOrderAnalyticsComponent;
-  
+
   activeTab: 'work-orders' | 'analytics' = 'work-orders';
   showCreateModal = false;
   workOrderForm: FormGroup;
@@ -31,27 +31,27 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
   errorMessage = '';
   fieldErrors: { [key: string]: string[] } = {};
   currentFilters: any = {};
-  
+
   // Lists for select boxes
   assets: any[] = [];
   locations: any[] = [];
   teamMembers: any[] = [];
-  
+
   // Metadata options for new standardized select boxes
   statusOptions: MetaItem[] = [];
   priorityOptions: MetaItem[] = [];
   categoryOptions: MetaItem[] = [];
-  
+
   // Dropdown states for new standardized select boxes
   showStatusDropdown = false;
   showPriorityDropdown = false;
   showCategoryDropdown = false;
-  
+
   // Selected values for new standardized select boxes
   selectedStatus: MetaItem | null = null;
   selectedPriority: MetaItem | null = null;
   selectedCategory: MetaItem | null = null;
-  
+
   private subscription = new Subscription();
 
   constructor(
@@ -269,9 +269,9 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     return this.selectedCategory ? this.selectedCategory.id : null;
   }
 
-  getStatusColor(): string {
-    if (!this.selectedStatus) return '#6B7280';
-    switch (this.selectedStatus.slug) {
+  getStatusColor(slug: string): string {
+    if (!slug) return '#6B7280';
+    switch (slug) {
       case 'open': return '#10B981';
       case 'in-progress': return '#F59E0B';
       case 'completed': return '#3B82F6';
@@ -281,9 +281,9 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     }
   }
 
-  getPriorityColor(): string {
-    if (!this.selectedPriority) return '#6B7280';
-    switch (this.selectedPriority.slug) {
+  getPriorityColor(priority: MetaItem): string {
+    if (!priority) return '#6B7280';
+    switch (priority.slug) {
       case 'low': return '#10B981';
       case 'medium': return '#F59E0B';
       case 'high': return '#F97316';
@@ -293,27 +293,27 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusDescription(): string {
-    if (!this.selectedStatus) return 'Select a status for this work order';
-    switch (this.selectedStatus.slug) {
+  getStatusDescription(status: MetaItem): string {
+    if (!status) return 'Select a status for this work order';
+    switch (status.slug) {
       case 'open': return 'Work order is open and ready to be assigned';
       case 'in-progress': return 'Work order is currently being worked on';
       case 'completed': return 'Work order has been completed successfully';
       case 'cancelled': return 'Work order has been cancelled';
       case 'on-hold': return 'Work order is temporarily on hold';
-      default: return this.selectedStatus.name;
+      default: return status.name;
     }
   }
 
-  getPriorityDescription(): string {
-    if (!this.selectedPriority) return 'Select a priority level for this work order';
-    switch (this.selectedPriority.slug) {
+  getPriorityDescription(priority: MetaItem): string {
+    if (!priority) return 'Select a priority level for this work order';
+    switch (priority.slug) {
       case 'low': return 'Low priority - can be addressed when convenient';
       case 'medium': return 'Medium priority - should be addressed soon';
       case 'high': return 'High priority - needs immediate attention';
       case 'critical': return 'Critical priority - urgent, requires immediate action';
       case 'ppm': return 'Preventive maintenance - scheduled maintenance task';
-      default: return this.selectedPriority.name;
+      default: return priority.name;
     }
   }
 
@@ -352,7 +352,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     console.log('WorkOrdersComponent: setActiveTab called with:', tab);
     this.activeTab = tab;
     console.log('WorkOrdersComponent: activeTab is now:', this.activeTab);
-    
+
     // Refresh data when switching to analytics tab
     if (tab === 'analytics' && this.workOrderAnalytics) {
       this.workOrderAnalytics.refreshData();
@@ -392,11 +392,11 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
   private showError(message: string, fieldErrors?: { [key: string]: string[] }): void {
     this.errorMessage = message;
     this.showErrorMessage = true;
-    
+
     if (fieldErrors) {
       this.fieldErrors = fieldErrors;
     }
-    
+
     setTimeout(() => {
       this.showErrorMessage = false;
       this.fieldErrors = {};
@@ -416,7 +416,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
   onFiltersChanged(filters: any): void {
     this.currentFilters = filters;
     console.log('Filters received in main component:', filters);
-    
+
     // Here you would typically apply filters to the work order list
     // For now, we'll just log them
     if (this.workOrderList) {
@@ -429,7 +429,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     if (this.workOrderForm.valid) {
       this.isLoading = true;
       this.resetMessages();
-      
+
       const workOrderData: CreateWorkOrderRequest = {
         title: this.workOrderForm.value.title,
         description: this.workOrderForm.value.description || undefined,
@@ -472,7 +472,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
           },
           error: (error) => {
             console.error('Error creating work order:', error);
-            
+
             // Handle different types of errors
             if (error.error?.errors) {
               // Backend validation errors
@@ -500,17 +500,17 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     if (this.workOrderList) {
       this.workOrderList.refreshWorkOrders();
     }
-    
+
     // Refresh stats
     if (this.workOrderStats) {
       this.workOrderStats.loadStats();
     }
-    
+
     // Refresh analytics
     if (this.workOrderAnalytics) {
       this.workOrderAnalytics.refreshData();
     }
-    
+
     // Refresh select data
     this.loadSelectData();
     this.loadMetadataOptions();

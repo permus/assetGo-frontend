@@ -21,12 +21,12 @@
   </div>
 
   <div class="tabs">
-    <div class="tab" 
+    <div class="tab"
          [class.active]="activeTab === 'work-orders'"
          (click)="setActiveTab('work-orders')">
       Work Orders
     </div>
-    <div class="tab" 
+    <div class="tab"
          [class.active]="activeTab === 'analytics'"
          (click)="setActiveTab('analytics')">
       Analytics
@@ -35,9 +35,9 @@
 
   <div class="content">
     <div class="work-orders-content" [class.active]="activeTab === 'work-orders'">
-      
+
       <app-work-order-stats></app-work-order-stats>
-      
+
       <div class="create-button-container">
         <button class="create-button" (click)="openCreateModal()">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@
           Create Work Order
         </button>
       </div>
-      
+
       <app-work-order-list (createWorkOrderRequested)="openCreateModal()"></app-work-order-list>
     </div>
 
@@ -66,7 +66,7 @@
       </svg>
       <h2>Create New Work Order</h2>
     </div>
-    
+
     <div class="modal-body">
       <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()">
         <!-- Basic Information Section -->
@@ -77,13 +77,13 @@
             </svg>
             <h3>Basic Information</h3>
           </div>
-          
+
           <div class="form-row full-width">
             <div class="form-group" [class.error]="hasFieldError('title')">
               <label>Title <span class="required">*</span></label>
-              <input 
-                type="text" 
-                formControlName="title" 
+              <input
+                type="text"
+                formControlName="title"
                 placeholder="Enter work order title"
                 [class.error-input]="hasFieldError('title')">
               <div class="field-error" *ngIf="hasFieldError('title')">
@@ -91,7 +91,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="form-row">
             <div class="form-group" [class.error]="hasFieldError('status_id')">
               <label>Status <span class="required">*</span></label>
@@ -101,8 +101,8 @@
                   <div class="dropdown-content">
                     <span *ngIf="!selectedStatus" class="placeholder">Select status</span>
                     <div *ngIf="selectedStatus" class="selected-item">
-                      <div class="status-icon" [style.background-color]="getStatusColor() + '20'">
-                        <svg class="icon" [style.color]="getStatusColor()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div class="status-icon" [style.background-color]="getStatusColor(selectedStatus.slug) + '20'">
+                        <svg class="icon" [style.color]="getStatusColor(selectedStatus.slug)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                       </div>
@@ -118,14 +118,14 @@
                   <div class="dropdown-header">Select status</div>
                   <button *ngFor="let status of statusOptions" type="button" (click)="selectStatus(status)" class="dropdown-item" [class.selected]="selectedStatus?.id === status.id">
                     <div class="item-content">
-                      <div class="item-icon" [style.background-color]="getStatusColor() + '20'">
-                        <svg class="icon" [style.color]="getStatusColor()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div class="item-icon" [style.background-color]="getStatusColor(status.slug) + '20'">
+                        <svg class="icon" [style.color]="getStatusColor(status.slug)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                       </div>
                       <div class="item-details">
                         <div class="item-name">{{status.name}}</div>
-                        <div class="item-description">{{getStatusDescription()}}</div>
+                        <div class="item-description !text-xs">{{getStatusDescription(status)}}</div>
                       </div>
                     </div>
                   </button>
@@ -135,7 +135,7 @@
                 {{ getFieldError('status_id') }}
               </div>
             </div>
-            
+
             <div class="form-group" [class.error]="hasFieldError('priority_id')">
               <label>Priority <span class="required">*</span></label>
               <!-- Custom Priority Dropdown -->
@@ -144,8 +144,8 @@
                   <div class="dropdown-content">
                     <span *ngIf="!selectedPriority" class="placeholder">Select priority</span>
                     <div *ngIf="selectedPriority" class="selected-item">
-                      <div class="priority-icon" [style.background-color]="getPriorityColor() + '20'">
-                        <svg class="icon" [style.color]="getPriorityColor()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div class="priority-icon" [style.background-color]="getPriorityColor(selectedPriority) + '20'">
+                        <svg class="icon" [style.color]="getPriorityColor(selectedPriority)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
                       </div>
@@ -161,14 +161,14 @@
                   <div class="dropdown-header">Select priority</div>
                   <button *ngFor="let priority of priorityOptions" type="button" (click)="selectPriority(priority)" class="dropdown-item" [class.selected]="selectedPriority?.id === priority.id">
                     <div class="item-content">
-                      <div class="item-icon" [style.background-color]="getPriorityColor() + '20'">
-                        <svg class="icon" [style.color]="getPriorityColor()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div class="item-icon" [style.background-color]="getPriorityColor(priority) + '20'">
+                        <svg class="icon" [style.color]="getPriorityColor(priority)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
                       </div>
                       <div class="item-details">
                         <div class="item-name">{{priority.name}}</div>
-                        <div class="item-description">{{getPriorityDescription()}}</div>
+                        <div class="item-description !text-xs">{{getPriorityDescription(priority)}}</div>
                       </div>
                     </div>
                   </button>
@@ -179,7 +179,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="form-row">
             <div class="form-group" [class.error]="hasFieldError('category_id')">
               <label>Category (Optional)</label>
@@ -236,20 +236,20 @@
                 {{ getFieldError('category_id') }}
               </div>
             </div>
-            
+
             <div class="form-group">
               <label>Due Date</label>
-              <input 
-                type="datetime-local" 
+              <input
+                type="datetime-local"
                 formControlName="due_date">
             </div>
           </div>
-          
+
           <div class="form-row full-width">
             <div class="form-group">
               <label>Description</label>
-              <textarea 
-                formControlName="description" 
+              <textarea
+                formControlName="description"
                 placeholder="Enter work order description"></textarea>
             </div>
           </div>
@@ -273,7 +273,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Assignment & Location Section -->
         <div class="form-section">
           <div class="section-header">
@@ -283,7 +283,7 @@
             </svg>
             <h3>Assignment & Location</h3>
           </div>
-          
+
           <div class="form-row">
             <div class="form-group" [class.error]="hasFieldError('asset_id')">
               <label>Asset (Optional)</label>
@@ -303,7 +303,7 @@
                 <small>Select an existing asset from your assets list</small>
               </div>
             </div>
-            
+
             <div class="form-group" [class.error]="hasFieldError('location_id')">
               <label>Location (Optional)</label>
               <select
@@ -323,7 +323,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="form-row">
             <div class="form-group" [class.error]="hasFieldError('assigned_to')">
               <label>Assign To Team Member (Optional)</label>
@@ -347,7 +347,7 @@
         </div>
       </form>
     </div>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeCreateModal()" [disabled]="isLoading">Cancel</button>
       <button class="btn btn-primary" (click)="onSubmit()" [disabled]="isLoading">

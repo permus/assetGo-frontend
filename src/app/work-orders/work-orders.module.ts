@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { WorkOrdersRoutingModule } from './work-orders-routing.module';
 import { WorkOrdersComponent } from './work-orders.component';
-import { 
+import {
   WorkOrderListComponent,
   WorkOrderCardComponent,
   WorkOrderFiltersComponent,
@@ -17,6 +17,8 @@ import { EditWorkOrderModalComponent } from './components/edit-work-order-modal/
 import { DeleteConfirmationModalComponent } from '../assets/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { AddWorkOrderPartsModalComponent } from './components/add-work-order-parts-modal/add-work-order-parts-modal.component';
 import { ViewCostsModalComponent } from './components/view-costs-modal/view-costs-modal.component';
+import {PaginationComponent} from "../shared/components/pagination/pagination.component";
+import {ClickOutsideDirective} from '../shared/directives/click-outside/click-outside.directive';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import { ViewCostsModalComponent } from './components/view-costs-modal/view-cost
     HttpClientModule,
     WorkOrdersRoutingModule,
     WorkOrderAnalyticsComponent,
-    DeleteConfirmationModalComponent
+    DeleteConfirmationModalComponent,
+    PaginationComponent,
+    ClickOutsideDirective
   ]
 })
 export class WorkOrdersModule { }

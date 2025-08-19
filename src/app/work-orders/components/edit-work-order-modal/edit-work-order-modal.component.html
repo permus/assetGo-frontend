@@ -22,12 +22,12 @@
         <div class="spinner"></div>
         <p>Loading form...</p>
       </div>
-      
+
       <form *ngIf="isFormReady" [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
         <!-- Basic Information -->
         <div class="form-section">
           <h3 class="section-title">Basic Information</h3>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label for="title" class="form-label">Title *</label>
@@ -136,7 +136,7 @@
         <!-- Assignment & Asset -->
         <div class="form-section">
           <h3 class="section-title">Assignment & Asset</h3>
-          
+
           <div class="form-row">
             <div class="form-group" [class.error]="hasFieldError('asset_id')">
               <label for="asset_id" class="form-label">Asset</label>
@@ -208,9 +208,9 @@
       <button type="button" class="btn btn-secondary" (click)="closeModal()">
         Cancel
       </button>
-      <button 
-        type="button" 
-        class="btn btn-primary" 
+      <button
+        type="button"
+        class="btn btn-primary"
         (click)="onSubmit()"
         [disabled]="!canSubmit()"
       >
