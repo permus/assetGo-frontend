@@ -12,6 +12,10 @@ import { InventoryAnalyticsService, AbcAnalysisItem } from '../../../core/servic
 export class AbcAnalysisComponent implements OnInit {
   searchTerm = '';
   selectedClass = 'all';
+  // Optional configuration
+  costBasis: 'average' | 'unit' = 'average';
+  thrA: number | undefined;
+  thrB: number | undefined;
 
   loading = true;
   error: string | null = null;
@@ -48,7 +52,11 @@ export class AbcAnalysisComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.analyticsService.getAbcAnalysis().subscribe({
+    this.analyticsService.getAbcAnalysis({
+      cost_basis: this.costBasis,
+      ...(typeof this.thrA === 'number' ? { thr_a: this.thrA } : {}),
+      ...(typeof this.thrB === 'number' ? { thr_b: this.thrB } : {}),
+    }).subscribe({
       next: (response) => {
         if (response.success) {
           this.inventoryItems = response.data;
@@ -125,9 +133,18 @@ export class AbcAnalysisComponent implements OnInit {
   }
 
   exportCSV(): void {
-    console.log('Exporting ABC Analysis to CSV...');
-    // Here you would implement the actual CSV export logic
-    // For now, just log the action
+    this.analyticsService.downloadAbcCsv({
+      cost_basis: this.costBasis,
+      ...(typeof this.thrA === 'number' ? { thr_a: this.thrA } : {}),
+      ...(typeof this.thrB === 'number' ? { thr_b: this.thrB } : {}),
+    }).subscribe((blob: any) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `abc-analysis-${new Date().toISOString().slice(0,19)}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
   }
 
   getAbcClassColor(abcClass: string): string {

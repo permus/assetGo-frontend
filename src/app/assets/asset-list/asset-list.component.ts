@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { CurrencyPipe, NgIf, NgFor, DecimalPipe, DatePipe, NgClass } from '@angular/common';
+import { CurrencyPipe, NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AssetService } from '../services/asset.service';
 import { OnInit, OnDestroy } from '@angular/core';
@@ -16,7 +16,7 @@ import * as QRCode from 'qrcode';
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, DecimalPipe, DatePipe, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule, PaginationComponent],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule, PaginationComponent],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })

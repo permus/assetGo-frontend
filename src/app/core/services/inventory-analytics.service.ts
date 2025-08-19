@@ -439,10 +439,15 @@ export class InventoryAnalyticsService {
     );
   }
 
-  getAbcAnalysis(): Observable<AbcAnalysisResponse> {
+  getAbcAnalysis(params?: { cost_basis?: 'average' | 'unit'; thr_a?: number; thr_b?: number }): Observable<AbcAnalysisResponse> {
+    let httpParams = new HttpParams();
+    if (params?.cost_basis) httpParams = httpParams.set('cost_basis', params.cost_basis);
+    if (typeof params?.thr_a === 'number') httpParams = httpParams.set('thr_a', String(params.thr_a));
+    if (typeof params?.thr_b === 'number') httpParams = httpParams.set('thr_b', String(params.thr_b));
+
     return this.http.get<AbcAnalysisResponse>(
       `${this.apiUrl}/inventory/analytics/abc-analysis`,
-      this.getAuthHeaders()
+      { ...this.getAuthHeaders(), params: httpParams }
     );
   }
 
@@ -705,6 +710,24 @@ export class InventoryAnalyticsService {
       emailData,
       this.getAuthHeaders()
     );
+  }
+
+  // ABC CSV Export
+  downloadAbcCsv(params?: { cost_basis?: 'average' | 'unit'; thr_a?: number; thr_b?: number }): Observable<Blob> {
+    let httpParams = new HttpParams();
+    if (params?.cost_basis) httpParams = httpParams.set('cost_basis', params.cost_basis);
+    if (typeof params?.thr_a === 'number') httpParams = httpParams.set('thr_a', String(params.thr_a));
+    if (typeof params?.thr_b === 'number') httpParams = httpParams.set('thr_b', String(params.thr_b));
+
+    return this.http.get(
+      `${this.apiUrl}/inventory/analytics/abc-analysis/export`,
+      {
+        headers: this.getAuthHeaders().headers,
+        params: httpParams,
+        // Angular's HttpClient typing requires this cast to use blob
+        responseType: 'blob' as 'json'
+      }
+    ) as unknown as Observable<Blob>;
   }
 
   // Supplier methods

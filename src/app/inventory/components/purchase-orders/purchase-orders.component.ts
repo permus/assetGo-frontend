@@ -89,8 +89,8 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
       return;
     }
     
-    // Here you would call the API to approve the PO
-    this.inventoryService.updatePurchaseOrder(po.id, { status: 'approved' } as any).subscribe({
+    // Call the approve endpoint to approve the PO
+    this.inventoryService.approvePurchaseOrder({ purchase_order_id: po.id, approve: true }).subscribe({
       next: (response: any) => {
         if (response.success) {
           console.log('Purchase Order approved successfully');

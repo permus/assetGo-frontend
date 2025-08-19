@@ -1,51 +1,85 @@
 /* Pagination Component Styles */
 
 .pagination-container {
-  @apply bg-white border-t border-gray-200;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
 }
 
 /* Custom styles for pagination buttons */
 .pagination-btn {
-  @apply inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-colors duration-150;
-  @apply border border-gray-300 rounded-lg;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 150ms;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
 }
 
 .pagination-btn:not(:disabled):hover {
-  @apply bg-gray-50 text-gray-700;
+  background-color: #f9fafb;
+  color: #374151;
 }
 
 .pagination-btn:disabled {
-  @apply opacity-50 cursor-not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .pagination-btn.active {
-  @apply bg-blue-600 text-white border-blue-600 shadow-sm;
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.05);
 }
 
 .pagination-btn.active:hover {
-  @apply bg-blue-700 border-blue-700;
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 /* Per page selector styles */
 .per-page-select {
-  @apply px-3 py-1 border border-gray-300 rounded-lg text-sm;
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+.per-page-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.5);
+  border-color: #3b82f6;
 }
 
 /* Jump to page input styles */
 .jump-page-input {
-  @apply w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center;
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  width: 4rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+.jump-page-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.5);
+  border-color: #3b82f6;
 }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .pagination-container {
-    @apply flex-col space-y-4;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
   
   .pagination-info {
-    @apply text-center;
+    text-align: center;
   }
 }
 
@@ -56,12 +90,17 @@
 
 /* Ellipsis styling */
 .ellipsis {
-  @apply flex items-center justify-center w-10 h-10 text-gray-400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #9ca3af;
 }
 
 /* Focus styles for accessibility */
 .pagination-btn:focus,
 .per-page-select:focus,
 .jump-page-input:focus {
-  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+  outline: none;
 }
