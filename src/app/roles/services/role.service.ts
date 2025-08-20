@@ -15,6 +15,7 @@ export interface Role {
   permissions?: Permission;
   users_count?: number;
   showMenu?: boolean; // For UI dropdown menu state
+  has_location_access?: boolean; // accessor from backend
 }
 
 export interface Permission {

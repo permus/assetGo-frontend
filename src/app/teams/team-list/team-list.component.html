@@ -220,11 +220,23 @@
         <hr class="my-3 border-gray-200">
         
         <!-- Hourly Rate -->
-        <div class="flex items-center text-sm text-gray-500 mb-2" *ngIf="teamMember.hourly_rate">
+        <div class="flex items-center text-sm text-gray-500 mb-2" *ngIf="teamMember.hourly_rate !== undefined && teamMember.hourly_rate !== null">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
           </svg>
           <span>${{ teamMember.hourly_rate }}/hour</span>
+        </div>
+
+        <!-- Location Scope -->
+        <div class="text-xs mb-2">
+          <span *ngIf="teamMember.has_full_location_access" class="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-green-700 border border-green-200">Full access</span>
+          <ng-container *ngIf="!teamMember.has_full_location_access && teamMember.locations?.length">
+            <div class="flex flex-wrap gap-1">
+              <span *ngFor="let loc of teamMember.locations" class="inline-flex items-center px-2 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200">
+                {{ loc.name }}
+              </span>
+            </div>
+          </ng-container>
         </div>
         
         <!-- Created Date -->

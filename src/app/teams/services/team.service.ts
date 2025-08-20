@@ -24,6 +24,9 @@ export interface TeamMember {
   created_at: string;
   updated_at: string;
   showMenu?: boolean; // For UI dropdown menu state
+  // Location scoping info (optional fields provided by backend)
+  locations?: { id: number; name: string }[];
+  has_full_location_access?: boolean;
 }
 
 export interface TeamMemberStatistics {
@@ -63,7 +66,9 @@ export interface CreateTeamMemberRequest {
   last_name: string;
   email: string;
   role_id: number;
-  hourly_rate?: number;
+  hourly_rate?: number | null;
+  location_ids?: number[] | null; // omit or null => full access
+  expand_descendants?: boolean;   // default true
 }
 
 export interface UpdateTeamMemberRequest {
@@ -71,7 +76,9 @@ export interface UpdateTeamMemberRequest {
   last_name?: string;
   email?: string;
   role_id?: number;
-  hourly_rate?: number;
+  hourly_rate?: number | null;
+  location_ids?: number[] | null;
+  expand_descendants?: boolean;
 }
 
 export interface ResendInvitationRequest {

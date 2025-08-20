@@ -105,6 +105,33 @@
           </p>
         </div>
 
+        <!-- Location Scope (visible only if role.has_location_access) -->
+        <div *ngIf="showLocationScope" class="mb-4 border rounded-lg p-3 bg-gray-50">
+          <div class="flex items-center justify-between mb-2">
+            <div class="font-medium text-gray-800">Location Scope</div>
+            <button type="button" (click)="clearSelection()" class="text-sm text-blue-600 hover:underline">Clear selection (Full access)</button>
+          </div>
+          <div class="flex items-center mb-3">
+            <input type="checkbox" id="expand_descendants" formControlName="expand_descendants" class="mr-2">
+            <label for="expand_descendants" class="text-sm text-gray-700">Include descendants (recommended)</label>
+          </div>
+          <div *ngIf="loadingTree" class="text-sm text-gray-500">Loading locations...</div>
+          <div *ngIf="treeError" class="text-sm text-red-600">{{ treeError }}</div>
+          <div *ngIf="!loadingTree && !treeError">
+            <ng-select
+              [items]="flatLocationOptions"
+              bindLabel="label"
+              bindValue="id"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [searchable]="true"
+              placeholder="Select locations (empty = full access)"
+              formControlName="location_ids">
+            </ng-select>
+          </div>
+          <p class="mt-2 text-xs text-gray-500">No selection means full access to all locations.</p>
+        </div>
+
         <!-- Hourly Rate -->
         <div class="mb-6">
           <label for="hourly_rate" class="block text-sm font-medium text-gray-700 mb-2">

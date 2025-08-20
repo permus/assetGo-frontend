@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @use "tailwindcss";
 @import 'flatpickr/dist/flatpickr.css';
+@import "@ng-select/ng-select/themes/default.theme.css";
 
 /* Google Maps styling */
 #location-map,
