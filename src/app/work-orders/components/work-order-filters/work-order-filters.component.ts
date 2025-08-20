@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import {Component, OnInit, OnDestroy, Output, EventEmitter, effect} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { WorkOrderService, WorkOrderFilters } from '../../services/work-order.service';
 import { AssetService } from '../../../assets/services/asset.service';
@@ -13,9 +13,10 @@ import { Subscription } from 'rxjs';
   templateUrl: './work-order-filters.component.html',
   styleUrls: ['./work-order-filters.component.scss']
 })
+
 export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
   @Output() filtersChanged = new EventEmitter<any>();
-  
+
   filterForm: FormGroup;
   isLoading = false;
   private subscription = new Subscription();
@@ -52,7 +53,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
   users: Array<{ id: number; first_name: string; last_name: string }> = [];
 
   constructor(
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private workOrderService: WorkOrderService,
     private assetService: AssetService,
     private locationService: LocationService,
@@ -71,6 +72,9 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
       end_date: [''],
       due_start_date: [''],
       due_end_date: ['']
+    });
+    effect(() => {
+      this.checkFilter();
     });
   }
 
@@ -298,14 +302,14 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
       sortBy: this.sortBy,
       sortOrder: this.sortOrder
     };
-    
+
     // Clean up empty values
     Object.keys(filters).forEach(key => {
       if (filters[key] === '' || filters[key] === null || filters[key] === undefined) {
         delete filters[key];
       }
     });
-    
+
     // Emit the filters to parent component
     this.filtersChanged.emit(filters);
   }
@@ -330,6 +334,16 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     this.showAdvanced = false;
     this.showDateRangePicker = false;
     this.onFilterChange();
+  }
+  checkFilter(): boolean {
+    const { status_id, priority_id, category_id, search } = this.filterForm.value;
+
+    return !!(
+      status_id ||
+      priority_id ||
+      category_id ||
+      (search && search.trim() !== '')
+    );
   }
 
   // Close dropdowns when clicking outside
@@ -375,7 +389,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     if (!statusId) return '#6B7280';
     const status = this.statusOptions.find(s => s.id === statusId);
     if (!status) return '#6B7280';
-    
+
     const colorMap: { [key: string]: string } = {
       'open': '#10B981',      // Green
       'in-progress': '#F59E0B', // Amber
@@ -390,7 +404,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     if (!priorityId) return '#6B7280';
     const priority = this.priorityOptions.find(p => p.id === priorityId);
     if (!priority) return '#6B7280';
-    
+
     const colorMap: { [key: string]: string } = {
       'low': '#10B981',       // Green
       'medium': '#F59E0B',    // Amber
@@ -404,7 +418,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     if (!statusId) return 'Work order status';
     const status = this.statusOptions.find(s => s.id === statusId);
     if (!status) return 'Work order status';
-    
+
     const descriptionMap: { [key: string]: string } = {
       'open': 'Work order is open and ready for assignment',
       'in-progress': 'Work order is currently being worked on',
@@ -419,7 +433,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     if (!priorityId) return 'Work order priority level';
     const priority = this.priorityOptions.find(p => p.id === priorityId);
     if (!priority) return 'Work order priority level';
-    
+
     const descriptionMap: { [key: string]: string } = {
       'low': 'Low priority - can be addressed when convenient',
       'medium': 'Medium priority - should be addressed soon',

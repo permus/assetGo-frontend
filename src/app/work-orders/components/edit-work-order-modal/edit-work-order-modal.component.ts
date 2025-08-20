@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { WorkOrderService, WorkOrder } from '../../services/work-order.service';
-import { AssetService } from '../../../assets/services/asset.service';
-import { LocationService } from '../../../locations/services/location.service';
-import { TeamService } from '../../../teams/services/team.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { firstValueFrom } from 'rxjs';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {WorkOrderService, WorkOrder} from '../../services/work-order.service';
+import {AssetService} from '../../../assets/services/asset.service';
+import {LocationService} from '../../../locations/services/location.service';
+import {TeamService} from '../../../teams/services/team.service';
+import {AuthService} from '../../../core/services/auth.service';
+import {firstValueFrom} from 'rxjs';
 
 // Interfaces for dropdown data
 interface User {
@@ -92,7 +92,7 @@ export class EditWorkOrderModalComponent implements OnInit {
 
   // Check if the form is ready to use
   get isFormReady(): boolean {
-    return !!(this.editForm && typeof this.editForm.patchValue === 'function');
+    return (this.editForm && typeof this.editForm.patchValue === 'function');
   }
 
   // Safely ensure the form is ready
@@ -117,8 +117,9 @@ export class EditWorkOrderModalComponent implements OnInit {
     private assetService: AssetService,
     private locationService: LocationService,
     private teamService: TeamService,
-    private authService: AuthService
-  ) {}
+    protected authService: AuthService
+  ) {
+  }
 
   ngOnInit(): void {
     console.log('EditWorkOrderModalComponent: ngOnInit called');
@@ -199,16 +200,6 @@ export class EditWorkOrderModalComponent implements OnInit {
         assigned_to: ['']
       });
 
-      console.log('EditWorkOrderModalComponent: Form initialized:', {
-        formExists: !!this.editForm,
-        formValid: this.editForm.valid,
-        formStatus: this.editForm.status,
-        formErrors: this.editForm.errors,
-        formValues: this.editForm.value,
-        formType: typeof this.editForm,
-        formConstructor: this.editForm.constructor.name
-      });
-
       // Verify the form was created properly
       if (!this.editForm || typeof this.editForm.patchValue !== 'function') {
         console.error('EditWorkOrderModalComponent: Form not properly initialized');
@@ -222,30 +213,16 @@ export class EditWorkOrderModalComponent implements OnInit {
   }
 
   private populateForm(): void {
-    if (!this.workOrder) {
-      console.log('EditWorkOrderModalComponent: No workOrder to populate form with');
+    if (!this.workOrder || !this.isFormReady) {
       return;
     }
 
-    if (!this.isFormReady) {
-      console.log('EditWorkOrderModalComponent: Form not ready, initializing first');
-      this.initForm();
-
-      // Check again after initialization
-      if (!this.isFormReady) {
-        console.error('EditWorkOrderModalComponent: Form still not ready after initialization');
-        return;
-      }
-    }
-
-    console.log('EditWorkOrderModalComponent: Populating form with workOrder:', this.workOrder);
-
-    // Convert date strings to Date objects for the form
-    const dueDate = this.workOrder.due_date ? new Date(this.workOrder.due_date).toISOString().split('T')[0] : '';
-
-    const formValues = {
+    const dueDate = this.workOrder.due_date
+      ? new Date(this.workOrder.due_date).toISOString().slice(0, 16) // YYYY-MM-DDTHH:mm
+      : '';
+    this.editForm.patchValue({
       title: this.workOrder.title || '',
-      priority: this.workOrder.priority || '',
+      priority: this.workOrder.priority?.slug || this.workOrder.priority || '',
       due_date: dueDate,
       description: this.workOrder.description || '',
       estimated_hours: this.workOrder.estimated_hours || '',
@@ -253,67 +230,14 @@ export class EditWorkOrderModalComponent implements OnInit {
       asset_id: this.getFieldValue(this.workOrder.asset),
       location_id: this.getFieldValue(this.workOrder.location),
       assigned_to: this.getFieldValue(this.workOrder.assigned_to)
-    };
-
-    console.log('EditWorkOrderModalComponent: Form values to set:', formValues);
-    console.log('EditWorkOrderModalComponent: About to call patchValue, editForm exists:', !!this.editForm);
-    console.log('EditWorkOrderModalComponent: editForm type:', typeof this.editForm);
-    console.log('EditWorkOrderModalComponent: editForm constructor:', this.editForm?.constructor?.name);
-
-    // Final safety check before calling patchValue
-    if (!this.isFormReady) {
-      console.error('EditWorkOrderModalComponent: Form not ready for patchValue operation');
-      return;
-    }
-
-    try {
-      this.editForm.patchValue(formValues);
-      console.log('EditWorkOrderModalComponent: Form populated successfully');
-    } catch (error: unknown) {
-      console.error('EditWorkOrderModalComponent: Error populating form:', error);
-      console.error('EditWorkOrderModalComponent: Error details:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        editFormExists: !!this.editForm,
-        editFormType: typeof this.editForm,
-        editFormConstructor: this.editForm?.constructor?.name
-      });
-      // If there's an error, try to reinitialize the form
-      this.initForm();
-      try {
-        this.editForm.patchValue(formValues);
-        console.log('EditWorkOrderModalComponent: Form reinitialized and populated successfully');
-      } catch (retryError: unknown) {
-        console.error('EditWorkOrderModalComponent: Failed to populate form after reinitialization:', retryError);
-      }
-    }
-
-    // Check form state after population
-    if (this.isFormReady && this.editForm) {
-      console.log('EditWorkOrderModalComponent: Form state after population:', {
-        formValid: this.editForm.valid,
-        formStatus: this.editForm.status,
-        formErrors: this.editForm.errors,
-        formValues: this.editForm.value,
-        titleControl: {
-          value: this.editForm.get('title')?.value,
-          valid: this.editForm.get('title')?.valid,
-          errors: this.editForm.get('title')?.errors
-        },
-        priorityControl: {
-          value: this.editForm.get('priority')?.value,
-          valid: this.editForm.get('priority')?.valid,
-          errors: this.editForm.get('priority')?.errors
-        }
-      });
-    }
+    });
   }
 
   private getFieldValue(field: any): any {
     if (!field) return '';
 
     // If it's an object with an id property, return the id
-    if (typeof field === 'object' && field !== null && 'id' in field) {
+    if (typeof field === 'object' && 'id' in field) {
       return field.id;
     }
 
@@ -333,11 +257,11 @@ export class EditWorkOrderModalComponent implements OnInit {
       this.users = teamsResponse?.data || [];
 
       // Load assets
-      const assetsResponse = await firstValueFrom(this.assetService.getAssets({ per_page: 100 }));
+      const assetsResponse = await firstValueFrom(this.assetService.getAssets({per_page: 100}));
       this.assets = assetsResponse?.data?.assets || assetsResponse?.data || [];
 
       // Load locations
-      const locationsResponse = await firstValueFrom(this.locationService.getLocations({ per_page: 100 }));
+      const locationsResponse = await firstValueFrom(this.locationService.getLocations({per_page: 100}));
       this.locations = locationsResponse?.data?.locations || [];
 
       // Load team members (teams)
@@ -402,10 +326,6 @@ export class EditWorkOrderModalComponent implements OnInit {
     return this.isFieldInvalid(fieldName);
   }
 
-  isFormModified(): boolean {
-    return this.isFormReady && this.editForm ? this.editForm.dirty : false;
-  }
-
   canSubmit(): boolean {
     if (!this.isFormReady || !this.editForm) {
       return false;
@@ -428,16 +348,13 @@ export class EditWorkOrderModalComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    console.log('EditWorkOrderModalComponent: onSubmit called');
 
     // Ensure form is initialized before trying to use it
     if (!this.isFormReady) {
-      console.log('EditWorkOrderModalComponent: Form not ready, initializing first');
       this.initForm();
 
       // Check again after initialization
       if (!this.isFormReady) {
-        console.error('EditWorkOrderModalComponent: Form still not ready after initialization');
         return;
       }
     }
@@ -447,28 +364,19 @@ export class EditWorkOrderModalComponent implements OnInit {
       console.error('EditWorkOrderModalComponent: Form not ready for submission');
       return;
     }
-
-    console.log('EditWorkOrderModalComponent: Form valid:', this.editForm.valid);
-    console.log('EditWorkOrderModalComponent: Form invalid:', this.editForm.invalid);
-    console.log('EditWorkOrderModalComponent: isSubmitting:', this.isSubmitting);
-    console.log('EditWorkOrderModalComponent: workOrder:', !!this.workOrder);
-
     if (this.editForm.invalid || this.isSubmitting || !this.workOrder) {
-      console.log('EditWorkOrderModalComponent: Form submission blocked');
       return;
     }
 
-    console.log('EditWorkOrderModalComponent: Starting form submission');
     this.isSubmitting = true;
 
     try {
       const formData = this.editForm.value;
-      console.log('EditWorkOrderModalComponent: Form data:', formData);
 
       // Prepare the update payload
       const updatePayload = {
         title: formData.title,
-        priority: formData.priority,
+        priority: formData.priority.id,
         due_date: formData.due_date || null,
         description: formData.description || null,
         estimated_hours: formData.estimated_hours || null,
@@ -477,8 +385,6 @@ export class EditWorkOrderModalComponent implements OnInit {
         location_id: formData.location_id || null,
         assigned_to: formData.assigned_to || null
       };
-
-      console.log('EditWorkOrderModalComponent: Update payload:', updatePayload);
 
       // Update the work order
       const updatedWorkOrder = await firstValueFrom(this.workOrderService.updateWorkOrder(this.workOrder.id, updatePayload));
@@ -503,15 +409,8 @@ export class EditWorkOrderModalComponent implements OnInit {
   }
 
   closeModal(): void {
-    // Check if form has unsaved changes
-    if (this.isFormModified()) {
-      if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-        this.resetForm();
-        this.modalClosed.emit();
-      }
-    } else {
-      this.modalClosed.emit();
-    }
+    this.resetForm();
+    this.modalClosed.emit();
   }
 
   // Prevent modal from closing when clicking inside the modal content

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { WorkOrderService, WorkOrder, WorkOrderListResponse } from '../../services/work-order.service';
+import { WorkOrderService, WorkOrder, } from '../../services';
 import { Subscription } from 'rxjs';
-import { EditWorkOrderModalComponent } from '../edit-work-order-modal/edit-work-order-modal.component';
+import {PaginationData} from '../../../shared/components/pagination/pagination.component';
 
 // Interfaces for nested objects
 interface User {
@@ -46,6 +46,18 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
   perPage = 10;
   total = 0;
   totalPages = 0;
+
+
+  // Pagination
+  pagination: PaginationData = {
+    current_page: 1,
+    last_page: 1,
+    per_page: 20,
+    total: 0,
+    from: 0,
+    to: 0
+  };
+
 
   // Bulk operations properties
   selectedWorkOrders: Set<number> = new Set();
@@ -154,20 +166,26 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.workOrderService.getWorkOrders(params).subscribe({
         next: (response: any) => {
-          // Fix: The API returns { data: [...], current_page: 1, total: 1 }
-          // So response.data is the array of work orders
           this.workOrders = response.data.data || [];
-          this.total = response.total || 0;
-          this.currentPage = response.current_page || 1;
-          this.perPage = response.per_page || 10;
-          this.totalPages = response.last_page || 1;
+          this.total = response.data.total || 0;
+          this.currentPage = response.data.current_page || 1;
+          this.perPage = response.data.per_page || 10;
+          this.totalPages = response.data.last_page || 1;
+          this.pagination = {
+            current_page: this.currentPage,
+            last_page: this.totalPages,
+            per_page: this.perPage,
+            total: this.total,
+            from: (this.currentPage - 1) * this.perPage + 1,
+            to: Math.min(this.currentPage * this.perPage, this.total)
+          };
           this.isLoading = false;
         },
         error: (error) => {
           console.error('WorkOrderListComponent: Error loading work orders:', error);
           this.workOrders = [];
           this.isLoading = false;
-        }
+        },
       })
     );
   }
@@ -315,7 +333,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
     // Here you would call the bulk update API
     console.log('Bulk status update:', updates);
-    
+
     // For now, just refresh the list
     this.refreshWorkOrders();
     this.selectedWorkOrders.clear();
@@ -334,7 +352,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
     // Here you would call the bulk update API
     console.log('Bulk priority update:', updates);
-    
+
     // For now, just refresh the list
     this.refreshWorkOrders();
     this.selectedWorkOrders.clear();
@@ -353,7 +371,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
     // Here you would call the bulk update API
     console.log('Bulk assignment update:', updates);
-    
+
     // For now, just refresh the list
     this.refreshWorkOrders();
     this.selectedWorkOrders.clear();
@@ -366,10 +384,10 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
     if (confirm(`Are you sure you want to delete ${this.selectedWorkOrders.size} work order(s)?`)) {
       const workOrderIds = Array.from(this.selectedWorkOrders);
-      
+
       // Here you would call the bulk delete API
       console.log('Bulk delete:', workOrderIds);
-      
+
       // For now, just refresh the list
       this.refreshWorkOrders();
       this.selectedWorkOrders.clear();
@@ -379,7 +397,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
   getAssigneeName(workOrder: any): string {
     if (workOrder.assigned_to) {
-      if (typeof workOrder.assigned_to === 'object' && workOrder.assigned_to !== null) {
+      if (typeof workOrder.assigned_to === 'object') {
         const assignedTo = workOrder.assigned_to as User;
         const firstName = assignedTo.first_name || '';
         const lastName = assignedTo.last_name || '';
@@ -392,7 +410,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
   getAssetName(workOrder: any): string {
     if (workOrder.asset) {
-      if (typeof workOrder.asset === 'object' && workOrder.asset !== null) {
+      if (typeof workOrder.asset === 'object') {
         const asset = workOrder.asset as Asset;
         return asset.name || asset.asset_id || 'No Asset';
       }
@@ -403,7 +421,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
   getLocationName(workOrder: any): string {
     if (workOrder.location) {
-      if (typeof workOrder.location === 'object' && workOrder.location !== null) {
+      if (typeof workOrder.location === 'object') {
         const location = workOrder.location as Location;
         return location.name || location.full_path || 'No Location';
       }
@@ -491,4 +509,23 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     // Show success message (optional)
     console.log('Work order updated successfully:', updatedWorkOrder);
   }
+
+
+  /**
+   * Handle pagination page change
+   */
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadWorkOrders(page);
+  }
+
+  /**
+   * Handle pagination per page change
+   */
+  onPerPageChange(perPage: number): void {
+    this.perPage = perPage;
+    this.currentPage = 1; // Reset to first page when changing per page
+    this.loadWorkOrders();
+  }
+
 }
