@@ -23,6 +23,11 @@
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
+
+  &::-webkit-scrollbar {
+    width:0;
+    display: none;
+  }
 }
 
 // Modal Header
@@ -349,7 +354,7 @@
 // Loading state
 .btn:disabled {
   position: relative;
-  
+
   .animate-spin {
     animation: spin 1s linear infinite;
   }

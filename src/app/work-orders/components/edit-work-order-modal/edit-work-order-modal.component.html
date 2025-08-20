@@ -47,22 +47,58 @@
 
           <div class="form-row">
             <div class="form-group">
+              <label for="status" class="form-label">Status *</label>
+              <select
+                id="status"
+                formControlName="status_id"
+                class="form-select capitalize"
+                [class.error]="isFieldInvalid('status_id')"
+              >
+                <option value="">Select status</option>
+                @for (status of statusOptions;track status.id) {
+                  <option value="{{ status.id }}">{{ status.name }}</option>
+                }
+              </select>
+              <div *ngIf="isFieldInvalid('status_id')" class="error-message">
+                {{ getFieldError('status_id') }}
+              </div>
+            </div>
+
+            <div class="form-group">
               <label for="priority" class="form-label">Priority *</label>
               <select
                 id="priority"
-                formControlName="priority"
-                class="form-select"
-                [class.error]="isFieldInvalid('priority')"
+                formControlName="priority_id"
+                class="form-select capitalize"
+                [class.error]="isFieldInvalid('priority_id')"
               >
                 <option value="">Select Priority</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-                <option value="urgent">Urgent</option>
+               @for (priority of priorityOptions;track priority) {
+                <option value="{{ priority.id }}">{{ priority.name }}</option>
+               }
               </select>
               <div *ngIf="isFieldInvalid('priority')" class="error-message">
                 {{ getFieldError('priority') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="category" class="form-label">Category (Optional)</label>
+              <select
+                id="category"
+                formControlName="category_id"
+                class="form-select"
+                [class.error]="isFieldInvalid('category_id')"
+              >
+                <option value="">Select Category</option>
+                @for (category of categoryOptions;track category.id) {
+                  <option value="{{ category.id }}">{{ category.name }}</option>
+                }
+              </select>
+              <div *ngIf="isFieldInvalid('category_id')" class="error-message">
+                {{ getFieldError('category_id') }}
               </div>
             </div>
 
@@ -141,6 +177,7 @@
             <div class="form-group" [class.error]="hasFieldError('asset_id')">
               <label for="asset_id" class="form-label">Asset</label>
               <select
+                (change)="onAssetChange($event)"
                 id="asset_id"
                 formControlName="asset_id"
                 class="form-select"

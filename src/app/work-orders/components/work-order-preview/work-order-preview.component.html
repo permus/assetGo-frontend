@@ -83,7 +83,7 @@
       [isOpen]="showEditModal"
       [workOrder]="$any(workOrder)"
       (modalClosed)="closeEditModal()"
-      (workOrderUpdated)="onWorkOrderUpdated($event)">
+      (workOrderUpdated)="loadWorkOrder(workOrder?.id)">
     </app-edit-work-order-modal>
 
     <app-add-work-order-parts-modal

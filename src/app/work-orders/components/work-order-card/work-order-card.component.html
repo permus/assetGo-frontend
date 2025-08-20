@@ -1,8 +1,8 @@
-<div class="work-order-card" [class.list-view]="isListView">
+<div class="work-order-card h-[200px]" [class.list-view]="isListView">
   <!-- Bulk Selection Checkbox -->
   <div class="bulk-selection-checkbox" *ngIf="showBulkSelection">
-    <input 
-      type="checkbox" 
+    <input
+      type="checkbox"
       [checked]="isSelected"
       (change)="onSelectionChange($event)"
       class="bulk-checkbox">
@@ -15,7 +15,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-1.5a2.5 2.5 0 11-3.536 3.536l-7.5 7.5a2 2 0 102.828 2.828l7.5-7.5a2.5 2.5 0 013.536-3.536z" />
         </svg>
       </div>
-      <h3 class="title">{{ workOrder.title }}</h3>
+      <h3 class="title truncate" [title]="workOrder.title" [ngClass]="workOrder.status && workOrder.priority && workOrder.category ? 'w-[70px]' : 'w-[150px]'">{{ workOrder.title }}</h3>
     </div>
     <div class="header-actions">
       <div class="badges">
@@ -27,6 +27,7 @@
         </span>
         <span *ngIf="getCategoryName()" class="badge category-badge">{{ getCategoryName() }}</span>
       </div>
+
       <div class="relative" (click)="$event.stopPropagation()">
         <button
           (click)="toggleMenu()"
@@ -75,8 +76,8 @@
   </div>
 
   <div class="card-content">
-    <p class="description" *ngIf="workOrder.description">
-      {{ workOrder.description }}
+    <p class="description truncate" [class.italic]="!workOrder.description" [title]="workOrder.description || 'No description provided'">
+      {{ workOrder.description || 'No description provided' }}
     </p>
 
     <div class="meta-row">
@@ -91,7 +92,7 @@
     </div>
 
     <div class="footer-row">
-      <span>Created {{ workOrder.created_at | date:'MMM d, y' }} by {{ getCreatedBy() || 'Unknown' }}</span>
+      <span class="text-xs">Created {{ workOrder.created_at | date:'MMM d, y' }} by {{ getCreatedBy() || 'Unknown' }}</span>
     </div>
   </div>
 

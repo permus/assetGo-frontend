@@ -53,6 +53,13 @@
         }
       }
 
+
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
       .bulk-actions {
         display: flex;
         gap: 1rem;
@@ -115,12 +122,6 @@
           }
         }
       }
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
 
       .bulk-delete-btn {
         display: inline-flex;
@@ -250,10 +251,6 @@
    }
 
   .loading-state {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
     padding: 1rem;
 
     .loading-skeleton {
@@ -402,7 +399,7 @@
 
   .work-orders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 
@@ -529,7 +526,7 @@
                 color: #dc2626;
               }
 
-              &.status-in_progress {
+              &.status-in-progress {
                 background: #eff6ff;
                 color: #2563eb;
               }

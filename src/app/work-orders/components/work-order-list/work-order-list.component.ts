@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { WorkOrderService, WorkOrder, } from '../../services';
-import { Subscription } from 'rxjs';
+import {Component, OnInit, OnDestroy, Output, EventEmitter} from '@angular/core';
+import {WorkOrderService, WorkOrder,} from '../../services';
+import {Subscription} from 'rxjs';
 import {PaginationData} from '../../../shared/components/pagination/pagination.component';
+import {Router} from '@angular/router';
 
 // Interfaces for nested objects
 interface User {
@@ -61,12 +62,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
   // Bulk operations properties
   selectedWorkOrders: Set<number> = new Set();
-  isBulkMode = false;
   showBulkActions = false;
-  bulkAction = '';
-  bulkTargetUser: number | null = null;
-  bulkStatus: string = '';
-  bulkPriority: string = '';
   // Delete modal state (align with Asset delete flow)
   showDeleteConfirmationModal = false;
 
@@ -75,7 +71,8 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
   private subscription = new Subscription();
 
-  constructor(private workOrderService: WorkOrderService) {}
+  constructor(private workOrderService: WorkOrderService, private router: Router) {
+  }
 
   ngOnInit(): void {
     this.loadWorkOrders();
@@ -83,28 +80,6 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-  }
-
-  // Method to test empty state (remove in production)
-  testEmptyState(): void {
-    this.workOrders = [];
-    this.total = 0;
-    this.currentPage = 1;
-    this.totalPages = 0;
-    this.isLoading = false;
-    console.log('WorkOrderListComponent: Empty state triggered manually');
-  }
-
-  // Method to get current state for debugging (remove in production)
-  getCurrentState(): any {
-    return {
-      workOrders: this.workOrders,
-      workOrdersLength: this.workOrders?.length,
-      isLoading: this.isLoading,
-      total: this.total,
-      currentPage: this.currentPage,
-      totalPages: this.totalPages
-    };
   }
 
   loadWorkOrders(page: number = 1, filters?: any): void {
@@ -208,39 +183,6 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     this.createWorkOrderRequested.emit();
   }
 
-  goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.loadWorkOrders(page);
-    }
-  }
-
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxVisiblePages = 5;
-
-    if (this.totalPages <= maxVisiblePages) {
-      // Show all pages if total is small
-      for (let i = 1; i <= this.totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Show pages around current page
-      let start = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
-      let end = Math.min(this.totalPages, start + maxVisiblePages - 1);
-
-      // Adjust start if we're near the end
-      if (end - start + 1 < maxVisiblePages) {
-        start = Math.max(1, end - maxVisiblePages + 1);
-      }
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-    }
-
-    return pages;
-  }
-
   // Helper methods for list view
   getStatusLabel(status: string): string {
     const statusMap: { [key: string]: string } = {
@@ -263,26 +205,8 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     return priorityMap[priority] || priority;
   }
 
-  // Bulk operations methods
-  toggleBulkMode(): void {
-    this.isBulkMode = !this.isBulkMode;
-    if (!this.isBulkMode) {
-      this.selectedWorkOrders.clear();
-      this.showBulkActions = false;
-    }
-  }
-
-  toggleWorkOrderSelection(workOrderId: number): void {
-    if (this.selectedWorkOrders.has(workOrderId)) {
-      this.selectedWorkOrders.delete(workOrderId);
-    } else {
-      this.selectedWorkOrders.add(workOrderId);
-    }
-    this.showBulkActions = this.selectedWorkOrders.size > 0;
-  }
-
   onCardSelectionChanged(event: { workOrderId: number; selected: boolean }): void {
-    const { workOrderId, selected } = event;
+    const {workOrderId, selected} = event;
     if (selected) {
       this.selectedWorkOrders.add(workOrderId);
     } else {
@@ -358,43 +282,6 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     this.selectedWorkOrders.clear();
     this.showBulkActions = false;
   }
-
-  // Bulk assignment
-  assignBulkWorkOrders(userId: number): void {
-    if (this.selectedWorkOrders.size === 0) return;
-
-    const workOrderIds = Array.from(this.selectedWorkOrders);
-    const updates = workOrderIds.map(id => ({
-      id,
-      assigned_to: userId
-    }));
-
-    // Here you would call the bulk update API
-    console.log('Bulk assignment update:', updates);
-
-    // For now, just refresh the list
-    this.refreshWorkOrders();
-    this.selectedWorkOrders.clear();
-    this.showBulkActions = false;
-  }
-
-  // Bulk delete
-  deleteBulkWorkOrders(): void {
-    if (this.selectedWorkOrders.size === 0) return;
-
-    if (confirm(`Are you sure you want to delete ${this.selectedWorkOrders.size} work order(s)?`)) {
-      const workOrderIds = Array.from(this.selectedWorkOrders);
-
-      // Here you would call the bulk delete API
-      console.log('Bulk delete:', workOrderIds);
-
-      // For now, just refresh the list
-      this.refreshWorkOrders();
-      this.selectedWorkOrders.clear();
-      this.showBulkActions = false;
-    }
-  }
-
   getAssigneeName(workOrder: any): string {
     if (workOrder.assigned_to) {
       if (typeof workOrder.assigned_to === 'object') {
@@ -432,8 +319,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
   viewWorkOrderDetails(workOrder: any): void {
     // Navigate to work order details
-    console.log('Viewing work order:', workOrder);
-    // TODO: Implement navigation to work order details page
+    this.router.navigate(['/work-orders', workOrder.id]);
   }
 
   editWorkOrder(workOrder: any): void {
@@ -443,7 +329,9 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
   }
 
   deleteWorkOrder(workOrder: WorkOrder): void {
-    if (!workOrder?.id) { return; }
+    if (!workOrder?.id) {
+      return;
+    }
     // Match asset flow: select the item and open confirmation modal
     this.selectedWorkOrders.clear();
     this.selectedWorkOrders.add(workOrder.id);

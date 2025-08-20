@@ -1,11 +1,13 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {WorkOrderService, WorkOrder} from '../../services/work-order.service';
+import {WorkOrder, WorkOrderService} from '../../services/work-order.service';
 import {AssetService} from '../../../assets/services/asset.service';
 import {LocationService} from '../../../locations/services/location.service';
 import {TeamService} from '../../../teams/services/team.service';
 import {AuthService} from '../../../core/services/auth.service';
-import {firstValueFrom} from 'rxjs';
+import {firstValueFrom, Subscription} from 'rxjs';
+import {MetaItem} from '../../../core/types/work-order.types';
+import {MetaWorkOrdersService} from '../../../core/services/meta-work-orders.service';
 
 // Interfaces for dropdown data
 interface User {
@@ -20,6 +22,7 @@ interface Asset {
   id: number;
   name: string;
   asset_id: string;
+  location: any; //eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 interface Location {
@@ -76,7 +79,7 @@ interface Team {
   templateUrl: './edit-work-order-modal.component.html',
   styleUrls: ['./edit-work-order-modal.component.scss']
 })
-export class EditWorkOrderModalComponent implements OnInit {
+export class EditWorkOrderModalComponent implements OnInit, OnChanges {
   @Input() workOrder: WorkOrder | null = null;
   @Input() isOpen = false;
   @Output() modalClosed = new EventEmitter<void>();
@@ -84,7 +87,9 @@ export class EditWorkOrderModalComponent implements OnInit {
 
   editForm!: FormGroup;
   isSubmitting = false;
-
+  statusOptions: MetaItem[] = [];
+  priorityOptions: MetaItem[] = [];
+  categoryOptions: MetaItem[] = [];
   // Getter to safely access the form
   get form(): FormGroup | null {
     return this.editForm || null;
@@ -110,29 +115,25 @@ export class EditWorkOrderModalComponent implements OnInit {
   assets: Asset[] = [];
   locations: Location[] = [];
   teams: Team[] = [];
-
+  private subscription = new Subscription();
   constructor(
     private fb: FormBuilder,
     private workOrderService: WorkOrderService,
     private assetService: AssetService,
     private locationService: LocationService,
     private teamService: TeamService,
-    protected authService: AuthService
+    protected authService: AuthService,
+    private metaWorkOrdersService: MetaWorkOrdersService,
+
   ) {
   }
 
   ngOnInit(): void {
-    console.log('EditWorkOrderModalComponent: ngOnInit called');
-    console.log('EditWorkOrderModalComponent: ngOnInit - workOrder:', !!this.workOrder, 'isOpen:', this.isOpen);
     this.initForm();
     this.loadDropdownData();
+    this.loadMetadataOptions();
     if (this.workOrder && this.isFormReady) {
-      console.log('EditWorkOrderModalComponent: WorkOrder found, populating form');
       this.populateForm();
-    } else if (this.workOrder) {
-      console.log('EditWorkOrderModalComponent: WorkOrder found but form not ready');
-    } else {
-      console.log('EditWorkOrderModalComponent: No WorkOrder provided');
     }
   }
 
@@ -143,12 +144,6 @@ export class EditWorkOrderModalComponent implements OnInit {
     // Ensure form is initialized before trying to use it
     if (!this.isFormReady) {
       this.initForm();
-
-      // Check again after initialization
-      if (!this.isFormReady) {
-        console.error('EditWorkOrderModalComponent: Form still not ready after initialization in ngOnChanges');
-        return;
-      }
     }
 
     if (this.workOrder && this.isFormReady) {
@@ -165,12 +160,6 @@ export class EditWorkOrderModalComponent implements OnInit {
   private resetForm(): void {
     if (!this.isFormReady) {
       this.initForm();
-
-      // Check again after initialization
-      if (!this.isFormReady) {
-        console.error('EditWorkOrderModalComponent: Form still not ready after initialization');
-        return;
-      }
     }
 
     if (this.isFormReady && this.editForm) {
@@ -181,16 +170,12 @@ export class EditWorkOrderModalComponent implements OnInit {
   }
 
   private initForm(): void {
-
-    if (!this.fb) {
-      console.error('EditWorkOrderModalComponent: FormBuilder not available');
-      return;
-    }
-
     try {
       this.editForm = this.fb.group({
         title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
-        priority: ['', Validators.required],
+        priority_id: ['', Validators.required],
+        status_id: ['', Validators.required],
+        category_id: [''],
         due_date: [''],
         description: ['', [Validators.maxLength(1000)]],
         estimated_hours: ['', [Validators.min(0)]],
@@ -217,13 +202,12 @@ export class EditWorkOrderModalComponent implements OnInit {
       return;
     }
 
-    const dueDate = this.workOrder.due_date
-      ? new Date(this.workOrder.due_date).toISOString().slice(0, 16) // YYYY-MM-DDTHH:mm
-      : '';
     this.editForm.patchValue({
       title: this.workOrder.title || '',
-      priority: this.workOrder.priority?.slug || this.workOrder.priority || '',
-      due_date: dueDate,
+      priority_id: this.workOrder.priority?.id || this.workOrder.priority || '',
+      status_id: this.workOrder.status?.id || this.workOrder.status || '',
+      category_id: this.workOrder.category?.id || this.workOrder.category || '',
+      due_date:this.workOrder?.due_date ? this.workOrder.due_date.split('T')[0] : undefined,
       description: this.workOrder.description || '',
       estimated_hours: this.workOrder.estimated_hours || '',
       notes: this.workOrder.notes || '',
@@ -231,6 +215,7 @@ export class EditWorkOrderModalComponent implements OnInit {
       location_id: this.getFieldValue(this.workOrder.location),
       assigned_to: this.getFieldValue(this.workOrder.assigned_to)
     });
+    console.log(this.editForm.get('due_date')?.value,'due_date',this.workOrder.due_date);
   }
 
   private getFieldValue(field: any): any {
@@ -307,7 +292,9 @@ export class EditWorkOrderModalComponent implements OnInit {
   private getFieldLabel(fieldName: string): string {
     const labels: { [key: string]: string } = {
       title: 'Title',
-      priority: 'Priority',
+      status_id: 'Status',
+      category_id: 'Category',
+      priority_id: 'Priority',
       due_date: 'Due Date',
       description: 'Description',
       estimated_hours: 'Estimated Hours',
@@ -333,37 +320,10 @@ export class EditWorkOrderModalComponent implements OnInit {
 
     const isValid = this.editForm.valid;
     const notSubmitting = !this.isSubmitting;
-    const result = isValid && notSubmitting;
-
-    console.log('EditWorkOrderModalComponent: canSubmit check:', {
-      formExists: !!this.editForm,
-      formValid: isValid,
-      notSubmitting: notSubmitting,
-      result: result,
-      formErrors: this.editForm.errors,
-      formStatus: this.editForm.status
-    });
-
-    return result;
+    return isValid && notSubmitting;
   }
 
   async onSubmit(): Promise<void> {
-
-    // Ensure form is initialized before trying to use it
-    if (!this.isFormReady) {
-      this.initForm();
-
-      // Check again after initialization
-      if (!this.isFormReady) {
-        return;
-      }
-    }
-
-    // Final safety check before accessing form properties
-    if (!this.isFormReady) {
-      console.error('EditWorkOrderModalComponent: Form not ready for submission');
-      return;
-    }
     if (this.editForm.invalid || this.isSubmitting || !this.workOrder) {
       return;
     }
@@ -376,7 +336,9 @@ export class EditWorkOrderModalComponent implements OnInit {
       // Prepare the update payload
       const updatePayload = {
         title: formData.title,
-        priority: formData.priority.id,
+        status_id: formData.status_id,
+        category_id: formData.category_id,
+        priority_id: formData.priority_id,
         due_date: formData.due_date || null,
         description: formData.description || null,
         estimated_hours: formData.estimated_hours || null,
@@ -388,7 +350,6 @@ export class EditWorkOrderModalComponent implements OnInit {
 
       // Update the work order
       const updatedWorkOrder = await firstValueFrom(this.workOrderService.updateWorkOrder(this.workOrder.id, updatePayload));
-
       if (updatedWorkOrder) {
         this.workOrderUpdated.emit(updatedWorkOrder);
         this.closeModal();
@@ -413,8 +374,53 @@ export class EditWorkOrderModalComponent implements OnInit {
     this.modalClosed.emit();
   }
 
-  // Prevent modal from closing when clicking inside the modal content
-  onModalContentClick(event: Event): void {
-    event.stopPropagation();
+  onAssetChange(event: Event) {
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedAsset = this.assets.find(a => a.id === +selectedId);
+    this.editForm.patchValue({ location_id: selectedAsset?.location?.id || '' });
+  }
+
+  private loadMetadataOptions(): void {
+    // Ensure we don't reuse any stale cached responses after deploy/code changes
+    this.metaWorkOrdersService.clearAllCache();
+
+    // Load statuses
+    this.subscription.add(
+      this.metaWorkOrdersService.getStatus().subscribe({
+        next: (statuses) => {
+          this.statusOptions = statuses;
+        },
+        error: (error) => {
+          console.error('Error loading statuses:', error);
+          this.statusOptions = [];
+        }
+      })
+    );
+
+    // Load priorities
+    this.subscription.add(
+      this.metaWorkOrdersService.getPriorities().subscribe({
+        next: (priorities) => {
+          this.priorityOptions = priorities;
+        },
+        error: (error) => {
+          console.error('Error loading priorities:', error);
+          this.priorityOptions = [];
+        }
+      })
+    );
+
+    // Load categories
+    this.subscription.add(
+      this.metaWorkOrdersService.getCategories().subscribe({
+        next: (categories) => {
+          this.categoryOptions = categories;
+        },
+        error: (error) => {
+          console.error('Error loading categories:', error);
+          this.categoryOptions = [];
+        }
+      })
+    );
   }
 }

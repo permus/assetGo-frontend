@@ -448,7 +448,6 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       this.subscription.add(
         this.workOrderService.createWorkOrder(workOrderData).subscribe({
           next: (response) => {
-            console.log('Work order created successfully:', response);
             this.showSuccess();
             this.closeCreateModal();
             this.workOrderForm.reset({
@@ -456,34 +455,28 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
               priority_id: this.selectedPriority?.id || null,
               category_id: null
             });
-            // Reset selected values
+
             this.selectedCategory = null;
-            // Refresh the work order list and stats
+
             if (this.workOrderList) {
               this.workOrderList.refreshWorkOrders();
             }
             if (this.workOrderStats) {
               this.workOrderStats.loadStats();
             }
-            // Refresh analytics if on analytics tab
             if (this.activeTab === 'analytics' && this.workOrderAnalytics) {
               this.workOrderAnalytics.refreshData();
             }
           },
           error: (error) => {
-            console.error('Error creating work order:', error);
-
-            // Handle different types of errors
+            this.isLoading = false;
             if (error.error?.errors) {
-              // Backend validation errors
               const fieldErrors = error.error.errors;
               const message = error.error?.message || 'Please fix the validation errors below.';
               this.showError(message, fieldErrors);
             } else if (error.error?.message) {
-              // General error message
               this.showError(error.error.message);
             } else {
-              // Fallback error message
               this.showError('Failed to create work order. Please try again.');
             }
           },
@@ -494,6 +487,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       );
     }
   }
+
 
   refreshAllData(): void {
     // Refresh work order list
@@ -515,4 +509,12 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     this.loadSelectData();
     this.loadMetadataOptions();
   }
+
+
+  onAssetChange(event: Event) {
+    const selectedId = (event.target as HTMLSelectElement).value;
+    const selectedAsset = this.assets.find(a => a.id === +selectedId);
+    this.workOrderForm.patchValue({ location_id: selectedAsset?.location?.id || '' });
+  }
+
 }
