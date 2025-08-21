@@ -19,15 +19,15 @@
           </svg>
           <h3 class="section-title">Basic Information</h3>
         </div>
-        
+
         <div class="form-row">
           <div class="form-field">
             <label for="part_number" class="field-label">
               Part Number <span class="required">*</span>
             </label>
-            <input 
-              type="text" 
-              id="part_number" 
+            <input
+              type="text"
+              id="part_number"
               formControlName="part_number"
               class="form-input"
               [class.error]="partForm.get('part_number')?.errors && partForm.get('part_number')?.touched"
@@ -36,14 +36,14 @@
               {{ getFieldError('part_number') }}
             </div>
           </div>
-          
+
           <div class="form-field">
             <label for="name" class="field-label">
               Name <span class="required">*</span>
             </label>
-            <input 
-              type="text" 
-              id="name" 
+            <input
+              type="text"
+              id="name"
               formControlName="name"
               class="form-input"
               [class.error]="partForm.get('name')?.errors && partForm.get('name')?.touched"
@@ -53,33 +53,33 @@
             </div>
           </div>
         </div>
-        
+
         <div class="form-field">
           <label for="description" class="field-label">Description</label>
-          <textarea 
-            id="description" 
+          <textarea
+            id="description"
             formControlName="description"
             class="form-textarea"
             rows="3"
             placeholder="Enter part description"></textarea>
         </div>
-        
+
         <div class="form-row">
           <div class="form-field">
             <label for="category_id" class="field-label">Category ID</label>
-            <input 
-              type="number" 
-              id="category_id" 
+            <input
+              type="number"
+              id="category_id"
               formControlName="category_id"
               class="form-input"
               placeholder="Enter category ID">
           </div>
-          
+
           <div class="form-field">
             <label for="barcode" class="field-label">Barcode</label>
-            <input 
-              type="text" 
-              id="barcode" 
+            <input
+              type="text"
+              id="barcode"
               formControlName="barcode"
               class="form-input"
               placeholder="Enter barcode">
@@ -95,15 +95,15 @@
           </svg>
           <h3 class="section-title">Specifications</h3>
         </div>
-        
+
         <div class="form-row">
           <div class="form-field">
             <label for="uom" class="field-label">
               Unit of Measure <span class="required">*</span>
             </label>
-            <input 
-              type="text" 
-              id="uom" 
+            <input
+              type="text"
+              id="uom"
               formControlName="uom"
               class="form-input"
               [class.error]="partForm.get('uom')?.errors && partForm.get('uom')?.touched"
@@ -112,12 +112,12 @@
               {{ getFieldError('uom') }}
             </div>
           </div>
-          
+
           <div class="form-field">
             <label for="unit_cost" class="field-label">Unit Cost</label>
-            <input 
-              type="number" 
-              id="unit_cost" 
+            <input
+              type="number"
+              id="unit_cost"
               formControlName="unit_cost"
               class="form-input"
               placeholder="0.00"
@@ -135,24 +135,24 @@
           </svg>
           <h3 class="section-title">Stock Management</h3>
         </div>
-        
+
         <div class="form-row">
           <div class="form-field">
             <label for="reorder_point" class="field-label">Reorder Point</label>
-            <input 
-              type="number" 
-              id="reorder_point" 
+            <input
+              type="number"
+              id="reorder_point"
               formControlName="reorder_point"
               class="form-input"
               placeholder="0"
               min="0">
           </div>
-          
+
           <div class="form-field">
             <label for="reorder_qty" class="field-label">Reorder Quantity</label>
-            <input 
-              type="number" 
-              id="reorder_qty" 
+            <input
+              type="number"
+              id="reorder_qty"
               formControlName="reorder_qty"
               class="form-input"
               placeholder="1"
@@ -168,6 +168,10 @@
         </button>
         <button type="submit" class="btn btn-primary" [disabled]="!partForm.valid">
           Create Part
+          @if (!manageLoading) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          }
+
         </button>
       </div>
     </form>

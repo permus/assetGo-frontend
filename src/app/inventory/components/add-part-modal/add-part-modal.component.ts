@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CreatePartRequest } from '../../../core/services/inventory-analytics.service';
@@ -13,6 +13,7 @@ import { CreatePartRequest } from '../../../core/services/inventory-analytics.se
 export class AddPartModalComponent {
   @Output() closeModal = new EventEmitter<void>();
   @Output() createPart = new EventEmitter<CreatePartRequest>();
+  @Input() manageLoading = false;
 
   partForm: FormGroup;
 
@@ -33,7 +34,7 @@ export class AddPartModalComponent {
   onSubmit(): void {
     if (this.partForm.valid) {
       const formValue = this.partForm.value;
-      
+
       // Convert empty strings to undefined for optional fields
       const partData: CreatePartRequest = {
         part_number: formValue.part_number,

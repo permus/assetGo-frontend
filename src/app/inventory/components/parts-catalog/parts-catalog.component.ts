@@ -17,7 +17,7 @@ export class PartsCatalogComponent implements OnInit {
   parts: InventoryPart[] = [];
   loading = true;
   error: string | null = null;
-  
+
   // Search and filter properties
   searchTerm = '';
   selectedStatus = '';
@@ -25,13 +25,14 @@ export class PartsCatalogComponent implements OnInit {
   perPage = 15;
   totalParts = 0;
   totalPages = 0;
-  
+
   // View control properties
   currentView: 'grid' | 'list' | 'compact' | 'table' = 'grid';
   showAddPartModal = false;
   showEditPartModal = false;
   selectedPart: InventoryPart | null = null;
-  
+  partLoading = false;
+
   // Summary data
   summaryData = {
     totalParts: 0,
@@ -78,10 +79,10 @@ export class PartsCatalogComponent implements OnInit {
 
   calculateSummaryData(): void {
     this.summaryData.totalParts = this.totalParts;
-    this.summaryData.lowStockItems = this.parts.filter(part => 
+    this.summaryData.lowStockItems = this.parts.filter(part =>
       part.reorder_point && part.reorder_point > 0
     ).length;
-    this.summaryData.totalValue = this.parts.reduce((sum, part) => 
+    this.summaryData.totalValue = this.parts.reduce((sum, part) =>
       sum + (part.unit_cost || 0), 0
     );
   }
@@ -149,6 +150,7 @@ export class PartsCatalogComponent implements OnInit {
   }
 
   onCreatePart(partData: CreatePartRequest): void {
+    this.partLoading = true;
     this.analyticsService.createPart(partData).subscribe({
       next: (response) => {
         if (response.success) {
@@ -159,8 +161,10 @@ export class PartsCatalogComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error creating part:', err);
-        // You could add an error notification here
+        this.partLoading = false;
       }
+    }).add(() =>{
+      this.partLoading = false;
     });
   }
 
@@ -203,12 +207,12 @@ export class PartsCatalogComponent implements OnInit {
     if (!part.reorder_point || part.reorder_point <= 0) {
       return { status: 'In Stock', class: 'in-stock', icon: 'check-circle' };
     }
-    
+
     // This is a simplified check - in a real app you'd compare with actual stock levels
     if (part.unit_cost && part.unit_cost > 0) {
       return { status: 'Low Stock', class: 'low-stock', icon: 'exclamation-triangle' };
     }
-    
+
     return { status: 'Out of Stock', class: 'out-of-stock', icon: 'x-circle' };
   }
 

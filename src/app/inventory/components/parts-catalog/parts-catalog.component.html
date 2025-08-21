@@ -67,15 +67,15 @@
           <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
-          <input 
-            type="text" 
-            placeholder="Search parts..." 
+          <input
+            type="text"
+            placeholder="Search parts..."
             class="search-input"
             [(ngModel)]="searchTerm">
         </div>
-        
+
         <div class="status-filter">
-          <select 
+          <select
             class="status-select"
             [(ngModel)]="selectedStatus">
             <option value="">All Status</option>
@@ -89,8 +89,8 @@
       <div class="actions-row">
         <div class="view-controls">
           <div class="view-toggles">
-            <button 
-              class="view-toggle" 
+            <button
+              class="view-toggle"
               [class.active]="currentView === 'grid'"
               (click)="onViewChange('grid')"
               title="Grid View">
@@ -98,8 +98,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
               </svg>
             </button>
-            <button 
-              class="view-toggle" 
+            <button
+              class="view-toggle"
               [class.active]="currentView === 'list'"
               (click)="onViewChange('list')"
               title="List View">
@@ -107,8 +107,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
               </svg>
             </button>
-            <button 
-              class="view-toggle" 
+            <button
+              class="view-toggle"
               [class.active]="currentView === 'compact'"
               (click)="onViewChange('compact')"
               title="Compact Grid">
@@ -116,8 +116,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
               </svg>
             </button>
-            <button 
-              class="view-toggle" 
+            <button
+              class="view-toggle"
               [class.active]="currentView === 'table'"
               (click)="onViewChange('table')"
               title="Table View">
@@ -272,8 +272,8 @@
 
     <!-- Pagination -->
     <div *ngIf="totalPages > 1" class="pagination">
-      <button 
-        class="pagination-btn" 
+      <button
+        class="pagination-btn"
         [disabled]="currentPage === 1"
         (click)="onPageChange(currentPage - 1)">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -281,19 +281,19 @@
         </svg>
         Previous
       </button>
-      
+
       <div class="pagination-pages">
-        <button 
+        <button
           *ngFor="let page of [].constructor(totalPages); let i = index"
-          class="pagination-page" 
+          class="pagination-page"
           [class.active]="currentPage === i + 1"
           (click)="onPageChange(i + 1)">
           {{ i + 1 }}
         </button>
       </div>
-      
-      <button 
-        class="pagination-btn" 
+
+      <button
+        class="pagination-btn"
         [disabled]="currentPage === totalPages"
         (click)="onPageChange(currentPage + 1)">
         Next
@@ -314,6 +314,7 @@
   <!-- Add Part Modal -->
   <app-add-part-modal
     *ngIf="showAddPartModal"
+    [manageLoading]="partLoading"
     (closeModal)="closeAddPartModal()"
     (createPart)="onCreatePart($event)">
   </app-add-part-modal>
