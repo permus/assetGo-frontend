@@ -43,8 +43,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   trendMax = 1;
   trendTicks: number[] = [1, 0.75, 0.5, 0.25, 0];
 
-  // Chart.js instance
+  // Chart.js instances
   private trendChart?: Chart;
+  private agingChart?: Chart;
 
   // ABC Analysis summary
   abcSummary = {
@@ -197,6 +198,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           next: (response) => {
             if (response.success) {
               this.agingData = response.data;
+              setTimeout(() => this.renderAgingChart(), 0);
             }
             resolve();
           },
@@ -428,6 +430,62 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }
 
     this.trendChart = new Chart(canvas.getContext('2d')!, config);
+  }
+
+  private renderAgingChart(force?: boolean): void {
+    const canvas = document.getElementById('agingBucketsCanvas') as HTMLCanvasElement | null;
+    if (!canvas || !this.agingData) return;
+
+    const labels = (this.agingData.buckets || []).map(b => b.label);
+    const counts = (this.agingData.buckets || []).map(b => b.count);
+    const values = (this.agingData.buckets || []).map(b => b.value);
+
+    const config: ChartConfiguration<'bar'> = {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Items',
+          data: counts,
+          backgroundColor: 'rgba(59,130,246,0.3)',
+          borderColor: '#3b82f6',
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const idx = ctx.dataIndex;
+                const count = counts[idx] ?? 0;
+                const val = values[idx] ?? 0;
+                return ` ${count} items — AED ${val.toLocaleString()}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0 } },
+          x: { grid: { display: false } }
+        }
+      }
+    };
+
+    if (this.agingChart && !force) {
+      this.agingChart.data.labels = labels;
+      this.agingChart.data.datasets[0].data = counts as any;
+      this.agingChart.update();
+      return;
+    }
+    if (this.agingChart && force) {
+      this.agingChart.destroy();
+      this.agingChart = undefined;
+    }
+    this.agingChart = new Chart(canvas.getContext('2d')!, config);
   }
 
   getTrendPath(): string {
