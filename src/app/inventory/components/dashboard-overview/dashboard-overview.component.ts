@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem } from '../../../core/services/inventory-analytics.service';
+import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem, TurnoverData, StockAgingData } from '../../../core/services/inventory-analytics.service';
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -20,6 +20,11 @@ export class DashboardOverviewComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
+  // Added analytics snippets for overview cards
+  turnoverData: TurnoverData | null = null;
+  agingData: StockAgingData | null = null;
+  slowThresholdDays = 90;
+
   // ABC summary for overview
   abcSummary = {
     classA: { count: 0, value: 0, percentage: 0 },
@@ -33,6 +38,8 @@ export class DashboardOverviewComponent implements OnInit {
   ngOnInit(): void {
     this.loadDashboardData();
     this.loadAbcSummary();
+    this.loadTurnover();
+    this.loadStockAging();
   }
 
   loadDashboardData(): void {
@@ -59,6 +66,8 @@ export class DashboardOverviewComponent implements OnInit {
   refreshData(): void {
     this.loadDashboardData();
     this.loadAbcSummary();
+    this.loadTurnover();
+    this.loadStockAging();
   }
 
   private loadAbcSummary(): void {
@@ -70,6 +79,48 @@ export class DashboardOverviewComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading ABC analysis for overview:', err);
+      }
+    });
+  }
+
+  private loadTurnover(): void {
+    // Use last 6 months, annualized to times/year
+    this.analyticsService.getTurnover({ period: '6m' }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.turnoverData = res.data;
+          // Also mirror into dashboardData for direct binding if desired
+          this.dashboardData = {
+            ...this.dashboardData,
+            average_turnover: res.data.turnover
+          } as DashboardData;
+        }
+      },
+      error: (err) => {
+        console.error('Error loading turnover for overview:', err);
+      }
+    });
+  }
+
+  private loadStockAging(): void {
+    this.analyticsService.getStockAging().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.agingData = res.data;
+          // Determine slow threshold from last bucket definition if available
+          const buckets = res.data.buckets || [];
+          const last = buckets[buckets.length - 1];
+          if (last && typeof last.days_from === 'number') {
+            this.slowThresholdDays = last.days_from;
+          }
+          this.dashboardData = {
+            ...this.dashboardData,
+            slow_moving_count: res.data.slow_moving?.length || 0
+          } as DashboardData;
+        }
+      },
+      error: (err) => {
+        console.error('Error loading stock aging for overview:', err);
       }
     });
   }

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem } from '../../../core/services/inventory-analytics.service';
+import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem, TurnoverData, StockAgingData, KpisData, CategoryTurnoverItem, MonthlyTurnoverPoint } from '../../../core/services/inventory-analytics.service';
+import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -13,8 +14,11 @@ import { Subject, takeUntil } from 'rxjs';
 export class AnalyticsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  activeTab = 'overview';
-  selectedPeriod = '6months';
+  activeTab = 'turnover';
+  selectedPeriod: '1m' | '3m' | '6m' | '1y' = '6m';
+
+  // Config: monthly carrying cost rate (e.g., 2% of inventory value)
+  private readonly carryingRateMonthly = 0.02;
 
   // Loading and error states
   loading = false;
@@ -24,6 +28,23 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   dashboardData: DashboardData | null = null;
   abcAnalysisData: AbcAnalysisItem[] = [];
   overviewData: DashboardData | null = null;
+  turnoverData: TurnoverData | null = null;
+  agingData: StockAgingData | null = null;
+  kpis: KpisData | null = null;
+  categoryTurnover: CategoryTurnoverItem[] = [];
+  monthlyTrend: MonthlyTurnoverPoint[] = [];
+  hasTrendData = false;
+
+  // Simple chart metrics for SVG rendering
+  private readonly trendChartWidth = 400;
+  private readonly trendChartHeight = 200;
+  private readonly trendYPadding = 10; // top/bottom padding
+  private readonly trendYScaleHeight = 180; // drawable height
+  trendMax = 1;
+  trendTicks: number[] = [1, 0.75, 0.5, 0.25, 0];
+
+  // Chart.js instance
+  private trendChart?: Chart;
 
   // ABC Analysis summary
   abcSummary = {
@@ -32,46 +53,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     classC: { count: 0, value: 0, percentage: 0 }
   };
 
-  // Sample data for different periods (for demo purposes)
-  periodData = {
-    '6months': {
-      turnover: '2.4x',
-      turnoverChange: '+12.5% from last period',
-      carryingCost: 'AED 15,000',
-      deadStockValue: 'AED 8,500',
-      deadStockItems: '23 items',
-      avgDays: '45 days'
-    },
-    '3months': {
-      turnover: '2.1x',
-      turnoverChange: '+8.2% from last period',
-      carryingCost: 'AED 12,500',
-      deadStockValue: 'AED 6,200',
-      deadStockItems: '18 items',
-      avgDays: '42 days'
-    },
-    '1month': {
-      turnover: '1.8x',
-      turnoverChange: '+5.1% from last period',
-      carryingCost: 'AED 10,000',
-      deadStockValue: 'AED 4,800',
-      deadStockItems: '15 items',
-      avgDays: '38 days'
-    },
-    '1year': {
-      turnover: '2.8x',
-      turnoverChange: '+18.7% from last period',
-      carryingCost: 'AED 18,500',
-      deadStockValue: 'AED 9,200',
-      deadStockItems: '28 items',
-      avgDays: '52 days'
-    }
-  };
 
   constructor(private analyticsService: InventoryAnalyticsService) { }
 
   ngOnInit(): void {
     this.loadAllAnalytics();
+    Chart.register(...registerables);
   }
 
   ngOnDestroy(): void {
@@ -83,11 +70,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    // Load all three analytics endpoints
+    // Load analytics endpoints including KPIs
     Promise.all([
-      this.loadInventoryAnalytics(),
       this.loadAbcAnalysis(),
-      this.loadDashboardOverview()
+      this.loadDashboardOverview(),
+      this.loadTurnover(this.selectedPeriod),
+      this.loadStockAging(),
+      this.loadTurnoverByCategory(this.selectedPeriod),
+      this.loadMonthlyTrend(this.selectedPeriod),
+      this.loadKpis(this.selectedPeriod)
     ]).finally(() => {
       this.loading = false;
     });
@@ -106,6 +97,111 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             console.error('Error loading inventory analytics:', err);
+            resolve();
+          }
+        });
+    });
+  }
+
+  loadMonthlyTrend(period: '1m' | '3m' | '6m' | '1y'): Promise<void> {
+    return new Promise((resolve) => {
+      this.analyticsService.getMonthlyTurnoverTrend({ period })
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.monthlyTrend = response.data.points || [];
+              this.updateTrendMeta();
+              setTimeout(() => this.renderTrendChart(), 0);
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading monthly turnover trend:', err);
+            resolve();
+          }
+        });
+    });
+  }
+
+  loadTurnoverByCategory(period: '1m' | '3m' | '6m' | '1y'): Promise<void> {
+    return new Promise((resolve) => {
+      this.analyticsService.getTurnoverByCategory({ period })
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.categoryTurnover = response.data.categories || [];
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading turnover by category:', err);
+            resolve();
+          }
+        });
+    });
+  }
+
+  loadTurnover(period: '1m' | '3m' | '6m' | '1y'): Promise<void> {
+    return new Promise((resolve) => {
+      this.analyticsService.getTurnover({ period })
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.turnoverData = response.data;
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading turnover:', err);
+            resolve();
+          }
+        });
+    });
+  }
+
+  loadKpis(period: '1m' | '3m' | '6m' | '1y'): Promise<void> {
+    return new Promise((resolve) => {
+      this.analyticsService.getKpis({ period, carrying_rate: 0.24, dead_days: 90 })
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.kpis = response.data;
+              // Prefer KPIs for the top cards when available
+              this.turnoverData = {
+                period: response.data.period,
+                cogs: 0,
+                avg_inventory_value: response.data.avg_inventory_value,
+                turnover: response.data.turnover,
+                days_on_hand: response.data.days_on_hand
+              };
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading KPIs:', err);
+            resolve();
+          }
+        });
+    });
+  }
+
+  loadStockAging(): Promise<void> {
+    return new Promise((resolve) => {
+      this.analyticsService.getStockAging()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.agingData = response.data;
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error loading stock aging:', err);
             resolve();
           }
         });
@@ -181,14 +277,28 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   onTabChange(tab: string): void {
     this.activeTab = tab;
-    console.log('Switched to tab:', tab);
+    if (tab === 'turnover') {
+      this.loadTurnover(this.selectedPeriod);
+      this.loadTurnoverByCategory(this.selectedPeriod);
+      this.loadMonthlyTrend(this.selectedPeriod).then(() => setTimeout(() => this.renderTrendChart(true as any), 0));
+      this.loadKpis(this.selectedPeriod);
+    }
+    if (tab === 'aging') {
+      this.loadStockAging();
+    }
   }
 
   onPeriodChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     if (target && target.value) {
-      this.selectedPeriod = target.value;
-      console.log('Changed period to:', target.value);
+      // map old select values to API period tokens if needed
+      const map: any = { '1month': '1m', '3months': '3m', '6months': '6m', '1year': '1y' };
+      const val = map[target.value] || target.value;
+      this.selectedPeriod = val as any;
+      this.loadTurnover(this.selectedPeriod);
+      this.loadTurnoverByCategory(this.selectedPeriod);
+      this.loadMonthlyTrend(this.selectedPeriod);
+      this.loadKpis(this.selectedPeriod);
     }
   }
 
@@ -197,9 +307,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     // Here you would implement the actual export functionality
   }
 
-  getCurrentData() {
-    return this.periodData[this.selectedPeriod as keyof typeof this.periodData];
-  }
+  // Removed getCurrentData; now using live turnoverData
 
   refreshData(): void {
     this.loadAllAnalytics();
@@ -216,5 +324,133 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       case 'C': return 'bg-blue-100 text-blue-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  }
+
+  // Derived KPI helpers for top cards
+  getCarryingCostMonthly(): number {
+    if (this.kpis) return this.kpis.carrying_cost_monthly || 0;
+    const total = this.dashboardData?.total_value ?? this.overviewData?.total_value ?? 0;
+    return total * this.carryingRateMonthly; // fallback
+  }
+
+  getDeadStockValue(): number {
+    if (this.kpis) return this.kpis.dead_stock_value || 0;
+    if (!this.agingData?.slow_moving?.length) return 0; // fallback
+    return this.agingData.slow_moving.reduce((sum, item) => sum + (item.value || 0), 0);
+  }
+
+  getDeadStockItems(): number {
+    if (this.kpis) return this.kpis.dead_stock_items || 0;
+    return this.agingData?.slow_moving?.length ?? 0; // fallback
+  }
+
+  // Helpers for category turnover chart
+  getMaxCategoryTurnover(): number {
+    if (!this.categoryTurnover || this.categoryTurnover.length === 0) return 1;
+    const max = Math.max(...this.categoryTurnover.map(c => c.turnover || 0));
+    return max > 0 ? max : 1;
+  }
+
+  // Trend helpers (computed in TS to keep template simple)
+  private updateTrendMeta(): void {
+    const max = Math.max(...(this.monthlyTrend || []).map(p => p.turnover || 0), 0);
+    this.trendMax = this.niceCeil(max);
+    this.hasTrendData = (this.monthlyTrend || []).some(p => (p.turnover || 0) > 0);
+    const t1 = this.trendMax;
+    const t2 = this.trendMax * 0.75;
+    const t3 = this.trendMax * 0.5;
+    const t4 = this.trendMax * 0.25;
+    this.trendTicks = [t1, t2, t3, t4, 0];
+  }
+
+  private niceCeil(value: number): number {
+    const thresholds = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50];
+    if (value <= 0) return 1;
+    for (const t of thresholds) if (value <= t) return t;
+    return Math.pow(10, Math.ceil(Math.log10(value)));
+  }
+
+  formatTick(val: number): string {
+    const decimals = this.trendMax < 1 ? 2 : 1;
+    return Number(val).toFixed(decimals);
+  }
+
+  private renderTrendChart(force?: boolean): void {
+    const labels = (this.monthlyTrend || []).map(p => p.label.split(' ')[0]);
+    const data = (this.monthlyTrend || []).map(p => p.turnover || 0);
+
+    const config: ChartConfiguration<'line'> = {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Turnover',
+          data,
+          borderColor: '#0d9488',
+          backgroundColor: 'rgba(13,148,136,0.2)',
+          tension: 0.3,
+          pointRadius: 3,
+          pointBackgroundColor: '#0d9488'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: Math.max(1, this.trendMax),
+            ticks: {
+              callback: (value) => this.formatTick(Number(value))
+            }
+          },
+          x: {
+            grid: { display: false }
+          }
+        }
+      }
+    };
+
+    const canvas = document.getElementById('monthlyTrendCanvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+
+    if (this.trendChart && !force) {
+      this.trendChart.data.labels = labels;
+      this.trendChart.data.datasets[0].data = data as any;
+      this.trendChart.update();
+      return;
+    }
+    if (this.trendChart && force) {
+      this.trendChart.destroy();
+      this.trendChart = undefined;
+    }
+
+    this.trendChart = new Chart(canvas.getContext('2d')!, config);
+  }
+
+  getTrendPath(): string {
+    const n = this.monthlyTrend?.length || 0;
+    if (n === 0) return '';
+    const stepX = this.trendChartWidth / Math.max(1, n - 1);
+    let d = '';
+    for (let i = 0; i < n; i++) {
+      const x = i * stepX;
+      const y = this.trendY(this.monthlyTrend[i]);
+      d += i === 0 ? `M${x},${y}` : ` L${x},${y}`;
+    }
+    return d;
+  }
+
+  trendX(index: number): number {
+    const n = this.monthlyTrend?.length || 0;
+    const stepX = this.trendChartWidth / Math.max(1, n - 1);
+    return index * stepX;
+  }
+
+  trendY(point: MonthlyTurnoverPoint): number {
+    const ratio = Math.min(1, Math.max(0, (point?.turnover || 0) / this.trendMax));
+    return this.trendChartHeight - (ratio * this.trendYScaleHeight) - this.trendYPadding;
   }
 }

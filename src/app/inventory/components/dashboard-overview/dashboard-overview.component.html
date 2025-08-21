@@ -52,18 +52,7 @@
         </div>
       </div>
 
-      <div class="metric-card">
-        <div class="card-header">
-          <h4 class="card-title">Total Parts</h4>
-          <div class="card-icon">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
-            </svg>
-          </div>
-        </div>
-        <div class="card-value">{{ dashboardData.total_parts }}</div>
-        <div class="card-message">Items in catalog</div>
-      </div>
+      
 
       <div class="metric-card">
         <div class="card-header">
@@ -83,22 +72,34 @@
         </ng-template>
       </div>
 
-      <div class="metric-card">
+      
+
+      <!-- New: Average Turnover Card (from overview or turnoverData) -->
+      <div class="metric-card" *ngIf="(dashboardData.average_turnover !== undefined) || turnoverData">
         <div class="card-header">
-          <h4 class="card-title">Out of Stock</h4>
+          <h4 class="card-title">Average Turnover</h4>
           <div class="card-icon">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v4h4M21 21v-4h-4M3 17v4h4M21 7V3h-4"></path>
             </svg>
           </div>
         </div>
-        <div class="card-value danger">{{ dashboardData.out_of_stock_count }}</div>
-        <div class="card-description" *ngIf="dashboardData.out_of_stock_count > 0; else noOutOfStock">
-          Items with zero stock
+        <div class="card-value">{{ (dashboardData.average_turnover ?? turnoverData?.turnover ?? 0) | number:'1.1-2' }}x</div>
+        <div class="card-message">Times per year</div>
+      </div>
+
+      <!-- New: Slow Moving Items Card (from overview or agingData) -->
+      <div class="metric-card" *ngIf="(dashboardData.slow_moving_count !== undefined) || agingData">
+        <div class="card-header">
+          <h4 class="card-title">Slow Moving Items</h4>
+          <div class="card-icon">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
         </div>
-        <ng-template #noOutOfStock>
-          <div class="card-description">All items in stock</div>
-        </ng-template>
+        <div class="card-value">{{ dashboardData.slow_moving_count ?? (agingData?.slow_moving?.length || 0) }}</div>
+        <div class="card-message">{{ slowThresholdDays }}+ days without movement</div>
       </div>
     </div>
 

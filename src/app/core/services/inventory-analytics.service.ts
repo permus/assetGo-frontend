@@ -8,6 +8,9 @@ export interface DashboardData {
   total_parts: number;
   low_stock_count: number;
   out_of_stock_count: number;
+  // New fields from overview endpoint
+  average_turnover?: number;
+  slow_moving_count?: number;
 }
 
 export interface PartsOverviewData {
@@ -32,6 +35,96 @@ export interface AbcAnalysisItem {
 export interface AbcAnalysisResponse {
   success: boolean;
   data: AbcAnalysisItem[];
+}
+
+export interface TurnoverData {
+  period: string;
+  cogs: number;
+  avg_inventory_value: number;
+  turnover: number;
+  days_on_hand: number | null;
+}
+
+export interface TurnoverResponse {
+  success: boolean;
+  data: TurnoverData;
+}
+
+export interface KpisData {
+  period: string;
+  turnover: number;
+  days_on_hand: number | null;
+  avg_inventory_value: number;
+  carrying_cost_monthly: number;
+  carrying_rate_annual: number;
+  dead_stock_value: number;
+  dead_stock_items: number;
+  dead_days_threshold: number;
+}
+
+export interface KpisResponse {
+  success: boolean;
+  data: KpisData;
+}
+
+export interface CategoryTurnoverItem {
+  category_id: number | null;
+  category_name: string;
+  cogs: number;
+  avg_inventory_value: number;
+  turnover: number;
+  days_on_hand: number | null;
+}
+
+export interface TurnoverByCategoryResponse {
+  success: boolean;
+  data: {
+    period: string;
+    categories: CategoryTurnoverItem[];
+  };
+}
+
+export interface MonthlyTurnoverPoint {
+  month: string;      // YYYY-MM
+  label: string;      // e.g., "Mar 2025"
+  cogs: number;
+  avg_inventory_value: number;
+  turnover: number;   // monthly (not annualized)
+}
+
+export interface MonthlyTurnoverTrendResponse {
+  success: boolean;
+  data: {
+    period: string;
+    points: MonthlyTurnoverPoint[];
+  };
+}
+
+export interface AgingBucket {
+  label: string;
+  days_from: number;
+  days_to: number | null;
+  count: number;
+  value: number;
+}
+
+export interface SlowMovingItem {
+  part_id: number;
+  name: string;
+  on_hand: number;
+  value: number;
+  last_movement_at: string | null;
+  days_since_movement: number;
+}
+
+export interface StockAgingData {
+  buckets: AgingBucket[];
+  slow_moving: SlowMovingItem[];
+}
+
+export interface StockAgingResponse {
+  success: boolean;
+  data: StockAgingData;
 }
 
 export interface DashboardResponse {
@@ -465,6 +558,46 @@ export class InventoryAnalyticsService {
     return this.http.get<DashboardResponse>(
       `${this.apiUrl}/inventory/analytics/dashboard`,
       this.getAuthHeaders()
+    );
+  }
+
+  getTurnover(params?: { period?: '1m' | '3m' | '6m' | '1y' }): Observable<TurnoverResponse> {
+    return this.http.get<TurnoverResponse>(
+      `${this.apiUrl}/inventory/analytics/turnover`,
+      { ...this.getAuthHeaders(), params: new HttpParams({ fromObject: params || {} }) }
+    );
+  }
+
+  getKpis(params?: { period?: '1m' | '3m' | '6m' | '1y'; carrying_rate?: number; dead_days?: number }): Observable<KpisResponse> {
+    return this.http.get<KpisResponse>(
+      `${this.apiUrl}/inventory/analytics/kpis`,
+      { ...this.getAuthHeaders(), params: new HttpParams({ fromObject: params || {} }) }
+    );
+  }
+
+  getTurnoverByCategory(params?: { period?: '1m' | '3m' | '6m' | '1y' }): Observable<TurnoverByCategoryResponse> {
+    return this.http.get<TurnoverByCategoryResponse>(
+      `${this.apiUrl}/inventory/analytics/turnover-by-category`,
+      { ...this.getAuthHeaders(), params: new HttpParams({ fromObject: params || {} }) }
+    );
+  }
+
+  getMonthlyTurnoverTrend(params?: { period?: '1m' | '3m' | '6m' | '1y' }): Observable<MonthlyTurnoverTrendResponse> {
+    return this.http.get<MonthlyTurnoverTrendResponse>(
+      `${this.apiUrl}/inventory/analytics/monthly-turnover-trend`,
+      { ...this.getAuthHeaders(), params: new HttpParams({ fromObject: params || {} }) }
+    );
+  }
+
+  getStockAging(params?: { bands?: number[] }): Observable<StockAgingResponse> {
+    let httpParams = new HttpParams();
+    if (params?.bands && params.bands.length) {
+      // send repeated bands[]=n params for array
+      params.bands.forEach(b => { httpParams = httpParams.append('bands[]', String(b)); });
+    }
+    return this.http.get<StockAgingResponse>(
+      `${this.apiUrl}/inventory/analytics/stock-aging`,
+      { ...this.getAuthHeaders(), params: httpParams }
     );
   }
 
