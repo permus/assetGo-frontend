@@ -16,7 +16,7 @@ export class EditPartModalComponent implements OnInit {
   @Output() updatePart = new EventEmitter<UpdatePartRequest>();
 
   editForm: UpdatePartRequest = {};
-
+  @Input() manageLoading: boolean = false;
   ngOnInit(): void {
     // Initialize form with current part data
     this.editForm = {

@@ -94,6 +94,7 @@ export class PartsCatalogComponent implements OnInit {
           this.summaryData.totalParts = response.data.total_parts;
           this.summaryData.lowStockItems = response.data.low_stock_count;
           this.summaryData.totalValue = response.data.total_value;
+          console.log('Parts overview:', this.summaryData.totalValue);
         }
       },
       error: (err) => {
@@ -169,6 +170,7 @@ export class PartsCatalogComponent implements OnInit {
   }
 
   onUpdatePart(partData: UpdatePartRequest): void {
+    this.partLoading = true;
     if (!this.selectedPart) return;
 
     this.analyticsService.updatePart(this.selectedPart.id, partData).subscribe({
@@ -182,7 +184,10 @@ export class PartsCatalogComponent implements OnInit {
       error: (err) => {
         console.error('Error updating part:', err);
         // You could add an error notification here
+        this.partLoading = false;
       }
+    }).add(() => {
+      this.partLoading = false;
     });
   }
 

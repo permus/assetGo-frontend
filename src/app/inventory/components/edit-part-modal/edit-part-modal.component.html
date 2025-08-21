@@ -14,13 +14,13 @@
         <!-- Basic Information -->
         <div class="form-section">
           <h3 class="section-title">Basic Information</h3>
-          
+
           <div class="form-group">
             <label for="name" class="form-label">Part Name *</label>
-            <input 
-              type="text" 
-              id="name" 
-              name="name" 
+            <input
+              type="text"
+              id="name"
+              name="name"
               class="form-input"
               [(ngModel)]="editForm.name"
               required>
@@ -28,10 +28,10 @@
 
           <div class="form-group">
             <label for="part_number" class="form-label">Part Number *</label>
-            <input 
-              type="text" 
-              id="part_number" 
-              name="part_number" 
+            <input
+              type="text"
+              id="part_number"
+              name="part_number"
               class="form-input"
               [(ngModel)]="editForm.part_number"
               required>
@@ -39,9 +39,9 @@
 
           <div class="form-group">
             <label for="description" class="form-label">Description</label>
-            <textarea 
-              id="description" 
-              name="description" 
+            <textarea
+              id="description"
+              name="description"
               class="form-textarea"
               rows="3"
               [(ngModel)]="editForm.description"
@@ -52,13 +52,13 @@
         <!-- Specifications -->
         <div class="form-section">
           <h3 class="section-title">Specifications</h3>
-          
+
           <div class="form-group">
             <label for="uom" class="form-label">Unit of Measure *</label>
-            <input 
-              type="text" 
-              id="uom" 
-              name="uom" 
+            <input
+              type="text"
+              id="uom"
+              name="uom"
               class="form-input"
               [(ngModel)]="editForm.uom"
               required
@@ -67,10 +67,10 @@
 
           <div class="form-group">
             <label for="unit_cost" class="form-label">Unit Cost</label>
-            <input 
-              type="number" 
-              id="unit_cost" 
-              name="unit_cost" 
+            <input
+              type="number"
+              id="unit_cost"
+              name="unit_cost"
               class="form-input"
               [(ngModel)]="editForm.unit_cost"
               min="0"
@@ -80,10 +80,10 @@
 
           <div class="form-group">
             <label for="category_id" class="form-label">Category ID</label>
-            <input 
-              type="number" 
-              id="category_id" 
-              name="category_id" 
+            <input
+              type="number"
+              id="category_id"
+              name="category_id"
               class="form-input"
               [(ngModel)]="editForm.category_id"
               placeholder="Category ID">
@@ -93,13 +93,13 @@
         <!-- Inventory Management -->
         <div class="form-section">
           <h3 class="section-title">Inventory Management</h3>
-          
+
           <div class="form-group">
             <label for="reorder_point" class="form-label">Reorder Point</label>
-            <input 
-              type="number" 
-              id="reorder_point" 
-              name="reorder_point" 
+            <input
+              type="number"
+              id="reorder_point"
+              name="reorder_point"
               class="form-input"
               [(ngModel)]="editForm.reorder_point"
               min="0"
@@ -108,10 +108,10 @@
 
           <div class="form-group">
             <label for="reorder_qty" class="form-label">Reorder Quantity</label>
-            <input 
-              type="number" 
-              id="reorder_qty" 
-              name="reorder_qty" 
+            <input
+              type="number"
+              id="reorder_qty"
+              name="reorder_qty"
               class="form-input"
               [(ngModel)]="editForm.reorder_qty"
               min="0"
@@ -120,10 +120,10 @@
 
           <div class="form-group">
             <label for="barcode" class="form-label">Barcode</label>
-            <input 
-              type="text" 
-              id="barcode" 
-              name="barcode" 
+            <input
+              type="text"
+              id="barcode"
+              name="barcode"
               class="form-input"
               [(ngModel)]="editForm.barcode"
               placeholder="Barcode">
@@ -133,12 +133,12 @@
         <!-- Classification -->
         <div class="form-section">
           <h3 class="section-title">Classification</h3>
-          
+
           <div class="form-group">
             <label for="status" class="form-label">Status</label>
-            <select 
-              id="status" 
-              name="status" 
+            <select
+              id="status"
+              name="status"
               class="form-select"
               [(ngModel)]="editForm.status">
               <option value="">Select Status</option>
@@ -150,9 +150,9 @@
 
           <div class="form-group">
             <label for="abc_class" class="form-label">ABC Class</label>
-            <select 
-              id="abc_class" 
-              name="abc_class" 
+            <select
+              id="abc_class"
+              name="abc_class"
               class="form-select"
               [(ngModel)]="editForm.abc_class">
               <option value="">Select ABC Class</option>
@@ -169,7 +169,13 @@
           Cancel
         </button>
         <button type="submit" class="btn btn-primary">
-          Update Part
+          @if (manageLoading) {
+            Updating...
+            <span
+              class="border-t border-white border-opacity-25 ml-2 w-4 h-4 rounded-full animate-spin inline-block"></span>
+          }@else {
+            Update Part
+          }
         </button>
       </div>
     </form>

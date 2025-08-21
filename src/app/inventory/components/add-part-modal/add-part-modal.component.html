@@ -167,9 +167,12 @@
           Cancel
         </button>
         <button type="submit" class="btn btn-primary" [disabled]="!partForm.valid">
-          Create Part
-          @if (!manageLoading) {
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+
+          @if (manageLoading) {
+            Creating...
+            <span class="border-t border-white border-opacity-25 ml-2 w-4 h-4 rounded-full animate-spin inline-block"></span>
+          } @else {
+            Create Part
           }
 
         </button>
