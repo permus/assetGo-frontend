@@ -21,6 +21,10 @@
   max-height: 90vh;
   overflow-y: auto;
   animation: modalSlideIn 0.3s ease-out;
+  &::-webkit-scrollbar {
+    width:0;
+    display: none;
+  }
 }
 
 @keyframes modalSlideIn {

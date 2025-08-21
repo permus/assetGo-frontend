@@ -4,11 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { InventoryAnalyticsService, InventoryPart, PartsCatalogResponse, CreatePartRequest, UpdatePartRequest } from '../../../core/services/inventory-analytics.service';
 import { EditPartModalComponent } from '../edit-part-modal/edit-part-modal.component';
 import { AddPartModalComponent } from '../add-part-modal/add-part-modal.component';
+import {
+  DeleteConfirmationModalComponent
+} from '../../../assets/components/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-parts-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, EditPartModalComponent, AddPartModalComponent],
+  imports: [CommonModule, FormsModule, EditPartModalComponent, AddPartModalComponent, DeleteConfirmationModalComponent],
   templateUrl: './parts-catalog.component.html',
   styleUrls: ['./parts-catalog.component.scss']
 })
@@ -17,7 +20,8 @@ export class PartsCatalogComponent implements OnInit {
   parts: InventoryPart[] = [];
   loading = true;
   error: string | null = null;
-
+  isDropdownOpen = false;
+  showDeleteConfirmationModal = false;
   // Search and filter properties
   searchTerm = '';
   selectedStatus = '';
@@ -83,7 +87,7 @@ export class PartsCatalogComponent implements OnInit {
       part.reorder_point && part.reorder_point > 0
     ).length;
     this.summaryData.totalValue = this.parts.reduce((sum, part) =>
-      sum + (part.unit_cost || 0), 0
+      sum + Number(part.unit_cost || 0), 0
     );
   }
 
@@ -191,21 +195,25 @@ export class PartsCatalogComponent implements OnInit {
     });
   }
 
+  openDeleteConfirmationModal(selectedPart: InventoryPart): void {
+    this.selectedPart = selectedPart;
+    this.showDeleteConfirmationModal = true;
+  }
+
   onDeletePart(partId: number): void {
-    if (confirm('Are you sure you want to delete this part? This action cannot be undone.')) {
-      this.analyticsService.deletePart(partId).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.loadPartsCatalog();
-            // You could add a success notification here
-          }
-        },
-        error: (err) => {
-          console.error('Error deleting part:', err);
-          // You could add an error notification here
+    this.analyticsService.deletePart(partId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.closeDeleteModal();
+          this.loadPartsCatalog();
+          // You could add a success notification here
         }
-      });
-    }
+      },
+      error: (err) => {
+        console.error('Error deleting part:', err);
+        // You could add an error notification here
+      }
+    });
   }
 
   getStockStatus(part: InventoryPart): { status: string; class: string; icon: string } {
@@ -228,4 +236,9 @@ export class PartsCatalogComponent implements OnInit {
   getStatusOptions(): string[] {
     return ['active', 'inactive', 'discontinued'];
   }
+
+  closeDeleteModal(): void {
+    this.showDeleteConfirmationModal = false;
+  }
+
 }
