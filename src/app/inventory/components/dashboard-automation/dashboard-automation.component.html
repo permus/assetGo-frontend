@@ -53,53 +53,23 @@
     </div>
     <p class="section-subtitle">Parts that need reordering based on current stock levels.</p>
 
-    <!-- Alert Item -->
-    <div class="alert-item">
+    <!-- Recommendations List -->
+    <div class="alert-item" *ngIf="!recommendations.length && !loading">
+      <div class="alert-content"><span class="part-name">No recommendations</span></div>
+    </div>
+    <div class="alert-item" *ngFor="let r of recommendations">
       <div class="alert-left">
-        <div class="severity-badge high">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-          </svg>
-          <span>HIGH</span>
-        </div>
-        
         <div class="alert-content">
-          <span class="part-name">part 1 (1)</span>
+          <span class="part-name">{{ r.name }} (ID: {{ r.part_id }})</span>
           <div class="stock-details">
-            <div class="stock-item">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-              </svg>
-              <span>Current: 0</span>
-            </div>
-            <div class="stock-item">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-              </svg>
-              <span>Reorder: 2</span>
-            </div>
-            <div class="stock-item">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m6 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
-              </svg>
-              <span>Recommended: 50</span>
-            </div>
+            <div class="stock-item"><span>Available: {{ r.available }}</span></div>
+            <div class="stock-item"><span>Daily usage: {{ r.daily_usage }}</span></div>
+            <div class="stock-item"><span>Recommended: {{ r.recommended_qty }}</span></div>
           </div>
         </div>
       </div>
-      
       <div class="alert-right">
-        <div class="pricing-status">
-          <span class="price">$150</span>
-          <span class="status">Out of stock</span>
-        </div>
-        <button class="create-po-btn">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-          </svg>
-          Create PO
-        </button>
+        <button class="create-po-btn">Create PO</button>
       </div>
     </div>
   </div>

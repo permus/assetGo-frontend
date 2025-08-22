@@ -14,7 +14,7 @@
         </svg>
       </div>
       <div class="card-content">
-        <div class="card-value">1</div>
+        <div class="card-value">{{ summary.active }}</div>
         <div class="card-label">Active Alerts</div>
       </div>
     </div>
@@ -26,7 +26,7 @@
         </svg>
       </div>
       <div class="card-content">
-        <div class="card-value">1</div>
+        <div class="card-value">{{ summary.critical }}</div>
         <div class="card-label">Critical</div>
       </div>
     </div>
@@ -38,7 +38,7 @@
         </svg>
       </div>
       <div class="card-content">
-        <div class="card-value">0</div>
+        <div class="card-value">{{ summary.ack }}</div>
         <div class="card-label">Acknowledged</div>
       </div>
     </div>
@@ -50,7 +50,7 @@
         </svg>
       </div>
       <div class="card-content">
-        <div class="card-value">1</div>
+        <div class="card-value">{{ summary.total }}</div>
         <div class="card-label">Total Alerts</div>
       </div>
     </div>
@@ -61,61 +61,53 @@
     <div class="section-header">
       <h3 class="section-title">Alert Management</h3>
       <p class="section-subtitle">Monitor and manage all inventory alerts</p>
+      <button class="action-btn acknowledge" (click)="runScan()">Run Scan</button>
     </div>
 
     <!-- Alert Filter Tabs -->
     <div class="alert-tabs">
-      <button class="tab-button active">
+      <button class="tab-button" [class.active]="filter==='active'" (click)="setFilter('active')">
         <span class="tab-text">Active</span>
-        <span class="tab-count">(1)</span>
+        <span class="tab-count">({{ summary.active }})</span>
       </button>
-      <button class="tab-button">
+      <button class="tab-button" [class.active]="filter==='critical'" (click)="setFilter('critical')">
         <span class="tab-text">Critical</span>
-        <span class="tab-count">(1)</span>
+        <span class="tab-count">({{ summary.critical }})</span>
       </button>
-      <button class="tab-button">
+      <button class="tab-button" [class.active]="filter==='ack'" (click)="setFilter('ack')">
         <span class="tab-text">Acknowledged</span>
-        <span class="tab-count">(0)</span>
+        <span class="tab-count">({{ summary.ack }})</span>
       </button>
-      <button class="tab-button">
+      <button class="tab-button" [class.active]="filter==='all'" (click)="setFilter('all')">
         <span class="tab-text">All</span>
-        <span class="tab-count">(1)</span>
+        <span class="tab-count">({{ summary.total }})</span>
       </button>
     </div>
 
     <!-- Alert List -->
     <div class="alert-list">
-      <div class="alert-item critical">
+      <div *ngIf="!alerts.length && !loading" class="alert-item">
+        <div class="alert-content"><p class="alert-description">No active alerts</p></div>
+      </div>
+      <div class="alert-item" *ngFor="let a of alerts" [ngClass]="a.alert_level">
         <div class="alert-left">
           <div class="alert-severity">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-            <span class="severity-label">CRITICAL</span>
+            <span class="severity-label">{{ a.alert_level | uppercase }}</span>
           </div>
-          
           <div class="alert-content">
-            <h4 class="alert-title">part 1 (1)</h4>
-            <p class="alert-description">part 1 is completely out of stock</p>
+            <h4 class="alert-title">#{{ a.part_id || '-' }}</h4>
+            <p class="alert-description">{{ a.message }}</p>
             <div class="alert-details">
-              <span class="stock-info">Current: 0</span>
-              <span class="timestamp">Aug 12, 2025 22:38</span>
+              <span class="timestamp">{{ a.created_at | date:'medium' }}</span>
             </div>
           </div>
         </div>
-        
         <div class="alert-actions">
-          <button class="action-btn acknowledge">
+          <button class="action-btn acknowledge" (click)="resolve(a)">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
-            Acknowledge
-          </button>
-          <button class="action-btn dismiss">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-            Dismiss
+            Resolve
           </button>
         </div>
       </div>

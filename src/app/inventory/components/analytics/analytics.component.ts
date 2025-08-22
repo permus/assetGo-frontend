@@ -46,6 +46,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   // Chart.js instances
   private trendChart?: Chart;
   private agingChart?: Chart;
+  private abcChart?: Chart;
 
   // ABC Analysis summary
   abcSummary = {
@@ -58,8 +59,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   constructor(private analyticsService: InventoryAnalyticsService) { }
 
   ngOnInit(): void {
-    this.loadAllAnalytics();
+    // Register Chart.js before any chart creation to avoid first-render issues
     Chart.register(...registerables);
+    this.loadAllAnalytics();
   }
 
   ngOnDestroy(): void {
@@ -111,9 +113,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (response) => {
             if (response.success) {
-              this.monthlyTrend = response.data.points || [];
+              const pts = response.data.points || [];
+              this.monthlyTrend = pts.length ? pts : this.generateZeroTrend(period);
               this.updateTrendMeta();
-              setTimeout(() => this.renderTrendChart(), 0);
+              // Render twice to ensure first paint after layout
+              setTimeout(() => this.renderTrendChart(true as any), 0);
+              setTimeout(() => this.renderTrendChart(), 50);
             }
             resolve();
           },
@@ -197,7 +202,22 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (response) => {
             if (response.success) {
-              this.agingData = response.data;
+              const data = response.data;
+              // Fallback buckets with zeros when API returns none
+              if (!data || !data.buckets || data.buckets.length === 0) {
+                this.agingData = {
+                  buckets: [
+                    { label: '0-30 days', days_from: 0, days_to: 30, count: 0, value: 0 },
+                    { label: '31-60 days', days_from: 31, days_to: 60, count: 0, value: 0 },
+                    { label: '61-90 days', days_from: 61, days_to: 90, count: 0, value: 0 },
+                    { label: '91-180 days', days_from: 91, days_to: 180, count: 0, value: 0 },
+                    { label: '180+ days', days_from: 181, days_to: null, count: 0, value: 0 },
+                  ],
+                  slow_moving: [],
+                };
+              } else {
+                this.agingData = data;
+              }
               setTimeout(() => this.renderAgingChart(), 0);
             }
             resolve();
@@ -219,6 +239,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             if (response.success) {
               this.abcAnalysisData = response.data;
               this.calculateAbcSummary();
+              if (this.activeTab === 'abc') setTimeout(() => this.renderAbcChart(), 0);
             }
             resolve();
           },
@@ -277,6 +298,30 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     };
   }
 
+  // ABC helpers for UI breakdown
+  private getClassCount(abc: 'A' | 'B' | 'C'): number {
+    if (abc === 'A') return this.abcSummary.classA.count;
+    if (abc === 'B') return this.abcSummary.classB.count;
+    return this.abcSummary.classC.count;
+  }
+
+  private getClassValue(abc: 'A' | 'B' | 'C'): number {
+    if (abc === 'A') return this.abcSummary.classA.value;
+    if (abc === 'B') return this.abcSummary.classB.value;
+    return this.abcSummary.classC.value;
+  }
+
+  getClassQuantityPercentage(abc: 'A' | 'B' | 'C'): number {
+    const totalItems = this.abcAnalysisData.length || 1;
+    return Number(((this.getClassCount(abc) / totalItems) * 100).toFixed(1));
+  }
+
+  getClassValuePercentage(abc: 'A' | 'B' | 'C'): number {
+    if (abc === 'A') return Number(this.abcSummary.classA.percentage.toFixed(1));
+    if (abc === 'B') return Number(this.abcSummary.classB.percentage.toFixed(1));
+    return Number(this.abcSummary.classC.percentage.toFixed(1));
+  }
+
   onTabChange(tab: string): void {
     this.activeTab = tab;
     if (tab === 'turnover') {
@@ -287,6 +332,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }
     if (tab === 'aging') {
       this.loadStockAging();
+    }
+    if (tab === 'abc') {
+      this.loadAbcAnalysis().then(() => setTimeout(() => this.renderAbcChart(true as any), 0));
     }
   }
 
@@ -429,7 +477,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       this.trendChart = undefined;
     }
 
-    this.trendChart = new Chart(canvas.getContext('2d')!, config);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    this.trendChart = new Chart(ctx, config);
   }
 
   private renderAgingChart(force?: boolean): void {
@@ -486,6 +536,56 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       this.agingChart = undefined;
     }
     this.agingChart = new Chart(canvas.getContext('2d')!, config);
+  }
+
+  private renderAbcChart(force?: boolean): void {
+    const canvas = document.getElementById('abcPieCanvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const counts = [
+      this.abcAnalysisData.filter(i => i.class === 'A').length,
+      this.abcAnalysisData.filter(i => i.class === 'B').length,
+      this.abcAnalysisData.filter(i => i.class === 'C').length,
+    ];
+    const config: ChartConfiguration<'doughnut'> = {
+      type: 'doughnut',
+      data: {
+        labels: ['Class A', 'Class B', 'Class C'],
+        datasets: [{
+          data: counts,
+          backgroundColor: ['#2563eb', '#10b981', '#f59e0b'],
+          borderColor: ['#2563eb', '#10b981', '#f59e0b'],
+          borderWidth: 1
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom' } } }
+    };
+
+    if (this.abcChart && !force) {
+      this.abcChart.data.datasets[0].data = counts as any;
+      this.abcChart.update();
+      return;
+    }
+    if (this.abcChart && force) {
+      this.abcChart.destroy();
+      this.abcChart = undefined;
+    }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    this.abcChart = new Chart(ctx, config);
+  }
+
+  private generateZeroTrend(period: '1m' | '3m' | '6m' | '1y') {
+    const monthsMap: any = { '1m': 1, '3m': 3, '6m': 6, '1y': 12 };
+    const n = monthsMap[period] || 6;
+    const points: MonthlyTurnoverPoint[] = [] as any;
+    const now = new Date();
+    for (let i = n - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const label = d.toLocaleString(undefined, { month: 'short', year: 'numeric' });
+      const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      points.push({ month: ym, label, cogs: 0, avg_inventory_value: 0, turnover: 0 });
+    }
+    return points;
   }
 
   getTrendPath(): string {

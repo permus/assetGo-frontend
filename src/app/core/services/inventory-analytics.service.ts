@@ -60,6 +60,8 @@ export interface KpisData {
   dead_stock_value: number;
   dead_stock_items: number;
   dead_days_threshold: number;
+  previous_turnover?: number;
+  turnover_change_pct?: number | null;
 }
 
 export interface KpisResponse {
@@ -125,6 +127,32 @@ export interface StockAgingData {
 export interface StockAgingResponse {
   success: boolean;
   data: StockAgingData;
+}
+
+// Alerts API
+export interface InventoryAlertDTO {
+  id: number;
+  part_id: number | null;
+  alert_type: string;
+  alert_level: string;
+  message: string;
+  is_resolved: boolean;
+  created_at: string;
+}
+
+export interface AlertsListResponse {
+  success: boolean;
+  data: { data: InventoryAlertDTO[]; current_page: number; last_page: number; total: number };
+}
+
+export interface AlertActionResponse {
+  success: boolean;
+  data: any;
+}
+
+export interface AlertsSummaryResponse {
+  success: boolean;
+  data: { active: number; critical: number; ack: number; total: number };
 }
 
 export interface DashboardResponse {
@@ -610,6 +638,49 @@ export class InventoryAnalyticsService {
     return this.http.get<AbcAnalysisResponse>(
       `${this.apiUrl}/inventory/analytics/abc-analysis`,
       { ...this.getAuthHeaders(), params: httpParams }
+    );
+  }
+
+  // Alerts
+  getAlerts(params?: { is_resolved?: boolean; page?: number }): Observable<AlertsListResponse> {
+    let httpParams = new HttpParams();
+    if (typeof params?.is_resolved === 'boolean') httpParams = httpParams.set('is_resolved', String(params.is_resolved));
+    if (params?.page) httpParams = httpParams.set('page', String(params.page));
+    return this.http.get<AlertsListResponse>(
+      `${this.apiUrl}/inventory/alerts`,
+      { ...this.getAuthHeaders(), params: httpParams }
+    );
+  }
+
+  resolveAlert(alertId: number): Observable<AlertActionResponse> {
+    return this.http.post<AlertActionResponse>(
+      `${this.apiUrl}/inventory/alerts/${alertId}/resolve`,
+      {},
+      this.getAuthHeaders()
+    );
+  }
+
+  scanAlerts(): Observable<AlertActionResponse> {
+    return this.http.post<AlertActionResponse>(
+      `${this.apiUrl}/inventory/alerts/scan`,
+      {},
+      this.getAuthHeaders()
+    );
+  }
+
+  getAlertsSummary(): Observable<AlertsSummaryResponse> {
+    return this.http.get<AlertsSummaryResponse>(
+      `${this.apiUrl}/inventory/alerts/summary`,
+      this.getAuthHeaders()
+    );
+  }
+
+  // Automation recommendations
+  getReorderRecommendations(body?: { lookback_days?: number; lead_time_days?: number; safety_days?: number }): Observable<{ success: boolean; data: { recommendations: any[] } }> {
+    return this.http.post<{ success: boolean; data: { recommendations: any[] } }>(
+      `${this.apiUrl}/inventory/automation/recommendations`,
+      body || {},
+      this.getAuthHeaders()
     );
   }
 

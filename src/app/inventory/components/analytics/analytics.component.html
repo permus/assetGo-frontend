@@ -60,6 +60,9 @@
         <div class="card-content">
           <div class="metric-value">{{ (turnoverData.turnover || 0) | number:'1.1-2' }}x</div>
           <div class="metric-label">Inventory Turnover</div>
+          <div class="metric-change" *ngIf="kpis?.turnover_change_pct !== null && kpis?.turnover_change_pct !== undefined">
+            {{ kpis?.turnover_change_pct! | number:'1.0-2' }}% from last period
+          </div>
         </div>
         <svg class="metric-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
@@ -279,9 +282,60 @@
 
     <!-- Other Tab Contents -->
     <div *ngIf="activeTab === 'abc'" class="tab-content">
-      <div class="tab-placeholder">
-        <h3>ABC Analysis</h3>
-        <p>This tab shows detailed ABC analysis. Switch to Overview tab to see the ABC data.</p>
+      <div class="charts-section">
+        <div class="chart-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">ABC Analysis Distribution</h3>
+            <p class="panel-subtitle">Parts categorized by value contribution</p>
+          </div>
+          <div class="chart-container" style="height:260px;padding:12px 8px;">
+            <canvas id="abcPieCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">ABC Category Breakdown</h3>
+            <p class="panel-subtitle">Value and quantity by category</p>
+          </div>
+          <div class="abc-breakdown">
+            <div class="abc-row a">
+              <div class="left">
+                <span class="badge a">Class A</span>
+                <div class="items">{{ abcSummary.classA.count }} items</div>
+                <div class="sub">{{ getClassValuePercentage('A') }}% of total value</div>
+              </div>
+              <div class="right">
+                <div class="value">{{ formatCurrency(abcSummary.classA.value) }}</div>
+                <div class="qty">{{ getClassQuantityPercentage('A') }}% of quantity</div>
+              </div>
+            </div>
+
+            <div class="abc-row b">
+              <div class="left">
+                <span class="badge b">Class B</span>
+                <div class="items">{{ abcSummary.classB.count }} items</div>
+                <div class="sub">{{ getClassValuePercentage('B') }}% of total value</div>
+              </div>
+              <div class="right">
+                <div class="value">{{ formatCurrency(abcSummary.classB.value) }}</div>
+                <div class="qty">{{ getClassQuantityPercentage('B') }}% of quantity</div>
+              </div>
+            </div>
+
+            <div class="abc-row c">
+              <div class="left">
+                <span class="badge c">Class C</span>
+                <div class="items">{{ abcSummary.classC.count }} items</div>
+                <div class="sub">{{ getClassValuePercentage('C') }}% of total value</div>
+              </div>
+              <div class="right">
+                <div class="value">{{ formatCurrency(abcSummary.classC.value) }}</div>
+                <div class="qty">{{ getClassQuantityPercentage('C') }}% of quantity</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -293,54 +347,49 @@
     </div>
 
     <div *ngIf="activeTab === 'aging'" class="tab-content">
-      <div class="analytics-card" *ngIf="agingData">
-        <div class="card-header">
-          <h3 class="card-title">Stock Aging Summary</h3>
-          <span class="card-subtitle">Buckets by days since last movement</span>
-        </div>
-        <div class="card-metrics">
-          <div class="metric-item" *ngFor="let b of agingData.buckets">
-            <span class="metric-label">{{ b.label }} days</span>
-            <span class="metric-value">{{ b.count }} items — {{ formatCurrency(b.value) }}</span>
+      <div class="charts-section" *ngIf="agingData">
+        <!-- Left: Stock Age Distribution -->
+        <div class="chart-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">Stock Age Distribution</h3>
+            <p class="panel-subtitle">Inventory value by age buckets</p>
+          </div>
+          <div class="chart-container" style="height:260px;padding:12px 8px;">
+            <canvas id="agingBucketsCanvas"></canvas>
           </div>
         </div>
-      </div>
 
-      <div class="chart-panel" *ngIf="agingData">
-        <div class="panel-header">
-          <h3 class="panel-title">Aging Buckets</h3>
-          <p class="panel-subtitle">Items per bucket (tooltip shows value)</p>
-        </div>
-        <div class="chart-container" style="height:260px;padding:12px 8px;">
-          <canvas id="agingBucketsCanvas"></canvas>
-        </div>
-      </div>
-
-      <div class="abc-table-section" *ngIf="agingData?.slow_moving?.length">
-        <h3 class="section-title">Slow Moving Items (≥ 90 days)</h3>
-        <div class="table-container">
-          <table class="analytics-table">
-            <thead>
-              <tr>
-                <th>Part ID</th>
-                <th>Part Name</th>
-                <th>On Hand</th>
-                <th>Value</th>
-                <th>Last Movement</th>
-                <th>Days Since</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of agingData.slow_moving">
-                <td>{{ item.part_id }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.on_hand }}</td>
-                <td>{{ formatCurrency(item.value) }}</td>
-                <td>{{ item.last_movement_at || '-' }}</td>
-                <td>{{ item.days_since_movement }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Right: Slow Moving Items -->
+        <div class="chart-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">Slow Moving Items</h3>
+            <p class="panel-subtitle">Items with low turnover requiring attention</p>
+          </div>
+          <div class="table-container" *ngIf="agingData?.slow_moving?.length; else noSlowMoving">
+            <table class="panel-table">
+              <thead>
+                <tr>
+                  <th>Part</th>
+                  <th>On Hand</th>
+                  <th>Value</th>
+                  <th>Days Since</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of agingData.slow_moving">
+                  <td>{{ item.name || item.part_id }}</td>
+                  <td>{{ item.on_hand }}</td>
+                  <td>{{ formatCurrency(item.value) }}</td>
+                  <td>{{ item.days_since_movement }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ng-template #noSlowMoving>
+            <div class="chart-container">
+              <div class="chart-placeholder">No slow moving items</div>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
