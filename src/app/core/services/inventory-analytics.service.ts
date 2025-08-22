@@ -437,8 +437,8 @@ export interface StockLevelsResponse {
 }
 
 export interface StockAdjustmentRequest {
-  part_id: number;
-  location_id: number;
+  part_id: number | null;
+  location_id: number | null;
   type: 'receipt' | 'issue' | 'adjustment' | 'return';
   quantity: number;
   unit_cost?: number;
@@ -847,10 +847,10 @@ export class InventoryAnalyticsService {
 
   // Transactions Methods
   getTransactions(queryParams: string = ''): Observable<TransactionsResponse> {
-    const url = queryParams ? 
-      `${this.apiUrl}/inventory/transactions?${queryParams}` : 
+    const url = queryParams ?
+      `${this.apiUrl}/inventory/transactions?${queryParams}` :
       `${this.apiUrl}/inventory/transactions`;
-    
+
     return this.http.get<TransactionsResponse>(
       url,
       this.getAuthHeaders()
@@ -985,9 +985,9 @@ export class InventoryAnalyticsService {
       .set('page', page.toString());
 
     console.log('Getting suppliers with params:', params.toString());
-    return this.http.get<SuppliersResponse>(`${this.apiUrl}/inventory/suppliers`, { 
-      ...this.getAuthHeaders(), 
-      params 
+    return this.http.get<SuppliersResponse>(`${this.apiUrl}/inventory/suppliers`, {
+      ...this.getAuthHeaders(),
+      params
     });
   }
 

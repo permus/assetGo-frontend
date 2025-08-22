@@ -79,15 +79,15 @@
           <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
-          <input 
-            type="text" 
-            placeholder="Search parts..." 
+          <input
+            type="text"
+            placeholder="Search here..."
             class="search-input"
             [(ngModel)]="searchTerm">
         </div>
-        
+
         <div class="filter-container">
-          <select 
+          <select
             class="filter-select"
             [(ngModel)]="selectedLocationId">
             <option [value]="null">All Locations</option>
@@ -98,7 +98,7 @@
         </div>
 
         <div class="filter-container">
-          <select 
+          <select
             class="filter-select"
             [(ngModel)]="selectedPartId">
             <option [value]="null">All Parts</option>
@@ -107,11 +107,8 @@
             </option>
           </select>
         </div>
-      </div>
-
-      <div class="actions-row">
-        <div class="bulk-actions">
-          <button class="btn btn-outline" (click)="clearFilters()">
+        @if (searchTerm || selectedLocationId || selectedPartId) {
+          <button class="btn btn-outline !border" (click)="clearFilters()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: .5rem;">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -123,19 +120,25 @@
             </svg>
             Apply Filters
           </button>
+        }
+
+      </div>
+
+      <div class="actions-row">
+        <div class="bulk-actions">
           <button class="btn btn-primary" (click)="openAdjustmentModal()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
             Stock Adjustment
           </button>
-          <button class="btn btn-secondary" (click)="openTransferModal()">
+          <button class="btn btn-secondary !hidden" (click)="openTransferModal()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
             </svg>
             Transfer Stock
           </button>
-          <button class="btn btn-warning" (click)="openCountModal()">
+          <button class="btn btn-warning !hidden" (click)="openCountModal()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
@@ -217,16 +220,17 @@
                   </svg>
                 </button>
               </div>
-              
+
               <!-- Quick Release for Reserved Stock -->
               <div class="quick-release" *ngIf="stock.reserved > 0">
-                <input 
-                  type="number" 
-                  class="release-quantity" 
+                <input
+                  type="number"
+                  [(ngModel)]="quickReleaseQuantity"
+                  class="release-quantity"
                   [max]="stock.reserved"
                   min="1"
                   placeholder="Qty">
-                <button class="release-btn" (click)="onReleaseStock(stock, 1)" title="Release Reserved Stock">
+                <button class="release-btn" (click)="onReleaseStock(stock, quickReleaseQuantity)" title="Release Reserved Stock">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
                   </svg>
@@ -249,8 +253,8 @@
 
     <!-- Pagination -->
     <div *ngIf="totalPages > 1" class="pagination">
-      <button 
-        class="pagination-btn" 
+      <button
+        class="pagination-btn"
         [disabled]="currentPage === 1"
         (click)="onPageChange(currentPage - 1)">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,19 +262,19 @@
         </svg>
         Previous
       </button>
-      
+
       <div class="pagination-pages">
-        <button 
+        <button
           *ngFor="let page of [].constructor(totalPages); let i = index"
-          class="pagination-page" 
+          class="pagination-page"
           [class.active]="currentPage === i + 1"
           (click)="onPageChange(i + 1)">
           {{ i + 1 }}
         </button>
       </div>
-      
-      <button 
-        class="pagination-btn" 
+
+      <button
+        class="pagination-btn"
         [disabled]="currentPage === totalPages"
         (click)="onPageChange(currentPage + 1)">
         Next
@@ -286,9 +290,11 @@
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2 class="modal-title">
-          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
-          </svg>
+          <a href="javascript:void(0)" (click)="closeAdjustmentModal()">
+            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+            </svg>
+          </a>
           Stock Adjustment
         </h2>
         <button class="close-btn" (click)="closeAdjustmentModal()">
@@ -309,13 +315,13 @@
           </div>
           <div class="form-group">
             <label for="adjustment-part" class="form-label">Part *</label>
-            <select 
-              id="adjustment-part" 
+            <select
+              id="adjustment-part"
               class="form-select"
               [(ngModel)]="adjustmentForm.part_id"
               name="part_id"
               required>
-              <option value="">Select a part</option>
+              <option value="null">Select a part</option>
               <option *ngFor="let part of availableParts" [value]="part.id">
                 {{ part.part_number }} - {{ part.name }}
               </option>
@@ -334,13 +340,13 @@
           </div>
           <div class="form-group">
             <label for="adjustment-location" class="form-label">Location *</label>
-            <select 
-              id="adjustment-location" 
+            <select
+              id="adjustment-location"
               class="form-select"
               [(ngModel)]="adjustmentForm.location_id"
               name="location_id"
               required>
-              <option value="">Select a location</option>
+              <option value="null">Select a location</option>
               <option *ngFor="let location of availableLocations" [value]="location.id">
                 {{ location.name }}
               </option>
@@ -358,9 +364,9 @@
           </div>
           <div class="form-group">
             <label for="adjustment-quantity" class="form-label">Adjustment Quantity *</label>
-            <input 
-              type="number" 
-              id="adjustment-quantity" 
+            <input
+              type="number"
+              id="adjustment-quantity"
               class="form-input"
               [(ngModel)]="adjustmentForm.quantity"
               name="quantity"
@@ -368,13 +374,12 @@
               required>
           </div>
           <div class="form-group">
-            <label for="adjustment-reason" class="form-label">Reason *</label>
-            <select 
-              id="adjustment-reason" 
+            <label for="adjustment-reason" class="form-label">Reason</label>
+            <select
+              id="adjustment-reason"
               class="form-select"
               [(ngModel)]="adjustmentForm.reason"
-              name="reason"
-              required>
+              name="reason">
               <option value="">Select a reason</option>
               <option value="receipt">Receipt</option>
               <option value="issue">Issue</option>
@@ -398,8 +403,8 @@
           </div>
           <div class="form-group">
             <label for="adjustment-notes" class="form-label">Notes</label>
-            <textarea 
-              id="adjustment-notes" 
+            <textarea
+              id="adjustment-notes"
               class="form-textarea"
               [(ngModel)]="adjustmentForm.notes"
               name="notes"
@@ -412,8 +417,14 @@
           <button type="button" class="btn btn-secondary" (click)="closeAdjustmentModal()">
             Cancel
           </button>
-          <button type="submit" class="btn btn-primary">
-            Adjust Stock
+          <button type="submit" class="btn btn-primary" [class.opacity-50]="adjustStockLoading && !adjustmentForm.part_id || !adjustmentForm.location_id && adjustmentForm.quantity == 0" [disabled]="!adjustmentForm.part_id && !adjustmentForm.location_id && adjustmentForm.quantity == 0">
+
+            @if (adjustStockLoading){
+              Adjusting...
+              <span class="border-t border-white animate-spin border-opacity-25 ml-2 w-4 h-4 rounded-full inline-block"></span>
+            }@else {
+              Adjust Stock
+            }
           </button>
         </div>
       </form>
@@ -435,8 +446,8 @@
       <form (ngSubmit)="onTransferStock()" class="modal-form">
         <div class="form-group">
           <label for="transfer-from" class="form-label">From Location *</label>
-          <select 
-            id="transfer-from" 
+          <select
+            id="transfer-from"
             class="form-select"
             [(ngModel)]="transferForm.from_location_id"
             name="from_location_id"
@@ -450,8 +461,8 @@
 
         <div class="form-group">
           <label for="transfer-to" class="form-label">To Location *</label>
-          <select 
-            id="transfer-to" 
+          <select
+            id="transfer-to"
             class="form-select"
             [(ngModel)]="transferForm.to_location_id"
             name="to_location_id"
@@ -465,9 +476,9 @@
 
         <div class="form-group">
           <label for="transfer-quantity" class="form-label">Quantity *</label>
-          <input 
-            type="number" 
-            id="transfer-quantity" 
+          <input
+            type="number"
+            id="transfer-quantity"
             class="form-input"
             [(ngModel)]="transferForm.quantity"
             name="quantity"
@@ -477,9 +488,9 @@
 
         <div class="form-group">
           <label for="transfer-reason" class="form-label">Reason</label>
-          <input 
-            type="text" 
-            id="transfer-reason" 
+          <input
+            type="text"
+            id="transfer-reason"
             class="form-input"
             [(ngModel)]="transferForm.reason"
             name="reason"
@@ -488,8 +499,8 @@
 
         <div class="form-group">
           <label for="transfer-notes" class="form-label">Notes</label>
-          <textarea 
-            id="transfer-notes" 
+          <textarea
+            id="transfer-notes"
             class="form-textarea"
             [(ngModel)]="transferForm.notes"
             name="notes"
@@ -499,9 +510,9 @@
 
         <div class="form-group">
           <label for="transfer-reference" class="form-label">Reference</label>
-          <input 
-            type="text" 
-            id="transfer-reference" 
+          <input
+            type="text"
+            id="transfer-reference"
             class="form-input"
             [(ngModel)]="transferForm.reference"
             name="reference"
@@ -535,9 +546,9 @@
       <form (ngSubmit)="onReserveStock()" class="modal-form">
         <div class="form-group">
           <label for="reserve-quantity" class="form-label">Quantity to Reserve *</label>
-          <input 
-            type="number" 
-            id="reserve-quantity" 
+          <input
+            type="number"
+            id="reserve-quantity"
             class="form-input"
             [(ngModel)]="reserveForm.quantity"
             name="quantity"
@@ -547,9 +558,9 @@
 
         <div class="form-group">
           <label for="reserve-reference" class="form-label">Reference</label>
-          <input 
-            type="text" 
-            id="reserve-reference" 
+          <input
+            type="text"
+            id="reserve-reference"
             class="form-input"
             [(ngModel)]="reserveForm.reference"
             name="reference"
@@ -583,9 +594,9 @@
       <form (ngSubmit)="onPerformStockCount()" class="modal-form">
         <div class="form-group">
           <label for="count-quantity" class="form-label">Counted Quantity *</label>
-          <input 
-            type="number" 
-            id="count-quantity" 
+          <input
+            type="number"
+            id="count-quantity"
             class="form-input"
             [(ngModel)]="countForm.counted_quantity"
             name="counted_quantity"
@@ -595,8 +606,8 @@
 
         <div class="form-group">
           <label for="count-notes" class="form-label">Notes</label>
-          <textarea 
-            id="count-notes" 
+          <textarea
+            id="count-notes"
             class="form-textarea"
             [(ngModel)]="countForm.notes"
             name="notes"

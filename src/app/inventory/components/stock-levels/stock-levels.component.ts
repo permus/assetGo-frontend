@@ -1,7 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { InventoryAnalyticsService, InventoryStock, StockLevelsResponse, StockAdjustmentRequest, StockTransferRequest, StockReserveRequest, StockCountRequest, LocationResponse } from '../../../core/services/inventory-analytics.service';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {
+  InventoryAnalyticsService,
+  InventoryStock,
+  StockLevelsResponse,
+  StockAdjustmentRequest,
+  StockTransferRequest,
+  StockReserveRequest,
+  StockCountRequest,
+  LocationResponse
+} from '../../../core/services/inventory-analytics.service';
 
 @Component({
   selector: 'app-stock-levels',
@@ -15,7 +24,7 @@ export class StockLevelsComponent implements OnInit {
   stockLevels: InventoryStock[] = [];
   loading = true;
   error: string | null = null;
-  
+  adjustStockLoading = false;
   // Search and filter properties
   searchTerm = '';
   selectedLocationId: number | null = null;
@@ -24,7 +33,7 @@ export class StockLevelsComponent implements OnInit {
   perPage = 15;
   totalStocks = 0;
   totalPages = 0;
-  
+
   // Summary data
   summaryData = {
     totalItems: 0,
@@ -38,13 +47,14 @@ export class StockLevelsComponent implements OnInit {
   showTransferModal = false;
   showReserveModal = false;
   showCountModal = false;
-  
+
   // Form data
   adjustmentForm: StockAdjustmentRequest = {
-    part_id: 0,
-    location_id: 0,
+    part_id: null,
+    location_id: null,
     type: 'receipt',
-    quantity: 0
+    quantity: 0,
+    reason: '',
   };
 
   transferForm: StockTransferRequest = {
@@ -69,8 +79,10 @@ export class StockLevelsComponent implements OnInit {
   // Available locations (you might want to fetch this from a separate API)
   availableLocations: any[] = [];
   availableParts: any[] = [];
+  quickReleaseQuantity: number | null = null;
 
-  constructor(private analyticsService: InventoryAnalyticsService) { }
+  constructor(private analyticsService: InventoryAnalyticsService) {
+  }
 
   ngOnInit(): void {
     this.loadStockLevels();
@@ -119,17 +131,17 @@ export class StockLevelsComponent implements OnInit {
   loadAvailableLocations(): void {
     console.log('Loading available locations...');
     console.log('API URL:', this.analyticsService['apiUrl']);
-    
+
     // Fetch locations from the API with exact parameters as specified
     this.analyticsService.getLocations(1, 100, 0, 'created', 'desc').subscribe({
       next: (response: any) => {
         console.log('Locations API response:', response);
         console.log('Response success:', response.success);
         console.log('Response data:', response.data);
-        
+
         // Handle different possible response structures
         let locationsData: any[] = [];
-        
+
         if (response.success && response.data) {
           // Check if data is directly an array
           if (Array.isArray(response.data)) {
@@ -144,7 +156,7 @@ export class StockLevelsComponent implements OnInit {
             locationsData = response.data.locations;
           }
         }
-        
+
         if (locationsData.length > 0) {
           this.availableLocations = locationsData.map(location => ({
             id: location.id,
@@ -164,9 +176,9 @@ export class StockLevelsComponent implements OnInit {
           });
           // Fallback to mock data if API response is not successful
           this.availableLocations = [
-            { id: 1, name: 'Main Warehouse', code: 'MW' },
-            { id: 2, name: 'Secondary Storage', code: 'SS' },
-            { id: 3, name: 'Field Office', code: 'FO' }
+            {id: 1, name: 'Main Warehouse', code: 'MW'},
+            {id: 2, name: 'Secondary Storage', code: 'SS'},
+            {id: 3, name: 'Field Office', code: 'FO'}
           ];
         }
       },
@@ -180,9 +192,9 @@ export class StockLevelsComponent implements OnInit {
         });
         // Fallback to mock data if API fails
         this.availableLocations = [
-          { id: 1, name: 'Main Warehouse', code: 'MW' },
-          { id: 2, name: 'Secondary Storage', code: 'SS' },
-          { id: 3, name: 'Field Office', code: 'FO' }
+          {id: 1, name: 'Main Warehouse', code: 'MW'},
+          {id: 2, name: 'Secondary Storage', code: 'SS'},
+          {id: 3, name: 'Field Office', code: 'FO'}
         ];
         console.log('Using fallback locations:', this.availableLocations);
       }
@@ -206,9 +218,9 @@ export class StockLevelsComponent implements OnInit {
           console.error('Failed to load parts for dropdown');
           // Fallback to mock data if API response is not successful
           this.availableParts = [
-            { id: 1, name: 'Sample Part 1', part_number: 'P001' },
-            { id: 2, name: 'Sample Part 2', part_number: 'P002' },
-            { id: 3, name: 'Sample Part 3', part_number: 'P003' }
+            {id: 1, name: 'Sample Part 1', part_number: 'P001'},
+            {id: 2, name: 'Sample Part 2', part_number: 'P002'},
+            {id: 3, name: 'Sample Part 3', part_number: 'P003'}
           ];
         }
       },
@@ -216,9 +228,9 @@ export class StockLevelsComponent implements OnInit {
         console.error('Error loading parts for dropdown:', err);
         // Fallback to mock data if API fails
         this.availableParts = [
-          { id: 1, name: 'Sample Part 1', part_number: 'P001' },
-          { id: 2, name: 'Sample Part 2', part_number: 'P002' },
-          { id: 3, name: 'Sample Part 3', part_number: 'P003' }
+          {id: 1, name: 'Sample Part 1', part_number: 'P001'},
+          {id: 2, name: 'Sample Part 2', part_number: 'P002'},
+          {id: 3, name: 'Sample Part 3', part_number: 'P003'}
         ];
         console.log('Using fallback parts:', this.availableParts);
       }
@@ -227,13 +239,13 @@ export class StockLevelsComponent implements OnInit {
 
   calculateSummaryData(): void {
     this.summaryData.totalItems = this.totalStocks;
-    this.summaryData.totalValue = this.stockLevels.reduce((sum, stock) => 
+    this.summaryData.totalValue = this.stockLevels.reduce((sum, stock) =>
       sum + (stock.on_hand * stock.average_cost), 0
     );
-    this.summaryData.lowStockItems = this.stockLevels.filter(stock => 
+    this.summaryData.lowStockItems = this.stockLevels.filter(stock =>
       stock.on_hand <= (stock.part.reorder_point || 0)
     ).length;
-    this.summaryData.outOfStockItems = this.stockLevels.filter(stock => 
+    this.summaryData.outOfStockItems = this.stockLevels.filter(stock =>
       stock.on_hand <= 0
     ).length;
   }
@@ -273,13 +285,13 @@ export class StockLevelsComponent implements OnInit {
     console.log('Opening adjustment modal...');
     console.log('Available locations:', this.availableLocations);
     console.log('Available parts:', this.availableParts);
-    
+
     // Ensure locations are loaded when modal opens
     if (this.availableLocations.length === 0) {
       console.log('No locations available, reloading...');
       this.loadAvailableLocations();
     }
-    
+
     if (stock) {
       this.adjustmentForm = {
         part_id: stock.part_id,
@@ -294,21 +306,24 @@ export class StockLevelsComponent implements OnInit {
   closeAdjustmentModal(): void {
     this.showAdjustmentModal = false;
     this.adjustmentForm = {
-      part_id: 0,
-      location_id: 0,
+      part_id: null,
+      location_id: null,
       type: 'receipt',
-      quantity: 0
+      quantity: 0,
+      reason: '',
+      notes: '',
     };
   }
 
   onAdjustStock(): void {
     if (this.adjustmentForm.part_id && this.adjustmentForm.location_id && this.adjustmentForm.quantity !== 0) {
+      this.adjustStockLoading = true;
       // Set a default type based on quantity (positive = receipt, negative = issue)
       const adjustmentData: StockAdjustmentRequest = {
         ...this.adjustmentForm,
         type: this.adjustmentForm.quantity > 0 ? 'receipt' : 'issue'
       };
-      
+
       this.analyticsService.adjustStock(adjustmentData).subscribe({
         next: (response) => {
           if (response.success) {
@@ -318,9 +333,12 @@ export class StockLevelsComponent implements OnInit {
           }
         },
         error: (err) => {
+          this.adjustStockLoading = false;
           console.error('Error adjusting stock:', err);
           // You could add an error notification here
         }
+      }).add(() => {
+        this.adjustStockLoading = true;
       });
     }
   }
@@ -349,9 +367,9 @@ export class StockLevelsComponent implements OnInit {
   }
 
   onTransferStock(): void {
-    if (this.transferForm.part_id && this.transferForm.from_location_id && 
-        this.transferForm.to_location_id && this.transferForm.quantity > 0 &&
-        this.transferForm.from_location_id !== this.transferForm.to_location_id) {
+    if (this.transferForm.part_id && this.transferForm.from_location_id &&
+      this.transferForm.to_location_id && this.transferForm.quantity > 0 &&
+      this.transferForm.from_location_id !== this.transferForm.to_location_id) {
       this.analyticsService.transferStock(this.transferForm).subscribe({
         next: (response) => {
           if (response.success) {
@@ -447,7 +465,10 @@ export class StockLevelsComponent implements OnInit {
   }
 
   // Stock Release
-  onReleaseStock(stock: InventoryStock, quantity: number): void {
+  onReleaseStock(stock: InventoryStock, quantity: number | null = 1): void {
+    if (quantity === null) {
+      quantity = 1;
+    }
     if (quantity > 0 && quantity <= stock.reserved) {
       const releaseData: StockReserveRequest = {
         part_id: stock.part_id,
@@ -460,6 +481,7 @@ export class StockLevelsComponent implements OnInit {
           if (response.success) {
             this.loadStockLevels();
             // You could add a success notification here
+            this.quickReleaseQuantity = null;
           }
         },
         error: (err) => {
@@ -472,23 +494,23 @@ export class StockLevelsComponent implements OnInit {
 
   getStockStatus(stock: InventoryStock): { status: string; class: string; icon: string } {
     if (stock.on_hand <= 0) {
-      return { status: 'Out of Stock', class: 'out-of-stock', icon: 'x-circle' };
+      return {status: 'Out of Stock', class: 'out-of-stock', icon: 'x-circle'};
     }
-    
+
     if (stock.on_hand <= (stock.part.reorder_point || 0)) {
-      return { status: 'Low Stock', class: 'low-stock', icon: 'exclamation-triangle' };
+      return {status: 'Low Stock', class: 'low-stock', icon: 'exclamation-triangle'};
     }
-    
+
     if (stock.reserved > 0) {
-      return { status: 'Partially Reserved', class: 'reserved', icon: 'lock-closed' };
+      return {status: 'Partially Reserved', class: 'reserved', icon: 'lock-closed'};
     }
-    
-    return { status: 'In Stock', class: 'in-stock', icon: 'check-circle' };
+
+    return {status: 'In Stock', class: 'in-stock', icon: 'check-circle'};
   }
 
   getStockLevelClass(stock: InventoryStock): string {
     const percentage = stock.on_hand > 0 ? (stock.available / stock.on_hand) * 100 : 0;
-    
+
     if (percentage <= 20) return 'critical';
     if (percentage <= 50) return 'warning';
     return 'good';
@@ -506,7 +528,7 @@ export class StockLevelsComponent implements OnInit {
   testAPIs(): void {
     console.log('Testing APIs...');
     console.log('Environment API URL:', this.analyticsService['apiUrl']);
-    
+
     // Test locations API with exact parameters
     this.analyticsService.getLocations(1, 100, 0, 'created', 'desc').subscribe({
       next: (response) => {
@@ -539,7 +561,7 @@ export class StockLevelsComponent implements OnInit {
     console.log('Force reloading locations...');
     this.availableLocations = []; // Clear current locations
     this.loadAvailableLocations();
-    
+
     // Show a temporary message
     setTimeout(() => {
       if (this.availableLocations.length === 0) {
@@ -555,7 +577,7 @@ export class StockLevelsComponent implements OnInit {
     console.log('=== Testing Locations API ===');
     console.log('Current token:', localStorage.getItem('token'));
     console.log('Current API URL:', this.analyticsService['apiUrl']);
-    
+
     // Test with a simple HTTP call to see what we get
     this.analyticsService.getLocations(1, 5, 0, 'created', 'desc').subscribe({
       next: (response) => {
