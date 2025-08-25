@@ -232,18 +232,23 @@
                         d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
               </button>
-              <button class="action-btn transfer" (click)="openTransferModal(stock)" title="Transfer Stock">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                </svg>
-              </button>
-              <button class="action-btn reserve" (click)="openReserveModal(stock)" title="Reserve Stock">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                </svg>
-              </button>
+              @if (stock.available > 0){
+                <button class="action-btn transfer" (click)="openTransferModal(stock)" title="Transfer Stock">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                  </svg>
+                </button>
+
+                <button class="action-btn reserve" (click)="openReserveModal(stock)" title="Reserve Stock">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                </button>
+              }
+
+
               <button class="action-btn count" (click)="openCountModal(stock)" title="Stock Count">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -256,12 +261,12 @@
             <div class="quick-release" *ngIf="stock.reserved > 0">
               <input
                 type="number"
-                [(ngModel)]="quickReleaseQuantity"
+                [(ngModel)]="releaseQuantities[stock.id]"
                 class="release-quantity"
                 [max]="stock.reserved"
                 min="1"
                 placeholder="Qty">
-              <button class="release-btn" (click)="onReleaseStock(stock, quickReleaseQuantity)"
+              <button class="release-btn" (click)="onReleaseStock(stock, releaseQuantities[stock.id])"
                       title="Release Reserved Stock">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

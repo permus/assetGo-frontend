@@ -118,6 +118,8 @@
             background-color: white;
           }
         }
+
+
       }
 
       .status-dropdown {
@@ -149,6 +151,31 @@
           height: 1rem;
           color: #6b7280;
           pointer-events: none;
+        }
+      }
+
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        white-space: nowrap;
+
+        &.btn-secondary {
+          background-color: white;
+          color: #374151;
+          border: 1px solid #d1d5db;
+
+          &:hover {
+            background-color: #f9fafb;
+            border-color: #9ca3af;
+          }
         }
       }
     }
@@ -261,7 +288,6 @@
     border-radius: 0.75rem;
     border: 1px solid #e5e7eb;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    overflow: hidden;
 
     .table-header {
       padding: 1.5rem;
@@ -284,7 +310,6 @@
     }
 
     .table-wrapper {
-      overflow-x: auto;
 
       table {
         width: 100%;

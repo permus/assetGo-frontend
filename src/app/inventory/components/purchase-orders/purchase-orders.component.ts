@@ -18,27 +18,27 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
   showViewPOModal = false;
   showReceiveItemsModal = false;
   selectedPurchaseOrder: PurchaseOrder | null = null;
-  
+
   // Dropdown state
   openDropdownId: number | null = null;
-  
+
   // Data properties
   purchaseOrders: PurchaseOrder[] = [];
   loading = false;
   error: string | null = null;
-  
+
   // Pagination
   currentPage = 1;
   totalPages = 1;
   totalItems = 0;
   perPage = 15;
-  
+
   // Filters
   filters = {
     status: '',
     search: ''
   };
-  
+
   // Overview stats
   overviewStats = {
     totalPOs: 0,
@@ -52,7 +52,7 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadPurchaseOrders();
     this.loadOverviewStats();
-    
+
     // Close dropdown when clicking outside
     document.addEventListener('click', this.onDocumentClick.bind(this));
   }
@@ -83,12 +83,12 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
 
   approvePurchaseOrder(po: PurchaseOrder): void {
     console.log('Approving Purchase Order:', po.po_number);
-    
+
     if (!po.id) {
       this.error = 'Purchase Order ID is missing';
       return;
     }
-    
+
     // Call the approve endpoint to approve the PO
     this.inventoryService.approvePurchaseOrder({ purchase_order_id: po.id, approve: true }).subscribe({
       next: (response: any) => {
@@ -104,28 +104,28 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
         this.error = 'Error approving purchase order: ' + err.message;
       }
     });
-    
+
     this.openDropdownId = null;
   }
 
   sendEmail(po: PurchaseOrder): void {
     console.log('Sending email for Purchase Order:', po.po_number);
-    
+
     // Here you would implement email functionality
     // This could open a modal to compose email or trigger an email service
     alert(`Email functionality for PO ${po.po_number} would be implemented here.`);
-    
+
     this.openDropdownId = null;
   }
 
   markAsOrdered(po: PurchaseOrder): void {
     console.log('Marking Purchase Order as Ordered:', po.po_number);
-    
+
     if (!po.id) {
       this.error = 'Purchase Order ID is missing';
       return;
     }
-    
+
     // Here you would call the API to mark the PO as ordered
     this.inventoryService.updatePurchaseOrder(po.id, { status: 'ordered' } as any).subscribe({
       next: (response: any) => {
@@ -141,7 +141,7 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
         this.error = 'Error marking purchase order as ordered: ' + err.message;
       }
     });
-    
+
     this.openDropdownId = null;
   }
 
@@ -259,8 +259,8 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
   }
 
   onCreatePurchaseOrder(poData: any): void {
-    console.log('Creating Purchase Order:', poData);
-    
+/*    console.log('Creating Purchase Order:', poData);
+
     this.inventoryService.createPurchaseOrder(poData).subscribe({
       next: (response) => {
         if (response.success) {
@@ -275,7 +275,11 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.error = 'Error creating purchase order: ' + err.message;
       }
-    });
+    });*/
+
+    this.loadPurchaseOrders();
+    this.loadOverviewStats();
+    this.closeCreatePOModal();
   }
 
   onPurchaseOrderUpdated(updatedPO: PurchaseOrder): void {
@@ -322,12 +326,12 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
   formatCurrency(amount: any): string {
     // Convert to number and handle invalid values
     const numAmount = Number(amount);
-    
+
     // Check if it's a valid number
     if (isNaN(numAmount) || !isFinite(numAmount)) {
       return 'AED 0.00';
     }
-    
+
     return `AED ${numAmount.toFixed(2)}`;
   }
 
@@ -336,15 +340,15 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
     if (!dateString) {
       return 'N/A';
     }
-    
+
     try {
       const date = new Date(dateString);
-      
+
       // Check if it's a valid date
       if (isNaN(date.getTime())) {
         return 'Invalid Date';
       }
-      
+
       return date.toLocaleDateString();
     } catch (error) {
       return 'Invalid Date';
@@ -353,7 +357,7 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
 
   calculateItemsTotal(items: any[]): number {
     if (!items || !Array.isArray(items) || items.length === 0) return 0;
-    
+
     return items.reduce((sum, item) => {
       const qty = Number(item?.ordered_qty) || 0;
       return sum + (isNaN(qty) ? 0 : qty);

@@ -6,8 +6,8 @@
       <p class="text-gray-600">Track and manage all inventory movements and transactions</p>
     </div>
     <div class="header-actions">
-      <button 
-        (click)="refreshData()" 
+      <button
+        (click)="refreshData()"
         class="btn btn-secondary"
         [disabled]="loading">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,10 +24,7 @@
       <!-- Transaction Type Filter -->
       <div class="filter-group">
         <label class="filter-label">Transaction Type</label>
-        <select 
-          [(ngModel)]="filters.type" 
-          class="filter-select"
-          (change)="applyFilters()">
+        <select [(ngModel)]="filters.type" class="filter-select">
           <option *ngFor="let type of transactionTypes" [value]="type.value">
             {{ type.label }}
           </option>
@@ -37,10 +34,10 @@
       <!-- Part Filter -->
       <div class="filter-group">
         <label class="filter-label">Part</label>
-        <select 
-          [(ngModel)]="filters.part_id" 
+        <select
+          [(ngModel)]="filters.part_id"
           class="filter-select"
-          (change)="applyFilters()">
+        >
           <option value="">All Parts</option>
           <option *ngFor="let part of availableParts" [value]="part.id">
             {{ part.name }} ({{ part.part_number }})
@@ -51,10 +48,10 @@
       <!-- Location Filter -->
       <div class="filter-group">
         <label class="filter-label">Location</label>
-        <select 
-          [(ngModel)]="filters.location_id" 
+        <select
+          [(ngModel)]="filters.location_id"
           class="filter-select"
-          (change)="applyFilters()">
+          >
           <option value="">All Locations</option>
           <option *ngFor="let location of availableLocations" [value]="location.id">
             {{ location.name }} ({{ location.code }})
@@ -65,46 +62,48 @@
       <!-- Date Range Filters -->
       <div class="filter-group">
         <label class="filter-label">Start Date</label>
-        <input 
-          type="date" 
-          [(ngModel)]="filters.start_date" 
+        <input
+          type="date"
+          [(ngModel)]="filters.start_date"
           class="filter-input"
-          (change)="applyFilters()">
+         >
       </div>
 
       <div class="filter-group">
         <label class="filter-label">End Date</label>
-        <input 
-          type="date" 
-          [(ngModel)]="filters.end_date" 
+        <input
+          type="date"
+          [(ngModel)]="filters.end_date"
           class="filter-input"
-          (change)="applyFilters()">
+          >
       </div>
 
       <!-- Search Filter -->
       <div class="filter-group">
         <label class="filter-label">Search</label>
-        <input 
-          type="text" 
-          [(ngModel)]="filters.search" 
+        <input
+          type="text"
+          [(ngModel)]="filters.search"
           placeholder="Search transactions..."
-          class="filter-input"
-          (input)="applyFilters()">
+          class="filter-input">
       </div>
     </div>
 
-    <div class="filter-actions">
-      <button 
-        (click)="clearFilters()" 
-        class="btn btn-outline">
-        Clear Filters
-      </button>
-      <button 
-        (click)="applyFilters()" 
-        class="btn btn-primary">
-        Apply Filters
-      </button>
-    </div>
+    @if (filters.type || filters.part_id || filters.location_id || filters.start_date || filters.end_date || filters.search){
+      <div class="filter-actions mt-6">
+        <button
+          (click)="clearFilters()"
+          class="btn btn-outline">
+          Clear Filters
+        </button>
+        <button
+          (click)="applyFilters()"
+          class="btn btn-primary">
+          Apply Filters
+        </button>
+      </div>
+    }
+
   </div>
 
   <!-- Loading State -->
@@ -156,7 +155,7 @@
               {{ formatDate(transaction.created_at) }}
             </td>
             <td class="td-type">
-              <span 
+              <span
                 class="transaction-type-badge"
                 [ngClass]="getTransactionTypeClass(transaction.type)">
                 {{ getTransactionTypeLabel(transaction.type) }}
@@ -219,7 +218,7 @@
 
     <!-- Pagination -->
     <div *ngIf="totalPages > 1" class="pagination">
-      <button 
+      <button
         (click)="onPageChange(currentPage - 1)"
         [disabled]="currentPage === 1"
         class="pagination-btn pagination-prev">
@@ -230,7 +229,7 @@
       </button>
 
       <div class="pagination-pages">
-        <button 
+        <button
           *ngFor="let page of [].constructor(totalPages); let i = index"
           (click)="onPageChange(i + 1)"
           [class.active]="currentPage === i + 1"
@@ -239,7 +238,7 @@
         </button>
       </div>
 
-      <button 
+      <button
         (click)="onPageChange(currentPage + 1)"
         [disabled]="currentPage === totalPages"
         class="pagination-btn pagination-next">

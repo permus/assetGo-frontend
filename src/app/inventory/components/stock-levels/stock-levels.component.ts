@@ -83,8 +83,7 @@ export class StockLevelsComponent implements OnInit {
   // Available locations (you might want to fetch this from a separate API)
   availableLocations: any[] = [];
   availableParts: any[] = [];
-  quickReleaseQuantity: number | null = null;
-
+  releaseQuantities: { [stockId: number]: number } = {};
   constructor(private analyticsService: InventoryAnalyticsService) {
   }
 
@@ -484,8 +483,7 @@ export class StockLevelsComponent implements OnInit {
         next: (response) => {
           if (response.success) {
             this.loadStockLevels();
-            // You could add a success notification here
-            this.quickReleaseQuantity = null;
+            this.releaseQuantities = {};
           }
         },
         error: (err) => {
