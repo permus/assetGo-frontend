@@ -124,23 +124,23 @@
     <!-- Detailed Analysis Section -->
     <div class="detailed-analysis">
       <h3 class="section-title">Detailed Analysis</h3>
-      
+
       <!-- Search and Filter Controls -->
       <div class="controls-row">
         <div class="search-container">
           <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
-          <input 
-            type="text" 
-            placeholder="Search parts..." 
+          <input
+            type="text"
+            placeholder="Search parts..."
             class="search-input"
             [value]="searchTerm"
             (input)="onSearchChange($event)">
         </div>
 
         <div class="filter-container">
-          <select 
+          <select
             class="filter-select"
             [value]="selectedClass"
             (change)="onClassFilterChange($event)">
@@ -159,7 +159,7 @@
       <div class="analysis-table-container">
         <table class="analysis-table">
           <thead>
-            <tr>
+            <tr class="uppercase">
               <th>Part Number</th>
               <th>Part Name</th>
               <th>Total Value</th>

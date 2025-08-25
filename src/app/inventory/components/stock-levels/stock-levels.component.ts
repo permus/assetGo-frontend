@@ -4,7 +4,6 @@ import {FormsModule} from '@angular/forms';
 import {
   InventoryAnalyticsService,
   InventoryStock,
-  StockLevelsResponse,
   StockAdjustmentRequest,
   StockTransferRequest,
   StockReserveRequest,
@@ -23,6 +22,10 @@ export class StockLevelsComponent implements OnInit {
   // Data properties
   stockLevels: InventoryStock[] = [];
   loading = true;
+  reserveLoading = false;
+  transferLoading = false;
+  countLoading = false;
+  releaseLoading = false;
   error: string | null = null;
   adjustStockLoading = false;
   // Search and filter properties
@@ -33,7 +36,8 @@ export class StockLevelsComponent implements OnInit {
   perPage = 15;
   totalStocks = 0;
   totalPages = 0;
-
+  locationDropdownOpen = false;
+  partDropdownOpen = false;
   // Summary data
   summaryData = {
     totalItems: 0,
@@ -250,18 +254,6 @@ export class StockLevelsComponent implements OnInit {
     ).length;
   }
 
-  onSearchChange(): void {
-    // No-op; apply on button click
-  }
-
-  onLocationFilterChange(): void {
-    // No-op; apply on button click
-  }
-
-  onPartFilterChange(): void {
-    // No-op; apply on button click
-  }
-
   applyFilters(): void {
     this.currentPage = 1;
     this.loadStockLevels();
@@ -338,7 +330,7 @@ export class StockLevelsComponent implements OnInit {
           // You could add an error notification here
         }
       }).add(() => {
-        this.adjustStockLoading = true;
+        this.adjustStockLoading = false;
       });
     }
   }
@@ -370,6 +362,7 @@ export class StockLevelsComponent implements OnInit {
     if (this.transferForm.part_id && this.transferForm.from_location_id &&
       this.transferForm.to_location_id && this.transferForm.quantity > 0 &&
       this.transferForm.from_location_id !== this.transferForm.to_location_id) {
+      this.transferLoading = true;
       this.analyticsService.transferStock(this.transferForm).subscribe({
         next: (response) => {
           if (response.success) {
@@ -379,9 +372,12 @@ export class StockLevelsComponent implements OnInit {
           }
         },
         error: (err) => {
+          this.transferLoading = false;
           console.error('Error transferring stock:', err);
           // You could add an error notification here
         }
+      }).add(() => {
+        this.transferLoading = false;
       });
     }
   }
@@ -409,6 +405,7 @@ export class StockLevelsComponent implements OnInit {
 
   onReserveStock(): void {
     if (this.reserveForm.part_id && this.reserveForm.location_id && this.reserveForm.quantity > 0) {
+      this.reserveLoading = true;
       this.analyticsService.reserveStock(this.reserveForm).subscribe({
         next: (response) => {
           if (response.success) {
@@ -418,9 +415,12 @@ export class StockLevelsComponent implements OnInit {
           }
         },
         error: (err) => {
+          this.reserveLoading = false;
           console.error('Error reserving stock:', err);
           // You could add an error notification here
         }
+      }).add(() => {
+        this.reserveLoading = false;
       });
     }
   }
@@ -448,6 +448,7 @@ export class StockLevelsComponent implements OnInit {
 
   onPerformStockCount(): void {
     if (this.countForm.part_id && this.countForm.location_id && this.countForm.counted_quantity >= 0) {
+      this.countLoading = true;
       this.analyticsService.performStockCount(this.countForm).subscribe({
         next: (response) => {
           if (response.success) {
@@ -457,9 +458,12 @@ export class StockLevelsComponent implements OnInit {
           }
         },
         error: (err) => {
+          this.countLoading = false;
           console.error('Error performing stock count:', err);
           // You could add an error notification here
         }
+      }).add(() => {
+        this.countLoading = false;
       });
     }
   }
@@ -475,7 +479,7 @@ export class StockLevelsComponent implements OnInit {
         location_id: stock.location_id,
         quantity: quantity
       };
-
+      this.releaseLoading = true;
       this.analyticsService.releaseStock(releaseData).subscribe({
         next: (response) => {
           if (response.success) {
@@ -485,9 +489,12 @@ export class StockLevelsComponent implements OnInit {
           }
         },
         error: (err) => {
+          this.releaseLoading = false;
           console.error('Error releasing stock:', err);
           // You could add an error notification here
         }
+      }).add(() => {
+        this.releaseLoading = false;
       });
     }
   }

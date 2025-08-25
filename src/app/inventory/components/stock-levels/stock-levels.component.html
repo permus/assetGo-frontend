@@ -8,12 +8,14 @@
   <!-- Error State -->
   <div *ngIf="error && !loading" class="error-state">
     <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
     </svg>
     <h3 class="error-title">{{ error }}</h3>
     <button class="btn btn-primary" (click)="refreshData()">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
       </svg>
       Retry
     </button>
@@ -26,7 +28,8 @@
       <div class="summary-card total-items">
         <div class="card-icon">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
           </svg>
         </div>
         <div class="card-content">
@@ -38,7 +41,8 @@
       <div class="summary-card total-value">
         <div class="card-icon">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
           </svg>
         </div>
         <div class="card-content">
@@ -50,7 +54,8 @@
       <div class="summary-card low-stock">
         <div class="card-icon">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
           </svg>
         </div>
         <div class="card-content">
@@ -77,7 +82,8 @@
       <div class="search-row">
         <div class="search-container">
           <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
           <input
             type="text"
@@ -86,8 +92,11 @@
             [(ngModel)]="searchTerm">
         </div>
 
-        <div class="filter-container">
+        <div class="filter-container position-relative">
           <select
+            (mousedown)="locationDropdownOpen = true"
+            (change)="locationDropdownOpen =false"
+            (blur)="locationDropdownOpen = false"
             class="filter-select"
             [(ngModel)]="selectedLocationId">
             <option [value]="null">All Locations</option>
@@ -95,10 +104,18 @@
               {{ location.name }}
             </option>
           </select>
+          <svg
+            class="dropdown-arrow absolute top-1/2 right-2 transform -translate-y-1/2 w-4 h-4 transition duration-200"
+            [class.rotate-180]="locationDropdownOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
         </div>
 
-        <div class="filter-container">
+        <div class="filter-container position-relative">
           <select
+            (mousedown)="partDropdownOpen = true"
+            (change)="partDropdownOpen =false"
+            (blur)="partDropdownOpen = false"
             class="filter-select"
             [(ngModel)]="selectedPartId">
             <option [value]="null">All Parts</option>
@@ -106,6 +123,11 @@
               {{ part.part_number }} - {{ part.name }}
             </option>
           </select>
+          <svg
+            class="dropdown-arrow absolute top-1/2 right-2 transform -translate-y-1/2 w-4 h-4 transition duration-200"
+            [class.rotate-180]="partDropdownOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
         </div>
         @if (searchTerm || selectedLocationId || selectedPartId) {
           <button class="btn btn-outline !border" (click)="clearFilters()">
@@ -116,7 +138,8 @@
           </button>
           <button class="btn btn-primary" (click)="applyFilters()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: .5rem;">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
             Apply Filters
           </button>
@@ -128,19 +151,22 @@
         <div class="bulk-actions">
           <button class="btn btn-primary" (click)="openAdjustmentModal()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
             Stock Adjustment
           </button>
           <button class="btn btn-secondary !hidden" (click)="openTransferModal()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
             </svg>
             Transfer Stock
           </button>
           <button class="btn btn-warning !hidden" (click)="openCountModal()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
             Stock Count
           </button>
@@ -152,99 +178,107 @@
     <div class="stock-table-container">
       <table class="stock-table">
         <thead>
-          <tr>
-            <th class="th-part">Part</th>
-            <th class="th-location">Location</th>
-            <th class="th-on-hand">On Hand</th>
-            <th class="th-available">Available</th>
-            <th class="th-reserved">Reserved</th>
-            <th class="th-cost">Average Cost</th>
-            <th class="th-status">Status</th>
-            <th class="th-actions" style="min-width: 220px; width: 20%">Actions</th>
-          </tr>
+        <tr class="uppercase">
+          <th class="th-part">Part</th>
+          <th class="th-location">Location</th>
+          <th class="th-on-hand">On Hand</th>
+          <th class="th-available">Available</th>
+          <th class="th-reserved">Reserved</th>
+          <th class="th-cost">Average Cost</th>
+          <th class="th-status">Status</th>
+          <th class="th-actions" style="min-width: 220px; width: 20%">Actions</th>
+        </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let stock of stockLevels">
-            <td class="part-info">
-              <div class="part-name">{{ stock.part.name }}</div>
-              <div class="part-number">{{ stock.part.part_number }}</div>
-            </td>
-            <td class="location-info">
-              <div class="location-name">{{ stock.location.name }}</div>
-              <div class="location-code" *ngIf="stock.location.code">{{ stock.location.code }}</div>
-            </td>
-            <td class="stock-quantity">
+        <tr *ngFor="let stock of stockLevels">
+          <td class="part-info">
+            <div class="part-name">{{ stock.part.name }}</div>
+            <div class="part-number">{{ stock.part.part_number }}</div>
+          </td>
+          <td class="location-info">
+            <div class="location-name">{{ stock.location.name }}</div>
+            <div class="location-code" *ngIf="stock.location.code">{{ stock.location.code }}</div>
+          </td>
+          <td class="stock-quantity">
               <span class="quantity" [class]="getStockLevelClass(stock)">
                 {{ stock.on_hand }}
               </span>
-            </td>
-            <td class="stock-quantity">
-              <span class="quantity available">{{ stock.available }}</span>
-            </td>
-            <td class="stock-quantity">
-              <span class="quantity reserved" *ngIf="stock.reserved > 0">{{ stock.reserved }}</span>
-              <span class="quantity" *ngIf="stock.reserved === 0">-</span>
-            </td>
-            <td class="stock-cost">
-              <span class="cost" *ngIf="stock.average_cost > 0">${{ stock.average_cost | number:'1.2-2' }}</span>
-              <span class="cost" *ngIf="!stock.average_cost || stock.average_cost === 0">-</span>
-            </td>
-            <td class="stock-status">
+          </td>
+          <td class="stock-quantity">
+            <span class="quantity available">{{ stock.available }}</span>
+          </td>
+          <td class="stock-quantity">
+            <span class="quantity reserved" *ngIf="stock.reserved > 0">{{ stock.reserved }}</span>
+            <span class="quantity" *ngIf="stock.reserved === 0">-</span>
+          </td>
+          <td class="stock-cost">
+            <span class="cost" *ngIf="stock.average_cost > 0">${{ stock.average_cost | number:'1.2-2' }}</span>
+            <span class="cost" *ngIf="!stock.average_cost || stock.average_cost === 0">-</span>
+          </td>
+          <td class="stock-status">
               <span class="status-badge" [class]="getStockStatus(stock).class">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                 </svg>
                 {{ getStockStatus(stock).status }}
               </span>
-            </td>
-            <td class="stock-actions" style="min-width: 220px; width: 20%">
-              <div class="action-buttons">
-                <button class="action-btn adjust" (click)="openAdjustmentModal(stock)" title="Adjust Stock">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                  </svg>
-                </button>
-                <button class="action-btn transfer" (click)="openTransferModal(stock)" title="Transfer Stock">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                  </svg>
-                </button>
-                <button class="action-btn reserve" (click)="openReserveModal(stock)" title="Reserve Stock">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                  </svg>
-                </button>
-                <button class="action-btn count" (click)="openCountModal(stock)" title="Stock Count">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                  </svg>
-                </button>
-              </div>
+          </td>
+          <td class="stock-actions" style="min-width: 220px; width: 20%">
+            <div class="action-buttons">
+              <button class="action-btn adjust" (click)="openAdjustmentModal(stock)" title="Adjust Stock">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+              </button>
+              <button class="action-btn transfer" (click)="openTransferModal(stock)" title="Transfer Stock">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+              </button>
+              <button class="action-btn reserve" (click)="openReserveModal(stock)" title="Reserve Stock">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </button>
+              <button class="action-btn count" (click)="openCountModal(stock)" title="Stock Count">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </button>
+            </div>
 
-              <!-- Quick Release for Reserved Stock -->
-              <div class="quick-release" *ngIf="stock.reserved > 0">
-                <input
-                  type="number"
-                  [(ngModel)]="quickReleaseQuantity"
-                  class="release-quantity"
-                  [max]="stock.reserved"
-                  min="1"
-                  placeholder="Qty">
-                <button class="release-btn" (click)="onReleaseStock(stock, quickReleaseQuantity)" title="Release Reserved Stock">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
+            <!-- Quick Release for Reserved Stock -->
+            <div class="quick-release" *ngIf="stock.reserved > 0">
+              <input
+                type="number"
+                [(ngModel)]="quickReleaseQuantity"
+                class="release-quantity"
+                [max]="stock.reserved"
+                min="1"
+                placeholder="Qty">
+              <button class="release-btn" (click)="onReleaseStock(stock, quickReleaseQuantity)"
+                      title="Release Reserved Stock">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
         </tbody>
       </table>
 
       <!-- No Results Message -->
       <div *ngIf="stockLevels.length === 0" class="no-results">
         <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
         <h3 class="no-results-title">No Stock Items Found</h3>
         <p class="no-results-description">Try adjusting your search criteria or filters.</p>
@@ -292,7 +326,8 @@
         <h2 class="modal-title">
           <a href="javascript:void(0)" (click)="closeAdjustmentModal()">
             <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
             </svg>
           </a>
           Stock Adjustment
@@ -309,7 +344,8 @@
         <div class="form-section">
           <div class="section-header">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
             </svg>
             <h3 class="section-title">Part Information</h3>
           </div>
@@ -333,8 +369,10 @@
         <div class="form-section">
           <div class="section-header">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
             <h3 class="section-title">Location Details</h3>
           </div>
@@ -358,7 +396,8 @@
         <div class="form-section">
           <div class="section-header">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
             </svg>
             <h3 class="section-title">Adjustment Information</h3>
           </div>
@@ -397,7 +436,8 @@
         <div class="form-section">
           <div class="section-header">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
             <h3 class="section-title">Additional Notes</h3>
           </div>
@@ -417,12 +457,15 @@
           <button type="button" class="btn btn-secondary" (click)="closeAdjustmentModal()">
             Cancel
           </button>
-          <button type="submit" class="btn btn-primary" [class.opacity-50]="adjustStockLoading && !adjustmentForm.part_id || !adjustmentForm.location_id && adjustmentForm.quantity == 0" [disabled]="!adjustmentForm.part_id && !adjustmentForm.location_id && adjustmentForm.quantity == 0">
+          <button type="submit" class="btn btn-primary"
+                  [class.opacity-50]="adjustStockLoading && !adjustmentForm.part_id && !adjustmentForm.location_id && adjustmentForm.quantity == 0"
+                  [disabled]="!adjustmentForm.part_id && !adjustmentForm.location_id && adjustmentForm.quantity == 0">
 
-            @if (adjustStockLoading){
+            @if (adjustStockLoading) {
               Adjusting...
-              <span class="border-t border-white animate-spin border-opacity-25 ml-2 w-4 h-4 rounded-full inline-block"></span>
-            }@else {
+              <span
+                class="border-t border-white animate-spin border-opacity-25 ml-2 w-4 h-4 rounded-full inline-block"></span>
+            } @else {
               Adjust Stock
             }
           </button>
@@ -523,8 +566,15 @@
           <button type="button" class="btn btn-secondary" (click)="closeTransferModal()">
             Cancel
           </button>
-          <button type="submit" class="btn btn-primary">
-            Transfer Stock
+          <button type="submit" class="btn btn-primary" [class.opacity-50]="transferLoading"
+                  [disabled]="transferLoading">
+            @if (transferLoading) {
+              Transferring...
+              <span
+                class="border-t border-white animate-spin border-opacity-25 ml-2 w-4 h-4 rounded-full inline-block"></span>
+            } @else {
+              Transfer Stock
+            }
           </button>
         </div>
       </form>
@@ -572,7 +622,12 @@
             Cancel
           </button>
           <button type="submit" class="btn btn-primary">
-            Reserve Stock
+            @if (reserveLoading){
+              Reserving Stock...
+              <span class="border-t border-white animate-spin border-opacity-25 ml-2 w-4 h-4 rounded-full inline-block"></span>
+            } @else {
+              Reserve Stock
+            }
           </button>
         </div>
       </form>
@@ -620,7 +675,12 @@
             Cancel
           </button>
           <button type="submit" class="btn btn-primary">
-            Update Count
+            @if (countLoading){
+              Updating Count...
+              <span class="border-t border-white animate-spin border-opacity-25 ml-2 w-4 h-4 rounded-full inline-block"></span>
+            } @else {
+              Update Count
+            }
           </button>
         </div>
       </form>

@@ -49,16 +49,16 @@
         <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
-        <input 
-          type="text" 
-          placeholder="Search purchase orders..." 
+        <input
+          type="text"
+          placeholder="Search purchase orders..."
           class="search-input"
           [(ngModel)]="filters.search"
           (input)="applyFilters()">
       </div>
 
       <div class="status-dropdown">
-        <select 
+        <select
           class="status-select"
           [(ngModel)]="filters.status"
           (change)="applyFilters()">
@@ -152,7 +152,7 @@
     <div *ngIf="purchaseOrders.length > 0" class="table-wrapper">
       <table class="purchase-orders-table">
         <thead>
-          <tr>
+          <tr class="uppercase">
             <th class="th-po-number">PO Number</th>
             <th class="th-supplier">Supplier</th>
             <th class="th-order-date">Order Date</th>
@@ -181,7 +181,7 @@
               {{ formatDate(po.expected_date) }}
             </td>
             <td class="td-status">
-              <span 
+              <span
                 class="status-badge"
                 [ngClass]="getStatusClass(po.status)">
                 {{ getStatusLabel(po.status) }}
@@ -205,7 +205,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                   </svg>
                 </button>
-                
+
                 <div class="dropdown-menu" [class.show]="po.id && openDropdownId === po.id">
                   <button class="dropdown-item" (click)="viewPurchaseOrder(po)">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,7 +214,7 @@
                     </svg>
                     View Details
                   </button>
-                  
+
                   <button class="dropdown-item" (click)="approvePurchaseOrder(po)" *ngIf="po.status === 'draft' || po.status === 'pending'">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -262,14 +262,14 @@
         Showing {{ (currentPage - 1) * perPage + 1 }} to {{ getMinValue(currentPage * perPage, totalItems) }} of {{ totalItems }} results
       </div>
       <div class="pagination-buttons">
-        <button 
-          class="btn btn-outline" 
+        <button
+          class="btn btn-outline"
           [disabled]="currentPage === 1"
           (click)="onPageChange(currentPage - 1)">
           Previous
         </button>
-        <button 
-          class="btn btn-outline" 
+        <button
+          class="btn btn-outline"
           [disabled]="currentPage === totalPages"
           (click)="onPageChange(currentPage + 1)">
           Next
