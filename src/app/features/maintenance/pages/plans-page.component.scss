@@ -1,0 +1,56 @@
+.plans-page {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+    }
+    p { color: #6b7280; margin: 0.25rem 0 0; }
+
+    .actions { display: flex; gap: .5rem; }
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .75rem;
+    margin-bottom: 1rem;
+
+    .metric-card {
+      position: relative;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: .75rem;
+      padding: 1rem;
+      .label { color: #6b7280; font-size: .875rem; }
+      .value { font-size: 1.5rem; font-weight: 700; }
+      .value.success { color: #16a34a; }
+      .value.danger { color: #ef4444; }
+      .icon { position: absolute; right: .75rem; top: .75rem; opacity: .6; }
+    }
+  }
+
+  .skeletons { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #fff; border: 1px solid #e5e7eb; border-radius: .75rem; padding: 3rem; color: #6b7280;
+    .title { font-weight: 600; color: #111827; margin-top: .5rem; }
+    .subtitle { margin: .25rem 0 1rem; }
+  }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+  .plan-card { background: #fff; border: 1px solid #e5e7eb; border-radius: .75rem; padding: 1rem; }
+  .card-title { font-weight: 600; }
+  .card-subtitle { color: #6b7280; font-size: .875rem; }
+  .card-meta { margin-top: .25rem; font-size: .875rem; }
+}
+
+
+

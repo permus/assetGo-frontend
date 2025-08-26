@@ -1,0 +1,26 @@
+<div class="maintenance-container">
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">Preventive Maintenance</h1>
+      <p class="page-subtitle">Plans, schedules, inspections, and analytics</p>
+    </div>
+  </div>
+
+  <div class="navigation-tabs">
+    <nav class="tabs-nav">
+      <a routerLink="/maintenance/plans" routerLinkActive="active" class="tab-link">Plans</a>
+      <a routerLink="/maintenance/scheduled" routerLinkActive="active" class="tab-link">Scheduled</a>
+      <a routerLink="/maintenance/ppm-gantt" routerLinkActive="active" class="tab-link">PPM Gantt</a>
+      <a routerLink="/maintenance/inspections" routerLinkActive="active" class="tab-link">Inspections</a>
+      <a routerLink="/maintenance/history" routerLinkActive="active" class="tab-link">History</a>
+      <a routerLink="/maintenance/analytics" routerLinkActive="active" class="tab-link">Analytics</a>
+    </nav>
+  </div>
+
+  <div class="content-area">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+
+

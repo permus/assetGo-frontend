@@ -46,6 +46,10 @@ export const routes: Routes = [
       {
         path: 'inventory',
         loadChildren: () => import('./inventory/inventory.module').then(m => m.InventoryModule)
+      },
+      {
+        path: 'maintenance',
+        loadChildren: () => import('./features/maintenance/maintenance.module').then(m => m.MaintenanceModule)
       }
     ]
   },
