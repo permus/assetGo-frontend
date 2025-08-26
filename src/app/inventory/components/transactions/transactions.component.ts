@@ -14,13 +14,13 @@ export class TransactionsComponent implements OnInit {
   transactions: InventoryTransaction[] = [];
   loading = false;
   error: string | null = null;
-  
+
   // Pagination
   currentPage = 1;
   totalPages = 1;
   totalItems = 0;
   perPage = 15;
-  
+
   // Filters
   filters = {
     type: '',
@@ -30,7 +30,7 @@ export class TransactionsComponent implements OnInit {
     end_date: '',
     search: ''
   };
-  
+
   // Available options for filters
   availableParts: any[] = [];
   availableLocations: any[] = [];
@@ -99,8 +99,7 @@ export class TransactionsComponent implements OnInit {
   loadAvailableLocations(): void {
     this.inventoryService.getLocations(1, 100, 0, 'created', 'desc').subscribe({
       next: (response) => {
-        this.availableLocations = response.data.data || [];
-        console.log('Available locations loaded:', this.availableLocations.length);
+        this.availableLocations = response.data?.locations || [];
       },
       error: (err) => {
         console.error('Error loading locations:', err);

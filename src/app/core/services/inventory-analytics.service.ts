@@ -235,6 +235,7 @@ export interface InventoryLocation {
 export interface LocationResponse {
   success: boolean;
   data: {
+    locations: any[];
     data: InventoryLocation[];
     current_page: number;
     last_page: number;

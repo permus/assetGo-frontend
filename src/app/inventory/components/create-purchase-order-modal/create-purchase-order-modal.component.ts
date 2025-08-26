@@ -87,7 +87,7 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
 
   addItem(): void {
     const itemGroup = this.fb.group({
-      part_id: [''],
+      part_id: ['',Validators.required],
       part_number: ['', [Validators.required]],
       description: ['', [Validators.required]],
       qty: ['', [Validators.required, Validators.min(1)]],
@@ -119,10 +119,10 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
     const subtotal = this.itemsArray.controls.reduce((total, item) => {
       return total + this.calculateItemTotal(this.itemsArray.controls.indexOf(item));
     }, 0);
-    
+
     const taxRate = this.poForm.get('tax_rate')?.value || 0;
     const tax = subtotal * (taxRate / 100);
-    
+
     return subtotal + tax;
   }
 
@@ -236,10 +236,10 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
   onSupplierCreated(supplier: Supplier): void {
     // Add the new supplier to the list
     this.suppliers.push(supplier);
-    
+
     // Select the newly created supplier
     this.poForm.patchValue({ supplier_id: supplier.id });
-    
+
     // Close the modal
     this.closeAddSupplierModal();
   }

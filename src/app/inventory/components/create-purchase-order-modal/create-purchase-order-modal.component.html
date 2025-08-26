@@ -23,7 +23,7 @@
             </div>
             <h3 class="section-title">Supplier Information</h3>
           </div>
-          
+
           <div class="form-row">
             <div class="form-field">
               <label for="supplier" class="field-label">Supplier (Optional)</label>
@@ -49,7 +49,7 @@
                 {{ getFieldError('vendor_name') }}
               </div>
             </div>
-            
+
             <div class="form-field">
               <label for="vendorContact" class="field-label">Vendor Contact *</label>
               <input type="text" id="vendorContact" formControlName="vendor_contact" class="form-input" placeholder="Enter vendor contact information">
@@ -70,7 +70,7 @@
             </div>
             <h3 class="section-title">Order Details</h3>
           </div>
-          
+
           <div class="form-row">
             <div class="form-field">
               <label for="orderDate" class="field-label">Order Date *</label>
@@ -79,7 +79,7 @@
                 {{ getFieldError('order_date') }}
               </div>
             </div>
-            
+
             <div class="form-field">
               <label for="expectedDelivery" class="field-label">Expected Delivery *</label>
               <input type="date" id="expectedDelivery" formControlName="expected_date" class="form-input">
@@ -99,7 +99,7 @@
           <div class="form-row">
             <div class="form-field full-width">
               <label for="terms" class="field-label">Terms & Conditions</label>
-              <textarea id="terms" formControlName="terms" rows="2" class="form-textarea" 
+              <textarea id="terms" formControlName="terms" rows="2" class="form-textarea"
                         placeholder="Enter payment terms and conditions..."></textarea>
             </div>
           </div>
@@ -118,14 +118,14 @@
               Add Item
             </button>
           </div>
-          
+
           <div formArrayName="items" class="items-container">
             <div *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i" class="item-row">
               <div class="item-header">
                 <h4 class="item-title">Item {{ i + 1 }}</h4>
-                <button 
-                  type="button" 
-                  class="btn btn-sm btn-danger" 
+                <button
+                  type="button"
+                  class="btn btn-sm btn-danger"
                   (click)="removeItem(i)"
                   *ngIf="itemsArray.length > 1">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,18 +133,21 @@
                   </svg>
                 </button>
               </div>
-              
+
               <div class="form-row">
                 <div class="form-field">
-                  <label [for]="'part_' + i" class="field-label">Part (Optional)</label>
+                  <label [for]="'part_' + i" class="field-label">Part <span>*</span></label>
                   <select [id]="'part_' + i" formControlName="part_id" class="form-select">
                     <option value="">Select a part</option>
                     <option *ngFor="let part of parts" [value]="part.id">
                       {{ part.name }} ({{ part.part_number }})
                     </option>
                   </select>
+                  <div class="error-message" *ngIf="getArrayFieldError('items', i, 'part_id')">
+                    {{ getArrayFieldError('items', i, 'part_id') }}
+                  </div>
                 </div>
-                
+
                 <div class="form-field">
                   <label [for]="'partNumber_' + i" class="field-label">Part Number *</label>
                   <input type="text" [id]="'partNumber_' + i" formControlName="part_number" class="form-input" placeholder="Enter part number">
@@ -163,27 +166,27 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="form-row">
                 <div class="form-field">
                   <label [for]="'qty_' + i" class="field-label">Quantity *</label>
-                  <input 
-                    type="number" 
-                    [id]="'qty_' + i" 
-                    formControlName="qty" 
+                  <input
+                    type="number"
+                    [id]="'qty_' + i"
+                    formControlName="qty"
                     class="form-input"
                     min="1">
                   <div class="error-message" *ngIf="getArrayFieldError('items', i, 'qty')">
                     {{ getArrayFieldError('items', i, 'qty') }}
                   </div>
                 </div>
-                
+
                 <div class="form-field">
                   <label [for]="'cost_' + i" class="field-label">Unit Cost *</label>
-                  <input 
-                    type="number" 
-                    [id]="'cost_' + i" 
-                    formControlName="unit_cost" 
+                  <input
+                    type="number"
+                    [id]="'cost_' + i"
+                    formControlName="unit_cost"
                     class="form-input"
                     min="0.01"
                     step="0.01">
@@ -191,7 +194,7 @@
                     {{ getArrayFieldError('items', i, 'unit_cost') }}
                   </div>
                 </div>
-                
+
                 <div class="form-field">
                   <label class="field-label">Line Total</label>
                   <div class="line-total">{{ calculateItemTotal(i) | currency:'AED' }}</div>
@@ -199,7 +202,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="total-section">
             <div class="total-row">
               <div class="total-label">Subtotal:</div>
@@ -226,11 +229,11 @@
             </div>
             <h3 class="section-title">Additional Information</h3>
           </div>
-          
+
           <div class="form-row">
             <div class="form-field full-width">
               <label for="notes" class="field-label">Notes</label>
-              <textarea id="notes" formControlName="notes" rows="3" class="form-textarea" 
+              <textarea id="notes" formControlName="notes" rows="3" class="form-textarea"
                         placeholder="Add any additional notes or special instructions..."></textarea>
             </div>
           </div>
@@ -250,7 +253,7 @@
   </div>
 
   <!-- Add Supplier Modal -->
-  <app-add-supplier-modal 
+  <app-add-supplier-modal
     *ngIf="showAddSupplierModal"
     (closeModal)="closeAddSupplierModal()"
     (supplierCreated)="onSupplierCreated($event)">

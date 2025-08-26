@@ -7,7 +7,8 @@
         <div class="card-label">Total POs</div>
       </div>
       <svg class="card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
       </svg>
     </div>
 
@@ -17,7 +18,8 @@
         <div class="card-label">Pending</div>
       </div>
       <svg class="card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
     </div>
 
@@ -37,7 +39,8 @@
         <div class="card-label">Total Value</div>
       </div>
       <svg class="card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
       </svg>
     </div>
   </div>
@@ -47,21 +50,21 @@
     <div class="search-controls">
       <div class="search-container">
         <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
         <input
           type="text"
           placeholder="Search purchase orders..."
           class="search-input"
           [(ngModel)]="filters.search"
-          (input)="applyFilters()">
+        >
       </div>
 
       <div class="status-dropdown">
         <select
           class="status-select"
-          [(ngModel)]="filters.status"
-          (change)="applyFilters()">
+          [(ngModel)]="filters.status">
           <option value="">All Status</option>
           <option value="draft">Draft</option>
           <option value="pending">Pending</option>
@@ -76,12 +79,20 @@
         </svg>
       </div>
 
-      @if (filters.search || filters.status){
+      @if (filters.search || filters.status) {
         <button class="btn btn-secondary" (click)="clearFilters()">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
           Clear Filters
+        </button>
+
+        <button class="btn btn-primary" (click)="applyFilters()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          Apply Filters
         </button>
       }
 
@@ -90,14 +101,16 @@
     <div class="action-buttons">
       <button class="btn btn-secondary" (click)="refreshData()">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
         </svg>
         Refresh
       </button>
       <!-- Templates button retained -->
       <button class="btn btn-secondary !hidden">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
         Templates
       </button>
@@ -121,7 +134,8 @@
   <div *ngIf="error && !loading" class="error-state">
     <div class="error-icon">
       <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
     </div>
     <p class="error-message">{{ error }}</p>
@@ -142,10 +156,12 @@
     <!-- Empty State -->
     <div *ngIf="purchaseOrders.length === 0" class="empty-state">
       <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
       </svg>
       <h3 class="empty-title">No Purchase Orders Found</h3>
-      <p class="empty-description">No purchase orders match your current filters. Try adjusting your search criteria or create a new purchase order.</p>
+      <p class="empty-description">No purchase orders match your current filters. Try adjusting your search criteria or
+        create a new purchase order.</p>
       <button class="btn btn-primary" (click)="openCreatePOModal()">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -158,106 +174,116 @@
     <div *ngIf="purchaseOrders.length > 0" class="table-wrapper">
       <table class="purchase-orders-table">
         <thead>
-          <tr class="uppercase">
-            <th class="th-po-number">PO Number</th>
-            <th class="th-supplier">Supplier</th>
-            <th class="th-order-date">Order Date</th>
-            <th class="th-expected-date">Expected Date</th>
-            <th class="th-status">Status</th>
-            <th class="th-items">Items</th>
-            <th class="th-total">Total</th>
-            <th class="th-actions">Actions</th>
-          </tr>
+        <tr class="uppercase">
+          <th class="th-po-number">PO Number</th>
+          <th class="th-supplier">Supplier</th>
+          <th class="th-order-date">Order Date</th>
+          <th class="th-expected-date">Expected Date</th>
+          <th class="th-status">Status</th>
+          <th class="th-items">Items</th>
+          <th class="th-total">Total</th>
+          <th class="th-actions">Actions</th>
+        </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let po of purchaseOrders" class="table-row">
-            <td class="td-po-number">
-              <div class="po-number">{{ po.po_number }}</div>
-            </td>
-            <td class="td-supplier">
-              <div class="supplier-info">
-                <div class="supplier-name">{{ po.supplier?.name || 'Unknown Supplier' }}</div>
-                <div class="supplier-id">ID: {{ po.supplier_id }}</div>
-              </div>
-            </td>
-            <td class="td-order-date">
-              {{ formatDate(po.order_date) }}
-            </td>
-            <td class="td-expected-date">
-              {{ formatDate(po.expected_date) }}
-            </td>
-            <td class="td-status">
+        <tr *ngFor="let po of purchaseOrders" class="table-row">
+          <td class="td-po-number">
+            <div class="po-number">{{ po.po_number }}</div>
+          </td>
+          <td class="td-supplier">
+            <div class="supplier-info">
+              <div class="supplier-name">{{ po.supplier?.name || 'Unknown Supplier' }}</div>
+              <div class="supplier-id">ID: {{ po.supplier_id }}</div>
+            </div>
+          </td>
+          <td class="td-order-date">
+            {{ formatDate(po.order_date) }}
+          </td>
+          <td class="td-expected-date">
+            {{ formatDate(po.expected_date) }}
+          </td>
+          <td class="td-status">
               <span
                 class="status-badge"
                 [ngClass]="getStatusClass(po.status)">
                 {{ getStatusLabel(po.status) }}
               </span>
-            </td>
-            <td class="td-items">
-              <div class="items-info">
-                <div class="items-count">{{ po.items?.length || 0 }} items</div>
-                <div class="items-summary">
-                  {{ calculateItemsTotal(po.items) }} total qty
-                </div>
+          </td>
+          <td class="td-items">
+            <div class="items-info">
+              <div class="items-count">{{ po.items?.length || 0 }} items</div>
+              <div class="items-summary">
+                {{ calculateItemsTotal(po.items) }} total qty
               </div>
-            </td>
-            <td class="td-total">
-              <div class="total-amount">{{ formatCurrency(po.total) }}</div>
-            </td>
-            <td class="td-actions">
-              <div class="dropdown-container">
-                <button class="dropdown-trigger" (click)="po.id && toggleDropdown($event, po.id)">
+            </div>
+          </td>
+          <td class="td-total">
+            <div class="total-amount">{{ formatCurrency(po.total) }}</div>
+          </td>
+          <td class="td-actions">
+            <div class="dropdown-container">
+              <button class="dropdown-trigger" (click)="po.id && toggleDropdown($event, po.id)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                </svg>
+              </button>
+
+              <div class="dropdown-menu" [class.show]="po.id && openDropdownId === po.id">
+                <button class="dropdown-item" (click)="viewPurchaseOrder(po)">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                   </svg>
+                  View Details
                 </button>
 
-                <div class="dropdown-menu" [class.show]="po.id && openDropdownId === po.id">
-                  <button class="dropdown-item" (click)="viewPurchaseOrder(po)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    View Details
-                  </button>
+                <button class="dropdown-item" (click)="approvePurchaseOrder(po)"
+                        *ngIf="po.status === 'draft' || po.status === 'pending'">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  Approve
+                </button>
+                <button class="dropdown-item" (click)="markAsOrdered(po)" *ngIf="po.status === 'approved'">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                  </svg>
+                  Mark as Ordered
+                </button>
 
-                  <button class="dropdown-item" (click)="approvePurchaseOrder(po)" *ngIf="po.status === 'draft' || po.status === 'pending'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Approve
-                  </button>
-                  <button class="dropdown-item" (click)="markAsOrdered(po)" *ngIf="po.status === 'approved'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                    </svg>
-                    Mark as Ordered
-                  </button>
+                <button class="dropdown-item" (click)="openReceiveItemsModal(po)" *ngIf="po.status === 'ordered'">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Receive Items
+                </button>
 
-                  <button class="dropdown-item" (click)="openReceiveItemsModal(po)" *ngIf="po.status === 'ordered'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Receive Items
-                  </button>
+                <button class="dropdown-item" (click)="sendEmail(po)"
+                        *ngIf="po.status === 'received' || po.status === 'closed'">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 12H8m8 0H8m8 0H8m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Send Email
+                </button>
 
-                  <button class="dropdown-item" (click)="sendEmail(po)" *ngIf="po.status === 'received' || po.status === 'closed'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H8m8 0H8m8 0H8m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Send Email
-                  </button>
-
-                  <button class="dropdown-item" (click)="closePurchaseOrder(po)" *ngIf="po.status === 'received' || po.status === 'ordered'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    Close PO
-                  </button>
-                </div>
+                <button class="dropdown-item" (click)="closePurchaseOrder(po)"
+                        *ngIf="po.status === 'received' || po.status === 'ordered'">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  Close PO
+                </button>
               </div>
-            </td>
-          </tr>
+            </div>
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -265,7 +291,8 @@
     <!-- Pagination -->
     <div *ngIf="purchaseOrders.length > 0" class="pagination">
       <div class="pagination-info">
-        Showing {{ (currentPage - 1) * perPage + 1 }} to {{ getMinValue(currentPage * perPage, totalItems) }} of {{ totalItems }} results
+        Showing {{ (currentPage - 1) * perPage + 1 }} to {{ getMinValue(currentPage * perPage, totalItems) }}
+        of {{ totalItems }} results
       </div>
       <div class="pagination-buttons">
         <button

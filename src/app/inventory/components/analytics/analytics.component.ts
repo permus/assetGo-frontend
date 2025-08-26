@@ -118,7 +118,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
               this.updateTrendMeta();
               // Render twice to ensure first paint after layout
               setTimeout(() => this.renderTrendChart(true as any), 0);
-              setTimeout(() => this.renderTrendChart(), 50);
+              setTimeout(() => this.renderTrendChart(), 500);
             }
             resolve();
           },

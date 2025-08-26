@@ -177,6 +177,15 @@
             border-color: #9ca3af;
           }
         }
+
+        &.btn-primary {
+          background-color: #3b82f6;
+          color: white;
+
+          &:hover {
+            background-color: #2563eb;
+          }
+        }
       }
     }
 
