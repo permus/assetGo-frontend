@@ -159,8 +159,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   addAsset() {
-    // TODO: Implement add asset functionality
-    console.log('Add asset to location');
+   this.router.navigate(['/assets/create', { locationId: this.location?.id }]);
   }
 
   deleteLocation() {
