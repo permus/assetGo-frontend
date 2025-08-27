@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterModule } from '@angular/router';
-import { AuthService, User } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
-import { HostListener } from '@angular/core';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterOutlet, RouterModule} from '@angular/router';
+import {AuthService, User} from '../../../core/services/auth.service';
+import {Router} from '@angular/router';
+import {HostListener} from '@angular/core';
 
 @Component({
   selector: 'app-layout',
@@ -15,6 +15,7 @@ import { HostListener } from '@angular/core';
 export class LayoutComponent {
   public currentUser: User | null = null;
   public showUserDropdown = false;
+  sidebarOpen = true;
 
   constructor(
     private router: Router,
@@ -44,6 +45,11 @@ export class LayoutComponent {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
   @HostListener('document:click', ['$event'])
