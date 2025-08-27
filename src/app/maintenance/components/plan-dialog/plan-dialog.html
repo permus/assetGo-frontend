@@ -1,0 +1,405 @@
+<div *ngIf="isOpen" class="fixed inset-0 z-50 modal-overlay" (click)="onBackdrop($event)">
+  <div class="absolute inset-0 bg-black/30"></div>
+  <div class="absolute inset-0 flex items-start justify-center overflow-auto py-8 px-4">
+    <div class="modal bg-white rounded-2xl shadow-xl w-full max-w-5xl" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="text-xl  font-semibold">Create Maintenance Plan</h2>
+        <p class="text-sm text-gray-500">Create a new preventive maintenance plan with tasks and scheduling</p>
+
+        <div class="mt-3 grid grid-cols-4 w-full gap-2 bg-white p-3 rounded-lg">
+          <button *ngFor="let s of steps; index as i" class="tab-btn p-2 rounded-lg" [class.bg-blue-600]="i===step()" [class.text-white]="i===step()" [class.disabled]="i>step()" (click)="onTabClick(i)">{{s}}</button>
+        </div>
+      </div>
+
+      <div class="p-6 space-y-4 modal-body">
+        <ng-container [ngSwitch]="step()">
+          <ng-container *ngSwitchCase="0">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-row full-width">
+                <div class="form-group" [class.error]="hasFieldError('name')">
+                  <label>Name <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    [(ngModel)]="model.name"
+                    placeholder="Plan name"
+                    [class.error-input]="hasFieldError('name')" />
+                  <div class="field-error" *ngIf="hasFieldError('name')">
+                    {{ getFieldError('name') }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row full-width">
+              <div class="form-group">
+                  <label>Priority</label>
+                  <div class="relative priority-dropdown" (click)="$event.stopPropagation()">
+                    <button type="button" (click)="togglePriorityDropdown()" class="dropdown-button" [class.active]="showPriorityDropdown">
+                      <div class="dropdown-content">
+                        <span *ngIf="!selectedPriorityMeta" class="placeholder">Select priority</span>
+                        <div *ngIf="selectedPriorityMeta" class="selected-item">
+                          <div class="item-icon">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                          </div>
+                          <span class="selected-text">{{ selectedPriorityMeta?.name || selectedPriorityMeta?.slug }}</span>
+                        </div>
+                        <svg class="dropdown-arrow" [class.rotated]="showPriorityDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </button>
+                    <div *ngIf="showPriorityDropdown" class="dropdown-menu">
+                      <div class="dropdown-header">Select priority</div>
+                      <button *ngFor="let priority of priorityOptions" type="button" (click)="selectPriority(priority)" class="dropdown-item" [class.selected]="selectedPriorityMeta?.id === priority.id">
+                        <div class="item-content">
+                          <div class="item-icon">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                          </div>
+                          <div class="item-details">
+                            <div class="item-name">{{ priority.name || priority.slug }}</div>
+                            <div class="item-description !text-xs">{{ getPriorityDescription(priority) }}</div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row full-width">
+              <div class="form-group">
+                  <label>Plan Type</label>
+                  <div class="relative plan-type-dropdown" (click)="$event.stopPropagation()">
+                    <button type="button" (click)="togglePlanTypeDropdown()" class="dropdown-button" [class.active]="showPlanTypeDropdown">
+                      <div class="dropdown-content">
+                        <span *ngIf="!model.plan_type" class="placeholder">Select plan type</span>
+                        <div *ngIf="model.plan_type" class="selected-item">
+                          <div class="item-icon">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          </div>
+                          <span class="selected-text">{{ getPlanTypeName(model.plan_type) }}</span>
+                        </div>
+                        <svg class="dropdown-arrow" [class.rotated]="showPlanTypeDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </button>
+                    <div *ngIf="showPlanTypeDropdown" class="dropdown-menu">
+                      <div class="dropdown-header">Select plan type</div>
+                      <button *ngFor="let opt of planTypeOptions" type="button" (click)="selectPlanType(opt.value)" class="dropdown-item" [class.selected]="model.plan_type === opt.value">
+                        <div class="item-content">
+                          <div class="item-icon">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          </div>
+                          <div class="item-details">
+                            <div class="item-name">{{ opt.name }}</div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row full-width">
+              <div class="form-group">
+                  <label>Estimated Duration (min)</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="model.estimeted_duration"
+                    placeholder="0"
+                    min="0" />
+                </div>
+              </div>
+
+              <div class="form-row full-width md:col-span-2">
+                <div class="form-group">
+                  <label>Descriptions</label>
+                  <textarea
+                    [(ngModel)]="model.descriptions"
+                    placeholder="Enter work order description"></textarea>
+                </div>
+              </div>
+
+              <div class="form-row full-width md:col-span-2">
+                <div class="form-group">
+                  <label>Instructions</label>
+                  <textarea
+                    [(ngModel)]="model.instractions"
+                    placeholder="Enter instructions"></textarea>
+                </div>
+              </div>
+
+              <div class="form-row full-width md:col-span-2">
+                <div class="form-group">
+                  <label>Safety Notes</label>
+                  <textarea
+                    [(ngModel)]="model.safety_notes"
+                    placeholder="Enter safety notes"></textarea>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="1">
+            <div class="assets-section light">
+              <h3 class="section-title">Assign Assets</h3>
+              <p class="section-subtitle">Select which assets this maintenance plan should apply to. You can always modify this later.</p>
+
+              <div class="filters-row">
+                <div class="search-box">
+                  <input type="text" [ngModel]="searchAssets()" (ngModelChange)="onAssetsSearchChange($event)" placeholder="Search assets..." />
+                </div>
+
+                <div class="relative category-dropdown" (click)="$event.stopPropagation()">
+                  <button type="button" (click)="toggleAssetCategoryDropdown()" class="dropdown-button" [class.active]="showAssetCategoryDropdown">
+                    <div class="dropdown-content">
+                      <span *ngIf="!selectedAssetCategory" class="placeholder">All Categories</span>
+                      <div *ngIf="selectedAssetCategory" class="selected-item">
+                        <div class="item-icon">
+                          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                        </div>
+                        <span class="selected-text">{{selectedAssetCategory?.name}}</span>
+                      </div>
+                      <svg class="dropdown-arrow" [class.rotated]="showAssetCategoryDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </button>
+                  <div *ngIf="showAssetCategoryDropdown" class="dropdown-menu">
+                    <div class="dropdown-header">All Categories</div>
+                    <button type="button" class="dropdown-item" (click)="selectAssetCategoryFilter(null)">
+                      <div class="item-content"><div class="item-details"><div class="item-name">All</div></div></div>
+                    </button>
+                    <button *ngFor="let c of assetCategoryOptions" type="button" (click)="selectAssetCategoryFilter(c)" class="dropdown-item" [class.selected]="selectedAssetCategory?.id===c.id">
+                      <div class="item-content"><div class="item-details"><div class="item-name">{{c.name}}</div></div></div>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="relative status-dropdown" (click)="$event.stopPropagation()">
+                  <button type="button" (click)="toggleAssetStatusDropdown()" class="dropdown-button" [class.active]="showAssetStatusDropdown">
+                    <div class="dropdown-content">
+                      <span *ngIf="!selectedAssetStatus" class="placeholder">All Status</span>
+                      <div *ngIf="selectedAssetStatus" class="selected-item">
+                        <div class="item-icon"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                        <span class="selected-text">{{selectedAssetStatus?.name}}</span>
+                      </div>
+                      <svg class="dropdown-arrow" [class.rotated]="showAssetStatusDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </button>
+                  <div *ngIf="showAssetStatusDropdown" class="dropdown-menu">
+                    <div class="dropdown-header">All Status</div>
+                    <button type="button" class="dropdown-item" (click)="selectAssetStatusFilter(null)">
+                      <div class="item-content"><div class="item-details"><div class="item-name">All</div></div></div>
+                    </button>
+                    <button *ngFor="let s of assetStatusOptions" type="button" (click)="selectAssetStatusFilter(s)" class="dropdown-item" [class.selected]="selectedAssetStatus?.id===s.id">
+                      <div class="item-content"><div class="item-details"><div class="item-name">{{s.name}}</div></div></div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bulk-actions">
+                <button class="btn btn-secondary" (click)="selectAllOnPage()" [disabled]="assetsLoading">Select All</button>
+                <button class="btn btn-secondary" (click)="clearAllSelection()" [disabled]="assetsLoading">Clear All</button>
+                <div class="count">{{selectedAssetIds().size}} selected</div>
+              </div>
+
+              <div class="assets-grid" [class.loading]="assetsLoading">
+                <div class="asset-card" *ngFor="let a of assets()">
+                  <label class="asset-select">
+                    <input type="checkbox" [checked]="isAssetSelected(a.id)" (change)="toggleAssetSelection(a.id)" />
+                    <span class="checkmark"></span>
+                  </label>
+                  <div class="asset-body">
+                    <div class="asset-name">{{a.name || a.asset_name}}</div>
+                    <div class="asset-meta">
+                      <div class="meta-line">{{a.asset_code || a.code || a.id}}</div>
+                      <div class="meta-line">{{a.location?.name || a.department?.name || a.brand || ''}}</div>
+                    </div>
+                    <div class="asset-status">{{a.status?.name || a.status || 'No Schedule'}}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pagination-row">
+                <button class="btn btn-secondary" (click)="prevAssetsPage()" [disabled]="assetsPage()===1 || assetsLoading">Prev</button>
+                <span class="page-indicator">Page {{assetsPage()}} / {{ totalAssetPages() }}</span>
+                <button class="btn btn-secondary" (click)="nextAssetsPage()" [disabled]="assetsPage()===totalAssetPages() || assetsLoading">Next</button>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="2">
+            <div class="checklist-section">
+              <h3 class="section-title">Checklist Items ({{items().length}})</h3>
+
+              <div class="add-item-card">
+                <div class="header-row">
+                  <div class="title">Add New Item</div>
+                  <div class="count">{{items().length}}</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="form-group"><label>Title</label>
+                    <input type="text" [(ngModel)]="newChecklistItem.title" placeholder="Item title" />
+                  </div>
+                  <div class="form-group"><label>Type</label>
+                    <div class="relative item-type-dropdown" (click)="$event.stopPropagation()">
+                      <button type="button" (click)="toggleNewItemTypeDropdown()" class="dropdown-button" [class.active]="showNewItemTypeDropdown">
+                        <div class="dropdown-content">
+                          <span *ngIf="!newChecklistItem.type" class="placeholder">Select type</span>
+                          <div *ngIf="newChecklistItem.type" class="selected-item">
+                            <div class="item-icon"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                            <span class="selected-text">{{ newChecklistItem.type }}</span>
+                          </div>
+                          <svg class="dropdown-arrow" [class.rotated]="showNewItemTypeDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                      </button>
+                      <div *ngIf="showNewItemTypeDropdown" class="dropdown-menu">
+                        <div class="dropdown-header">Select type</div>
+                        <button *ngFor="let t of itemTypeOptions" type="button" (click)="selectNewItemType(t)" class="dropdown-item" [class.selected]="newChecklistItem.type===t">
+                          <div class="item-content"><div class="item-details"><div class="item-name">{{t}}</div></div></div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+                <div class="form-group"><label>Description</label>
+                  <textarea [(ngModel)]="newChecklistItem.description" placeholder="Detailed instructions for this item"></textarea>
+                </div>
+
+                <div class="toggles-row">
+                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_required" /> Required</label>
+                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_safety_critical" /> Safety Critical</label>
+                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_photo_required" /> Photo Required</label>
+                </div>
+
+                <div class="actions-row">
+                  <button class="btn btn-primary" (click)="addItemFromForm()">+ Add Item</button>
+                </div>
+              </div>
+
+              <div class="list" *ngIf="items().length > 0">
+                <div *ngFor="let it of items(); index as i" class="list-item">
+                  <div class="item-title">{{it.title}}</div>
+                  <div class="item-meta">{{it.type}} • {{it.is_required ? 'Required' : 'Optional'}}</div>
+                  <button class="remove" (click)="removeItem(i)">Remove</button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="3">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="form-row full-width">
+                <div class="form-group">
+                  <label>Frequency Type</label>
+                  <div class="relative freq-type-dropdown" (click)="$event.stopPropagation()">
+                    <button type="button" (click)="toggleFrequencyTypeDropdown()" class="dropdown-button" [class.active]="showFrequencyTypeDropdown">
+                      <div class="dropdown-content">
+                        <span *ngIf="!model.frequency_type" class="placeholder">Select frequency type</span>
+                        <div *ngIf="model.frequency_type" class="selected-item">
+                          <div class="item-icon">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          </div>
+                          <span class="selected-text">{{ getFrequencyTypeLabel(model.frequency_type) }}</span>
+                        </div>
+                        <svg class="dropdown-arrow" [class.rotated]="showFrequencyTypeDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </button>
+                    <div *ngIf="showFrequencyTypeDropdown" class="dropdown-menu">
+                      <div class="dropdown-header">Select frequency type</div>
+                      <button *ngFor="let opt of frequencyTypeOptions" type="button" (click)="selectFrequencyType(opt.value)" class="dropdown-item" [class.selected]="model.frequency_type === opt.value">
+                        <div class="item-content">
+                          <div class="item-icon">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          </div>
+                          <div class="item-details">
+                            <div class="item-name">{{ opt.name }}</div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row full-width">
+                <div class="form-group" [class.error]="hasFieldError('frequency_value')">
+                  <label>Frequency Value</label>
+                  <input type="number" [(ngModel)]="model.frequency_value" [disabled]="model.frequency_type!=='time'" min="1" placeholder="Value" [class.error-input]="hasFieldError('frequency_value')" />
+                  <div class="field-error" *ngIf="hasFieldError('frequency_value')">
+                    {{ getFieldError('frequency_value') }}
+                  </div>
+                </div>
+              </div>
+              <div class="form-row full-width">
+                <div class="form-group" [class.error]="hasFieldError('frequency_unit')">
+                  <label>Frequency Unit</label>
+                  <div class="relative freq-unit-dropdown" (click)="$event.stopPropagation()">
+                    <button type="button" (click)="toggleFrequencyUnitDropdown()" class="dropdown-button" [class.active]="showFrequencyUnitDropdown" [disabled]="model.frequency_type!=='time'">
+                      <div class="dropdown-content">
+                        <span *ngIf="!model.frequency_unit" class="placeholder">Select unit</span>
+                        <div *ngIf="model.frequency_unit" class="selected-item">
+                          <div class="item-icon">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          </div>
+                          <span class="selected-text">{{ model.frequency_unit }}</span>
+                        </div>
+                        <svg class="dropdown-arrow" [class.rotated]="showFrequencyUnitDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </button>
+                    <div *ngIf="showFrequencyUnitDropdown && model.frequency_type==='time'" class="dropdown-menu">
+                      <div class="dropdown-header">Select unit</div>
+                      <button *ngFor="let u of frequencyUnitOptions" type="button" (click)="selectFrequencyUnit(u)" class="dropdown-item" [class.selected]="model.frequency_unit===u">
+                        <div class="item-content">
+                          <div class="item-icon">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          </div>
+                          <div class="item-details">
+                            <div class="item-name">{{ u }}</div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field-error" *ngIf="hasFieldError('frequency_unit')">
+                    {{ getFieldError('frequency_unit') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <div class="modal-footer p-6 border-t flex justify-between items-center">
+        <div class="text-sm text-red-600" *ngIf="error">{{error}}</div>
+        <div class="ml-auto flex gap-2">
+          <button class="btn btn-secondary w-[150px]" (click)="close()" [disabled]="loading">Cancel</button>
+          <button *ngIf="step() < 3" class="btn btn-primary w-[150px]" (click)="next()" [disabled]="!canGoNext() || loading">Next</button>
+          <button *ngIf="step() === 3" class="btn btn-primary w-[150px]" (click)="submit()" [disabled]="!canSubmit() || loading">Create plan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

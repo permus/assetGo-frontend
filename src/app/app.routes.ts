@@ -49,7 +49,7 @@ export const routes: Routes = [
       },
       {
         path: 'maintenance',
-        loadChildren: () => import('./features/maintenance/maintenance.module').then(m => m.MaintenanceModule)
+        loadChildren: () => import('./maintenance/maintenance.module').then(m => m.MaintenanceModule)
       }
     ]
   },
