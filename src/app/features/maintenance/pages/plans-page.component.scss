@@ -50,6 +50,20 @@
   .card-title { font-weight: 600; }
   .card-subtitle { color: #6b7280; font-size: .875rem; }
   .card-meta { margin-top: .25rem; font-size: .875rem; }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+  .btn.btn-secondary { background: white; color: #374151; border: 1px solid #d1d5db; }
+  .btn.btn-secondary:hover { background: #f9fafb; border-color: #9ca3af; }
+  .btn.btn-primary { background: #2563eb; color: white; }
+  .btn.btn-primary:hover { background: #1d4ed8; }
 }
 
 
