@@ -159,7 +159,10 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   addAsset() {
-   this.router.navigate(['/assets/create', { locationId: this.location?.id }]);
+    this.router.navigate(
+      ['/assets/create'],
+      { queryParams: { location_id: this.location?.id } }
+    );
   }
 
   deleteLocation() {

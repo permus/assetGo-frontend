@@ -179,7 +179,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.submitError = '';
     this.submitSuccess = '';
     this.submitFieldErrors = {};
-    
+
     // Convert images to base64
     this.convertImagesToBase64().then((base64Images: string[]) => {
       // Create payload object
@@ -267,7 +267,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     public route: ActivatedRoute,
     private http: HttpClient
-  ) {}
+  ) {
+
+  }
 
   ngOnInit() {
     // Check if we're duplicating an asset
@@ -282,7 +284,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         this.categories = res.data.categories;
       }
     });
-    
+
     // Load asset types from API
     this.assetService.getAssetTypes().subscribe(res => {
       if (res.success && res.data) {
@@ -299,7 +301,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         }));
       }
     });
-    
+
     // Load asset statuses from API
     this.assetService.getAssetStatuses().subscribe(res => {
       if (res.success && res.data) {
@@ -314,10 +316,10 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
           hexColor: status.color,
           sort_order: status.sort_order
         }));
-        
+
         // Sort by sort_order
         this.statusOptions.sort((a, b) => a.sort_order - b.sort_order);
-        
+
         // Set default status to first active status (usually 'Active')
         if (this.statusOptions.length > 0) {
           this.selectedStatus = this.statusOptions[0];
@@ -325,10 +327,20 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     });
-    
+
     this.assetService.getLocations().subscribe(res => {
       if (res.success && res.data) {
         this.locations = res.data.locations || res.data;
+
+        this.route.queryParams.subscribe((params: any) => {
+          if (params['location_id']) {
+            this.location_id = Number(params['location_id']); // cast to number
+
+            this.selectedLocation = this.locations.find(
+              (location: any) => location.id === this.location_id
+            );
+          }
+        });
       }
     });
 
@@ -383,7 +395,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
             const inputElement = inputRef.nativeElement;
             const fieldName = inputElement.getAttribute('name');
             console.log('Processing date input:', fieldName);
-            
+
             // Only initialize Flatpickr for purchase_date field
             if (fieldName === 'purchase_date') {
               console.log('Initializing Flatpickr for purchase_date');
@@ -466,7 +478,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     // Set dropdowns after data loads
     setTimeout(() => {
       if (sourceAsset.type) {
-        this.selectedAssetType = this.assetTypes.find(type => 
+        this.selectedAssetType = this.assetTypes.find(type =>
           type.id == sourceAsset.type || type.id === parseInt(sourceAsset.type)
         ) || null;
         if (this.selectedAssetType) {
@@ -489,8 +501,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (sourceAsset.status) {
         // Handle both cases: status could be a string name or numerical ID
-        this.selectedStatus = this.statusOptions.find(status => 
-          status.value === sourceAsset.status || 
+        this.selectedStatus = this.statusOptions.find(status =>
+          status.value === sourceAsset.status ||
           status.label === sourceAsset.status ||
           status.id === sourceAsset.status
         ) || null;
@@ -845,21 +857,21 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   // Helper method to convert date from display format to backend format
   private convertDateToBackendFormat(dateStr: string): string {
     if (!dateStr) return '';
-    
+
     try {
       // Parse the display format "01 Jul, 2025" to Date object
       const date = new Date(dateStr);
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return dateStr; // Return original if parsing fails
       }
-      
+
       // Convert to Y-m-d format
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      
+
       return `${year}-${month}-${day}`;
     } catch (error) {
       console.error('Date conversion error:', error);
@@ -897,7 +909,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   // Helper method to extract icon name from path
   getIconFromPath(iconPath: string): string {
     if (!iconPath) return 'cube';
-    
+
     // Extract filename without extension from path like "assets/icons/car.svg"
     const filename = iconPath.split('/').pop() || '';
     return filename.replace('.svg', '') || 'cube';
@@ -907,7 +919,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   getColorForType(typeName: string): string {
     const colorMap: { [key: string]: string } = {
       'Fixed Asset': '#2563eb',
-      'Semi-Fixed Asset': '#22c55e', 
+      'Semi-Fixed Asset': '#22c55e',
       'Mobile Asset': '#f59e42',
       'Fleet Asset': '#a855f7',
       'IT Equipment': '#3b82f6',
@@ -917,7 +929,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       'Electronics': '#8b5cf6',
       'Tools': '#f97316'
     };
-    
+
     return colorMap[typeName] || '#6b7280'; // Default gray color
   }
 
@@ -925,7 +937,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   private hexToTailwindColor(hexColor: string): string {
     const colorMap: { [key: string]: string } = {
       '#10B981': 'green',    // Active
-      '#F59E0B': 'orange',   // Maintenance  
+      '#F59E0B': 'orange',   // Maintenance
       '#9CA3AF': 'gray',     // Inactive
       '#EF4444': 'red',      // Retired
       '#6B7280': 'gray',     // Archived
@@ -934,7 +946,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       '#8B5CF6': 'purple',   // Alternative purple
       '#F97316': 'orange',   // Alternative orange
     };
-    
+
     return colorMap[hexColor.toUpperCase()] || 'gray';
   }
 
@@ -995,7 +1007,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         // For duplication, just show the existing image URLs as previews
         // Users can upload new images if needed
         this.imagePreviewUrls.push(image.image_url);
-        
+
         // Create a placeholder file object to maintain array consistency
         const fileName = `existing-image-${index + 1}.jpg`;
         const placeholderFile = new File([''], fileName, { type: 'image/jpeg' });
