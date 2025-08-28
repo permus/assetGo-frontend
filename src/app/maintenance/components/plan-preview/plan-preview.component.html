@@ -1,0 +1,287 @@
+<div *ngIf="isOpen" class="fixed inset-0 z-50 modal-overlay" (click)="onBackdrop($event)">
+  <div class="absolute inset-0 bg-black/30"></div>
+  <div class="absolute inset-0 flex items-start justify-center overflow-auto py-8 px-4">
+    <div class="modal bg-white rounded-2xl shadow-xl w-full max-w-6xl max-h-90vh overflow-hidden" (click)="$event.stopPropagation()">
+      
+      <!-- Header -->
+      <div class="modal-header bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-200">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ planData?.name || 'Maintenance Plan Preview' }}</h2>
+            <p class="text-gray-600">{{ planData?.descriptions || 'Comprehensive view of maintenance plan details' }}</p>
+          </div>
+          <div class="flex gap-3">
+            <button 
+              class="btn btn-secondary px-4 py-2 flex items-center gap-2"
+              (click)="editPlan()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              Edit Plan
+            </button>
+            <button 
+              class="btn btn-primary px-4 py-2 flex items-center gap-2"
+              (click)="close()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="flex items-center justify-center p-12">
+        <div class="text-center">
+          <svg class="animate-spin w-12 h-12 text-blue-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-gray-600">Loading plan details...</p>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div *ngIf="!loading && planData" class="modal-body p-6 overflow-y-auto h-calc-90vh-200px">
+        
+        <!-- Plan Overview Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Plan Overview
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Priority -->
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-1">Priority</div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 rounded-full text-xs font-medium {{ getPriorityColor(planData.priority?.name) }}">
+                  {{ planData.priority?.name || 'Not set' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Plan Type -->
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-1">Plan Type</div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 rounded-full text-xs font-medium {{ getPlanTypeColor(planData.plan_type) }}">
+                  {{ planData.plan_type || 'Not set' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Status -->
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-1">Status</div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 rounded-full text-xs font-medium {{ getStatusColor(planData.is_active) }}">
+                  {{ planData.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Estimated Duration -->
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-1">Est. Duration</div>
+              <div class="text-lg font-semibold text-gray-900">
+                {{ planData.estimeted_duration || 0 }} hours
+              </div>
+            </div>
+          </div>
+
+          <!-- Description and Instructions -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-2">Description</div>
+              <p class="text-gray-700">{{ planData.descriptions || 'No description provided' }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-2">Instructions</div>
+              <p class="text-gray-700">{{ planData.instractions || 'No instructions provided' }}</p>
+            </div>
+          </div>
+
+          <!-- Safety Notes -->
+          <div *ngIf="planData.safety_notes" class="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+              <div class="text-sm font-medium text-yellow-800">Safety Notes</div>
+            </div>
+            <p class="text-yellow-700">{{ planData.safety_notes }}</p>
+          </div>
+        </div>
+
+        <!-- Assets Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            Assigned Assets ({{ selectedAssets.length }})
+          </h3>
+          
+          <div *ngIf="selectedAssets.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let asset of selectedAssets" class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div class="flex items-start justify-between mb-3">
+                <h4 class="font-medium text-gray-900">{{ asset.name }}</h4>
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  {{ asset.status?.name || 'Active' }}
+                </span>
+              </div>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                  <span>{{ asset.asset_code }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <span>{{ asset.location?.name || 'Location not specified' }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                  <span>{{ asset.category?.name || 'Uncategorized' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="selectedAssets.length === 0" class="text-center py-8 text-gray-500">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <p>No assets assigned to this plan</p>
+          </div>
+        </div>
+
+        <!-- Checklist Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+            Checklist Items ({{ checklistItems.length }})
+          </h3>
+          
+          <div *ngIf="checklistItems.length > 0" class="space-y-3">
+            <div *ngFor="let item of checklistItems; trackBy: trackByChecklistItem" class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1">
+                  <h4 class="font-medium text-gray-900 mb-1">{{ item.title }}</h4>
+                  <p class="text-sm text-gray-600">{{ item.description }}</p>
+                </div>
+                <div class="flex items-center gap-2 ml-4">
+                  <span class="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {{ item.type }}
+                  </span>
+                  <span *ngIf="item.is_required" class="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    Required
+                  </span>
+                  <span *ngIf="item.is_safety_critical" class="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                    Safety Critical
+                  </span>
+                  <span *ngIf="item.is_photo_required" class="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Photo Required
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="checklistItems.length === 0" class="text-center py-8 text-gray-500">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+            <p>No checklist items defined</p>
+          </div>
+        </div>
+
+        <!-- Schedule Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            Schedule Information
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-1">Frequency</div>
+              <div class="text-lg font-semibold text-gray-900">
+                {{ getFrequencyLabel(scheduleInfo?.frequency_type, scheduleInfo?.frequency_value, scheduleInfo?.frequency_unit) }}
+              </div>
+            </div>
+            
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-1">Next Due Date</div>
+              <div class="text-lg font-semibold text-gray-900">
+                {{ formatDate(scheduleInfo?.next_due_date) }}
+              </div>
+            </div>
+            
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-1">Last Completed</div>
+              <div class="text-lg font-semibold text-gray-900">
+                {{ formatDate(scheduleInfo?.last_completed) }}
+              </div>
+            </div>
+            
+            <div class="bg-white border border-gray-200 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-1">Status</div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Scheduled
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Additional Information
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-2">Created</div>
+              <p class="text-gray-700">{{ formatDate(planData.created_at) }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm font-medium text-gray-500 mb-2">Last Updated</div>
+              <p class="text-gray-700">{{ formatDate(planData.updated_at) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error" class="p-6 text-center">
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <svg class="w-12 h-12 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p class="text-red-800 font-medium">{{ error }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

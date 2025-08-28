@@ -141,11 +141,12 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.workOrderService.getWorkOrders(params).subscribe({
         next: (response: any) => {
-          this.workOrders = response.data.data || [];
-          this.total = response.data.total || 0;
-          this.currentPage = response.data.current_page || 1;
-          this.perPage = response.data.per_page || 10;
-          this.totalPages = response.data.last_page || 1;
+          let data = response.data;
+          this.workOrders = data.data || [];
+          this.total = data.total || 0;
+          this.currentPage = data.current_page || 1;
+          this.perPage = data.per_page || 10;
+          this.totalPages = data.last_page || 1;
           this.pagination = {
             current_page: this.currentPage,
             last_page: this.totalPages,

@@ -1,5 +1,6 @@
 // Global Dropdown Component
 export * from './global-dropdown';
+export * from '../maintenance/components/plan-preview';
 
 // Layout Components
 export * from './layout';

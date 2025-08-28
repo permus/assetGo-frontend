@@ -1,32 +1,47 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MaintenanceStore } from '../store';
+import { MaintenanceService } from '../maintenance.service';
 import { PlanDialogComponent } from '../components/plan-dialog/plan-dialog.component';
+import { MaintenanceDeleteConfirmationModalComponent } from '../components/delete-confirmation-modal';
+
 import { MaintenancePlan } from '../models';
 
 @Component({
   selector: 'app-plans-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PlanDialogComponent],
+  imports: [CommonModule, FormsModule, PlanDialogComponent, MaintenanceDeleteConfirmationModalComponent],
   templateUrl: './plans-page.component.html',
   styleUrls: ['./plans-page.component.scss']
 })
 export class PlansPageComponent implements OnInit {
   isDialogOpen = false;
+  editMode = false;
+  planToEdit: MaintenancePlan | null = null;
   viewType: 'grid' | 'list' = 'grid';
   searchQuery = '';
   selectedPlans: MaintenancePlan[] = [];
   showingArchived = false;
-  planMenus: { [key: number]: boolean } = {};
+  planMenus: { [key: number]: boolean } = [];
+  
+  // Delete modal state
+  showDeleteConfirmationModal = false;
 
-  constructor(public store: MaintenanceStore) {}
+  constructor(
+    public store: MaintenanceStore,
+    private maintenanceService: MaintenanceService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void { 
     this.store.fetchPlans(); 
   }
 
   openDialog() { 
+    this.editMode = false;
+    this.planToEdit = null;
     this.isDialogOpen = true; 
   }
 
@@ -34,6 +49,21 @@ export class PlansPageComponent implements OnInit {
     this.isDialogOpen = false; 
     this.store.fetchPlans(); 
   }
+
+  onUpdated() {
+    this.isDialogOpen = false;
+    this.editMode = false;
+    this.planToEdit = null;
+    this.store.fetchPlans();
+  }
+
+  onDialogClosed() {
+    this.isDialogOpen = false;
+    this.editMode = false;
+    this.planToEdit = null;
+  }
+
+
 
   // Selection methods
   toggleSelectAllPlans() {
@@ -77,9 +107,53 @@ export class PlansPageComponent implements OnInit {
     console.log('Archiving selected plans:', this.selectedPlans);
   }
 
-  deleteSelected() {
-    // TODO: Implement delete functionality
-    console.log('Deleting selected plans:', this.selectedPlans);
+  deleteSelected(deletionReason?: string) {
+    if (this.selectedPlans.length === 0) {
+      this.closeDeleteModal();
+      return;
+    }
+
+    // Get plan IDs for bulk delete
+    const planIds = this.selectedPlans.map(plan => plan.id!);
+    
+    // Delete plans one by one (since there's no bulk delete endpoint)
+    let completed = 0;
+    let successCount = 0;
+    let errorCount = 0;
+    
+    const finalize = () => {
+      completed++;
+      if (completed >= planIds.length) {
+        // Reload plans and clear selection
+        this.store.fetchPlans();
+        this.clearSelection();
+        this.closeDeleteModal();
+        
+        // Show success/error message
+        if (errorCount === 0) {
+          console.log(`${successCount} plans deleted successfully`);
+        } else if (successCount === 0) {
+          console.error(`Failed to delete ${errorCount} plans`);
+        } else {
+          console.log(`${successCount} plans deleted successfully, ${errorCount} failed`);
+        }
+      }
+    };
+
+    planIds.forEach((id) => {
+      // Use the maintenance service directly since store.api is private
+      this.maintenanceService.deletePlan(id).subscribe({
+        next: () => {
+          successCount++;
+          finalize();
+        },
+        error: (error) => {
+          console.error('Failed to delete plan:', error);
+          errorCount++;
+          finalize();
+        }
+      });
+    });
   }
 
   restoreSelected() {
@@ -104,13 +178,21 @@ export class PlansPageComponent implements OnInit {
 
   // Individual plan actions
   viewPlan(plan: MaintenancePlan) {
-    // TODO: Implement view functionality
-    console.log('Viewing plan:', plan);
+    // Navigate to the preview page
+    this.router.navigate(['/maintenance/plans', plan.id]);
+    this.closeAllDropdowns();
   }
 
   editPlan(plan: MaintenancePlan) {
-    // TODO: Implement edit functionality
-    console.log('Editing plan:', plan);
+    // Close the dropdown menu
+    this.planMenus[plan.id!] = false;
+    
+    // Set edit mode and plan to edit
+    this.editMode = true;
+    this.planToEdit = plan;
+    
+    // Open the dialog
+    this.isDialogOpen = true;
   }
 
   duplicatePlan(plan: MaintenancePlan) {
@@ -139,8 +221,14 @@ export class PlansPageComponent implements OnInit {
   }
 
   deletePlan(plan: MaintenancePlan) {
-    // TODO: Implement delete functionality
-    console.log('Deleting plan:', plan);
+    // Close the dropdown menu
+    this.planMenus[plan.id!] = false;
+    
+    // Set the selected plan for single deletion
+    this.selectedPlans = [plan];
+    
+    // Open the delete confirmation modal
+    this.showDeleteConfirmationModal = true;
   }
 
   togglePlanMenu(planId: number) {
@@ -149,6 +237,26 @@ export class PlansPageComponent implements OnInit {
 
   isPlanMenuOpen(planId: number): boolean {
     return this.planMenus[planId] || false;
+  }
+
+  @HostListener('document:click')
+  closeAllDropdowns() {
+    // Close all open dropdown menus when clicking outside
+    Object.keys(this.planMenus).forEach(key => {
+      this.planMenus[Number(key)] = false;
+    });
+  }
+
+  // Delete modal methods
+  closeDeleteModal(): void {
+    this.showDeleteConfirmationModal = false;
+  }
+
+  openDeleteModalForSelected(): void {
+    if (this.selectedPlans.length === 0) {
+      return;
+    }
+    this.showDeleteConfirmationModal = true;
   }
 }
 

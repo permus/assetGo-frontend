@@ -39,7 +39,13 @@ const routes: Routes = [
         title: 'Preventive Maintenance — Analytics'
       },
     ]
-  }
+  },
+
+      {
+        path: 'plans/:id',
+        loadComponent: () => import('./pages/plan-preview-page/plan-preview-page.component').then(m => m.PlanPreviewPageComponent),
+        title: 'Maintenance Plan Preview'
+      },
 ];
 
 @NgModule({

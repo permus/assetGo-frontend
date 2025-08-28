@@ -18,6 +18,7 @@ export interface MaintenancePlanChecklist {
 
 export interface MaintenancePlan {
   id?: number;
+  company_id?: number;
   name: string;
   priority_id?: number | null;
   sort?: number;

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, computed, HostListener, OnInit, AfterViewInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, computed, HostListener, OnInit, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MaintenanceService } from '../../maintenance.service';
@@ -14,15 +14,19 @@ import { AssetService } from '../../../assets/services/asset.service';
   styleUrl: 'plan-dialog.scss',
   templateUrl: 'plan-dialog.html',
 })
-export class PlanDialogComponent implements OnInit, AfterViewInit {
+export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() isOpen = false;
+  @Input() editMode = false;
+  @Input() planToEdit: MaintenancePlan | null = null;
   @Output() closed = new EventEmitter<void>();
   @Output() created = new EventEmitter<any>();
+  @Output() updated = new EventEmitter<any>();
 
   steps = ['Basic Info', 'Assets', 'Checklist', 'Schedule'];
   step = signal(0);
   loading = false;
   error: string | null = null;
+  fieldErrors: { [key: string]: string[] } = {};
 
   model: MaintenancePlan & { checklist_items: MaintenancePlanChecklist[] } = {
     name: '',
@@ -164,11 +168,117 @@ export class PlanDialogComponent implements OnInit, AfterViewInit {
 
   // Ensure meta loaded when dialog opens (component constructed earlier)
   ngAfterViewInit() { this.ngOnInitOnce(); }
-  ngOnInit() { this.ngOnInitOnce(); }
+
+  loadPlanForEditing() {
+    if (!this.planToEdit?.id) return;
+
+    // Call the API to get complete plan data
+    this.loading = true;
+    this.api.getPlan(this.planToEdit.id).subscribe({
+      next: (response) => {
+        const planData = response?.data?.plan || response;
+
+        // Load the complete plan data into the model
+        this.model = {
+          ...planData,
+          checklist_items: []
+        };
+
+        // Load checklist items
+        if (planData.checklists && planData.checklists.length > 0) {
+          this.items.set([...planData.checklists]);
+        }
+
+        // Load asset IDs
+        if (planData.asset_ids && planData.asset_ids.length > 0) {
+          this.selectedAssetIds.set(new Set(planData.asset_ids));
+          this.assetIdsCsv.set(planData.asset_ids.join(', '));
+        }
+
+        // Load priority if available
+        if (planData?.priority_id) {
+          // Find the priority in the options and set it
+          const priority = this.priorityOptions.find(p => p.id === planData.priority_id);
+          if (priority) {
+            this.selectedPriorityMeta = priority;
+          }
+        }
+
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Failed to load plan data:', error);
+        this.loading = false;
+
+        // Fallback to basic data if API fails
+        this.loadBasicPlanData();
+      }
+    });
+  }
+
+  private loadBasicPlanData() {
+    if (!this.planToEdit) return;
+
+    // Load the basic plan data into the model
+    this.model = {
+      ...this.planToEdit,
+      checklist_items: []
+    };
+
+    // Load checklist items
+    if (this.planToEdit.checklists && this.planToEdit.checklists.length > 0) {
+      this.items.set([...this.planToEdit.checklists]);
+    }
+
+    // Load asset IDs
+    if (this.planToEdit.asset_ids && this.planToEdit.asset_ids.length > 0) {
+      this.selectedAssetIds.set(new Set(this.planToEdit.asset_ids));
+      this.assetIdsCsv.set(this.planToEdit.asset_ids.join(', '));
+    }
+
+    // Load priority if available
+    if (this.planToEdit?.priority_id) {
+      // Find the priority in the options and set it
+      const priority = this.priorityOptions.find(p => p.id === this.planToEdit!.priority_id);
+      if (priority) {
+        this.selectedPriorityMeta = priority;
+      }
+    }
+  }
+  ngOnInit() {
+    this.ngOnInitOnce();
+
+    // If editing, load the plan data
+    if (this.editMode && this.planToEdit?.id) {
+      // Small delay to ensure component is fully initialized
+      setTimeout(() => {
+        this.loadPlanForEditing();
+      }, 100);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // Handle changes to editMode or planToEdit inputs
+    if (changes['editMode'] || changes['planToEdit']) {
+      if (this.editMode && this.planToEdit?.id && this.isOpen) {
+        // Small delay to ensure component is fully initialized
+        setTimeout(() => {
+          this.loadPlanForEditing();
+        }, 100);
+      }
+    }
+  }
 
   // Validation helpers (Rule 2)
   hasFieldError(controlName: string): boolean {
     if (!this.submitted) return false;
+
+    // Check for backend validation errors first
+    if (this.fieldErrors[controlName] && this.fieldErrors[controlName].length > 0) {
+      return true;
+    }
+
+    // Check for frontend validation errors
     switch (controlName) {
       case 'name':
         return !this.model.name || this.model.name.trim().length === 0;
@@ -184,6 +294,12 @@ export class PlanDialogComponent implements OnInit, AfterViewInit {
   }
 
   getFieldError(controlName: string): string {
+    // Return backend validation error if available
+    if (this.fieldErrors[controlName] && this.fieldErrors[controlName].length > 0) {
+      return this.fieldErrors[controlName][0];
+    }
+
+    // Return frontend validation error
     switch (controlName) {
       case 'name':
         return 'This field is required.';
@@ -193,6 +309,13 @@ export class PlanDialogComponent implements OnInit, AfterViewInit {
         return 'This field is required.';
       default:
         return 'Invalid value.';
+    }
+  }
+
+  // Clear field errors when user starts typing
+  clearFieldError(fieldName: string) {
+    if (this.fieldErrors[fieldName]) {
+      delete this.fieldErrors[fieldName];
     }
   }
 
@@ -424,31 +547,79 @@ export class PlanDialogComponent implements OnInit, AfterViewInit {
     if (!this.canSubmit()) return;
     this.loading = true;
     this.error = null;
+    this.fieldErrors = {}; // Clear previous field errors
+
     const payload = { ...this.model, checklist_items: this.items().map((it, idx) => ({ ...it, order: it.order ?? idx })) };
-    this.api.createPlan(payload).subscribe({
-      next: (res) => {
-        this.loading = false;
-        this.created.emit(res);
-        this.close();
-      },
-      error: (err) => {
-        this.loading = false;
-        const msg = err?.error?.message || 'Failed to create plan';
-        this.error = msg;
-      }
-    });
+
+    if (this.editMode && this.planToEdit?.id) {
+      // Update existing plan
+      this.api.updatePlan(this.planToEdit.id, payload).subscribe({
+        next: (res) => {
+          this.loading = false;
+          this.updated.emit(res);
+          this.close();
+        },
+        error: (err) => {
+          this.loading = false;
+
+          // Handle backend validation errors
+          if (err?.error?.errors && typeof err.error.errors === 'object') {
+            this.fieldErrors = err.error.errors;
+            // Set general error message if available
+            this.error = err?.error?.message || 'Please fix the validation errors below.';
+          } else {
+            // Handle other types of errors
+            const msg = err?.error?.message || 'Failed to update plan';
+            this.error = msg;
+          }
+        }
+      });
+    } else {
+      // Create new plan
+      this.api.createPlan(payload).subscribe({
+        next: (res) => {
+          this.loading = false;
+          this.created.emit(res);
+          this.close();
+        },
+        error: (err) => {
+          this.loading = false;
+
+          // Handle backend validation errors
+          if (err?.error?.errors && typeof err.error.errors === 'object') {
+            this.fieldErrors = err.error.errors;
+            // Set general error message if available
+            this.error = err?.error?.message || 'Please fix the validation errors below.';
+          } else {
+            // Handle other types of errors
+            const msg = err?.error?.message || 'Failed to create plan';
+            this.error = msg;
+          }
+        }
+      });
+    }
   }
 
   private reset() {
     this.step.set(0);
-    this.model = {
-      name: '', priority_id: undefined, sort: 0, descriptions: '', category_id: undefined,
-      plan_type: 'preventive', estimeted_duration: undefined, instractions: '', safety_notes: '',
-      asset_ids: [], frequency_type: 'time', frequency_value: 30, frequency_unit: 'days', is_active: true, checklist_items: []
-    } as any;
-    this.items.set([]);
-    this.assetIdsCsv.set('');
+
+    if (this.editMode && this.planToEdit?.id) {
+      // Reset to edit mode with plan data from API
+      this.loadPlanForEditing();
+    } else {
+      // Reset to create mode with default values
+      this.model = {
+        name: '', priority_id: undefined, sort: 0, descriptions: '', category_id: undefined,
+        plan_type: 'preventive', estimeted_duration: undefined, instractions: '', safety_notes: '',
+        asset_ids: [], frequency_type: 'time', frequency_value: 30, frequency_unit: 'days', is_active: true, checklist_items: []
+      } as any;
+      this.items.set([]);
+      this.assetIdsCsv.set('');
+      this.selectedAssetIds.set(new Set());
+    }
+
     this.error = null;
+    this.fieldErrors = {};
     this.loading = false;
     this.submitted = false;
     this.closeAllDropdowns();

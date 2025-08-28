@@ -1,0 +1,30 @@
+// Delete Confirmation Modal Styles
+// Most styling is handled by Tailwind classes in the HTML
+
+// Custom animations if needed
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Ensure modal is above other elements
+.z-50 {
+  z-index: 50;
+}
+
+// Smooth transitions
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+.transition-colors {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}

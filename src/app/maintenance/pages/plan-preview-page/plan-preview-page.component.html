@@ -1,0 +1,290 @@
+<div class="maintenance-preview-page">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <button
+          (click)="backToPlans()"
+          class="back-button border-0 bg-transparent">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back to Plans
+        </button>
+        <div class="header-info">
+          <h1 class="page-title">{{ planData?.name || 'Maintenance Plan Preview' }}</h1>
+          <p class="page-subtitle">{{ planData?.descriptions || 'Comprehensive view of maintenance plan details' }}</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button
+          class="btn btn-secondary"
+          (click)="editPlan()">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Edit Plan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-content">
+      <svg class="animate-spin w-12 h-12 text-blue-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <h3 class="loading-title">Loading Plan Details</h3>
+      <p class="loading-subtitle">Please wait while we fetch your maintenance plan information...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <div class="error-content">
+      <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <h3 class="error-title">Error Loading Plan</h3>
+      <p class="error-message">{{ error }}</p>
+              <button
+          (click)="loadPlanData(plan?.id || 0)"
+          class="btn btn-primary mt-4">
+          Try Again
+        </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error && planData" class="page-content">
+
+    <!-- Plan Overview Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Plan Overview
+        </h2>
+      </div>
+
+      <div class="overview-grid">
+        <!-- Priority -->
+        <div class="overview-card">
+          <div class="card-label">Priority</div>
+          <div class="card-value">
+            <span class="status-badge {{ getPriorityColor(planData.priority?.name) }}">
+              {{ planData.priority?.name || 'Not set' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Plan Type -->
+        <div class="overview-card">
+          <div class="card-label">Plan Type</div>
+          <div class="card-value">
+            <span class="status-badge {{ getPlanTypeColor(planData.plan_type) }}">
+              {{ planData.plan_type || 'Not set' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="overview-card">
+          <div class="card-label">Status</div>
+          <div class="card-value">
+            <span class="status-badge {{ getStatusColor(planData.is_active) }}">
+              {{ planData.is_active ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Estimated Duration -->
+        <div class="overview-card">
+          <div class="card-label">Est. Duration</div>
+          <div class="card-value">
+            <span class="duration-value">{{ planData.estimeted_duration || 0 }} hours</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description and Instructions -->
+      <div class="description-grid">
+        <div class="description-card">
+          <div class="card-label">Description</div>
+          <p class="card-text">{{ planData.descriptions || 'No description provided' }}</p>
+        </div>
+        <div class="description-card">
+          <div class="card-label">Instructions</div>
+          <p class="card-text">{{ planData.instractions || 'No instructions provided' }}</p>
+        </div>
+      </div>
+
+      <!-- Safety Notes -->
+      <div *ngIf="planData.safety_notes" class="safety-notes">
+        <div class="safety-header">
+          <svg class="w-6 h-6 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <h3 class="safety-title">Safety Notes</h3>
+        </div>
+        <p class="safety-text">{{ planData.safety_notes }}</p>
+      </div>
+    </div>
+
+    <!-- Assets Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          Assigned Assets ({{ selectedAssets.length }})
+        </h2>
+      </div>
+
+      <div *ngIf="selectedAssets.length > 0" class="assets-grid">
+        <div *ngFor="let asset of selectedAssets" class="asset-card">
+          <div class="asset-header">
+            <h3 class="asset-name">{{ asset.name }}</h3>
+            <span class="asset-status {{ asset.status?.name === 'Active' ? 'status-active' : 'status-inactive' }}">
+              {{ asset.status?.name || 'Active' }}
+            </span>
+          </div>
+          <div class="asset-details">
+            <div class="asset-detail">
+              <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+              <span>{{ asset.asset_code }}</span>
+            </div>
+            <div class="asset-detail">
+              <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>{{ asset.location?.name || 'Location not specified' }}</span>
+            </div>
+            <div class="asset-detail">
+              <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+              <span>{{ asset.category?.name || 'Uncategorized' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="selectedAssets.length === 0" class="empty-state">
+        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+        <p class="empty-text">No assets assigned to this plan</p>
+      </div>
+    </div>
+
+    <!-- Checklist Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg class="w-6 h-6 text-purple-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+          Checklist Items ({{ checklistItems.length }})
+        </h2>
+      </div>
+
+      <div *ngIf="checklistItems.length > 0" class="checklist-list">
+        <div *ngFor="let item of checklistItems; trackBy: trackByChecklistItem" class="checklist-item">
+          <div class="item-content">
+            <div class="item-main">
+              <h3 class="item-title">{{ item.title }}</h3>
+              <p class="item-description">{{ item.description }}</p>
+            </div>
+            <div class="item-badges">
+              <span class="item-badge type-badge">{{ item.type }}</span>
+              <span *ngIf="item.is_required" class="item-badge required-badge">Required</span>
+              <span *ngIf="item.is_safety_critical" class="item-badge safety-badge">Safety Critical</span>
+              <span *ngIf="item.is_photo_required" class="item-badge photo-badge">Photo Required</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="checklistItems.length === 0" class="empty-state">
+        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+        </svg>
+        <p class="empty-text">No checklist items defined</p>
+      </div>
+    </div>
+
+    <!-- Schedule Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg class="w-6 h-6 text-indigo-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          Schedule Information
+        </h2>
+      </div>
+
+      <div class="schedule-grid">
+        <div class="schedule-card">
+          <div class="card-label">Frequency</div>
+          <div class="card-value">
+            <span class="schedule-value">{{ getFrequencyLabel(scheduleInfo?.frequency_type, scheduleInfo?.frequency_value, scheduleInfo?.frequency_unit) }}</span>
+          </div>
+        </div>
+
+        <div class="schedule-card">
+          <div class="card-label">Next Due Date</div>
+          <div class="card-value">
+            <span class="schedule-value">{{ formatDate(scheduleInfo?.next_due_date) }}</span>
+          </div>
+        </div>
+
+        <div class="schedule-card">
+          <div class="card-label">Last Completed</div>
+          <div class="card-value">
+            <span class="schedule-value">{{ formatDate(scheduleInfo?.last_completed) }}</span>
+          </div>
+        </div>
+
+        <div class="schedule-card">
+          <div class="card-label">Status</div>
+          <div class="card-value">
+            <span class="status-badge bg-green-100 text-green-800">Scheduled</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg class="w-6 h-6 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Additional Information
+        </h2>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="card-label">Created</div>
+          <p class="card-text">{{ formatDate(planData.created_at) }}</p>
+        </div>
+        <div class="info-card">
+          <div class="card-label">Last Updated</div>
+          <p class="card-text">{{ formatDate(planData.updated_at) }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

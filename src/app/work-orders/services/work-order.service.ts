@@ -377,10 +377,10 @@ export class WorkOrderService {
       });
     }
 
-    return this.http.get<ApiResponse<WorkOrderListResponse>>(
+    return this.http.get<WorkOrderListResponse>(
       this.apiUrl, 
       { ...this.getAuthHeaders(), params: httpParams }
-    ).pipe(map((res) => res.data));
+    );
   }
 
   // Get a single work order by ID
