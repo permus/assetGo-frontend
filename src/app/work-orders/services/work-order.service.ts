@@ -314,6 +314,17 @@ export class WorkOrderService {
       .pipe(map((res) => res.data));
   }
 
+  // Assign a work order to a user
+  assignWorkOrder(workOrderId: number, assignmentData: { user_id: number; due_date?: string; notes?: string }): Observable<any> {
+    return this.http
+      .post<ApiResponse<any>>(
+        `${this.apiUrl}/${workOrderId}/assign`,
+        assignmentData,
+        this.getAuthHeaders()
+      )
+      .pipe(map((res) => res.data));
+  }
+
   // Parts API
   getParts(workOrderId: number): Observable<WorkOrderPartItem[]> {
     return this.http
@@ -366,10 +377,10 @@ export class WorkOrderService {
       });
     }
 
-    return this.http.get<WorkOrderListResponse>(
+    return this.http.get<ApiResponse<WorkOrderListResponse>>(
       this.apiUrl, 
       { ...this.getAuthHeaders(), params: httpParams }
-    );
+    ).pipe(map((res) => res.data));
   }
 
   // Get a single work order by ID

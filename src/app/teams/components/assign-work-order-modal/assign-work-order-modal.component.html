@@ -1,0 +1,97 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Assign Work Order to {{ teamMemberName }}</h3>
+      <button class="close-btn" (click)="close()">×</button>
+    </div>
+    
+    <p class="subtitle">Select a work order to assign to this team member</p>
+    
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    
+    <div class="form-group">
+      <label>Available Work Orders <span class="required">*</span></label>
+
+      <div class="relative generic-dropdown" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          (click)="toggleWorkOrderDropdown()"
+          class="dropdown-button"
+          [class.active]="showWorkOrderDropdown"
+          [disabled]="loading || workOrders.length === 0">
+          <div class="dropdown-content">
+            <span *ngIf="!selectedWorkOrder" class="placeholder">
+              {{ loading ? 'Loading work orders...' : (workOrders.length === 0 ? 'No work orders available' : 'Select a work order') }}
+            </span>
+
+            <div *ngIf="selectedWorkOrder" class="selected-item">
+              <div class="item-icon">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <span class="selected-text">{{ selectedWorkOrder.title }}</span>
+            </div>
+
+            <svg class="dropdown-arrow" [class.rotated]="showWorkOrderDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </button>
+
+        <div *ngIf="showWorkOrderDropdown" class="dropdown-menu">
+          <div class="dropdown-header">Select a work order</div>
+
+          <button
+            *ngFor="let workOrder of workOrders"
+            type="button"
+            (click)="selectWorkOrder(workOrder)"
+            class="dropdown-item"
+            [class.selected]="selectedWorkOrder?.id === workOrder.id">
+            <div class="item-content">
+              <div class="item-icon">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <div class="item-details">
+                <div class="item-name">{{ workOrder.title }}</div>
+                <div class="item-description">
+                  {{ workOrder.status?.name || 'No status' }} • {{ workOrder.priority?.name || 'No priority' }}
+                </div>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-xs text-gray-500 mt-1">
+        Found {{ workOrders.length }} work orders
+        <span *ngIf="loading">(Loading...)</span>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Due Date (Optional)</label>
+      <input class="input" type="datetime-local" [(ngModel)]="dueDate" (input)="onInputChange()" />
+    </div>
+    
+    <div class="form-group">
+      <label>Assignment Notes (Optional)</label>
+      <textarea class="textarea" rows="5" [(ngModel)]="notes" (input)="onInputChange()" placeholder="Add any specific instructions or notes for this assignment..."></textarea>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn secondary" (click)="close()">Cancel</button>
+      <button class="btn primary" [disabled]="!selectedWorkOrderId || loading" (click)="submit()">
+        <span *ngIf="loading">Assigning...</span>
+        <span *ngIf="!loading">Assign Work Order</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+

@@ -4,19 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { TeamService, TeamMember, TeamMemberStatistics } from '../services/team.service';
 import { TeamDeleteConfirmationModalComponent } from '../components/team-delete-confirmation-modal/team-delete-confirmation-modal.component';
 import { TeamFormModalComponent } from '../components/team-form-modal/team-form-modal.component';
+import { AssignWorkOrderModalComponent } from '../components/assign-work-order-modal/assign-work-order-modal.component';
 
 @Component({
   selector: 'app-team-list',
   templateUrl: './team-list.component.html',
   styleUrls: ['./team-list.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent]
+  imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent, AssignWorkOrderModalComponent]
 })
 export class TeamListComponent implements OnInit {
   teamMembers: TeamMember[] = [];
   filteredTeamMembers: TeamMember[] = [];
   loading = false;
   error = '';
+  successMessage = '';
   statistics: TeamMemberStatistics | null = null;
   
   // Search and filtering
@@ -33,6 +35,8 @@ export class TeamListComponent implements OnInit {
   showFormModal = false;
   teamMemberToEdit: TeamMember | null = null;
   isEditMode = false;
+  showAssignModal = false;
+  teamMemberToAssign: TeamMember | null = null;
   
   // Sort options
   sortOptions = [
@@ -112,6 +116,30 @@ export class TeamListComponent implements OnInit {
     this.teamMemberToEdit = teamMember;
     this.isEditMode = true;
     this.showFormModal = true;
+  }
+
+  openAssign(teamMember: TeamMember): void {
+    this.teamMemberToAssign = teamMember;
+    this.showAssignModal = true;
+  }
+
+  closeAssign(): void {
+    this.showAssignModal = false;
+    this.teamMemberToAssign = null;
+  }
+
+  onAssignmentSubmitted(data: { work_order_id: number; due_date?: string; notes?: string }): void {
+    // Set success message
+    this.successMessage = `Work order successfully assigned to ${this.teamMemberToAssign?.first_name} ${this.teamMemberToAssign?.last_name}`;
+    
+    // Clear success message after 3 seconds
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 3000);
+    
+    // Refresh the team member list to update the assigned work order count
+    this.loadTeamMembers();
+    this.closeAssign();
   }
 
   viewTeamMember(teamMember: TeamMember): void {
