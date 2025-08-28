@@ -1,4 +1,18 @@
 // Modal animations
+.modal-overlay{
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .modal-enter {
   opacity: 0;
   transform: scale(0.9);

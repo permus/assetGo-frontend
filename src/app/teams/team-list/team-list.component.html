@@ -314,12 +314,7 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  @if (loading) {
-    <div class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-    </div>
-  }
+
 
   <!-- Error State -->
   @if (error && !loading) {
@@ -335,9 +330,9 @@
   }
 
   <!-- Team Members Cards -->
-  @if (!loading) {
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      @if (!loading) {
       <!--Team Card grid-->
       <div class="xl:col-span-2">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -355,9 +350,11 @@
                     </svg>
                   </div>
                   <div>
-              <span class="text-sm font-medium text-blue-400">
-                {{ getTeamMemberFullName(teamMember) }}
-              </span>
+                    <span class="text-sm font-medium text-blue-400 block mb-2">
+                     {{ getTeamMemberFullName(teamMember) }}
+                    </span>
+
+                    <div class="px-3  py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 inline">{{teamMember.roles[0].name}}</div>
                   </div>
                 </div>
 
@@ -389,7 +386,7 @@
 
                   <!-- Dropdown Menu -->
                   <div *ngIf="teamMember.showMenu"
-                       class="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+                       class="absolute right-0 top-1/2 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
                     <div class="py-1">
                       <!-- Edit Option -->
                       <button
@@ -488,7 +485,8 @@
 
               <div class="grid grid-cols-3">
                 <div class="text-center">
-                  <div class="text-lg font-semibold text-blue-600">{{ teamMember.assigned_work_orders_count || 0 }}</div>
+                  <div class="text-lg font-semibold text-blue-600">{{ teamMember.assigned_work_orders_count || 0 }}
+                  </div>
                   <div class="text-xs text-gray-500">Assigned</div>
                 </div>
                 <div class="text-center">
@@ -505,6 +503,43 @@
           </div>
         </div>
       </div>
+      }
+
+      <!-- Empty State -->
+      @if (!loading && filteredTeamMembers.length === 0) {
+        <div class="xl:col-span-2">
+          <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No team members found</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              {{ searchTerm ? 'Try adjusting your search terms.' : 'Get started by inviting your first team member.' }}
+            </p>
+            <div class="mt-6">
+              <button
+                (click)="createTeamMember()"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Invite Team Member
+              </button>
+            </div>
+          </div>
+        </div>
+
+      }
+
+      <!-- Loading State -->
+      @if (loading) {
+       <div class="xl:col-span-2">
+         <div class="flex justify-center items-center py-12 h-100">
+           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+         </div>
+       </div>
+      }
 
       <!--Team Analytics-->
       <div class="xl:col-span-1">
@@ -702,31 +737,10 @@
         </div>
       </div>
     </div>
-  }
 
-  <!-- Empty State -->
-  @if (!loading && filteredTeamMembers.length === 0) {
-    <div class="text-center py-12">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">No team members found</h3>
-      <p class="mt-1 text-sm text-gray-500">
-        {{ searchTerm ? 'Try adjusting your search terms.' : 'Get started by inviting your first team member.' }}
-      </p>
-      <div class="mt-6">
-        <button
-          (click)="createTeamMember()"
-          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          Invite Team Member
-        </button>
-      </div>
-    </div>
-  }
+
+
+
 
 
   <!-- Modals -->

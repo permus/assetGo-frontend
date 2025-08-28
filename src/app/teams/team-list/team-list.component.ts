@@ -5,14 +5,13 @@ import { TeamService, TeamMember, TeamMemberStatistics } from '../services/team.
 import { TeamDeleteConfirmationModalComponent } from '../components/team-delete-confirmation-modal/team-delete-confirmation-modal.component';
 import { TeamFormModalComponent } from '../components/team-form-modal/team-form-modal.component';
 import { AssignWorkOrderModalComponent } from '../components/assign-work-order-modal/assign-work-order-modal.component';
-import {ClickOutsideDirective} from '../../shared/directives/click-outside/click-outside.directive';
 
 @Component({
   selector: 'app-team-list',
   templateUrl: './team-list.component.html',
   styleUrls: ['./team-list.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent, AssignWorkOrderModalComponent, ClickOutsideDirective]
+  imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent, AssignWorkOrderModalComponent]
 })
 export class TeamListComponent implements OnInit {
   teamMembers: TeamMember[] = [];
