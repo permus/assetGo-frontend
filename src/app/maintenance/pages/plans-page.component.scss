@@ -66,5 +66,225 @@
   .btn.btn-primary:hover { background: #1d4ed8; }
 }
 
+// Checkbox styling for plan cards
+.plan-card-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #2563eb;
+  background-color: white;
+  border: 2px solid #60a5fa;
+  border-radius: 9999px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.plan-card-checkbox:checked {
+  background-color: #60a5fa;
+  border-color: #60a5fa;
+}
+
+.plan-card-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.plan-card-checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+// Checkbox styling for list view
+.plan-list-checkbox {
+  width: 1rem;
+  height: 1rem;
+  color: #2563eb;
+  background-color: white;
+  border: 2px solid #60a5fa;
+  border-radius: 50%;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.plan-list-checkbox:checked {
+  background-color: #60a5fa;
+  border-color: #60a5fa;
+}
+
+.plan-list-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.375rem;
+  height: 0.375rem;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.plan-list-checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+// Card hover effects
+.plan-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.plan-card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+// Selection indicator
+.border-blue-400 {
+  border-color: #60a5fa;
+}
+
+// Action button states
+.btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+// Dropdown menu positioning
+.relative {
+  position: relative;
+}
+
+// Z-index for dropdowns
+.z-50 {
+  z-index: 50;
+}
+
+// Responsive grid adjustments
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1025px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// Loading skeleton animation
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+// Search input focus states
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6;
+  border-color: transparent;
+}
+
+// Button hover states
+button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+// Card selection animation
+.border-blue-400 {
+  transition: all 0.2s ease-in-out;
+}
+
+// Status badge styling
+.bg-green-100 {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+// Icon sizing
+.w-16.h-16 {
+  width: 4rem;
+  height: 4rem;
+}
+
+// Dropdown arrow rotation
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+// Transition utilities
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+.transition-colors {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.transition-transform {
+  transition: transform 0.2s ease-in-out;
+}
+
+// Shadow utilities
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+// Hover shadow
+.hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
 
 

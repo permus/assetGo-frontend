@@ -1,31 +1,29 @@
-import { Component, Input, Output, EventEmitter, OnInit, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorkOrderService } from '../../../work-orders/services/work-order.service';
+import { GlobalDropdownComponent, DropdownOption } from '../../../shared/components/global-dropdown';
 
-@Component({
-  selector: 'app-assign-work-order-modal',
-  templateUrl: './assign-work-order-modal.component.html',
-  styleUrls: ['./assign-work-order-modal.component.scss'],
-  standalone: true,
-  imports: [CommonModule, FormsModule]
-})
+  @Component({
+    selector: 'app-assign-work-order-modal',
+    templateUrl: './assign-work-order-modal.component.html',
+    styleUrls: ['./assign-work-order-modal.component.scss'],
+    standalone: true,
+    imports: [CommonModule, FormsModule, GlobalDropdownComponent]
+  })
 export class AssignWorkOrderModalComponent implements OnInit {
   @Input() teamMemberName: string = '';
   @Input() teamMemberId: number = 0;
   @Output() closed = new EventEmitter<void>();
   @Output() submitted = new EventEmitter<{ work_order_id: number; due_date?: string; notes?: string }>();
 
-  workOrders: any[] = [];
+  workOrders: DropdownOption[] = [];
   selectedWorkOrderId: number | null = null;
-  selectedWorkOrder: any = null;
+  selectedWorkOrder: DropdownOption | null = null;
   dueDate: string = '';
   notes: string = '';
   loading = false;
   errorMessage: string = '';
-  
-  // Dropdown state
-  showWorkOrderDropdown = false;
 
   constructor(private workOrderService: WorkOrderService) {}
 
@@ -38,7 +36,13 @@ export class AssignWorkOrderModalComponent implements OnInit {
     
     this.workOrderService.getWorkOrders({ page: 1, per_page: 1000 }).subscribe({
       next: (response: any) => {
-        this.workOrders = response.data || [];
+        // Transform work orders to DropdownOption format
+        this.workOrders = (response.data || []).map((workOrder: any) => ({
+          id: workOrder.id,
+          name: workOrder.title,
+          description: workOrder.description || `Status: ${workOrder.status_id}`,
+          icon: 'work-order'
+        }));
         this.loading = false;
       },
       error: (error: any) => {
@@ -81,14 +85,9 @@ export class AssignWorkOrderModalComponent implements OnInit {
     });
   }
 
-  toggleWorkOrderDropdown(): void {
-    this.showWorkOrderDropdown = !this.showWorkOrderDropdown;
-  }
-
-  selectWorkOrder(workOrder: any): void {
+  selectWorkOrder(workOrder: DropdownOption): void {
     this.selectedWorkOrder = workOrder;
     this.selectedWorkOrderId = workOrder.id;
-    this.showWorkOrderDropdown = false;
     this.errorMessage = '';
   }
 
@@ -98,11 +97,6 @@ export class AssignWorkOrderModalComponent implements OnInit {
 
   close(): void {
     this.closed.emit();
-  }
-
-  @HostListener('document:click')
-  closeOnOutsideClick(): void {
-    this.showWorkOrderDropdown = false;
   }
 }
 

@@ -1,0 +1,91 @@
+<div class="dropdown-wrapper" [class.error]="hasFieldError()">
+  <label *ngIf="label" class="dropdown-label">{{ label }} <span class="required" *ngIf="required">*</span></label>
+
+  <div class="relative generic-dropdown" (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      (click)="toggleDropdown()"
+      class="dropdown-button"
+      [class.error]="hasFieldError()"
+      [class.active]="showDropdown"
+      [disabled]="disabled">
+      <div class="dropdown-content">
+        <span *ngIf="!selectedOption" class="placeholder">{{ placeholder }}</span>
+
+        <div *ngIf="selectedOption" class="selected-item">
+          <div class="item-icon" *ngIf="selectedOption.icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <span class="selected-text">{{ selectedOption.name }}</span>
+        </div>
+
+        <div class="dropdown-actions">
+          <button
+            *ngIf="selectedOption && !disabled"
+            type="button"
+            (click)="clearSelection(); $event.stopPropagation()"
+            class="clear-btn"
+            title="Clear selection">
+            <svg class="clear-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+          
+          <svg class="dropdown-arrow" [class.rotated]="showDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+      </div>
+    </button>
+
+    <div *ngIf="showDropdown" class="dropdown-menu" [style.max-height]="maxHeight">
+      <div class="dropdown-header">
+        <span>{{ placeholder }}</span>
+        <span class="options-count">{{ filteredOptions.length }} option{{ filteredOptions.length !== 1 ? 's' : '' }}</span>
+      </div>
+
+      <!-- Search input -->
+      <div *ngIf="searchable" class="search-container">
+        <input
+          type="text"
+          [value]="searchTerm"
+          (input)="onSearchInput($event)"
+          placeholder="Search options..."
+          class="search-input"
+          (click)="$event.stopPropagation()">
+      </div>
+
+      <!-- No results message -->
+      <div *ngIf="searchable && filteredOptions.length === 0 && searchTerm.trim() !== ''" class="no-results">
+        No options found for "{{ searchTerm }}"
+      </div>
+
+      <!-- Options list -->
+      <button
+        *ngFor="let option of filteredOptions"
+        type="button"
+        (click)="selectOption(option)"
+        class="dropdown-item"
+        [class.selected]="selectedOption?.id === option.id"
+        [class.disabled]="option.disabled">
+        <div class="item-content">
+          <div class="item-icon" *ngIf="option.icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="item-details">
+            <div class="item-name">{{ option.name }}</div>
+            <div class="item-description" *ngIf="option.description">{{ getOptionDescription(option) }}</div>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div class="field-error" *ngIf="hasFieldError()">
+    {{ getFieldError() }}
+  </div>
+</div>
