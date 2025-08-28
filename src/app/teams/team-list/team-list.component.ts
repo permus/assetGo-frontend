@@ -5,13 +5,14 @@ import { TeamService, TeamMember, TeamMemberStatistics } from '../services/team.
 import { TeamDeleteConfirmationModalComponent } from '../components/team-delete-confirmation-modal/team-delete-confirmation-modal.component';
 import { TeamFormModalComponent } from '../components/team-form-modal/team-form-modal.component';
 import { AssignWorkOrderModalComponent } from '../components/assign-work-order-modal/assign-work-order-modal.component';
+import {ClickOutsideDirective} from '../../shared/directives/click-outside/click-outside.directive';
 
 @Component({
   selector: 'app-team-list',
   templateUrl: './team-list.component.html',
   styleUrls: ['./team-list.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent, AssignWorkOrderModalComponent]
+  imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent, AssignWorkOrderModalComponent, ClickOutsideDirective]
 })
 export class TeamListComponent implements OnInit {
   teamMembers: TeamMember[] = [];
@@ -20,15 +21,21 @@ export class TeamListComponent implements OnInit {
   error = '';
   successMessage = '';
   statistics: TeamMemberStatistics | null = null;
-  
+
   // Search and filtering
   searchTerm = '';
-  
+
   // Sorting
   selectedSort: any = null;
+  selectedRole: any = {label: 'All Roles', value: ''};
+  selectedType: any = {label: 'All Types', value: ''};
+  selectedStatus: any = {label: 'All Status', value: ''};
   selectedSortDir: 'asc' | 'desc' = 'asc';
   showSortDropdown = false;
-  
+  showRoleDropdown = false;
+  showTypeDropdown = false;
+  showStatusDropdown = false;
+
   // Modal states
   showDeleteModal = false;
   teamMemberToDelete: TeamMember | null = null;
@@ -37,13 +44,33 @@ export class TeamListComponent implements OnInit {
   isEditMode = false;
   showAssignModal = false;
   teamMemberToAssign: TeamMember | null = null;
-  
+
   // Sort options
   sortOptions = [
     { label: 'Name', value: 'name' },
     { label: 'Created Date', value: 'created_at' },
     { label: 'Email', value: 'email' },
     { label: 'Role', value: 'role' }
+  ];
+
+  roleOptions = [
+    { label: 'All Roles', value: '' },
+    { label: 'Admin', value: 'admin' },
+    { label: 'User', value: 'user' },
+    {label: 'Technician', value: 'technician'}
+  ];
+
+  typeOptions = [
+    { label: 'All Types', value: '' },
+    { label: 'Admin', value: 'admin' },
+    { label: 'User', value: 'user' },
+    {label: 'Technician', value: 'technician'}
+  ];
+
+  statusOptions = [
+    { label: 'All Status', value: '' },
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' }
   ];
 
   constructor(
@@ -55,12 +82,12 @@ export class TeamListComponent implements OnInit {
     const target = event.target as HTMLElement;
     const dropdownButton = target.closest('button');
     const dropdownMenu = target.closest('.dropdown-menu');
-    
+
     // Don't close if clicking on dropdown elements
     if (dropdownButton || dropdownMenu) {
       return;
     }
-    
+
     // Close all dropdowns if clicking outside
     this.teamMembers = this.teamMembers.map(tm => ({
       ...tm,
@@ -106,6 +133,10 @@ export class TeamListComponent implements OnInit {
     });
   }
 
+  refreshStats(): void {
+    this.loadStatistics();
+  }
+
   createTeamMember(): void {
     this.teamMemberToEdit = null;
     this.isEditMode = false;
@@ -131,12 +162,12 @@ export class TeamListComponent implements OnInit {
   onAssignmentSubmitted(data: { work_order_id: number; due_date?: string; notes?: string }): void {
     // Set success message
     this.successMessage = `Work order successfully assigned to ${this.teamMemberToAssign?.first_name} ${this.teamMemberToAssign?.last_name}`;
-    
+
     // Clear success message after 3 seconds
     setTimeout(() => {
       this.successMessage = '';
     }, 3000);
-    
+
     // Refresh the team member list to update the assigned work order count
     this.loadTeamMembers();
     this.closeAssign();
@@ -184,7 +215,7 @@ export class TeamListComponent implements OnInit {
       const index = this.teamMembers.findIndex(tm => tm.id === teamMember.id);
       if (index !== -1) {
         this.teamMembers[index] = teamMember;
-        this.filteredTeamMembers = this.filteredTeamMembers.map(tm => 
+        this.filteredTeamMembers = this.filteredTeamMembers.map(tm =>
           tm.id === teamMember.id ? teamMember : tm
         );
       }
@@ -193,14 +224,6 @@ export class TeamListComponent implements OnInit {
       this.filteredTeamMembers.unshift(teamMember);
     }
     this.closeFormModal();
-  }
-
-  getActiveTeamMembersCount(): number {
-    return this.statistics?.active_team_members || 0;
-  }
-
-  getTotalTeamMembersCount(): number {
-    return this.statistics?.total_team_members || 0;
   }
 
   onSearchChange(): void {
@@ -223,11 +246,40 @@ export class TeamListComponent implements OnInit {
   toggleSortDropdown(): void {
     this.showSortDropdown = !this.showSortDropdown;
   }
+  toggleRoleDropdown(): void {
+    this.showRoleDropdown = !this.showRoleDropdown;
+  }
+
+  toggleTypeDropdown(): void {
+    this.showTypeDropdown = !this.showTypeDropdown;
+  }
+
+  toggleStatusDropdown(): void {
+    this.showStatusDropdown = !this.showStatusDropdown;
+  }
 
   selectSort(sort: any): void {
     this.selectedSort = sort;
     this.showSortDropdown = false;
     this.sortTeamMembers();
+  }
+
+  selectRole(role: any): void {
+    this.selectedRole = role;
+    this.showRoleDropdown = false;
+    this.filterTeamMembers();
+  }
+
+  selectType(type: any): void {
+    this.selectedType = type;
+    this.showTypeDropdown = false;
+    this.filterTeamMembers();
+  }
+
+  selectStatus(status: any): void {
+    this.selectedStatus = status;
+    this.showStatusDropdown = false;
+    this.filterTeamMembers();
   }
 
   toggleSortDir(): void {

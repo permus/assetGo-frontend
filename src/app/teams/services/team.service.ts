@@ -27,12 +27,14 @@ export interface TeamMember {
   // Location scoping info (optional fields provided by backend)
   locations?: { id: number; name: string }[];
   has_full_location_access?: boolean;
+  assigned_work_orders_count?: number;
 }
 
 export interface TeamMemberStatistics {
   total_team_members: number;
-  active_team_members: number;
-  pending_team_members: number;
+  work_orders_count: number;
+  active_work_orders_count: number;
+  completion_rate: number;
 }
 
 export interface AvailableRole {
