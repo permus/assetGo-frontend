@@ -15,9 +15,9 @@ export class MaintenanceStore {
 
   constructor(private api: MaintenanceService) {}
 
-  fetchPlans() {
+  fetchPlans(keyword?: string, per_page?: number) {
     this.loading.set(true);
-    this.api.listPlans({ include: 'meta', per_page: 20 }).subscribe({
+    this.api.listPlans({ include: 'meta', per_page: per_page ? per_page : 20 ,keyword}).subscribe({
       next: (res) => {
         const list = Array.isArray(res?.data?.plans) ? res.data.plans : [];
         this.plans.set(list);

@@ -1,28 +1,32 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MaintenancePlan } from '../../models';
-import { MaintenanceService } from '../../maintenance.service';
-import { AssetService } from '../../../assets/services/asset.service';
-import { Subject, takeUntil } from 'rxjs';
+import {Component, OnInit, OnDestroy, HostListener} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {MaintenancePlan} from '../../models';
+import {MaintenanceService} from '../../maintenance.service';
+import {AssetService} from '../../../assets/services/asset.service';
+import {Subject, takeUntil} from 'rxjs';
+import {PlanDialogComponent} from '../../components/plan-dialog/plan-dialog.component';
 
 @Component({
   selector: 'app-plan-preview-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink, PlanDialogComponent],
   templateUrl: './plan-preview-page.component.html',
   styleUrls: ['./plan-preview-page.component.scss']
 })
 export class PlanPreviewPageComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-
+  editMode = false;
+  planToEdit: MaintenancePlan | null = null;
+  isDialogOpen = false;
   // Plan data
   plan: MaintenancePlan | null = null;
   planData: any = null;
   selectedAssets: any[] = [];
   checklistItems: any[] = [];
   scheduleInfo: any = null;
+  planMenus: { [key: number]: boolean } = [];
 
   // Loading states
   loading = false;
@@ -30,6 +34,8 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
 
   // UI state
   descriptionExpanded = false;
+  notesExpanded = false;
+  instructionsExpanded = false;
   showActionsDropdown = false;
 
   constructor(
@@ -37,7 +43,8 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
     private router: Router,
     private maintenanceService: MaintenanceService,
     private assetService: AssetService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
@@ -60,9 +67,10 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
     // Load the plan data from the service
     this.maintenanceService.getPlan(planId).subscribe({
       next: (response) => {
-        this.plan = response.data;
+        this.plan = response.data.plan;
+        console.log(response.data.plan, 'plan')
         this.loading = false;
-        
+
         // Load additional data (assets, checklists, schedule)
         this.loadAdditionalData();
       },
@@ -140,7 +148,7 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
 
     // Try to fetch assets by IDs in bulk first
     const assetIds = this.plan.asset_ids.join(',');
-    this.assetService.getAssets({ ids: assetIds }).subscribe({
+    this.assetService.getAssets({ids: assetIds}).subscribe({
       next: (response: any) => {
         if (response.success && response.data && Array.isArray(response.data)) {
           this.selectedAssets = response.data.map((asset: any) => ({
@@ -172,7 +180,7 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
 
     console.log('Loading assets individually for IDs:', this.plan.asset_ids);
 
-    const assetPromises = this.plan.asset_ids.map(id => 
+    const assetPromises = this.plan.asset_ids.map(id =>
       this.assetService.getAsset(id).toPromise()
     );
 
@@ -187,9 +195,9 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
               id: asset.id,
               name: asset.name || 'Unnamed Asset',
               asset_code: asset.asset_code || 'No Code',
-              location: asset.location || { name: 'Location not specified' },
-              status: asset.status || { name: 'Unknown' },
-              category: asset.category || { name: 'Uncategorized' }
+              location: asset.location || {name: 'Location not specified'},
+              status: asset.status || {name: 'Unknown'},
+              category: asset.category || {name: 'Uncategorized'}
             };
           });
         console.log('Processed individual assets:', this.selectedAssets);
@@ -200,10 +208,16 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  editPlan() {
-    if (this.plan) {
-      this.router.navigate(['/maintenance/plans', this.plan.id, 'edit']);
-    }
+  editPlan(plan: any) {
+    // Close the dropdown menu
+    this.planMenus[plan.id!] = false;
+
+    // Set edit mode and plan to edit
+    this.editMode = true;
+    this.planToEdit = plan;
+
+    // Open the dialog
+    this.isDialogOpen = true;
   }
 
   backToPlans() {
@@ -245,19 +259,27 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
 
   getPriorityColor(priority: string): string {
     switch (priority?.toLowerCase()) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   }
 
   getPlanTypeColor(type: string): string {
     switch (type?.toLowerCase()) {
-      case 'preventive': return 'bg-blue-100 text-blue-800';
-      case 'corrective': return 'bg-orange-100 text-orange-800';
-      case 'emergency': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'preventive':
+        return 'bg-blue-100 text-blue-800';
+      case 'corrective':
+        return 'bg-orange-100 text-orange-800';
+      case 'emergency':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   }
 
@@ -295,5 +317,19 @@ export class PlanPreviewPageComponent implements OnInit, OnDestroy {
     if (!(event.target as Element).closest('.relative')) {
       this.showActionsDropdown = false;
     }
+  }
+
+  onUpdated() {
+    this.isDialogOpen = false;
+    this.editMode = false;
+    this.planToEdit = null;
+    if (this.plan?.id){
+      this.loadPlanData(this.plan.id);
+    }
+  }
+  onDialogClosed(){
+    this.isDialogOpen = false;
+    this.editMode = false;
+    this.planToEdit = null;
   }
 }

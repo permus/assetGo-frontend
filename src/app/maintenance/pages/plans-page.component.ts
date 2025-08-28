@@ -25,7 +25,7 @@ export class PlansPageComponent implements OnInit {
   selectedPlans: MaintenancePlan[] = [];
   showingArchived = false;
   planMenus: { [key: number]: boolean } = [];
-  
+  searchTimeOut :any = null;  //eslint-disable-line @typescript-eslint/no-explicit-any
   // Delete modal state
   showDeleteConfirmationModal = false;
 
@@ -35,19 +35,19 @@ export class PlansPageComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void { 
-    this.store.fetchPlans(); 
+  ngOnInit(): void {
+    this.store.fetchPlans();
   }
 
-  openDialog() { 
+  openDialog() {
     this.editMode = false;
     this.planToEdit = null;
-    this.isDialogOpen = true; 
+    this.isDialogOpen = true;
   }
 
-  onCreated() { 
-    this.isDialogOpen = false; 
-    this.store.fetchPlans(); 
+  onCreated() {
+    this.isDialogOpen = false;
+    this.store.fetchPlans();
   }
 
   onUpdated() {
@@ -115,12 +115,12 @@ export class PlansPageComponent implements OnInit {
 
     // Get plan IDs for bulk delete
     const planIds = this.selectedPlans.map(plan => plan.id!);
-    
+
     // Delete plans one by one (since there's no bulk delete endpoint)
     let completed = 0;
     let successCount = 0;
     let errorCount = 0;
-    
+
     const finalize = () => {
       completed++;
       if (completed >= planIds.length) {
@@ -128,7 +128,7 @@ export class PlansPageComponent implements OnInit {
         this.store.fetchPlans();
         this.clearSelection();
         this.closeDeleteModal();
-        
+
         // Show success/error message
         if (errorCount === 0) {
           console.log(`${successCount} plans deleted successfully`);
@@ -167,9 +167,16 @@ export class PlansPageComponent implements OnInit {
 
   // Search and filtering
   onSearch() {
-    // TODO: Implement search functionality
-    console.log('Searching for:', this.searchQuery);
+    if (this.searchTimeOut) {
+      clearTimeout(this.searchTimeOut);
+    }
+    this.searchTimeOut = setTimeout(() => {
+      this.store.fetchPlans(this.searchQuery);
+    }, 500);
   }
+onShowChange(event: any) {
+  this.store.fetchPlans(this.searchQuery, event.target.value);
+}
 
   // View toggle
   toggleViewType() {
@@ -186,11 +193,11 @@ export class PlansPageComponent implements OnInit {
   editPlan(plan: MaintenancePlan) {
     // Close the dropdown menu
     this.planMenus[plan.id!] = false;
-    
+
     // Set edit mode and plan to edit
     this.editMode = true;
     this.planToEdit = plan;
-    
+
     // Open the dialog
     this.isDialogOpen = true;
   }
@@ -223,10 +230,10 @@ export class PlansPageComponent implements OnInit {
   deletePlan(plan: MaintenancePlan) {
     // Close the dropdown menu
     this.planMenus[plan.id!] = false;
-    
+
     // Set the selected plan for single deletion
     this.selectedPlans = [plan];
-    
+
     // Open the delete confirmation modal
     this.showDeleteConfirmationModal = true;
   }

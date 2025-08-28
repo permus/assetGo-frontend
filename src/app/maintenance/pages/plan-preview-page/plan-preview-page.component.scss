@@ -46,48 +46,7 @@
     }
   }
 
-  // Checklist item styles
-  .checklist-item {
-    @apply bg-gray-50 rounded-lg p-4 border border-gray-200;
 
-    .item-content {
-      @apply flex flex-col space-y-3;
-
-      .item-main {
-        .item-title {
-          @apply text-lg font-semibold text-gray-900 mb-2;
-        }
-
-        .item-description {
-          @apply text-gray-600 text-sm;
-        }
-      }
-
-      .item-badges {
-        @apply flex flex-wrap gap-2;
-
-        .item-badge {
-          @apply px-2 py-1 rounded-full text-xs font-medium;
-
-          &.type-badge {
-            @apply bg-blue-100 text-blue-800;
-          }
-
-          &.required-badge {
-            @apply bg-yellow-100 text-yellow-800;
-          }
-
-          &.safety-badge {
-            @apply bg-red-100 text-red-800;
-          }
-
-          &.photo-badge {
-            @apply bg-purple-100 text-purple-800;
-          }
-        }
-      }
-    }
-  }
 
   // Schedule item styles
   .schedule-item {
@@ -102,14 +61,6 @@
     }
   }
 
-  // Line clamp utility
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
   // Print styles
   .print-hide {
     @media print {
@@ -117,4 +68,3 @@
     }
   }
 }
-

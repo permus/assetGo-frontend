@@ -1,16 +1,26 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-import { AssetService } from '../../services/asset.service';
-import { Location as angularLocation } from '@angular/common';
-import { PdfExportService } from '../../../shared/services/pdf-export.service';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  ViewChildren,
+  QueryList,
+  ChangeDetectorRef
+} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {Subject, takeUntil} from 'rxjs';
+import {AssetService} from '../../services/asset.service';
+import {Location as angularLocation} from '@angular/common';
+import {PdfExportService} from '../../../shared/services/pdf-export.service';
+import {FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import flatpickr from 'flatpickr';
-import { TransferAssetModalComponent } from '../transfer-asset-modal/transfer-asset-modal.component';
+import {TransferAssetModalComponent} from '../transfer-asset-modal/transfer-asset-modal.component';
 import * as QRCode from 'qrcode';
-import { Chart, ChartConfiguration, ChartData, ChartOptions } from 'chart.js';
-import { registerables } from 'chart.js';
+import {Chart, ChartConfiguration, ChartData, ChartOptions} from 'chart.js';
+import {registerables} from 'chart.js';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -28,18 +38,19 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   asset: any = null;
   loading = true;
+  saveMaintenanceLoading = false;
   error = '';
-  
+
   // Image gallery state
   currentImageIndex = 0;
   selectedImageUrl: string | null = null;
-  
+
   // UI state
   descriptionExpanded = false;
   showActionsDropdown = false;
   showTransferModal = false;
   showActivityHistoryModal = false;
-  
+
   // Maintenance Schedule
   maintenanceSchedules: any[] = [];
   maintenanceLoading = false;
@@ -55,10 +66,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   healthMetrics = {
     lastUpdated: new Date(),
     performanceTrend: [
-      { month: 'Jan', value: 82 },
-      { month: 'Feb', value: 84 },
-      { month: 'Mar', value: 88 },
-      { month: 'Apr', value: 85 }
+      {month: 'Jan', value: 82},
+      {month: 'Feb', value: 84},
+      {month: 'Mar', value: 88},
+      {month: 'Apr', value: 85}
     ]
   };
 
@@ -84,7 +95,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   activityHistoryLoading = false;
   activityError = '';
   activityHistoryError = '';
-  
+
   // Activity history pagination and filters
   activityHistoryParams: { [key: string]: any } = {
     page: 1,
@@ -229,7 +240,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadMaintenanceSchedules() {
     if (!this.asset) return;
-    
+
     this.maintenanceLoading = true;
     this.assetService.listMaintenanceSchedules(this.asset.id)
       .pipe(takeUntil(this.destroy$))
@@ -260,7 +271,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // Update health metrics with real asset data
       this.healthMetrics.lastUpdated = new Date();
-      
+
       // Update maintenance data with real asset data
       this.mockMaintenanceData = {
         status: this.asset.status || 'Active',
@@ -268,7 +279,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         nextMaintenance: this.asset.next_maintenance_date || null,
         interval: this.asset.maintenance_interval || 'Every 6 months'
       };
-      
+
       // Initialize image gallery
       if (this.asset.images && this.asset.images.length > 0) {
         this.selectedImageUrl = this.asset.images[0].image_url;
@@ -303,7 +314,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Generate the print content
     const printContent = this.generatePrintContent();
-    
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -360,9 +371,9 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         </body>
       </html>
     `);
-    
+
     printWindow.document.close();
-    
+
     // Wait for content to load then print
     printWindow.onload = () => {
       printWindow.print();
@@ -375,7 +386,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const asset = this.asset;
     const currentDate = new Date().toLocaleDateString();
-    
+
     return `
       <div class="header">
         <h1>Asset Details Report</h1>
@@ -551,7 +562,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getAssetTypeIcon(): string {
     if (!this.asset?.type) return 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4';
-    
+
     const icons: { [key: string]: string } = {
       'fixed': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
       'semi-fixed': 'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4a2 2 0 001-1.73z',
@@ -622,8 +633,9 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   saveMaintenanceSchedule() {
     if (this.maintenanceForm.valid && this.asset) {
+      this.saveMaintenanceLoading = true;
       const formData = this.maintenanceForm.value;
-      
+
       if (this.selectedSchedule) {
         // Update existing schedule
         this.assetService.updateMaintenanceSchedule(this.asset.id, this.selectedSchedule.id, formData)
@@ -636,9 +648,12 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
               }
             },
             error: (error) => {
+              this.saveMaintenanceLoading = false;
               console.error('Error updating maintenance schedule:', error);
             }
-          });
+          }).add(() =>{
+            this.saveMaintenanceLoading = false;
+        });
       } else {
         // Create new schedule
         this.assetService.addMaintenanceSchedule(this.asset.id, formData)
@@ -651,9 +666,12 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
               }
             },
             error: (error) => {
+              this.saveMaintenanceLoading = false;
               console.error('Error adding maintenance schedule:', error);
             }
-          });
+          }).add(() =>{
+            this.saveMaintenanceLoading = false;
+        });
       }
     }
   }
@@ -729,15 +747,15 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     // You can load asset types from API and map them here
     // For now, return the ID or a default value
     if (!typeId) return 'Standard Asset';
-    
+
     const typeMap: { [key: string]: string } = {
       '1': 'Fixed Asset',
-      '2': 'Semi-Fixed Asset', 
+      '2': 'Semi-Fixed Asset',
       '3': 'Mobile Asset',
       '4': 'Fleet Asset',
       '5': 'IT Equipment'
     };
-    
+
     return typeMap[typeId.toString()] || `Type ${typeId}`;
   }
 
@@ -755,10 +773,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   // Related assets methods
   loadRelatedAssets() {
     if (!this.asset?.id) return;
-    
+
     this.relatedAssetsLoading = true;
     this.relatedAssetsError = '';
-    
+
     this.assetService.getRelatedAssets(this.asset.id, this.relatedAssetsParams)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -779,12 +797,12 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadDepreciationChart() {
     if (!this.asset?.id) return;
-    
+
     this.depreciationChartLoading = true;
     this.depreciationChartError = '';
-    
+
     console.log('Loading depreciation chart for asset:', this.asset.id);
-    
+
     this.assetService.getAssetDepreciationChart(this.asset.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -814,7 +832,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   createDepreciationChart() {
     console.log('Creating depreciation chart...');
-    
+
     // Destroy existing chart if it exists
     if (this.depreciationChart) {
       console.log('Destroying existing chart');
@@ -825,7 +843,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       const ctx = document.getElementById('depreciationChart') as HTMLCanvasElement;
       console.log('Canvas element:', ctx);
-      
+
       if (!ctx) {
         console.error('Depreciation chart canvas not found');
         return;
@@ -834,7 +852,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       // Use API data if available, otherwise fallback to mock data
       const chartData = this.processChartData(this.depreciationChartData) || this.generateMockDepreciationData();
       console.log('Chart data to use:', chartData);
-      
+
       try {
         this.depreciationChart = new Chart(ctx, {
           type: 'line',
@@ -913,15 +931,15 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
               intersect: false
             }
           }
-                 });
-         console.log('Chart created successfully');
-         // Trigger change detection after chart creation
-         this.cdr.detectChanges();
-       } catch (error) {
-         console.error('Error creating chart:', error);
-       }
-     }, 100);
-   }
+        });
+        console.log('Chart created successfully');
+        // Trigger change detection after chart creation
+        this.cdr.detectChanges();
+      } catch (error) {
+        console.error('Error creating chart:', error);
+      }
+    }, 100);
+  }
 
   processChartData(apiData: any) {
     if (!apiData || !apiData.chart_data || !apiData.chart_data.has_data) {
@@ -931,7 +949,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const chartData = apiData.chart_data;
     const labels = chartData.depreciation_months.map((month: number) => `Month ${month}`);
     const values = chartData.depreciation_values.map((value: string) => parseFloat(value));
-    
+
     // Calculate accumulated depreciation
     const purchasePrice = parseFloat(apiData.asset.purchase_price);
     const depreciation = values.map((value: number) => purchasePrice - value);
@@ -953,25 +971,25 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const purchasePrice = parseFloat(this.asset?.purchase_price) || 10000;
     const usefulLife = parseFloat(this.asset?.depreciation) || 10;
     const depreciationLife = this.asset?.depreciation_life || 10;
-    
+
     const labels: string[] = [];
     const values: number[] = [];
     const depreciation: number[] = [];
-    
+
     // Use depreciation_life if available, otherwise use usefulLife
     const totalPeriods = depreciationLife || usefulLife;
-    
+
     for (let month = 1; month <= totalPeriods; month++) {
       labels.push(`Month ${month}`);
-      
+
       const monthlyDepreciation = purchasePrice / totalPeriods;
       const totalDepreciation = monthlyDepreciation * (month - 1);
       const currentValue = Math.max(0, purchasePrice - totalDepreciation);
-      
+
       values.push(currentValue);
       depreciation.push(totalDepreciation);
     }
-    
+
     return {
       labels,
       values,
@@ -1004,7 +1022,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (status?.color) {
       return `bg-${this.getColorFromHex(status.color)}-100 text-${this.getColorFromHex(status.color)}-700`;
     }
-    
+
     const statusName = status?.name || status;
     const colors: { [key: string]: string } = {
       'Active': 'bg-green-100 text-green-700',
@@ -1036,10 +1054,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   // Activity timeline methods
   loadActivityHistory() {
     if (!this.asset?.id) return;
-    
+
     this.activityLoading = true;
     this.activityError = '';
-    
+
     // Load recent activities (first 5)
     const params = {
       page: 1,
@@ -1047,7 +1065,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       sort_by: 'created_at',
       sort_dir: 'desc'
     };
-    
+
     this.assetService.getActivityHistory(this.asset.id, params)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -1102,13 +1120,13 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     console.log('Loading health performance chart for asset:', this.asset.id);
 
-    this.assetService.getAssetHealthPerformanceChart(this.asset.id, { months: 12 })
+    this.assetService.getAssetHealthPerformanceChart(this.asset.id, {months: 12})
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           console.log('Health performance chart API response:', response);
           this.healthPerformanceChartLoading = false;
-          
+
           if (response.success && response.data) {
             this.healthPerformanceChartData = response.data;
             // Create chart after a delay to ensure DOM is ready
@@ -1131,7 +1149,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   createHealthPerformanceChart() {
     console.log('Creating health performance chart...');
     console.log('Health performance chart data:', this.healthPerformanceChartData);
-    
+
     // Destroy existing chart
     if (this.healthPerformanceChart) {
       this.healthPerformanceChart.destroy();
@@ -1150,7 +1168,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         console.log('Processing health performance data...');
         const chartData = this.processHealthPerformanceData(this.healthPerformanceChartData);
         console.log('Processed chart data:', chartData);
-        
+
         const config: ChartConfiguration = {
           type: 'line',
           data: {
@@ -1228,7 +1246,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
                 cornerRadius: 8,
                 displayColors: true,
                 callbacks: {
-                  label: function(context) {
+                  label: function (context) {
                     const label = context.dataset.label || '';
                     const value = context.parsed.y;
                     if (label === 'Maintenance Count') {
@@ -1324,7 +1342,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       if (dateStr && dateStr.includes('-')) {
         const [year, month] = dateStr.split('-');
         const date = new Date(parseInt(year), parseInt(month) - 1);
-        return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+        return date.toLocaleDateString('en-US', {month: 'short', year: '2-digit'});
       }
       return dateStr;
     });
@@ -1348,18 +1366,18 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     for (let i = 0; i < months; i++) {
       const date = new Date();
       date.setMonth(date.getMonth() - (months - 1 - i));
-      labels.push(date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
-      
+      labels.push(date.toLocaleDateString('en-US', {month: 'short', year: '2-digit'}));
+
       // Generate realistic health scores (declining trend)
       const baseHealth = 85;
       const decline = (i * 2) + Math.random() * 5;
       healthScores.push(Math.max(60, Math.round(baseHealth - decline)));
-      
+
       // Generate performance scores (more stable)
       const basePerformance = 90;
       const variation = (Math.random() - 0.5) * 10;
       performanceScores.push(Math.max(75, Math.round(basePerformance + variation)));
-      
+
       // Generate maintenance counts (random)
       maintenanceCounts.push(Math.floor(Math.random() * 5) + 1);
     }
@@ -1386,14 +1404,14 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   forceCreateHealthPerformanceChart() {
     console.log('Force creating health performance chart...');
     console.log('Current health performance chart data:', this.healthPerformanceChartData);
-    
+
     // If no data, try to load it first
     if (!this.healthPerformanceChartData) {
       console.log('No data available, loading health performance chart...');
       this.loadHealthPerformanceChart();
       return;
     }
-    
+
     this.createHealthPerformanceChart();
   }
 
@@ -1423,12 +1441,12 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getAssetAge(): string {
     if (!this.asset?.purchase_date) return 'Unknown';
-    
+
     const purchaseDate = new Date(this.asset.purchase_date);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - purchaseDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 365) {
       return `${Math.floor(diffDays / 30)} months`;
     } else {
@@ -1440,7 +1458,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   getUtilizationRate(): number {
     // Calculate based on health score and asset age
     const healthScore = this.asset?.health_score || 0;
-    
+
     // Simple calculation based on health score
     if (healthScore >= 80) return 95;
     if (healthScore >= 60) return 85;
@@ -1451,7 +1469,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   getUptimePercentage(): number {
     // Calculate based on health score and maintenance history
     const healthScore = this.asset?.health_score || 0;
-    
+
     if (healthScore >= 80) return 99.5;
     if (healthScore >= 60) return 98.0;
     if (healthScore >= 40) return 95.0;
@@ -1460,7 +1478,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getMaintenanceFrequency(): string {
     const healthScore = this.asset?.health_score || 0;
-    
+
     if (healthScore >= 80) return 'Low';
     if (healthScore >= 60) return 'Medium';
     if (healthScore >= 40) return 'High';
@@ -1469,7 +1487,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getMaintenanceFrequencyPercentage(): number {
     const healthScore = this.asset?.health_score || 0;
-    
+
     if (healthScore >= 80) return 20;
     if (healthScore >= 60) return 40;
     if (healthScore >= 40) return 60;
@@ -1480,9 +1498,9 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     // Calculate based on current value vs purchase price
     const purchasePrice = parseFloat(this.asset?.purchase_price) || 0;
     const currentValue = this.calculateCurrentValue();
-    
+
     if (purchasePrice === 0) return 85;
-    
+
     const efficiency = (currentValue / purchasePrice) * 100;
     return Math.min(Math.max(efficiency, 0), 100);
   }
@@ -1508,7 +1526,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getPerformanceTrend(): string {
     const healthScore = this.asset?.health_score || 0;
-    
+
     if (healthScore >= 80) return 'Improving';
     if (healthScore >= 60) return 'Stable';
     if (healthScore >= 40) return 'Declining';
@@ -1517,7 +1535,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getCostEfficiencyTrend(): string {
     const efficiency = this.getCostEfficiency();
-    
+
     if (efficiency >= 80) return 'Optimal';
     if (efficiency >= 60) return 'Good';
     if (efficiency >= 40) return 'Fair';
@@ -1526,7 +1544,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getMaintenanceTrend(): string {
     const healthScore = this.asset?.health_score || 0;
-    
+
     if (healthScore >= 80) return 'Low';
     if (healthScore >= 60) return 'Stable';
     if (healthScore >= 40) return 'Increasing';
@@ -1579,28 +1597,28 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const healthScore = this.asset?.health_score || 0;
     const currentValue = this.calculateCurrentValue();
     const purchasePrice = parseFloat(this.asset?.purchase_price) || 0;
-    
+
     if (healthScore < 40) {
       alerts.push({
         message: 'Asset health is critical - consider replacement',
         class: 'bg-red-50 text-red-700'
       });
     }
-    
+
     if (currentValue < purchasePrice * 0.3) {
       alerts.push({
         message: 'Asset value has depreciated significantly',
         class: 'bg-orange-50 text-orange-700'
       });
     }
-    
+
     if (this.asset?.warranty === 'None' || !this.asset?.warranty) {
       alerts.push({
         message: 'No warranty coverage - maintenance costs may increase',
         class: 'bg-yellow-50 text-yellow-700'
       });
     }
-    
+
     return alerts;
   }
 
@@ -1608,7 +1626,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const alerts = [];
     const healthScore = this.asset?.health_score || 0;
     const age = this.getAssetAge();
-    
+
     if (healthScore < 60) {
       alerts.push({
         title: 'Maintenance Alert',
@@ -1616,7 +1634,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         class: 'bg-orange-50 text-orange-700'
       });
     }
-    
+
     if (healthScore < 40) {
       alerts.push({
         title: 'Critical Alert',
@@ -1624,7 +1642,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         class: 'bg-red-50 text-red-700'
       });
     }
-    
+
     if (age.includes('year') && parseInt(age) > 5) {
       alerts.push({
         title: 'Age Alert',
@@ -1632,7 +1650,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         class: 'bg-blue-50 text-blue-700'
       });
     }
-    
+
     return alerts;
   }
 
@@ -1657,7 +1675,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   scrollToSection(sectionId: string) {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({behavior: 'smooth'});
     }
   }
 
@@ -1688,12 +1706,13 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     // TODO: View detailed cost history
     console.log('View cost history');
   }
+
   getWarrantyStatus(warrantyDate: string): string {
     if (!warrantyDate) return 'No warranty';
-    
+
     const today = new Date();
     const warranty = new Date(warrantyDate);
-    
+
     if (warranty < today) {
       return 'Expired';
     } else {
@@ -1784,11 +1803,11 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const currentDate = new Date();
     const usefulLife = 10;
     const endDate = new Date(purchaseDate.getTime() + (usefulLife * 365.25 * 24 * 60 * 60 * 1000));
-    
+
     // Generate points for the depreciation line
     const points: string[] = [];
     const totalDays = (endDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24);
-    
+
     for (let i = 0; i <= 12; i++) {
       const days = (totalDays * i) / 12;
       const date = new Date(purchaseDate.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -1796,27 +1815,27 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       const annualDepreciation = maxValue / usefulLife;
       const totalDepreciation = Math.min(annualDepreciation * yearsElapsed, maxValue);
       const currentValue = Math.max(0, maxValue - totalDepreciation);
-      
+
       const x = (i / 12) * 100;
       const y = 100 - ((currentValue / maxValue) * 100);
-      
+
       points.push(`${x},${y}`);
     }
-    
+
     return `M ${points.join(' L ')}`;
   }
 
   getCurrentPeriodX(): number {
     if (!this.asset?.purchase_date) return 0;
-    
+
     const purchaseDate = new Date(this.asset.purchase_date);
     const currentDate = new Date();
     const usefulLife = 10;
     const endDate = new Date(purchaseDate.getTime() + (usefulLife * 365.25 * 24 * 60 * 60 * 1000));
-    
+
     const totalDays = (endDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24);
     const elapsedDays = (currentDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24);
-    
+
     return Math.min(100, Math.max(0, (elapsedDays / totalDays) * 100));
   }
 
@@ -1830,13 +1849,13 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const purchaseDate = this.asset?.purchase_date ? new Date(this.asset.purchase_date) : new Date();
     const usefulLife = 10;
     const endDate = new Date(purchaseDate.getTime() + (usefulLife * 365.25 * 24 * 60 * 60 * 1000));
-    
+
     const dates: Date[] = [];
     for (let i = 0; i <= 12; i++) {
       const days = ((endDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24) * i) / 12;
       dates.push(new Date(purchaseDate.getTime() + (days * 24 * 60 * 60 * 1000)));
     }
-    
+
     return dates;
   }
 
@@ -1848,12 +1867,12 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   calculateRemainingYears(): number {
     if (!this.asset?.purchase_date) return 10;
-    
+
     const purchaseDate = new Date(this.asset.purchase_date);
     const currentDate = new Date();
     const usefulLife = 10;
     const yearsElapsed = (currentDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
-    
+
     // Round to 2 decimal places to avoid floating point precision issues
     return Math.round(Math.max(0, usefulLife - yearsElapsed) * 100) / 100;
   }
@@ -1957,10 +1976,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   generateQRCode() {
     if (!this.asset) return;
-    
+
     this.qrCodeLoading = true;
     const publicUrl = `${window.location.origin}/public/asset/${this.asset.id}`;
-    
+
     QRCode.toDataURL(publicUrl, {
       width: 300,
       margin: 2,
@@ -1981,13 +2000,13 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   generateBarcode() {
     if (!this.asset?.asset_id) return;
-    
+
     this.barcodeLoading = true;
     const assetId = this.asset.asset_id;
-    
+
     // Use QuickChart.io service to generate barcode
     const barcodeUrl = `https://quickchart.io/barcode?c=${encodeURIComponent(assetId)}&chs=300x100&chld=L%7C0&choe=UTF-8`;
-    
+
     // Convert the URL to a data URL for download
     fetch(barcodeUrl)
       .then(response => response.blob())
@@ -2087,10 +2106,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadFullActivityHistory() {
     if (!this.asset?.id) return;
-    
+
     this.activityHistoryLoading = true;
     this.activityHistoryError = '';
-    
+
     this.assetService.getActivityHistory(this.asset.id, this.activityHistoryParams)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -2117,14 +2136,14 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   // Helper methods for activity history data formatting
   formatActivityBeforeAfter(before: any, after: any): string {
     if (!before && !after) return '';
-    
+
     let changes: string[] = [];
-    
+
     if (before && after) {
       // Compare before and after to show what changed
       const beforeKeys = Object.keys(before);
       const afterKeys = Object.keys(after);
-      
+
       for (const key of afterKeys) {
         if (before[key] !== after[key]) {
           const fieldName = this.getFieldDisplayName(key);
@@ -2156,7 +2175,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     }
-    
+
     return changes.length > 0 ? changes.join(', ') : '';
   }
 
@@ -2180,7 +2199,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       'manufacturer': 'Manufacturer',
       'category_id': 'Category'
     };
-    
+
     return fieldMap[fieldKey] || fieldKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 
@@ -2220,7 +2239,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       'maintenance': 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
       'imported': 'M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10'
     };
-    
+
     return iconMap[action] || 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z';
   }
 
@@ -2233,7 +2252,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       'maintenance': 'bg-orange-100 text-orange-600',
       'imported': 'bg-indigo-100 text-indigo-600'
     };
-    
+
     return colorMap[action] || 'bg-gray-100 text-gray-600';
   }
 

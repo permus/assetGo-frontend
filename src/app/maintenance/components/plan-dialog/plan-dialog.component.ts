@@ -27,7 +27,7 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
   loading = false;
   error: string | null = null;
   fieldErrors: { [key: string]: string[] } = {};
-
+  private assetsSearchTimeout: ReturnType<typeof setTimeout> | null = null;
   model: MaintenancePlan & { checklist_items: MaintenancePlanChecklist[] } = {
     name: '',
     priority_id: undefined,
@@ -325,19 +325,24 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     this.model.plan_type = value;
     this.showPlanTypeDropdown = false;
   }
-  getPlanTypeName(val: PlanType | null | undefined): string { return val ? String(val) : ''; }
+  getPlanTypeName(val: PlanType | null | undefined): string {
+    if (!val) return '';
+    return val
+      .toLowerCase()
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase());
 
-  toggleItemTypeDropdown(index: number) {
-    this.openItemTypeDropdownIndex = this.openItemTypeDropdownIndex === index ? null : index;
   }
-  selectItemType(index: number, t: MaintenancePlanChecklist['type']) {
-    const list = [...this.items()];
-    if (list[index]) {
-      list[index] = { ...list[index], type: t };
-      this.items.set(list);
-    }
-    this.openItemTypeDropdownIndex = null;
+
+  formatPlanName(val: PlanType | null | undefined): string {
+    if (!val) return '';
+
+    return val
+      .toLowerCase()
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase());
   }
+
   toggleNewItemTypeDropdown() { this.showNewItemTypeDropdown = !this.showNewItemTypeDropdown; }
   selectNewItemType(t: MaintenancePlanChecklist['type']) { this.newChecklistItem.type = t; this.showNewItemTypeDropdown = false; }
 
@@ -441,7 +446,17 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
   nextAssetsPage() { if (this.assetsPage() < this.totalAssetPages()) { this.assetsPage.set(this.assetsPage()+1); this.loadAssets(); } }
   prevAssetsPage() { if (this.assetsPage() > 1) { this.assetsPage.set(this.assetsPage()-1); this.loadAssets(); } }
 
-  onAssetsSearchChange(v: string) { this.searchAssets.set(v); this.assetsPage.set(1); this.loadAssets(); }
+  onAssetsSearchChange(v: string): void {
+    if (this.assetsSearchTimeout) {
+      clearTimeout(this.assetsSearchTimeout);
+    }
+
+    this.assetsSearchTimeout = setTimeout(() => {
+      this.searchAssets.set(v);
+      this.assetsPage.set(1);
+      this.loadAssets();
+    }, 500);
+  }
   onAssetsCategoryChange(id: string) { this.selectedAssetCategoryId = id ? Number(id) : null; this.assetsPage.set(1); this.loadAssets(); }
   onAssetsStatusChange(id: string) { this.selectedAssetStatusId = id ? Number(id) : null; this.assetsPage.set(1); this.loadAssets(); }
 
