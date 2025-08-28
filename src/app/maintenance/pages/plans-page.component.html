@@ -12,16 +12,7 @@
         </svg>
         Create Plan
       </button>
-      <div class="relative" (click)="$event.stopPropagation()">
-        <button (click)="toggleViewType()" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
-          <svg *ngIf="viewType === 'grid'" class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-          </svg>
-          <svg *ngIf="viewType === 'list'" class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-          </svg>
-        </button>
-      </div>
+      
     </div>
   </div>
 
@@ -103,15 +94,29 @@
       </div>
     </div>
     
-    <!-- Right: View Toggle -->
-    <div class="flex items-center space-x-2">
-      <button
-        (click)="toggleViewType()"
-        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
-        <span *ngIf="viewType === 'grid'">List View</span>
-        <span *ngIf="viewType === 'list'">Grid View</span>
-      </button>
-    </div>
+         <!-- Right: View Toggle -->
+     <div class="flex items-center space-x-2">
+       <div class="flex bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
+         <button
+           (click)="toggleViewType()"
+           [class]="viewType === 'grid' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-gray-600 border-transparent'"
+           class="px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200 flex items-center space-x-2">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+           </svg>
+           <span>Grid</span>
+         </button>
+         <button
+           (click)="toggleViewType()"
+           [class]="viewType === 'list' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-gray-600 border-transparent'"
+           class="px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200 flex items-center space-x-2">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+           </svg>
+           <span>List</span>
+         </button>
+       </div>
+     </div>
   </div>
 
   <!-- Loading State -->
