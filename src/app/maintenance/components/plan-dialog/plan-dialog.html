@@ -8,7 +8,7 @@
           class="text-sm text-gray-500">{{ editMode ? 'Update your existing maintenance plan' : 'Create a new preventive maintenance plan with tasks and scheduling' }}</p>
 
         <div class="mt-3 grid grid-cols-4 w-full gap-2 bg-white p-3 rounded-lg">
-          <button *ngFor="let s of steps; index as i" class="tab-btn p-2 rounded-lg" [class.bg-blue-600]="i===step()"
+          <button *ngFor="let s of steps; index as i" class="tab-btn p-2 rounded-lg" [class.bg-blue-600]="i === step()"
                   [class.text-white]="i===step()" [class.disabled]="i>step()" (click)="onTabClick(i)">{{ s }}
           </button>
         </div>
@@ -298,7 +298,8 @@
               </div>
 
               <div class="assets-grid" [class.loading]="assetsLoading">
-                <div class="asset-card flex-col" *ngFor="let a of assets()" [class.!border-blue-200]="isAssetSelected(a.id)">
+                <div class="asset-card flex-col" *ngFor="let a of assets()"
+                     [class.!border-blue-200]="isAssetSelected(a.id)">
                   <div class="flex justify-between w-full">
                     <label class="asset-select">
                       <input type="checkbox" class="rounded-full" [checked]="isAssetSelected(a.id)"
@@ -420,11 +421,14 @@
                 </div>
 
                 <div class="toggles-row">
-                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_required"/>
+                  <label class="toggle"><input class="form-check-input block" type="checkbox"
+                                               [(ngModel)]="newChecklistItem.is_required"/>
                     Required</label>
-                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_safety_critical"/>
+                  <label class="toggle"><input class="form-check-input block" type="checkbox"
+                                               [(ngModel)]="newChecklistItem.is_safety_critical"/>
                     Safety Critical</label>
-                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_photo_required"/> Photo
+                  <label class="toggle"><input class="form-check-input block" type="checkbox"
+                                               [(ngModel)]="newChecklistItem.is_photo_required"/> Photo
                     Required</label>
                 </div>
 
