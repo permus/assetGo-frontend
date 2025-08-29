@@ -1,10 +1,11 @@
-import { Routes } from '@angular/router';
-import { LandingComponent } from './pages/landing/landing.component';
-import { AuthGuard } from './core/guards/auth.guard';
-import { LayoutComponent } from './shared/components/layout/layout.component';
+import {Routes} from '@angular/router';
+import {LandingComponent} from './pages/landing/landing.component';
+import {AuthGuard} from './core/guards/auth.guard';
+import {LayoutComponent} from './shared/components/layout/layout.component';
+import {SettingsComponent} from './settings/settings.component';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
+  {path: '', component: LandingComponent},
   {
     path: '',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
@@ -50,12 +51,17 @@ export const routes: Routes = [
       {
         path: 'maintenance',
         loadChildren: () => import('./maintenance/maintenance.module').then(m => m.MaintenanceModule)
+      },
+      {
+        path: 'settings',
+        component: SettingsComponent,
+        title: 'Settings'
       }
     ]
   },
   // Template download routes
-  { path: 'templates/asset-import', redirectTo: '/assets/asset-import-template.csv' },
-  { path: 'templates/asset-import.csv', redirectTo: '/assets/asset-import-template.csv' },
-  { path: 'templates/asset-import.xlsx', redirectTo: '/assets/asset-import-template.xlsx' },
-  { path: '**', redirectTo: '' }
+  {path: 'templates/asset-import', redirectTo: '/assets/asset-import-template.csv'},
+  {path: 'templates/asset-import.csv', redirectTo: '/assets/asset-import-template.csv'},
+  {path: 'templates/asset-import.xlsx', redirectTo: '/assets/asset-import-template.xlsx'},
+  {path: '**', redirectTo: ''}
 ];
