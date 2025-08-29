@@ -1,0 +1,183 @@
+<div class="plans-page min-h-screen bg-gray-50 p-6">
+  <!-- Page Title and Subtitle -->
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 mb-1">Scheduled Maintenance Hub</h1>
+      <p class="text-gray-600 text-base">View and manage upcoming preventive maintenance executions</p>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="rounded-xl bg-blue-50 border border-blue-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Total Scheduled</span>
+        <span class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8m4-5v5m4-8v8" />
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ total }}</div>
+      <span class="text-sm text-blue-600 font-medium mt-1">Items scheduled</span>
+    </div>
+
+    <div class="rounded-xl bg-green-50 border border-green-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Upcoming (7d)</span>
+        <span class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ upcoming }}</div>
+      <span class="text-sm text-green-600 font-medium mt-1">Due soon</span>
+    </div>
+
+    <div class="rounded-xl bg-orange-50 border border-orange-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">In Progress</span>
+        <span class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2" />
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ inProgress }}</div>
+      <span class="text-sm text-orange-600 font-medium mt-1">Currently running</span>
+    </div>
+
+    <div class="rounded-xl bg-red-50 border border-red-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-base font-medium text-gray-700">Overdue</span>
+        <span class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01" />
+          </svg>
+        </span>
+      </div>
+      <div class="text-3xl font-bold text-gray-900">{{ overdue }}</div>
+      <span class="text-sm text-red-600 font-medium mt-1">Past due</span>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+    <!-- Search -->
+    <div class="flex-1 flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:space-x-3">
+      <div class="relative w-full md:w-100">
+        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input
+          type="text"
+          placeholder="Search by plan ID or status..."
+          class="w-full pl-10 pr-4 py-2 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()" />
+      </div>
+    </div>
+
+    <!-- Right: Actions + View toggle -->
+    <div class="flex items-center space-x-2 mt-3 md:mt-0">
+      <button (click)="openDialog()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Schedule Maintenance
+      </button>
+      <div class="flex bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
+        <button (click)="toggleViewType()" [class]="viewType === 'grid' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-gray-600 border-transparent'" class="px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200">Grid</button>
+        <button (click)="toggleViewType()" [class]="viewType === 'list' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-gray-600 border-transparent'" class="px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200">List</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex items-center justify-center py-20">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+        <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Scheduled Items</h3>
+      <p class="text-sm text-gray-500">Please wait while we fetch schedules...</p>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && filtered.length === 0" class="flex items-center justify-center py-20">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6M5 9h14M7 13h10M9 17h6"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No scheduled maintenance found</h3>
+      <p class="text-sm text-gray-500">Create a plan and schedule maintenance to see items here.</p>
+    </div>
+  </div>
+
+  <!-- Grid View -->
+  <div *ngIf="viewType === 'grid' && !loading && filtered.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-2">
+    <div *ngFor="let s of filtered" class="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col transition-all hover:shadow-md overflow-hidden">
+      <div class="relative bg-[#e0edff] h-28 flex items-center justify-between px-6">
+        <div>
+          <div class="text-sm text-gray-600">Plan</div>
+          <div class="text-lg font-semibold text-gray-900">#{{ s.maintenance_plan_id }}</div>
+        </div>
+        <span class="bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">{{ s.status || 'scheduled' }}</span>
+      </div>
+      <div class="p-6">
+        <div class="text-sm text-gray-700 mb-1"><span class="font-medium text-gray-600">Due:</span> {{ s.due_date || '-' }}</div>
+        <div class="text-sm text-gray-700 mb-1"><span class="font-medium text-gray-600">Start:</span> {{ s.start_date || '-' }}</div>
+        <div class="text-sm text-gray-700"><span class="font-medium text-gray-600">Priority:</span> {{ s.priority_id || '-' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div *ngIf="viewType === 'list' && !loading && filtered.length > 0" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900">Scheduled Items</h3>
+        <span class="text-sm text-gray-500">{{ filtered.length }} items</span>
+      </div>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <div *ngFor="let s of filtered" class="px-6 py-4 hover:bg-gray-50 transition-colors">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-gray-900">Plan #{{ s.maintenance_plan_id }}</div>
+            <div class="text-sm text-gray-500">Status: {{ s.status || 'scheduled' }} • Due: {{ s.due_date || '-' }}</div>
+          </div>
+          <div class="text-sm text-gray-700">Priority: {{ s.priority_id || '-' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination (client-side per page) -->
+  <div class="mt-8 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-700">Show:</span>
+      <select class="border border-gray-300 rounded-md px-2 py-1 text-sm" (change)="onShowChange($event)">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+      <span class="text-sm text-gray-700">per page</span>
+    </div>
+    <div class="text-sm text-gray-700">
+      Showing 1 - {{ filtered.length }} of {{ filtered.length }} entries
+    </div>
+  </div>
+  <app-schedule-dialog [isOpen]="isDialogOpen" (closed)="onDialogClosed()" (created)="onCreated()"></app-schedule-dialog>
+
+</div>
+
+

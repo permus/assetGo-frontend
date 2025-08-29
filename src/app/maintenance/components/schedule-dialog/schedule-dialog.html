@@ -1,0 +1,120 @@
+<div *ngIf="isOpen" class="fixed inset-0 z-50 modal-overlay" (click)="onBackdrop($event)">
+  <div class="absolute inset-0 bg-black/30"></div>
+  <div class="absolute inset-0 flex items-start justify-center overflow-auto py-8 px-4">
+    <div class="modal bg-white rounded-2xl shadow-xl w-full max-w-2xl" (click)="$event.stopPropagation()">
+      <div class="modal-header p-6 border-b">
+        <h2 class="text-xl font-semibold">Schedule Maintenance</h2>
+        <p class="text-sm text-gray-500">Create a scheduled maintenance item for a plan</p>
+      </div>
+
+      <div class="p-6 space-y-4 modal-body">
+        <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700">{{ error }}</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-group" [class.error]="hasFieldError('maintenance_plan_id')">
+            <label>Maintenance Plan <span class="required">*</span></label>
+            <div class="relative category-dropdown" (click)="$event.stopPropagation()">
+              <button type="button" (click)="togglePlanDropdown()" class="dropdown-button" [class.error]="hasFieldError('maintenance_plan_id')" [class.active]="showPlanDropdown" [disabled]="plansOptions.length===0">
+                <div class="dropdown-content">
+                  <span *ngIf="!selectedPlan" class="placeholder">Select plan</span>
+                  <div *ngIf="selectedPlan" class="selected-item">
+                    <span class="selected-text">{{ selectedPlan?.name }}</span>
+                  </div>
+                  <svg class="dropdown-arrow" [class.rotated]="showPlanDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+              <div *ngIf="showPlanDropdown" class="dropdown-menu">
+                <div class="dropdown-header">Select plan</div>
+                <button *ngFor="let p of plansOptions" type="button" (click)="selectPlan(p)" class="dropdown-item" [class.selected]="selectedPlan?.id === p.id">
+                  <div class="item-content"><div class="item-details"><div class="item-name">{{ p.name }}</div></div></div>
+                </button>
+              </div>
+            </div>
+            <div class="field-error" *ngIf="hasFieldError('maintenance_plan_id')">{{ getFieldError('maintenance_plan_id') }}</div>
+            <div style="height: 4px"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" [(ngModel)]="model.start_date" placeholder="YYYY-MM-DD">
+          </div>
+
+          
+
+          <div class="form-group">
+            <label>Priority</label>
+            <div class="relative priority-dropdown" (click)="$event.stopPropagation()">
+              <button type="button" (click)="togglePriorityDropdown()" class="dropdown-button" [class.active]="showPriorityDropdown" [disabled]="priorityOptions.length===0">
+                <div class="dropdown-content">
+                  <span *ngIf="!selectedPriorityMeta" class="placeholder">Select priority (optional)</span>
+                  <div *ngIf="selectedPriorityMeta" class="selected-item">
+                    <span class="selected-text">{{ selectedPriorityMeta?.name || selectedPriorityMeta?.slug }}</span>
+                  </div>
+                  <svg class="dropdown-arrow" [class.rotated]="showPriorityDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+              <div *ngIf="showPriorityDropdown" class="dropdown-menu">
+                <div class="dropdown-header">Select priority</div>
+                <button *ngFor="let priority of priorityOptions" type="button" (click)="selectPriority(priority)" class="dropdown-item" [class.selected]="selectedPriorityMeta?.id === priority.id">
+                  <div class="item-content"><div class="item-details"><div class="item-name">{{ priority.name || priority.slug }}</div></div></div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <div class="relative status-dropdown" (click)="$event.stopPropagation()">
+              <button type="button" (click)="toggleDropdown()" class="dropdown-button" [class.active]="showStatusDropdown">
+                <div class="dropdown-content">
+                  <span *ngIf="!selectedStatus" class="placeholder">Select status</span>
+                  <div *ngIf="selectedStatus" class="selected-item">
+                    <span class="selected-text">{{ selectedStatus?.name }}</span>
+                  </div>
+                  <svg class="dropdown-arrow" [class.rotated]="showStatusDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+              <div *ngIf="showStatusDropdown" class="dropdown-menu">
+                <div class="dropdown-header">Select status</div>
+                <button *ngFor="let option of statusOptions" type="button" (click)="selectOption(option)" class="dropdown-item" [class.selected]="selectedStatus?.id === option.id">
+                  <div class="item-content"><div class="item-details"><div class="item-name">{{ option.name }}</div></div></div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Assets moved to bottom -->
+        <div class="grid grid-cols-1">
+          <div class="form-group">
+            <label>Assets</label>
+            <ng-select
+              [items]="assetOptions"
+              bindLabel="name"
+              bindValue="id"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [searchable]="true"
+              placeholder="Search and select assets"
+              [(ngModel)]="model.asset_ids">
+            </ng-select>
+            <div class="field-help"><small>Leave empty to use plan assets</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer p-6 border-t flex justify-end gap-2">
+        <button class="btn btn-secondary w-[140px]" (click)="close()" [disabled]="loading">Cancel</button>
+        <button class="btn btn-primary w-[180px]" (click)="submit()" [disabled]="loading">Create Schedule</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

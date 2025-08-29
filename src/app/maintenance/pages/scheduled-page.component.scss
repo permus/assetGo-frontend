@@ -1,0 +1,20 @@
+.generic-dropdown {
+  .dropdown-button {
+    @apply bg-white border border-gray-200 rounded-xl px-4 py-2 shadow-sm flex items-center;
+  }
+  .dropdown-content { @apply flex items-center space-x-2; }
+  .dropdown-arrow { @apply w-4 h-4 ml-2 transition-transform; }
+  .dropdown-arrow.rotated { transform: rotate(180deg); }
+  .dropdown-menu {
+    @apply absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50;
+  }
+  .dropdown-item { @apply w-full text-left px-3 py-2 hover:bg-gray-50; }
+  .selected-item { @apply flex items-center; }
+  .selected-text { @apply font-medium; }
+  .dropdown-header { @apply px-3 py-2 text-xs text-gray-500; }
+}
+
+/* Align with plans-page visuals */
+.plans-page { @apply p-6; }
+
+
