@@ -334,15 +334,6 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
 
   }
 
-  formatPlanName(val: PlanType | null | undefined): string {
-    if (!val) return '';
-
-    return val
-      .toLowerCase()
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase());
-  }
-
   toggleNewItemTypeDropdown() { this.showNewItemTypeDropdown = !this.showNewItemTypeDropdown; }
   selectNewItemType(t: MaintenancePlanChecklist['type']) { this.newChecklistItem.type = t; this.showNewItemTypeDropdown = false; }
 

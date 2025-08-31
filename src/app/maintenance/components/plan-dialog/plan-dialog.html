@@ -421,15 +421,15 @@
                 </div>
 
                 <div class="toggles-row">
-                  <label class="toggle"><input class="form-check-input block" type="checkbox"
-                                               [(ngModel)]="newChecklistItem.is_required"/>
+                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_required"/>
+                    <span class="checkmark"></span>
                     Required</label>
-                  <label class="toggle"><input class="form-check-input block" type="checkbox"
-                                               [(ngModel)]="newChecklistItem.is_safety_critical"/>
+                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_safety_critical"/>
+                    <span class="checkmark"></span>
                     Safety Critical</label>
-                  <label class="toggle"><input class="form-check-input block" type="checkbox"
-                                               [(ngModel)]="newChecklistItem.is_photo_required"/> Photo
-                    Required</label>
+                  <label class="toggle"><input type="checkbox" [(ngModel)]="newChecklistItem.is_photo_required"/>
+                    <span class="checkmark"></span>
+                    Photo Required</label>
                 </div>
 
                 <div class="actions-row">

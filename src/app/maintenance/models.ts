@@ -21,6 +21,8 @@ export interface MaintenancePlan {
   company_id?: number;
   name: string;
   priority_id?: number | null;
+  priority?: any | null;
+  assets?: any[];
   sort?: number;
   descriptions?: string | null;
   category_id?: number | null;
@@ -35,6 +37,8 @@ export interface MaintenancePlan {
   is_active?: boolean;
   scheduled_count?: number;
   checklists?: MaintenancePlanChecklist[];
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface ScheduleMaintenance {

@@ -4,26 +4,6 @@
   .asset-card {
     @apply bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-all;
 
-    .asset-header {
-      @apply flex items-center justify-between mb-3;
-
-      .asset-name {
-        @apply text-lg font-semibold text-gray-900;
-      }
-
-      .asset-status {
-        @apply px-2 py-1 rounded-full text-xs font-medium;
-
-        &.status-active {
-          @apply bg-green-100 text-green-800;
-        }
-
-        &.status-inactive {
-          @apply bg-gray-100 text-gray-800;
-        }
-      }
-    }
-
     .asset-details {
       @apply space-y-2;
 
@@ -68,3 +48,4 @@
     }
   }
 }
+
