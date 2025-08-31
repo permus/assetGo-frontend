@@ -1,0 +1,77 @@
+<div class="min-h-screen bg-gray-50 text-gray-900 p-6">
+  <h1 class="text-xl font-semibold mb-2">Maintenance History</h1>
+  <p class="text-sm text-gray-500 mb-6">Track completed maintenance activities and their outcomes</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 metrics-grid">
+    <div class="metric-card info">
+      <div class="metric-header">
+        <div class="title">Total Activities</div>
+        <div class="badge">📊</div>
+      </div>
+      <div class="value">{{ all.length }}</div>
+      <div class="hint"><a class="link" href="javascript:void(0)">Items completed</a></div>
+    </div>
+    <div class="metric-card success">
+      <div class="metric-header">
+        <div class="title">Preventive</div>
+        <div class="badge">✅</div>
+      </div>
+      <div class="value">{{ all.length }}</div>
+      <div class="hint text-green-600">0% of total</div>
+    </div>
+    <div class="metric-card warning">
+      <div class="metric-header">
+        <div class="title">Total Cost</div>
+        <div class="badge">$</div>
+      </div>
+      <div class="value">$0</div>
+      <div class="hint text-orange-600">Year to date</div>
+    </div>
+    <div class="metric-card danger">
+      <div class="metric-header">
+        <div class="title">Avg Duration</div>
+        <div class="badge">⏱️</div>
+      </div>
+      <div class="value">0.0h</div>
+      <div class="hint text-red-600">Per activity</div>
+    </div>
+  </div>
+
+  <div class="search-row mb-4">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Search maintenance history</label>
+        <input type="text" [(ngModel)]="search" placeholder="Search by plan, status..." (input)="apply()" />
+      </div>
+    </div>
+    <div class="pill-group">
+      <button class="pill" [class.active]="filter==='all'" (click)="filter='all'; apply()">All</button>
+      <button class="pill" [class.active]="filter==='preventive'" (click)="filter='preventive'; apply()">Preventive</button>
+      <button class="pill" [class.active]="filter==='corrective'" (click)="filter='corrective'; apply()">Corrective</button>
+      <button class="pill" [class.active]="filter==='emergency'" (click)="filter='emergency'; apply()">Emergency</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-20">Loading...</div>
+  <div *ngIf="!loading && filtered.length===0" class="text-center py-20 text-gray-500 bg-white border border-gray-200 rounded-xl">
+    <div class="text-5xl mb-4">🗒️</div>
+    <div class="text-lg font-medium">No maintenance history found</div>
+    <div class="text-sm text-gray-500">Maintenance activities will appear here as they are completed.</div>
+  </div>
+
+  <div *ngIf="!loading && filtered.length>0" class="bg-white border border-gray-200 rounded-xl">
+    <div class="divide-y divide-gray-200">
+      <div class="px-6 py-4" *ngFor="let h of filtered">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-gray-900">Plan #{{ h.maintenance_plan_id }}</div>
+            <div class="text-xs text-gray-500">Completed • {{ h.due_date }}</div>
+          </div>
+          <div class="text-sm text-gray-700">Priority: {{ h.priority_id || '-' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

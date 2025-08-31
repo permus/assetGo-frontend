@@ -1,0 +1,22 @@
+.card { background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; padding:1rem; }
+.label { font-size:.75rem; color:#6b7280; }
+.sublabel { font-size:.7rem; color:#9ca3af; }
+.value { font-size:1.5rem; font-weight:700; color:#111827; }
+.panel { background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; padding:1rem; }
+.panel-title { font-weight:600; margin-bottom:.5rem; color:#111827; }
+.bar { width: 20px; background:#3b82f6; border-radius:.25rem; }
+.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0,0,0,.05); }
+
+/* Metrics cards consistent with History */
+.metrics-grid { align-items: stretch; }
+.metric-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; padding:1rem; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.metric-card .metric-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; }
+.metric-card .title{ font-weight:600; color:#111827; }
+.metric-card .badge{ background:#e5f0ff; color:#2563eb; border-radius:10px; padding:.35rem .5rem; font-size:.75rem; }
+.metric-card.info{ background:#f2f8ff; border-color:#dbeafe; }
+.metric-card.success{ background:#f2fffa; border-color:#d1fae5; }
+.metric-card.warning{ background:#fff8ed; border-color:#fde68a; }
+.metric-card.danger{ background:#fff5f5; border-color:#fecaca; }
+.metric-card .value{ font-size:1.75rem; font-weight:700; color:#0f172a; }
+.metric-card .hint{ margin-top:.5rem; font-size:.875rem; color:#6b7280; }
+

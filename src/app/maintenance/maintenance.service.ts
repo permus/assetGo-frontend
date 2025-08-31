@@ -53,6 +53,18 @@ export class MaintenanceService {
   createSchedule(payload: ScheduleMaintenance): Observable<any> {
     return this.http.post<any>(`${this.base}/schedules`, payload);
   }
+
+  getSchedule(id: number): Observable<any> {
+    return this.http.get<any>(`${this.base}/schedules/${id}`);
+  }
+
+  updateSchedule(id: number, payload: Partial<ScheduleMaintenance>): Observable<any> {
+    return this.http.put<any>(`${this.base}/schedules/${id}`, payload);
+  }
+
+  deleteSchedule(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}/schedules/${id}`);
+  }
 }
 
 

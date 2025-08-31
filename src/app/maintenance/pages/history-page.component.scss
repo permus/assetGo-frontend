@@ -1,0 +1,36 @@
+/* Light theme utility tokens for this page */
+.card { background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; padding:1rem; }
+.label { font-size:.75rem; color:#6b7280; }
+.sublabel { font-size:.7rem; color:#9ca3af; }
+.value { font-size:1.5rem; font-weight:700; color:#111827; }
+
+/* Standard input pattern styles (matches plan-dialog) */
+.form-row { width: 100%; }
+.form-group {
+  label { display: block; margin-bottom: .25rem; font-size: .875rem; font-weight: 500; color: #374151; }
+  input { width: 24rem; max-width: 100%; padding: .6rem .9rem; border: 1px solid #d1d5db; border-radius: .5rem; min-height: 42px; font-size: .875rem; background: #fff; }
+  .field-error { color: #dc2626; font-size: .75rem; margin-top: .25rem; }
+}
+
+/* Metrics cards styled like schedules/plans tiles */
+.metrics-grid { align-items: stretch; }
+.metric-card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1rem; box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.metric-card .metric-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; }
+.metric-card .title { font-weight:600; color:#111827; }
+.metric-card .badge { background:#e5f0ff; color:#2563eb; border-radius:10px; padding:.35rem .5rem; font-size:.75rem; }
+.metric-card.info { background:#f2f8ff; border-color:#dbeafe; }
+.metric-card.success { background:#f2fffa; border-color:#d1fae5; }
+.metric-card.warning { background:#fff8ed; border-color:#fde68a; }
+.metric-card.danger { background:#fff5f5; border-color:#fecaca; }
+.metric-card .value { font-size:1.75rem; font-weight:700; color:#0f172a; }
+.metric-card .hint { margin-top:.5rem; font-size:.875rem; color:#6b7280; }
+.metric-card .link { color:#2563eb; text-decoration:none; }
+
+/* Pills and search layout */
+.search-row { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; }
+.pill-group { display:flex; gap:.5rem; }
+.pill { padding:.5rem .9rem; border:1px solid #d1d5db; border-radius:.5rem; background:#fff; color:#111827; font-size:.875rem; }
+.pill.active { background:#2563eb; color:#fff; border-color:#2563eb; }
+

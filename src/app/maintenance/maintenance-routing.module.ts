@@ -19,6 +19,11 @@ const routes: Routes = [
         title: 'Preventive Maintenance — Scheduled'
       },
       {
+        path: 'scheduled/:id',
+        loadComponent: () => import('./pages/schedule-preview-page/schedule-preview-page.component').then(m => m.SchedulePreviewPageComponent),
+        title: 'Maintenance Schedule Preview'
+      },
+      {
         path: 'ppm-gantt',
         loadComponent: () => import('./pages/gantt-page.component').then(m => m.GanttPageComponent),
         title: 'Preventive Maintenance — PPM Gantt'

@@ -1,0 +1,90 @@
+<div class="min-h-screen bg-gray-50 text-gray-900 p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl font-semibold">Preventive Maintenance Analytics</h1>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 metrics-grid">
+    <div class="metric-card info">
+      <div class="metric-header">
+        <div class="title">Total Maintenance</div>
+        <div class="badge">📊</div>
+      </div>
+      <div class="value">{{ totalCount }}</div>
+      <div class="hint">0 upcoming</div>
+    </div>
+    <div class="metric-card success">
+      <div class="metric-header">
+        <div class="title">Preventive Ratio</div>
+        <div class="badge">✅</div>
+      </div>
+      <div class="value text-green-600">0.0%</div>
+      <div class="hint">Target: 80%</div>
+    </div>
+    <div class="metric-card warning">
+      <div class="metric-header">
+        <div class="title">Avg Cost</div>
+        <div class="badge">$</div>
+      </div>
+      <div class="value">$0</div>
+      <div class="hint">Per maintenance activity</div>
+    </div>
+    <div class="metric-card danger">
+      <div class="metric-header">
+        <div class="title">Avg Duration</div>
+        <div class="badge">⏱️</div>
+      </div>
+      <div class="value">0.0h</div>
+      <div class="hint">Per maintenance activity</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="panel">
+      <div class="panel-title">Maintenance Trend</div>
+      <div class="grid grid-cols-12 gap-1 text-xs text-gray-400">
+        <div class="col-span-12 flex items-end h-48 space-x-2">
+          <ng-container *ngFor="let v of trendData; let i = index">
+            <div class="bar" [style.height.%]="(v || 0) * 12" [attr.title]="trendLabels[i] + ': ' + v"></div>
+          </ng-container>
+        </div>
+        <div class="col-span-12 flex justify-between mt-2">
+          <span *ngFor="let l of trendLabels">{{ l }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Maintenance Types</div>
+      <div class="flex items-end h-48 space-x-3">
+        <div *ngFor="let t of typeBreakdown" class="w-12">
+          <div class="bar bg-purple-500" [style.height.%]="(t.value || 0) * 10" [attr.title]="t.name + ': ' + t.value"></div>
+          <div class="text-xs text-center mt-1">{{ t.name }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel mt-4">
+    <div class="panel-title">Maintenance Costs</div>
+    <div class="grid grid-cols-12 gap-1 text-xs text-gray-400">
+      <div class="col-span-12 flex items-end h-48 space-x-2">
+        <ng-container *ngFor="let v of monthlyCostsData; let i = index">
+          <div class="bar bg-emerald-500" [style.height.%]="(v || 0)" [attr.title]="monthlyCostsLabels[i] + ': $' + v"></div>
+        </ng-container>
+      </div>
+      <div class="col-span-12 flex justify-between mt-2">
+        <span *ngFor="let l of monthlyCostsLabels">{{ l }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel mt-4">
+    <div class="panel-title">Key Insights</div>
+    <ul class="list-disc pl-6 text-sm text-yellow-300">
+      <li>Consider increasing preventive maintenance to reduce corrective work.</li>
+      <li>No maintenance history found. Start by completing some maintenance activities.</li>
+    </ul>
+  </div>
+</div>
+
+
