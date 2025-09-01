@@ -1,7 +1,31 @@
-<div class="min-h-screen bg-gray-50 p-6">
-  <div class="mb-4">
-    <button class="btn btn-secondary" (click)="goBack()">Back</button>
+<div class="">
+
+  <!-- Header -->
+  <div class="bg-white border-b border-gray-200 px-6 py-4 print-hide">
+    <div class="flex items-center justify-between">
+      <!-- Back Button and Breadcrumb -->
+      <div class="flex items-center space-x-4">
+        <!-- Breadcrumb -->
+        <nav class="flex" aria-label="Breadcrumb">
+          <ol class="flex items-center space-x-2">
+            <li>
+              <a href="javascript:void(0)" (click)="goBack()" class="text-gray-500 hover:text-gray-700 transition-colors">Maintenance
+                Schedule</a>
+            </li>
+            <li>
+              <svg class="w-4 h-4 text-gray-400 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </li>
+            <li class="text-gray-900 font-medium">Schedule Details</li>
+          </ol>
+        </nav>
+      </div>
+
+    </div>
   </div>
+<div class="min-h-screen bg-gray-50 p-6">
+
 
   <div *ngIf="loading" class="text-center py-20">Loading...</div>
   <div *ngIf="error" class="text-center text-red-600 py-20">{{ error }}</div>
@@ -34,6 +58,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 

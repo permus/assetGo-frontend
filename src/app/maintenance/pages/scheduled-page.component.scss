@@ -1,35 +1,4 @@
 /* Reuse plan checkbox styles for schedule page */
-/* Square checkbox style (matches screenshot and plans list) */
-.plan-card-checkbox {
-  width: 1.1rem;
-  height: 1.1rem;
-  background-color: #fff;
-  border: 2px solid #60a5fa;
-  border-radius: 0.375rem; /* rounded-md */
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  position: relative;
-}
-
-.plan-card-checkbox:checked {
-  background-color: #3b82f6; /* blue-500 */
-  border-color: #3b82f6;
-}
-
-.plan-card-checkbox:checked::after {
-  content: '';
-  position: absolute;
-  width: 0.35rem;
-  height: 0.7rem;
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -60%) rotate(45deg);
-}
-
-.plan-card-checkbox:focus { outline: none; box-shadow: 0 0 0 2px #93c5fd; }
 
 .plan-list-checkbox {
   width: 1rem;

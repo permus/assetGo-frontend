@@ -8,14 +8,14 @@ import { ScheduleMaintenance } from '../models';
 import { MetaWorkOrdersService } from '../../core/services/meta-work-orders.service';
 import { AssetService } from '../../assets/services/asset.service';
 import { forkJoin, of } from 'rxjs';
-import { Router } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-scheduled-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ScheduleDialogComponent, MaintenanceDeleteConfirmationModalComponent],
+  imports: [CommonModule, FormsModule, ScheduleDialogComponent, MaintenanceDeleteConfirmationModalComponent, RouterLink],
   templateUrl: 'scheduled-page.component.html',
-  styleUrls: ['scheduled-page.component.scss']
+  styleUrls: ['scheduled-page.component.scss', 'schedule-selector.scss']
 })
 export class ScheduledPageComponent implements OnInit {
   loading = false;
@@ -284,6 +284,22 @@ export class ScheduledPageComponent implements OnInit {
     const d = new Date(value);
     if (isNaN(d.getTime())) return '-';
     return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
+  }
+
+
+  getScheduledName(name: string | null | undefined) {
+    switch (name) {
+      case 'in_progress':
+        return 'In Progress';
+      case 'overdue':
+        return 'Overdue';
+      case 'completed':
+        return 'Completed';
+      case 'scheduled':
+        return 'Scheduled';
+      default:
+        return name || 'Scheduled';
+    }
   }
 }
 

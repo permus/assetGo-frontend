@@ -9,52 +9,71 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <div class="rounded-xl bg-blue-50 border border-blue-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+    <div
+      class="rounded-xl bg-blue-50 border border-blue-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
       <div class="flex items-center justify-between mb-2">
         <span class="text-base font-medium text-gray-700">Total Scheduled</span>
         <span class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8m4-5v5m4-8v8" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+               stroke="currentColor"
+               class="size-5 text-blue-400">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/>
           </svg>
+
+
         </span>
       </div>
       <div class="text-3xl font-bold text-gray-900">{{ total }}</div>
       <span class="text-sm text-blue-600 font-medium mt-1">Items scheduled</span>
     </div>
 
-    <div class="rounded-xl bg-green-50 border border-green-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+    <div
+      class="rounded-xl bg-green-50 border border-green-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
       <div class="flex items-center justify-between mb-2">
         <span class="text-base font-medium text-gray-700">Upcoming (7d)</span>
         <span class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+               stroke="currentColor"
+               class="size-5 text-green-400">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
           </svg>
+
         </span>
       </div>
       <div class="text-3xl font-bold text-gray-900">{{ upcoming }}</div>
       <span class="text-sm text-green-600 font-medium mt-1">Due soon</span>
     </div>
 
-    <div class="rounded-xl bg-orange-50 border border-orange-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+    <div
+      class="rounded-xl bg-orange-50 border border-orange-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
       <div class="flex items-center justify-between mb-2">
         <span class="text-base font-medium text-gray-700">In Progress</span>
         <span class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2" />
-          </svg>
+     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-5 text-orange-400">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4.867 19.125h.008v.008h-.008v-.008Z"/>
+    </svg>
+
         </span>
       </div>
       <div class="text-3xl font-bold text-gray-900">{{ inProgress }}</div>
       <span class="text-sm text-orange-600 font-medium mt-1">Currently running</span>
     </div>
 
-    <div class="rounded-xl bg-red-50 border border-red-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
+    <div
+      class="rounded-xl bg-red-50 border border-red-100 p-6 flex flex-col justify-between shadow-sm transition-all hover:shadow-md">
       <div class="flex items-center justify-between mb-2">
         <span class="text-base font-medium text-gray-700">Overdue</span>
         <span class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01" />
+         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-5 text-red-400">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
           </svg>
+
         </span>
       </div>
       <div class="text-3xl font-bold text-gray-900">{{ overdue }}</div>
@@ -67,29 +86,38 @@
     <!-- Search -->
     <div class="flex-1 flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:space-x-3">
       <div class="relative w-full md:w-100">
-        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none"
+             stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
         <input
           type="text"
           placeholder="Search by plan ID or status..."
           class="w-full pl-10 pr-4 py-2 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
           [(ngModel)]="searchQuery"
-          (input)="onSearch()" />
+          (input)="onSearch()"/>
       </div>
     </div>
 
     <!-- Right: Actions + View toggle -->
     <div class="flex items-center space-x-2 mt-3 md:mt-0">
-      <button (click)="openDialog()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer">
+      <button (click)="openDialog()"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>
         Schedule Maintenance
       </button>
       <div class="flex bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
-        <button (click)="toggleViewType()" [class]="viewType === 'grid' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-gray-600 border-transparent'" class="px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200">Grid</button>
-        <button (click)="toggleViewType()" [class]="viewType === 'list' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-gray-600 border-transparent'" class="px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200">List</button>
+        <button (click)="toggleViewType()"
+                [class]="viewType === 'grid' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-gray-600 border-transparent'"
+                class="px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200">Grid
+        </button>
+        <button (click)="toggleViewType()"
+                [class]="viewType === 'list' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-gray-600 border-transparent'"
+                class="px-4 py-2 text-sm font-medium rounded-lg border transition-all duration-200">List
+        </button>
       </div>
     </div>
   </div>
@@ -100,7 +128,8 @@
       <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
         <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
       </div>
       <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Scheduled Items</h3>
@@ -122,31 +151,38 @@
   </div>
 
   <!-- Selection Bar (when nothing is selected) -->
-  <div class="w-full bg-white rounded-xl border border-gray-200 px-6 py-3 mb-4 flex items-center" *ngIf="viewType === 'grid' && selectedCount === 0 && !loading && filtered.length > 0">
-    <button type="button" (click)="toggleSelectAllSchedules()" class="focus:outline-none inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-blue-400 mr-3 transition-colors">
+  <div class="w-full bg-white rounded-xl border border-gray-200 px-6 py-3 mb-4 flex items-center"
+       *ngIf="viewType === 'grid' && selectedCount === 0 && !loading && filtered.length > 0">
+    <button type="button" (click)="toggleSelectAllSchedules()"
+            class="focus:outline-none inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-blue-400 mr-3 transition-colors">
       <span class="w-3 h-3 rounded-full block bg-white transition-colors"></span>
     </button>
     <span class="font-semibold text-gray-900">Select all {{ filtered.length }} schedules</span>
   </div>
 
   <!-- Action Bar (Selection) -->
-  <div class="w-full bg-white rounded-xl border border-gray-200 px-6 py-3 mb-4 flex items-center justify-between" *ngIf="viewType === 'grid' && selectedCount > 0 && !loading">
+  <div class="w-full bg-white rounded-xl border border-gray-200 px-6 py-3 mb-4 flex items-center justify-between"
+       *ngIf="viewType === 'grid' && selectedCount > 0 && !loading">
     <div class="flex items-center space-x-4">
-      <button type="button" (click)="toggleSelectAllSchedules()" class="focus:outline-none inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-blue-400 mr-3 transition-colors"
-        [class.bg-blue-100]="selectedCount === filtered.length">
+      <button type="button" (click)="toggleSelectAllSchedules()"
+              class="focus:outline-none inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-blue-400 mr-3 transition-colors"
+              [class.bg-blue-100]="selectedCount === filtered.length">
         <span class="w-3 h-3 rounded-full block transition-colors"
-          [class.bg-blue-400]="selectedCount === filtered.length"
-          [class.bg-white]="selectedCount !== filtered.length"></span>
+              [class.bg-blue-400]="selectedCount === filtered.length"
+              [class.bg-white]="selectedCount !== filtered.length"></span>
       </button>
-      <span class="font-bold text-gray-900">{{ selectedCount }} schedule{{ selectedCount > 1 ? 's' : '' }} selected</span>
+      <span class="font-bold text-gray-900">{{ selectedCount }} schedule{{ selectedCount > 1 ? 's' : '' }}
+        selected</span>
       <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm flex items-center font-medium">
         Selection Mode Active - Click cards to select
       </span>
     </div>
     <div class="flex items-center space-x-2">
-      <button (click)="openDeleteModalForSelected()" class="bg-red-50 text-red-600 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+      <button (click)="openDeleteModalForSelected()"
+              class="bg-red-50 text-red-600 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
         </svg>
         Delete Selected
       </button>
@@ -154,44 +190,59 @@
   </div>
 
   <!-- Grid View -->
-  <div *ngIf="viewType === 'grid' && !loading && filtered.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-2">
-    <div *ngFor="let s of filtered" class="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col transition-all hover:shadow-md overflow-hidden" [class.border-blue-400]="isScheduleSelected(s)" (click)="toggleScheduleSelection(s)">
-      <div class="relative bg-[#e0edff] h-28 flex items-center justify-between px-6">
-        <div class="absolute left-4 top-4 flex items-center">
-          <input type="checkbox" class="plan-card-checkbox" [checked]="isScheduleSelected(s)" (click)="$event.stopPropagation()" (change)="toggleScheduleSelection(s)" />
+  <div *ngIf="viewType === 'grid' && !loading && filtered.length > 0"
+       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-2">
+    <div *ngFor="let s of filtered"
+         class="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col transition-all hover:shadow-md overflow-hidden"
+         [class.border-blue-400]="isScheduleSelected(s)" (click)="toggleScheduleSelection(s)">
+      <div class="relative bg-[#e0edff] h-24 flex items-center justify-between px-6">
+        <div class="absolute left-2 !top-[10px] flex items-center">
+          <input type="checkbox" class="plan-card-checkbox" [checked]="isScheduleSelected(s)"
+                 (click)="$event.stopPropagation()" (change)="toggleScheduleSelection(s)"/>
         </div>
         <div>
-          <div class="text-sm text-gray-600">Plan</div>
-          <div class="text-lg font-semibold text-gray-900">{{ getPlanName(s.maintenance_plan_id) }}</div>
+          <a routerLink="/maintenance/scheduled/{{ s.maintenance_plan_id }}">
+            <div class="font-semibold text-lg text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors">{{ getPlanName(s.maintenance_plan_id) }}</div>
+          </a>
         </div>
         <div class="flex items-center gap-2">
-          <span class="bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">{{ s.status || 'scheduled' }}</span>
+          <span
+            class="bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">{{ getScheduledName(s?.status) || 'Scheduled' }}</span>
           <div class="relative" (click)="$event.stopPropagation()">
-            <button (click)="toggleMenu(s.id!)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+            <button (click)="toggleMenu(s.id!)"
+                    class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
               <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="6" r="1.5" />
-                <circle cx="12" cy="12" r="1.5" />
-                <circle cx="12" cy="18" r="1.5" />
+                <circle cx="12" cy="6" r="1.5"/>
+                <circle cx="12" cy="12" r="1.5"/>
+                <circle cx="12" cy="18" r="1.5"/>
               </svg>
             </button>
-            <div *ngIf="isMenuOpen(s.id!)" class="absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-              <button (click)="previewSchedule(s)" class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50">
+            <div *ngIf="isMenuOpen(s.id!)"
+                 class="absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+              <button (click)="previewSchedule(s)"
+                      class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                 </svg>
                 <span class="text-sm text-gray-700">Preview</span>
               </button>
-              <button (click)="editSchedule(s)" class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50">
+              <button (click)="editSchedule(s)"
+                      class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
                 <span class="text-sm text-gray-700">Edit</span>
               </button>
               <div class="border-t border-gray-100 my-1"></div>
-              <button (click)="requestDelete(s)" class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-red-50 text-red-600">
+              <button (click)="requestDelete(s)"
+                      class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-red-50 text-red-600">
                 <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                 </svg>
                 <span class="text-sm font-medium">Delete</span>
               </button>
@@ -200,16 +251,25 @@
         </div>
       </div>
       <div class="p-6">
-        <div class="text-sm text-gray-700 mb-1"><span class="font-medium text-gray-600">Due:</span> {{ formatDate(s.due_date) }}</div>
-        <div class="text-sm text-gray-700 mb-1"><span class="font-medium text-gray-600">Start:</span> {{ formatDate(s.start_date) }}</div>
-        <div class="text-sm text-gray-700 mb-1"><span class="font-medium text-gray-600">Priority:</span> {{ getPriorityName(s.priority_id) }}</div>
-        <div class="text-sm text-gray-700"><span class="font-medium text-gray-600">Assets:</span> {{ getAssetNames(s.asset_ids) }}</div>
+        <div class="text-sm text-gray-700 mb-1"><span
+          class="font-medium text-gray-600">Due:</span> {{ formatDate(s.due_date) }}
+        </div>
+        <div class="text-sm text-gray-700 mb-1"><span
+          class="font-medium text-gray-600">Start:</span> {{ formatDate(s.start_date) }}
+        </div>
+        <div class="text-sm text-gray-700 mb-1 capitalize"><span
+          class="font-medium text-gray-600">Priority:</span> {{ getPriorityName(s.priority_id) }}
+        </div>
+        <div class="text-sm text-gray-700"><span
+          class="font-medium text-gray-600">Assets:</span> {{ getAssetNames(s.asset_ids) }}
+        </div>
       </div>
     </div>
   </div>
 
   <!-- List View -->
-  <div *ngIf="viewType === 'list' && !loading && filtered.length > 0" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+  <div *ngIf="viewType === 'list' && !loading && filtered.length > 0"
+       class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-medium text-gray-900">Scheduled Items</h3>
@@ -220,41 +280,53 @@
       <div *ngFor="let s of filtered" class="px-6 py-4 hover:bg-gray-50 transition-colors">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <input type="checkbox" class="plan-list-checkbox" [checked]="isScheduleSelected(s)" (change)="toggleScheduleSelection(s)" />
+            <input type="checkbox" class="plan-list-checkbox" [checked]="isScheduleSelected(s)"
+                   (change)="toggleScheduleSelection(s)"/>
             <div>
               <div class="font-medium text-gray-900">{{ getPlanName(s.maintenance_plan_id) }}</div>
-              <div class="text-sm text-gray-500">Status: {{ s.status || 'scheduled' }} • Due: {{ formatDate(s.due_date) }} • Start: {{ formatDate(s.start_date) }}</div>
+              <div class="text-sm text-gray-500">Status: {{getScheduledName(s?.status) || 'scheduled' }} •
+                Due: {{ formatDate(s.due_date) }} • Start: {{ formatDate(s.start_date) }}
+              </div>
               <div class="text-sm text-gray-500">Assets: {{ getAssetNames(s.asset_ids) }}</div>
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 capitalize">
             <div class="text-sm text-gray-700">Priority: {{ getPriorityName(s.priority_id) }}</div>
             <div class="relative">
-              <button (click)="toggleMenu(s.id!)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+              <button (click)="toggleMenu(s.id!)"
+                      class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <circle cx="12" cy="6" r="1.5" />
-                  <circle cx="12" cy="12" r="1.5" />
-                  <circle cx="12" cy="18" r="1.5" />
+                  <circle cx="12" cy="6" r="1.5"/>
+                  <circle cx="12" cy="12" r="1.5"/>
+                  <circle cx="12" cy="18" r="1.5"/>
                 </svg>
               </button>
-              <div *ngIf="isMenuOpen(s.id!)" class="absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                <button (click)="previewSchedule(s)" class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50">
+              <div *ngIf="isMenuOpen(s.id!)"
+                   class="absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <button (click)="previewSchedule(s)"
+                        class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50">
                   <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                   </svg>
                   <span class="text-sm text-gray-700">Preview</span>
                 </button>
-                <button (click)="editSchedule(s)" class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50">
+                <button (click)="editSchedule(s)"
+                        class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50">
                   <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                   </svg>
                   <span class="text-sm text-gray-700">Edit</span>
                 </button>
                 <div class="border-t border-gray-100 my-1"></div>
-                <button (click)="requestDelete(s)" class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-red-50 text-red-600">
+                <button (click)="requestDelete(s)"
+                        class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-red-50 text-red-600">
                   <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                   </svg>
                   <span class="text-sm font-medium">Delete</span>
                 </button>
@@ -282,7 +354,9 @@
       Showing 1 - {{ filtered.length }} of {{ filtered.length }} entries
     </div>
   </div>
-  <app-schedule-dialog [isOpen]="isDialogOpen" [editMode]="editMode" [scheduleToEdit]="scheduleToEdit" (closed)="onDialogClosed()" (created)="onCreated()" (updated)="onCreated()"></app-schedule-dialog>
+  <app-schedule-dialog [isOpen]="isDialogOpen" [editMode]="editMode" [scheduleToEdit]="scheduleToEdit"
+                       (closed)="onDialogClosed()" (created)="onCreated()"
+                       (updated)="onCreated()"></app-schedule-dialog>
 
   <app-maintenance-delete-confirmation-modal
     [isOpen]="showDeleteModal"
