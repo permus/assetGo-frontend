@@ -9,7 +9,8 @@
         <nav class="flex" aria-label="Breadcrumb">
           <ol class="flex items-center space-x-2">
             <li>
-              <a href="javascript:void(0)" (click)="goBack()" class="text-gray-500 hover:text-gray-700 transition-colors">Maintenance
+              <a href="javascript:void(0)" (click)="goBack()"
+                 class="text-gray-500 hover:text-gray-700 transition-colors">Maintenance
                 Schedule</a>
             </li>
             <li>
@@ -24,41 +25,48 @@
 
     </div>
   </div>
-<div class="min-h-screen bg-gray-50 p-6">
+  <div class="min-h-screen bg-gray-50 p-6">
 
+    @if (loading) {
+      <div class="text-center py-20">Loading...</div>
+    }
+    @if (error) {
+      <div class="text-center text-red-600 py-20">{{ error }}</div>
+    }
 
-  <div *ngIf="loading" class="text-center py-20">Loading...</div>
-  <div *ngIf="error" class="text-center text-red-600 py-20">{{ error }}</div>
+    @if (!loading && !error && schedule) {
+      <div class="max-w-3xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <div class="text-sm text-gray-500">Maintenance Schedule</div>
+            <h1 class="text-2xl font-semibold">#{{ schedule?.id }} • Plan {{ schedule?.maintenance_plan_id }}</h1>
+          </div>
+          <span
+            class="bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">{{ schedule?.status || 'scheduled' }}</span>
+        </div>
 
-  <div *ngIf="!loading && !error && schedule" class="max-w-3xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <div class="text-sm text-gray-500">Maintenance Schedule</div>
-        <h1 class="text-2xl font-semibold">#{{ schedule?.id }} • Plan {{ schedule?.maintenance_plan_id }}</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="text-sm text-gray-600">Start</div>
+            <div class="font-medium">{{ formatDate(schedule?.start_date) }}</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-600">Due</div>
+            <div class="font-medium">{{ formatDate(schedule?.due_date) }}</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-600">Priority</div>
+            <div class="font-medium">{{ schedule?.priority_id || '-' }}</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-600">Assets</div>
+            <div class="font-medium">{{ (schedule?.asset_ids || []).join(', ') || '-' }}</div>
+          </div>
+        </div>
       </div>
-      <span class="bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">{{ schedule?.status || 'scheduled' }}</span>
-    </div>
+    }
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <div class="text-sm text-gray-600">Start</div>
-        <div class="font-medium">{{ formatDate(schedule?.start_date) }}</div>
-      </div>
-      <div>
-        <div class="text-sm text-gray-600">Due</div>
-        <div class="font-medium">{{ formatDate(schedule?.due_date) }}</div>
-      </div>
-      <div>
-        <div class="text-sm text-gray-600">Priority</div>
-        <div class="font-medium">{{ schedule?.priority_id || '-' }}</div>
-      </div>
-      <div>
-        <div class="text-sm text-gray-600">Assets</div>
-        <div class="font-medium">{{ (schedule?.asset_ids || []).join(', ') || '-' }}</div>
-      </div>
-    </div>
   </div>
-</div>
 </div>
 
 
