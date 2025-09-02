@@ -8,44 +8,57 @@
     <div
       class="tabs bg-white rounded-2xl grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 gap-2 p-2 my-4 text-center font-medium">
       <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer"
-           [ngClass]="tab === 'localisation' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('localisation')">
+           [ngClass]="tab() === 'localisation' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('localisation')">
         Localization
       </div>
+      @if (isAdmin()) {
+        <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer transition-all duration-200"
+             [ngClass]="tab() === 'modules' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('modules')">
+          Modules
+        </div>
+        <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer transition-all duration-200"
+             [ngClass]="tab() === 'company' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('company')">
+          Company
+        </div>
+      }
       <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer transition-all duration-200"
-           [ngClass]="tab === 'ai' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('ai')">
-        AI Configuration
-      </div>
-      <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer transition-all duration-200"
-           [ngClass]="tab === 'modules' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('modules')">
-        Modules
-      </div>
-      <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer transition-all duration-200"
-           [ngClass]="tab === 'company' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('company')">
-        Company
-      </div>
-      <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer transition-all duration-200"
-           [ngClass]="tab === 'preference' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('preference')">
+           [ngClass]="tab() === 'preference' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('preference')">
         Preferences
       </div>
       <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer transition-all duration-200"
-           [ngClass]="tab === 'date' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('date')">
+           [ngClass]="tab() === 'date' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('date')">
         Date & Time
       </div>
     </div>
 
     <!--Module content-->
 
-    @if (tab === 'localisation') {
+    @if (tab() === 'localisation') {
       <ng-container>
         <div class="border border-gray-200 p-4 rounded-2xl mb-4">
           <h1 class="text-2xl font-medium">Localization</h1>
           <p class="text-gray-600 text-sm">Language, currency, and regional settings</p>
         </div>
 
-        <div class="border border-gray-200 p-4 rounded-2xl">
-          <h1 class="text-2xl font-medium">Currency Settings</h1>
-        </div>
+        <language-settings></language-settings>
+        <currency-settings [disabled]="!isAdmin()"></currency-settings>
       </ng-container>
+    }
+
+    @if (tab() === 'modules' && isAdmin()) {
+      <module-settings></module-settings>
+    }
+
+    @if (tab() === 'company' && isAdmin()) {
+      <company-settings></company-settings>
+    }
+
+    @if (tab() === 'preference') {
+      <preferences-settings></preferences-settings>
+    }
+
+    @if (tab() === 'date') {
+      <date-time-settings></date-time-settings>
     }
 
   </div>
