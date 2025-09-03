@@ -4,17 +4,17 @@ import { Component, OnInit, signal } from '@angular/core';
   selector: 'language-settings',
   standalone: true,
   template: `
-    <div class="border border-gray-200 p-4 rounded-2xl">
+    <div class="border border-gray-200 p-4 rounded-lg mb-4 bg-white">
       <h2 class="text-xl font-medium mb-2">Language & Display</h2>
       <div class="text-sm text-gray-600 mb-2">Interface Language</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <button class="relative p-4 rounded border text-left" [class.bg-blue-600]="language()==='en'" [class.text-white]="language()==='en'" (click)="setLanguage('en')">
+        <button class="relative p-4 rounded-lg border border-gray-200 text-left" [class.bg-blue-600]="language()==='en'" [class.text-white]="language()==='en'" (click)="setLanguage('en')">
           <div class="text-xs">US</div>
           <div class="font-medium">English</div>
           <div class="text-xs opacity-80">English</div>
           <span *ngIf="language()==='en'" class="absolute right-3 top-3 text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-full">Active</span>
         </button>
-        <button class="relative p-4 rounded border text-left" [class.bg-gray-100]="language()==='ar'" (click)="setLanguage('ar')">
+        <button class="relative p-4 rounded-lg border border-gray-200 text-left" [class.bg-blue-600]="language()==='ar'" [class.text-white]="language()==='ar'" (click)="setLanguage('ar')">
           <div class="text-xs">AE</div>
           <div class="font-medium">Arabic</div>
           <div class="text-xs opacity-80">العربية</div>
@@ -37,7 +37,11 @@ import { Component, OnInit, signal } from '@angular/core';
         Current locale: {{ language()==='en' ? 'English (US)' : (language()==='ar' ? 'Arabic' : language()) }}
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .input { width: 100%; border-radius: 0.5rem; border: 1px solid #d1d5db; padding: 0.75rem 0.875rem; font-size: 1rem; background: #ffffff; transition: all 0.2s ease-in-out; }
+    .input::placeholder { color: #9ca3af; }
+  `]
 })
 export class LanguageSettingsComponent implements OnInit {
   language = signal(localStorage.getItem('app.language') || 'en');

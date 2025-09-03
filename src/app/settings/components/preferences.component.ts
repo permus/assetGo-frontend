@@ -5,13 +5,13 @@ import { SettingsService, Preferences } from '../settings.service';
   selector: 'preferences-settings',
   standalone: true,
   template: `
-    <div class="space-y-6">
-      <div class="border border-gray-200 p-4 rounded-2xl">
+    <div class="space-y-6 ">
+      <div class="border bg-white border-gray-200 p-4 rounded-lg">
         <h2 class="text-xl font-medium">Preferences</h2>
         <p class="text-sm text-gray-600">Personal user preferences and notifications</p>
       </div>
 
-      <div class="border border-gray-200 p-4 rounded-2xl">
+      <div class="border bg-white border-gray-200 p-4 rounded-lg">
         <h3 class="font-medium mb-4">Notification Preferences</h3>
         <div class="space-y-4">
           <div class="flex items-center justify-between">
@@ -53,19 +53,19 @@ import { SettingsService, Preferences } from '../settings.service';
         </div>
       </div>
 
-      <div class="border border-gray-200 p-4 rounded-2xl">
+      <div class="border bg-white border-gray-200 p-4 rounded-lg">
         <h3 class="font-medium mb-4">Display Preferences</h3>
         <div class="space-y-3">
           <div>
             <label class="text-sm font-medium">Dashboard Layout</label>
-            <select class="border p-2 rounded w-full" [value]="form().dashboard_layout || 'grid'" (change)="patch('dashboard_layout', $any($event.target).value)">
+            <select class="border border-gray-200 p-2 rounded-lg w-full" [value]="form().dashboard_layout || 'grid'" (change)="patch('dashboard_layout', $any($event.target).value)">
               <option value="grid">Grid View</option>
               <option value="list">List View</option>
             </select>
           </div>
           <div>
             <label class="text-sm font-medium">Items Per Page</label>
-            <select class="border p-2 rounded w-full" [value]="form().items_per_page || 20" (change)="patch('items_per_page', +$any($event.target).value)">
+            <select class="border border-gray-200 p-2 rounded-lg w-full" [value]="form().items_per_page || 20" (change)="patch('items_per_page', +$any($event.target).value)">
               <option [value]="10">10 Items</option>
               <option [value]="20">20 Items</option>
               <option [value]="50">50 Items</option>
@@ -101,7 +101,7 @@ import { SettingsService, Preferences } from '../settings.service';
         </div>
       </div>
 
-      <div class="border border-gray-200 p-4 rounded-2xl">
+      <div class="border bg-white border-gray-200 p-4 rounded-lg">
         <h3 class="font-medium mb-2">Accessibility</h3>
         <div class="flex items-center justify-between">
           <div>
@@ -118,7 +118,11 @@ import { SettingsService, Preferences } from '../settings.service';
         <button class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" [disabled]="saving()" (click)="save()">Save Preferences</button>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .input { width: 100%; border-radius: 0.5rem; border: 1px solid #d1d5db; padding: 0.75rem 0.875rem; font-size: 1rem; background: #ffffff; transition: all 0.2s ease-in-out; }
+    .input::placeholder { color: #9ca3af; }
+  `]
 })
 export class PreferencesComponent implements OnInit {
   private api = inject(SettingsService);
