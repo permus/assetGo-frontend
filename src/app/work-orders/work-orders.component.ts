@@ -191,14 +191,9 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
 
     // Load team members
     this.subscription.add(
-      this.teamService.getTeamMembers().subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            this.teamMembers = response.data || [];
-          } else {
-            this.teamMembers = [];
-            console.warn('Team members response format unexpected:', response);
-          }
+      this.teamService.getTeamMembersFlat(1000).subscribe({
+        next: (items) => {
+          this.teamMembers = items || [];
         },
         error: (error) => {
           console.error('Error loading team members:', error);

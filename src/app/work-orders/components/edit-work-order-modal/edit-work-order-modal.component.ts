@@ -238,8 +238,8 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
   private async loadDropdownData(): Promise<void> {
     try {
       // Load users (team members for assignment)
-      const teamsResponse = await firstValueFrom(this.teamService.getTeamMembers());
-      this.users = teamsResponse?.data || [];
+      const teams = await firstValueFrom(this.teamService.getTeamMembersFlat(1000));
+      this.users = teams || [];
 
       // Load assets
       const assetsResponse = await firstValueFrom(this.assetService.getAssets({per_page: 100}));
@@ -250,7 +250,7 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
       this.locations = locationsResponse?.data?.locations || [];
 
       // Load team members (teams)
-      this.teams = teamsResponse?.data || [];
+      this.teams = teams || [];
 
     } catch (error: unknown) {
       console.error('Error loading dropdown data:', error);

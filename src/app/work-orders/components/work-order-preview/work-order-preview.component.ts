@@ -211,10 +211,8 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
             }
           });
           // Load team members for modal selection
-          this.teamService.getTeamMembers().subscribe({
-            next: (res: any) => {
-              this.teamMembers = res?.data || [];
-            },
+          this.teamService.getTeamMembersFlat(1000).subscribe({
+            next: (items) => { this.teamMembers = items || []; },
             error: () => { this.teamMembers = []; }
           });
           // Load existing comments from API to ensure consistent shape

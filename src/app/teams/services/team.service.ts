@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -16,6 +17,12 @@ export interface TeamMember {
     name: string;
     description?: string;
   };
+  roles?: Array<{
+    id: number;
+    name: string;
+    description?: string;
+    permissions?: any;
+  }>;
   hourly_rate?: number;
   user_type: 'team';
   company_id: number;
@@ -28,6 +35,9 @@ export interface TeamMember {
   locations?: { id: number; name: string }[];
   has_full_location_access?: boolean;
   assigned_work_orders_count?: number;
+  assigned_work_orders_total_count?: number;
+  assigned_work_orders_active_count?: number;
+  assigned_work_orders_completed_count?: number;
 }
 
 export interface TeamMemberStatistics {
@@ -43,9 +53,21 @@ export interface AvailableRole {
   description?: string;
 }
 
-export interface TeamMembersResponse {
+export interface Pagination {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number;
+  to: number;
+}
+
+export interface TeamMembersPaginatedResponse {
   success: boolean;
-  data: TeamMember[];
+  data: {
+    teams: TeamMember[];
+    pagination: Pagination;
+  };
 }
 
 export interface TeamMemberResponse {
@@ -56,6 +78,18 @@ export interface TeamMemberResponse {
 export interface TeamMemberStatisticsResponse {
   success: boolean;
   data: TeamMemberStatistics;
+}
+
+export interface TeamAnalyticsResponse {
+  success: boolean;
+  data: {
+    date_range_days: number;
+    productivity_rate_percent: number;
+    on_time_rate_percent: number;
+    avg_completion_days: number;
+    labor_cost_total: number;
+    top_performers: Array<{ user_id: number; first_name: string; last_name: string; completed_count: number }>;
+  };
 }
 
 export interface AvailableRolesResponse {
@@ -105,9 +139,46 @@ export class TeamService {
     };
   }
 
-  // Get all team members
-  getTeamMembers(): Observable<TeamMembersResponse> {
-    return this.http.get<TeamMembersResponse>(this.apiUrl, this.getAuthHeaders());
+  // Get paginated team members
+  getTeamMembers(
+    page: number = 1,
+    perPage: number = 15,
+    opts?: {
+      search?: string;
+      role_id?: number;
+      role_name?: string;
+      status?: 'active' | 'inactive';
+      type?: string;
+      sort_by?: 'name' | 'email' | 'created_at';
+      sort_dir?: 'asc' | 'desc';
+    }
+  ): Observable<TeamMembersPaginatedResponse> {
+    const token = this.authService.getToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    } as { [header: string]: string };
+
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    params.set('per_page', String(perPage));
+    if (opts?.search) params.set('search', opts.search);
+    if (opts?.role_id !== undefined) params.set('role_id', String(opts.role_id));
+    if (opts?.role_name) params.set('role_name', opts.role_name);
+    if (opts?.status) params.set('status', opts.status);
+    if (opts?.type) params.set('type', opts.type);
+    if (opts?.sort_by) params.set('sort_by', opts.sort_by);
+    if (opts?.sort_dir) params.set('sort_dir', opts.sort_dir);
+
+    const url = `${this.apiUrl}?${params.toString()}`;
+    return this.http.get<TeamMembersPaginatedResponse>(url, { headers });
+  }
+
+  // Convenience: get flat list of team members for selects
+  getTeamMembersFlat(perPage: number = 1000): Observable<TeamMember[]> {
+    return this.getTeamMembers(1, perPage).pipe(
+      map((res) => res?.data?.teams ?? [])
+    );
   }
 
   // Get a specific team member
@@ -138,6 +209,21 @@ export class TeamService {
   // Get team member statistics
   getTeamMemberStatistics(): Observable<TeamMemberStatisticsResponse> {
     return this.http.get<TeamMemberStatisticsResponse>(`${this.apiUrl}/statistics`, this.getAuthHeaders());
+  }
+
+  // Get team analytics
+  getTeamAnalytics(params?: { date_range?: number }): Observable<TeamAnalyticsResponse> {
+    const token = this.authService.getToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    } as { [header: string]: string };
+
+    const query = new URLSearchParams();
+    if (params?.date_range) query.set('date_range', String(params.date_range));
+
+    const url = `${this.apiUrl}/analytics${query.toString() ? `?${query.toString()}` : ''}`;
+    return this.http.get<TeamAnalyticsResponse>(url, { headers });
   }
 
   // Get available roles for team members

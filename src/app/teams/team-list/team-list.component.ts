@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TeamService, TeamMember, TeamMemberStatistics } from '../services/team.service';
+import { TeamService, TeamMember, TeamMemberStatistics, TeamMembersPaginatedResponse, Pagination, TeamAnalyticsResponse } from '../services/team.service';
 import { TeamDeleteConfirmationModalComponent } from '../components/team-delete-confirmation-modal/team-delete-confirmation-modal.component';
 import { TeamFormModalComponent } from '../components/team-form-modal/team-form-modal.component';
 import { AssignWorkOrderModalComponent } from '../components/assign-work-order-modal/assign-work-order-modal.component';
@@ -16,10 +16,12 @@ import { AssignWorkOrderModalComponent } from '../components/assign-work-order-m
 export class TeamListComponent implements OnInit {
   teamMembers: TeamMember[] = [];
   filteredTeamMembers: TeamMember[] = [];
+  pagination: Pagination | null = null;
   loading = false;
   error = '';
   successMessage = '';
   statistics: TeamMemberStatistics | null = null;
+  analytics: TeamAnalyticsResponse['data'] | null = null;
 
   // Search and filtering
   searchTerm = '';
@@ -103,13 +105,21 @@ export class TeamListComponent implements OnInit {
     this.loadStatistics();
   }
 
-  loadTeamMembers(): void {
+  loadTeamMembers(page: number = 1): void {
     this.loading = true;
     this.error = '';
 
-    this.teamService.getTeamMembers().subscribe({
-      next: (response: any) => {
-        this.teamMembers = response.data;
+    this.teamService.getTeamMembers(page, 15, {
+      search: this.searchTerm || undefined,
+      role_name: this.selectedRole?.value || undefined,
+      status: this.selectedStatus?.value || undefined,
+      type: this.selectedType?.value || undefined,
+      sort_by: this.selectedSort?.value || undefined,
+      sort_dir: this.selectedSortDir
+    }).subscribe({
+      next: (response: TeamMembersPaginatedResponse) => {
+        this.teamMembers = response.data.teams;
+        this.pagination = response.data.pagination;
         this.filteredTeamMembers = [...this.teamMembers];
         this.loading = false;
       },
@@ -129,6 +139,12 @@ export class TeamListComponent implements OnInit {
       error: (error: any) => {
         console.error('Error loading team member statistics:', error);
       }
+    });
+
+    // Load analytics panel data
+    this.teamService.getTeamAnalytics({ date_range: 30 }).subscribe({
+      next: (res) => { this.analytics = res.data; },
+      error: (e) => { console.error('Error loading team analytics:', e); }
     });
   }
 
@@ -226,7 +242,8 @@ export class TeamListComponent implements OnInit {
   }
 
   onSearchChange(): void {
-    this.filterTeamMembers();
+    // Server-side search
+    this.loadTeamMembers(1);
   }
 
   filterTeamMembers(): void {
@@ -260,30 +277,30 @@ export class TeamListComponent implements OnInit {
   selectSort(sort: any): void {
     this.selectedSort = sort;
     this.showSortDropdown = false;
-    this.sortTeamMembers();
+    this.loadTeamMembers(1);
   }
 
   selectRole(role: any): void {
     this.selectedRole = role;
     this.showRoleDropdown = false;
-    this.filterTeamMembers();
+    this.loadTeamMembers(1);
   }
 
   selectType(type: any): void {
     this.selectedType = type;
     this.showTypeDropdown = false;
-    this.filterTeamMembers();
+    this.loadTeamMembers(1);
   }
 
   selectStatus(status: any): void {
     this.selectedStatus = status;
     this.showStatusDropdown = false;
-    this.filterTeamMembers();
+    this.loadTeamMembers(1);
   }
 
   toggleSortDir(): void {
     this.selectedSortDir = this.selectedSortDir === 'asc' ? 'desc' : 'asc';
-    this.sortTeamMembers();
+    this.loadTeamMembers(1);
   }
 
   sortTeamMembers(): void {
