@@ -27,6 +27,7 @@ export class GlobalDropdownComponent implements OnInit {
   @Input() errorMessage: string = '';
   @Input() searchable: boolean = false;
   @Input() maxHeight: string = '300px';
+  @Input() minWidth: string = '260px';
 
   @Output() selectionChange = new EventEmitter<DropdownOption>();
 

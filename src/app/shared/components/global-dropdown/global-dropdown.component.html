@@ -1,7 +1,7 @@
 <div class="dropdown-wrapper" [class.error]="hasFieldError()">
   <label *ngIf="label" class="dropdown-label">{{ label }} <span class="required" *ngIf="required">*</span></label>
 
-  <div class="relative generic-dropdown" (click)="$event.stopPropagation()">
+  <div class="relative generic-dropdown" (click)="$event.stopPropagation()" [style.min-width]="minWidth">
     <button
       type="button"
       (click)="toggleDropdown()"

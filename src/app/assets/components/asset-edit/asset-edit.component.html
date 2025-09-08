@@ -397,6 +397,16 @@
               <div class="text-xs text-gray-500 mt-1">Maximum 100 characters</div>
             </div>
             <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+              <input
+                type="text"
+                class="input"
+                placeholder="e.g., Apple, Samsung"
+                formControlName="brand"
+                maxlength="100" />
+              <div class="text-xs text-gray-500 mt-1">Optional</div>
+            </div>
+            <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>
               <input
                 type="text"
@@ -405,6 +415,36 @@
                 formControlName="model"
                 maxlength="100" />
               <div class="text-xs text-gray-500 mt-1">Maximum 100 characters</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Dimensions</label>
+              <input
+                type="text"
+                class="input"
+                formControlName="dimensions"
+                placeholder="e.g., 120×60×40 cm" />
+              <div class="text-xs text-gray-500 mt-1">L × W × H (any unit)</div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Weight</label>
+              <input
+                type="text"
+                class="input"
+                formControlName="weight"
+                placeholder="e.g., 12.5 kg" />
+              <div class="text-xs text-gray-500 mt-1">Any unit</div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
+              <input
+                type="text"
+                class="input"
+                formControlName="capacity"
+                placeholder="e.g., 256 GB, 5000 mAh, 2 Ton" />
+              <div class="text-xs text-gray-500 mt-1">Optional</div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -416,7 +456,6 @@
                 [class.border-red-300]="serialNumberError"
                 placeholder="e.g., SN123456789"
                 formControlName="serial_number"
-                required
                 maxlength="100" />
               <div *ngIf="serialNumberError" class="text-red-600 text-sm mt-1">
                 <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -552,7 +591,7 @@
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
                       </div>
-                      <span class="text-gray-900">{{selectedLocation.name}}</span>
+                      <span class="text-gray-900">{{selectedLocation.label || selectedLocation.name}}</span>
                     </div>
                     <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -579,7 +618,7 @@
                           </svg>
                         </div>
                         <div>
-                          <div class="font-medium text-gray-900">{{loc.name}}</div>
+                          <div class="font-medium text-gray-900">{{ getLocationLabel(loc) }}</div>
                           <div *ngIf="loc.type" class="text-sm text-gray-500">{{loc.type.name}}</div>
                         </div>
                       </div>
@@ -653,10 +692,13 @@
                   class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
                   [class.border-blue-500]="showStatusDropdown">
                   <div class="flex items-center justify-between">
-                    <div *ngIf="selectedStatus" class="flex items-center space-x-3">
+                    <div *ngIf="selectedStatus; else statusPlaceholder" class="flex items-center space-x-3">
                       <div class="w-3 h-3 rounded-full" [style.background-color]="selectedStatus.hexColor || '#6B7280'"></div>
                       <span class="text-gray-900">{{selectedStatus.label}}</span>
                     </div>
+                    <ng-template #statusPlaceholder>
+                      <span class="text-gray-400">Select status</span>
+                    </ng-template>
                     <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showStatusDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>

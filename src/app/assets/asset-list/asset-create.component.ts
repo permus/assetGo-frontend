@@ -52,6 +52,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   departments: any[] = [];
   possibleParents: any[] = [];
   parent_id: number | null = null;
+  // Duplication state
+  isDuplicate = false;
+  duplicateSourceId: string | null = null;
 
   // Dropdown state properties
   showAssetTypeDropdown = false;
@@ -180,10 +183,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.submitSuccess = '';
     this.submitFieldErrors = {};
 
-    // Convert images to base64
-    this.convertImagesToBase64().then((base64Images: string[]) => {
-      // Create payload object
-      const payload = {
+    const submitCreate = (base64Images: string[]) => {
+      const payload: any = {
         name: this.name,
         description: this.description,
         category_id: this.category_id,
@@ -203,15 +204,22 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         health_score: this.health_score,
         status: this.status,
         tags: this.selectedTags.map(tag => tag.name),
-        meta: this.meta,
-        images: base64Images
+        meta: this.meta
       };
 
-      this.assetService.createAsset(payload).subscribe({
+      if (!this.isDuplicate) {
+        payload.images = base64Images;
+      }
+
+      const request$ = this.isDuplicate && this.duplicateSourceId
+        ? this.assetService.duplicateAsset(this.duplicateSourceId, payload)
+        : this.assetService.createAsset(payload);
+
+      request$.subscribe({
         next: (res) => {
           this.isSubmitting = false;
           if (res.success) {
-            this.submitSuccess = 'Asset created successfully!';
+            this.submitSuccess = this.isDuplicate ? 'Asset duplicated successfully!' : 'Asset created successfully!';
             // Navigate back after 2 seconds
             setTimeout(() => {
               this.router.navigate(['/assets/list']);
@@ -227,11 +235,26 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
           this.handleFieldErrors(err.error?.errors || err.errors || {});
         }
       });
-    }).catch((error) => {
-      this.isSubmitting = false;
-      this.submitError = 'Failed to process images. Please try again.';
-      console.error('Image conversion error:', error);
-    });
+    };
+
+    if (this.isDuplicate) {
+      // For duplication, backend will copy existing images. Only encode new uploads if any.
+      if (this.images.length > 0) {
+        this.convertImagesToBase64().then(submitCreate).catch((error) => {
+          this.isSubmitting = false;
+          this.submitError = 'Failed to process images. Please try again.';
+          console.error('Image conversion error:', error);
+        });
+      } else {
+        submitCreate([]);
+      }
+    } else {
+      this.convertImagesToBase64().then(submitCreate).catch((error) => {
+        this.isSubmitting = false;
+        this.submitError = 'Failed to process images. Please try again.';
+        console.error('Image conversion error:', error);
+      });
+    }
   }
 
   healthScore = 85;
@@ -275,7 +298,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     // Check if we're duplicating an asset
     this.route.queryParams.subscribe((params: any) => {
       if (params['duplicate'] && params['sourceId']) {
-        this.loadAssetForDuplication(params['sourceId']);
+        this.isDuplicate = true;
+        this.duplicateSourceId = String(params['sourceId']);
+        this.loadAssetForDuplication(this.duplicateSourceId);
       }
     });
 
@@ -604,8 +629,27 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     this.clearErrors();
   }
 
+  private buildLocationLabel(loc: any): string {
+    if (!loc) return '';
+    // Prefer full_path if API provides it, otherwise build from complete_hierarchy or name
+    if (loc.full_path) return loc.full_path;
+    if (Array.isArray(loc.complete_hierarchy) && loc.complete_hierarchy.length > 0) {
+      return loc.complete_hierarchy.map((n: any) => n.name).join(' → ');
+    }
+    if (Array.isArray(loc.ancestors_with_details) && loc.ancestors_with_details.length > 0) {
+      return loc.ancestors_with_details.map((n: any) => n.name).join(' → ') + ' → ' + (loc.name || '');
+    }
+    return loc.name || '';
+  }
+
+  getLocationLabel(loc: any): string {
+    return this.buildLocationLabel(loc);
+  }
+
   selectLocation(location: any) {
-    this.selectedLocation = location;
+    // Enhance selected object with label for display
+    const label = this.buildLocationLabel(location);
+    this.selectedLocation = { ...location, label };
     this.location_id = location.id;
     this.showLocationDropdown = false;
   }
@@ -701,10 +745,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Serial number validation (required, max 100)
-    if (!this.serial_number || this.serial_number.trim().length === 0) {
-      this.serialNumberError = 'Serial number is required';
-      isValid = false;
-    } else if (this.serial_number.length > 100) {
+    if (this.serial_number && this.serial_number.length > 100) {
       this.serialNumberError = 'Serial number cannot exceed 100 characters';
       isValid = false;
     }

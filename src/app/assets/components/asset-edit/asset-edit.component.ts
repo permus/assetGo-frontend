@@ -105,7 +105,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.assetForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       description: [''],
-      serial_number: ['', [Validators.required, Validators.minLength(3)]],
+      serial_number: ['', [Validators.minLength(0)]],
       model: [''],
       manufacturer: [''],
       purchase_date: [''],
@@ -118,6 +118,10 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       warranty: [''],
       insurance: [''],
       health_score: [85, [Validators.min(0), Validators.max(100)]],
+      brand: [''],
+      dimensions: [''],
+      weight: [''],
+      capacity: [''],
       status: [null],
       type: [null, Validators.required],
       category_id: [null, Validators.required],
@@ -248,13 +252,17 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         serial_number: this.asset.serial_number || '',
         model: this.asset.model || '',
         manufacturer: this.asset.manufacturer || '',
-       purchase_date: purchaseDate,
+        brand: this.asset.brand || '',
+        dimensions: this.asset.dimensions || '',
+        weight: this.asset.weight || '',
+        capacity: this.asset.capacity || '',
+        purchase_date: purchaseDate,
         purchase_price: this.asset.purchase_price || null,
         depreciation: this.asset.depreciation || null,
         depreciation_life: this.asset.depreciation_life || null,
         location_id: this.asset.location_id || null,
         department_id: this.asset.department_id || null,
-       warranty: warrantyDate,
+        warranty: warrantyDate,
         insurance: this.asset.insurance || '',
         health_score: this.asset.health_score || 85,
         status: this.asset.status || null, // Keep as is - could be ID or string, will be handled below
@@ -278,11 +286,17 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedCategory = this.categories.find(cat => cat.id === this.asset.category_id) || null;
         this.selectedLocation = this.locations.find(loc => loc.id === this.asset.location_id) || null;
         this.selectedDepartment = this.departments.find(dept => dept.id === this.asset.department_id) || null;
-        this.selectedStatus = this.statusOptions.find(status => 
-          status.value === this.asset.status || 
-          status.label === this.asset.status ||
-          status.id === this.asset.status
-        ) || null;
+        const rawStatusIdOrName = this.asset?.status ?? this.asset?.asset_status?.id ?? this.asset?.asset_status?.name ?? null;
+        const numericStatus = (rawStatusIdOrName !== null && rawStatusIdOrName !== undefined && !isNaN(Number(rawStatusIdOrName)))
+          ? Number(rawStatusIdOrName)
+          : null;
+        const statusName = typeof rawStatusIdOrName === 'string' ? rawStatusIdOrName : (this.asset?.asset_status?.name ?? null);
+
+        this.selectedStatus = this.statusOptions.find(status => {
+          const matchesId = numericStatus !== null && (status.value === numericStatus || status.id === numericStatus);
+          const matchesLabel = !!statusName && status.label.toLowerCase() === String(statusName).toLowerCase();
+          return matchesId || matchesLabel;
+        }) || null;
 
         // If status is found, update the form with the numerical ID
         if (this.selectedStatus) {
@@ -505,6 +519,22 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showDepartmentDropdown = false;
   }
 
+  private buildLocationLabel(loc: any): string {
+    if (!loc) return '';
+    if (loc.full_path) return loc.full_path;
+    if (Array.isArray(loc.complete_hierarchy) && loc.complete_hierarchy.length > 0) {
+      return loc.complete_hierarchy.map((n: any) => n.name).join(' → ');
+    }
+    if (Array.isArray(loc.ancestors_with_details) && loc.ancestors_with_details.length > 0) {
+      return loc.ancestors_with_details.map((n: any) => n.name).join(' → ') + ' → ' + (loc.name || '');
+    }
+    return loc.name || '';
+  }
+
+  getLocationLabel(loc: any): string {
+    return this.buildLocationLabel(loc);
+  }
+
   toggleStatusDropdown() {
     this.showStatusDropdown = !this.showStatusDropdown;
     this.showAssetTypeDropdown = false;
@@ -547,7 +577,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   selectLocation(location: any) {
-    this.selectedLocation = location;
+    this.selectedLocation = { ...location, label: this.buildLocationLabel(location) };
     this.assetForm.patchValue({ location_id: location.id });
     this.showLocationDropdown = false;
   }

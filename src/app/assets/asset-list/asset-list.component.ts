@@ -11,12 +11,13 @@ import { RestoreConfirmationModalComponent } from '../components/restore-confirm
 import { PdfExportService } from '../../shared/services/pdf-export.service';
 import { RouterModule } from '@angular/router';
 import { PaginationComponent, PaginationData } from '../../shared/components/pagination/pagination.component';
+import { GlobalDropdownComponent, DropdownOption } from '../../shared/components/global-dropdown/global-dropdown.component';
 import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule, PaginationComponent],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule, PaginationComponent, GlobalDropdownComponent],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
@@ -85,8 +86,18 @@ export class AssetListComponent implements OnInit, OnDestroy {
   selectedSort = this.sortOptions[0];
   selectedSortDir = 'desc';
 
+  // Standard dropdown options (Rule 1)
+  sortDropdownOptions: DropdownOption[] = [];
+  selectedSortOption: DropdownOption | null = null;
+  assetTypeDropdownOptions: DropdownOption[] = [];
+  selectedAssetTypeOption: DropdownOption | null = null;
+  assetStatusDropdownOptions: DropdownOption[] = [];
+  selectedAssetStatusOption: DropdownOption | null = null;
+
   viewType: 'grid' | 'list' = 'grid';
   searchQuery = '';
+  // Tabs: Active | Archive
+  activeTab: 'active' | 'archive' = 'active';
   
   // Filter parameters
   currentFilters = {
@@ -141,6 +152,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
           icon: type.icon || null
         }))];
         this.selectedAssetType = this.assetTypes[0];
+        this.assetTypeDropdownOptions = this.assetTypes.map((t: any) => ({ id: t.id, name: t.label || t.name, icon: t.icon }));
+        this.selectedAssetTypeOption = this.assetTypeDropdownOptions[0] || null;
       }
     });
     this.assetService.getAssetStatuses().subscribe(res => {
@@ -152,8 +165,14 @@ export class AssetListComponent implements OnInit, OnDestroy {
           color: status.color || null
         }))];
         this.selectedAssetStatus = this.assetStatuses[0];
+        this.assetStatusDropdownOptions = this.assetStatuses.map((s: any) => ({ id: s.id, name: s.label || s.name }));
+        this.selectedAssetStatusOption = this.assetStatusDropdownOptions[0] || null;
       }
     });
+
+    // Build sort dropdown options per Rule 1
+    this.sortDropdownOptions = this.sortOptions.map(o => ({ id: o.value, name: o.label }));
+    this.selectedSortOption = this.sortDropdownOptions.find(o => o.id === this.selectedSort.value) || this.sortDropdownOptions[0];
   }
 
   loadAssetStatistics() {
@@ -573,11 +592,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   toggleArchivedView() {
-    this.showingArchived = !this.showingArchived;
-    this.currentFilters.archived = this.showingArchived;
-    this.currentFilters.page = 1; // Reset to first page
-    this.clearSelection();
-    this.loadAssets();
+    this.setTab(this.showingArchived ? 'active' : 'archive');
     this.showMenu = false; // Close the dropdown menu
   }
 
@@ -762,6 +777,29 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
+  // Standard dropdown handlers (Rule 1)
+  onSelectAssetType(option: DropdownOption | null): void {
+    this.selectedAssetTypeOption = option;
+    this.selectedAssetType = this.assetTypes.find((t: any) => t.id === (option?.id ?? '')) || null;
+    this.currentFilters.type = option?.id || '';
+    this.applyFilters();
+  }
+
+  onSelectAssetStatus(option: DropdownOption | null): void {
+    this.selectedAssetStatusOption = option;
+    this.selectedAssetStatus = this.assetStatuses.find((s: any) => s.id === (option?.id ?? '')) || null;
+    this.currentFilters.status = option?.id || '';
+    this.applyFilters();
+  }
+
+  onSelectSort(option: DropdownOption | null): void {
+    this.selectedSortOption = option;
+    const resolved = this.sortOptions.find(o => o.value === (option?.id || '')) || this.sortOptions[0];
+    this.selectedSort = resolved;
+    this.currentFilters.sort_by = resolved.value;
+    this.applyFilters();
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -826,6 +864,18 @@ export class AssetListComponent implements OnInit, OnDestroy {
   onPerPageChange(perPage: number): void {
     this.currentFilters.per_page = perPage;
     this.currentFilters.page = 1; // Reset to first page when changing per page
+    this.loadAssets();
+  }
+
+  /**
+   * Set current tab and apply archived filter accordingly
+   */
+  setTab(tab: 'active' | 'archive'): void {
+    this.activeTab = tab;
+    this.showingArchived = tab === 'archive';
+    this.currentFilters.archived = this.showingArchived;
+    this.currentFilters.page = 1;
+    this.clearSelection();
     this.loadAssets();
   }
 }

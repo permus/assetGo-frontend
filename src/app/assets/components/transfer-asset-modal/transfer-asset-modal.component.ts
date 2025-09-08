@@ -359,7 +359,27 @@ export class TransferAssetModalComponent implements OnInit, AfterViewInit, OnDes
   getLocationNameById(id: number | null): string {
     if (!id) return '';
     const loc = this.locations.find(l => l.id === id);
-    return loc ? loc.name : '';
+    if (!loc) return '';
+    if (loc.full_path) return loc.full_path;
+    if (Array.isArray(loc.complete_hierarchy) && loc.complete_hierarchy.length > 0) {
+      return loc.complete_hierarchy.map((n: any) => n.name).join(' → ');
+    }
+    if (Array.isArray(loc.ancestors_with_details) && loc.ancestors_with_details.length > 0) {
+      return loc.ancestors_with_details.map((n: any) => n.name).join(' → ') + ' → ' + (loc.name || '');
+    }
+    return loc.name || '';
+  }
+
+  getLocationLabel(location: any): string {
+    if (!location) return '';
+    if (location.full_path) return location.full_path;
+    if (Array.isArray(location.complete_hierarchy) && location.complete_hierarchy.length > 0) {
+      return location.complete_hierarchy.map((n: any) => n.name).join(' → ');
+    }
+    if (Array.isArray(location.ancestors_with_details) && location.ancestors_with_details.length > 0) {
+      return location.ancestors_with_details.map((n: any) => n.name).join(' → ') + ' → ' + (location.name || '');
+    }
+    return location.name || '';
   }
 
   getDepartmentNameById(id: number | null): string {

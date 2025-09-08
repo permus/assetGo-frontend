@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import { AssetService } from '../../services/asset.service';
 import { ImportProgressService } from '../../../shared/services/import-progress.service';
 import { timer, interval, Subject, takeUntil } from 'rxjs';
@@ -9,23 +9,23 @@ import { timer, interval, Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'app-smart-import',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './smart-import.component.html',
   styleUrls: ['./smart-import.component.scss']
 })
 export class SmartImportComponent implements OnDestroy {
   @Output() importComplete = new EventEmitter<void>();
-  
+
   private destroy$ = new Subject<void>();
-  
+
   // Step management
   currentStep = 1;
   totalSteps = 2; // Simplified to: 1. Upload, 2. Progress
-  
+
   // File upload state
   uploadedFile: File | null = null;
   uploaded = false;
-  
+
   // Import state
   importLoading = false;
   isImportComplete = false;
@@ -42,7 +42,7 @@ export class SmartImportComponent implements OnDestroy {
   // These properties are now managed by ImportProgressService
 
   constructor(
-    private assetService: AssetService, 
+    private assetService: AssetService,
     private router: Router,
     private importProgressService: ImportProgressService
   ) {}
@@ -57,10 +57,10 @@ export class SmartImportComponent implements OnDestroy {
    */
   parseFile(event: any): void {
     const file = event.target.files[0];
-    
+
     // Clear any existing errors
     this.clearError();
-    
+
     if (!file) {
       this.errorMessage = 'No file selected';
       this.showError = true;
@@ -138,4 +138,4 @@ export class SmartImportComponent implements OnDestroy {
   closeAllDropdowns(): void {
     // No-op for compatibility with template
   }
-} 
+}

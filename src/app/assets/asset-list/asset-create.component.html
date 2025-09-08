@@ -407,7 +407,6 @@
               placeholder="e.g., SN123456789"
               [(ngModel)]="serial_number"
               name="serial_number"
-              required
               maxlength="100" />
             <div *ngIf="serialNumberError" class="text-red-600 text-sm mt-1">
               <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -549,7 +548,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                       </svg>
                     </div>
-                    <span class="text-gray-900">{{selectedLocation.name}}</span>
+                    <span class="text-gray-900">{{selectedLocation.label || selectedLocation.name}}</span>
                   </div>
                   <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -576,7 +575,7 @@
                         </svg>
                       </div>
                       <div>
-                        <div class="font-medium text-gray-900">{{loc.name}}</div>
+                        <div class="font-medium text-gray-900">{{ getLocationLabel(loc) }}</div>
                         <div *ngIf="loc.type" class="text-sm text-gray-500">{{loc.type.name}}</div>
                       </div>
                     </div>
