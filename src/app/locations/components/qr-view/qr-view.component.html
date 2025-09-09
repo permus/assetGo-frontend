@@ -1,0 +1,105 @@
+<!-- Delete Confirmation Modal -->
+<div *ngIf="isOpen"
+     class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4"
+     [@backdropAnimation]>
+  <!-- Modal Container -->
+  <div class="bg-white rounded-2xl shadow-xl max-w-xl w-full" (clickOutside)="closeModalHandler()"
+       [@modalAnimation]>
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-gray-200">
+      <div class="flex items-center space-x-3">
+        <h2 class="text-xl font-semibold text-gray-900">Generate QR Code for {{ location?.name }}</h2>
+      </div>
+
+    </div>
+
+    <!-- Modal Content -->
+    <div class="p-6 pt-0">
+      <div class="p-6 border border-gray-200 rounded-2xl">
+        <div class="flex items-center gap-2 font-semibold mb-6 tracking-tight text-lg">
+          <div
+            class="p-2 text-gray-400 bg-gray-100  rounded-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+            </svg>
+          </div>
+          Location QR Code
+        </div>
+
+        <!--Qr image-->
+        <div class="flex justify-center">
+          @if (!regenLoading) {
+            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <img class="w-40 h-40" [src]="location?.quick_chart_qr_url" alt="qr code">
+            </div>
+          } @else {
+            <span
+              class="border-t border-blue-400 animate-spin border-opacity-25 ml-2 w-12 h-12 rounded-full inline-block"></span>
+          }
+
+        </div>
+
+        <div class="space-y-2 mt-4 text-center">
+          <div class="font-medium text-sm text-foreground">{{ location?.name }}</div>
+          <div class="flex items-center justify-center gap-2">
+            <div
+              class="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-0.5 font-semibold transition-colors text-xs">
+              {{ location?.type?.name }}
+            </div>
+            {{ location?.hierarchy_level }}
+          </div>
+
+          <div class="flex items-center justify-center gap-1 text-xs text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="size-3">
+              <path
+                d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span class="truncate max-w-[200px]">{{ location?.address || 'N/A' }}</span></div>
+
+
+          <div class="flex gap-2 justify-center my-4">
+            <button (click)="regenerateQr()"
+                    class="flex gap-2 items-center text-sm font-medium border border-gray-200 rounded-lg py-2 px-3 cursor-pointer hover:bg-gray-100 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+              </svg>
+              Regenerate
+            </button>
+
+            <a [href]="location?.quick_chart_qr_url" target="_blank" [download]="location?.quick_chart_qr_url"
+               (click)="downloadQr()"
+               class="flex gap-2 items-center text-sm font-medium border border-gray-200 rounded-lg py-2 px-3 cursor-pointer hover:bg-gray-100 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                   stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+              </svg>
+              Download
+            </a>
+            <button
+              class="flex gap-2 items-center text-sm font-medium border border-gray-200 rounded-lg py-2 px-3 cursor-pointer hover:bg-gray-100 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                   stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z"/>
+              </svg>
+
+              Print Label
+            </button>
+          </div>
+
+          <div class="text-xs text-gray-400 text-center pt-2 border-t border-gray-200">Scan this QR code to quickly
+            access location details and view assets
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

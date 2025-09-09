@@ -17,7 +17,7 @@ import * as QRCode from 'qrcode';
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, NgClass, RouterModule, PaginationComponent, GlobalDropdownComponent],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, RouterModule, PaginationComponent, GlobalDropdownComponent],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
@@ -56,7 +56,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   showDeleteConfirmationModal = false;
   showRestoreConfirmationModal = false;
   selectedAssetForRestore: any = null;
-  
+
   // View state
   showingArchived = false;
 
@@ -98,7 +98,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   searchQuery = '';
   // Tabs: Active | Archive
   activeTab: 'active' | 'archive' = 'active';
-  
+
   // Filter parameters
   currentFilters = {
     search: '',
@@ -122,10 +122,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
   assetStatuses: any[] = [];
   showAssetStatusDropdown = false;
   selectedAssetStatus: any | null = null;
-  
+
   // Asset menu state
   openAssetMenuId: number | null = null;
-  
+
   // Pagination
   pagination: PaginationData = {
     current_page: 1,
@@ -187,7 +187,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
               activeAssets: data.active_assets || 0,
               maintenance: data.maintenance || 0,
               totalValue: data.total_asset_value || 0,
-              assetHealth: data.total_asset_health && data.total_assets ? 
+              assetHealth: data.total_asset_health && data.total_assets ?
                 Math.round(data.total_asset_health / data.total_assets) : 100
             };
           }
@@ -233,7 +233,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     // Build query parameters
     const params: any = {};
-    
+
     if (this.currentFilters.search) {
       params.search = this.currentFilters.search;
     }
@@ -270,12 +270,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
               selected: false,
               showMenu: false
             }));
-            
+
             // Update pagination if available
             if (response.data.pagination) {
               this.pagination = response.data.pagination;
             }
-            
+
           } else {
             this.error = response.message || 'Failed to load assets';
           }
@@ -348,7 +348,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.showTypeDropdown = false;
     this.applyFilters();
   }
-  
+
   selectStatus(status: any) {
     const selectedOption = this.statusOptions.find(option => option.value === status);
     if (selectedOption) {
@@ -358,7 +358,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.showStatusDropdown = false;
     this.applyFilters();
   }
-  
+
   selectSort(sort: any) {
     const selectedOption = this.sortOptions.find(option => option.value === sort);
     if (selectedOption) {
@@ -368,7 +368,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.showSortDropdown = false;
     this.applyFilters();
   }
-  
+
   selectSortDir(dir: 'asc' | 'desc') {
     this.selectedSortDir = dir;
     this.currentFilters.sort_direction = dir;
@@ -436,7 +436,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   restoreSelectedAsset(restoreReason?: string) {
     // Check if this is a bulk restore (multiple selected assets) or single asset restore
     const selectedAssets = this.assetList.filter(asset => asset.selected);
-    
+
     if (selectedAssets.length > 1) {
       // Bulk restore
       this.restoreBulkAssets(restoreReason);
@@ -499,7 +499,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
               const deletedCount = response.deleted ? response.deleted.length : selectedAssets.length;
               console.log(`${deletedCount} assets deleted successfully`);
             }
-            
+
             // Reload assets and statistics
             this.loadAssets();
             this.loadAssetStatistics();
@@ -551,7 +551,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
               const archivedCount = response.archived ? response.archived.length : selectedAssets.length;
               console.log(`${archivedCount} assets archived successfully`);
             }
-            
+
             // Reload assets and statistics
             this.loadAssets();
             this.loadAssetStatistics();
@@ -654,7 +654,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
         asset.showMenu = false;
       }
     });
-    
+
     // Toggle the clicked asset's menu
     const asset = this.assetList.find(a => a.id === assetId);
     if (asset) {
@@ -699,7 +699,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     if (selectedAssets.length === 0) {
       return;
     }
-    
+
     // Open bulk restore modal
     this.showRestoreConfirmationModal = true;
   }
@@ -729,7 +729,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
               const restoredCount = response.restored ? response.restored.length : selectedAssets.length;
               console.log(`${restoredCount} assets restored successfully`);
             }
-            
+
             // Reload assets and statistics
             this.loadAssets();
             this.loadAssetStatistics();
@@ -811,7 +811,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   // QR Code functionality
   generateQRCodeForAsset(asset: any) {
     const publicUrl = `${window.location.origin}/public/asset/${asset.id}`;
-    
+
     QRCode.toDataURL(publicUrl, {
       width: 300,
       margin: 2,
@@ -831,7 +831,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   generateQRCodeForSelectedAssets() {
     const selectedAssets = this.assetList.filter(asset => asset.selected);
-    
+
     if (selectedAssets.length === 0) {
       console.log('No assets selected');
       return;

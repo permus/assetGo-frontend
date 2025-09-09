@@ -1,32 +1,35 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import { HostListener } from '@angular/core';
-import { LocationService, Location, LocationType, LocationsResponse } from './services/location.service';
-import { AddLocationModalComponent } from './components/add-location-modal/add-location-modal.component';
-import { EditLocationModalComponent } from './components/edit-location-modal/edit-location-modal.component';
-import { DeleteConfirmationModalComponent } from './components/delete-confirmation-modal/delete-confirmation-modal.component';
-import { BulkCreateModalComponent } from './components/bulk-create-modal/bulk-create-modal.component';
-import { HierarchyManagementComponent } from './components/hierarchy-management/hierarchy-management.component';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {ReactiveFormsModule, FormsModule} from '@angular/forms';
+import {Router, RouterModule} from '@angular/router';
+import {Subject, debounceTime, distinctUntilChanged, takeUntil} from 'rxjs';
+import {HostListener} from '@angular/core';
+import {LocationService, Location, LocationType, LocationsResponse} from './services/location.service';
+import {AddLocationModalComponent} from './components/add-location-modal/add-location-modal.component';
+import {EditLocationModalComponent} from './components/edit-location-modal/edit-location-modal.component';
+import {
+  DeleteConfirmationModalComponent
+} from './components/delete-confirmation-modal/delete-confirmation-modal.component';
+import {BulkCreateModalComponent} from './components/bulk-create-modal/bulk-create-modal.component';
+import {HierarchyManagementComponent} from './components/hierarchy-management/hierarchy-management.component';
+import {QrViewComponent} from './components/qr-view/qr-view.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent, HierarchyManagementComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent, HierarchyManagementComponent, QrViewComponent],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'
 })
 export class LocationsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   // Data
   locations: Location[] = [];
   locationTypes: LocationType[] = [];
   hierarchyData: any[] = [];
-  
+
   // UI State
   loading = false;
   hierarchyLoading = false;
@@ -34,14 +37,14 @@ export class LocationsComponent implements OnInit, OnDestroy {
   currentView: 'grid' | 'tree' | 'analytics' | 'mgmt' = 'grid';
   currentListView: 'grid' | 'list' = 'grid';
   expandedNodes: Set<number> = new Set();
-  
+
   // Modal state
   showAddLocationModal = false;
   showEditLocationModal = false;
   showDeleteConfirmationModal = false;
   showBulkCreateModal = false;
   selectedLocation: Location | null = null;
-  
+
   // Pagination
   pagination = {
     current_page: 1,
@@ -51,36 +54,31 @@ export class LocationsComponent implements OnInit, OnDestroy {
     from: 0,
     to: 0
   };
-  
+
   // Forms
   searchForm: FormGroup;
   filtersForm: FormGroup;
   jumpToPage: number | undefined;
-  
+
   // Filters
   sortOptions = [
-    { value: 'created', label: 'Created' },
-    { value: 'name', label: 'Name' },
-    { value: 'type', label: 'Type' },
-    { value: 'updated', label: 'Updated' }
+    {value: 'created', label: 'Created'},
+    {value: 'name', label: 'Name'},
+    {value: 'type', label: 'Type'},
+    {value: 'updated', label: 'Updated'}
   ];
-  
+
   hierarchyLevels = [
-    { value: '', label: 'All Levels' },
-    { value: '0', label: 'Level 0 (Root)' },
-    { value: '1', label: 'Level 1' },
-    { value: '2', label: 'Level 2' },
-    { value: '3', label: 'Level 3' },
-    { value: 'true', label: 'Hierarchy Level' }
+    {value: '', label: 'All Levels'},
+    {value: '0', label: 'Level 0 (Root)'},
+    {value: '1', label: 'Level 1'},
+    {value: '2', label: 'Level 2'},
+    {value: '3', label: 'Level 3'},
+    {value: 'true', label: 'Hierarchy Level'}
   ];
-  
-  assetCountOptions = [
-    { value: '', label: 'Any Count' },
-    { value: '0', label: 'No Assets' },
-    { value: '1-10', label: '1-10 Assets' },
-    { value: '11-50', label: '11-50 Assets' },
-    { value: '50+', label: '50+ Assets' }
-  ];
+
+  showQrViewModal = false;
+  qrData: any;
 
   constructor(
     private fb: FormBuilder,
@@ -90,7 +88,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.searchForm = this.fb.group({
       search: ['']
     });
-    
+
     this.filtersForm = this.fb.group({
       type_id: [''],
       parent_id: [''],
@@ -142,10 +140,10 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   loadLocations(page: number = 1) {
     this.loading = true;
-    
+
     const searchValue = this.searchForm.get('search')?.value;
     const filters = this.filtersForm.value;
-    
+
     // Always include default parameters
     const params: any = {
       page: page,
@@ -190,7 +188,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   loadHierarchy() {
     this.hierarchyLoading = true;
-    
+
     this.locationService.getHierarchy()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -206,10 +204,11 @@ export class LocationsComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   // View Controls
   setView(view: 'grid' | 'tree' | 'analytics' | 'mgmt') {
     this.currentView = view;
-    
+
     // When switching to grid view, clear filters to show only level 0 data
     if (view === 'grid') {
       this.clearFilters();
@@ -255,15 +254,15 @@ export class LocationsComponent implements OnInit, OnDestroy {
     const current = this.pagination.current_page;
     const total = this.pagination.last_page;
     const pages: number[] = [];
-    
+
     // Show current page and 2 pages on each side
     const start = Math.max(1, current - 2);
     const end = Math.min(total, current + 2);
-    
+
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
-    
+
     return pages;
   }
 
@@ -369,16 +368,16 @@ export class LocationsComponent implements OnInit, OnDestroy {
   onLocationDeleted(deletedLocation: Location) {
     // Remove the location from the current list
     this.locations = this.locations.filter(l => l.id !== deletedLocation.id);
-    
+
     // Update pagination totals
     this.pagination.total = Math.max(0, this.pagination.total - 1);
     this.pagination.to = Math.max(0, this.pagination.to - 1);
-    
+
     // If current page is empty and not the first page, go to previous page
     if (this.locations.length === 0 && this.pagination.current_page > 1) {
       this.loadLocations(this.pagination.current_page - 1);
     }
-    
+
     this.showDeleteConfirmationModal = false;
     this.selectedLocation = null;
   }
@@ -432,6 +431,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     };
     return colorMap[typeName] || 'gray';
   }
+
   exportQR() {
     // TODO: Implement QR export
     console.log('Export QR');
@@ -444,10 +444,22 @@ export class LocationsComponent implements OnInit, OnDestroy {
     const filterDropdown = target.closest('.filter-dropdown');
     const selectElement = target.closest('select');
     const optionElement = target.tagName === 'OPTION';
-    
+
     // Close dropdown if click is outside button, dropdown, select elements, and options
     if (!filterButton && !filterDropdown && !selectElement && !optionElement && this.showFilters) {
       this.showFilters = false;
     }
+  }
+
+
+  openQRCodeModal(data: any) { //eslint-disable-line @typescript-es
+    this.qrData = data;
+    this.showQrViewModal = true;
+  }
+
+
+  closeQrViewModal() {
+    this.showQrViewModal = false;
+    this.qrData = null;
   }
 }
