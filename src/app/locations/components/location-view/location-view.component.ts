@@ -298,6 +298,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   editSubLocation(subLocation: Location) {
+    // this.showEditLocationModal = true;
     // TODO: Implement edit sublocation functionality
     console.log('Edit sublocation:', subLocation);
   }
