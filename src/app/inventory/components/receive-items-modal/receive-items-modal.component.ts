@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { InventoryAnalyticsService, PurchaseOrder, ReceivePurchaseOrderRequest, InventoryLocation } from '../../../core/services/inventory-analytics.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-receive-items-modal',
@@ -22,7 +23,8 @@ export class ReceiveItemsModalComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private inventoryService: InventoryAnalyticsService
+    private inventoryService: InventoryAnalyticsService,
+    private currency: CurrencyService
   ) {
     this.receiveForm = this.fb.group({
       location_id: ['', [Validators.required]],
@@ -135,13 +137,7 @@ export class ReceiveItemsModalComponent implements OnInit {
     return '';
   }
 
-  formatCurrency(amount: any): string {
-    const num = typeof amount === 'number' ? amount : Number(amount);
-    if (!isFinite(num)) {
-      return 'AED 0.00';
-    }
-    return `AED ${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  }
+  formatCurrency(amount: any): string { return this.currency.format(amount); }
 
   getLocationName(locationId: number): string {
     const location = this.locations.find(l => l.id === locationId);

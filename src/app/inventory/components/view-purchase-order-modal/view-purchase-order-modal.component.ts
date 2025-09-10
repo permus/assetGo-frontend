@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PurchaseOrder } from '../../../core/services/inventory-analytics.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-view-purchase-order-modal',
@@ -13,6 +14,8 @@ export class ViewPurchaseOrderModalComponent {
   @Input() purchaseOrder: PurchaseOrder | null = null;
   @Output() closeModal = new EventEmitter<void>();
   @Output() purchaseOrderUpdated = new EventEmitter<PurchaseOrder>();
+
+  constructor(private currency: CurrencyService) {}
 
   // Safe getters for template use
   get hasItems(): boolean {
@@ -49,13 +52,7 @@ export class ViewPurchaseOrderModalComponent {
     }
   }
 
-  formatCurrency(amount: any): string {
-    const numAmount = Number(amount);
-    if (isNaN(numAmount) || !isFinite(numAmount)) {
-      return 'AED 0.00';
-    }
-    return `AED ${numAmount.toFixed(2)}`;
-  }
+  formatCurrency(amount: any): string { return this.currency.format(amount); }
 
   formatDate(dateString: any): string {
     if (!dateString) {

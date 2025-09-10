@@ -5,6 +5,7 @@ import { CreatePurchaseOrderModalComponent } from '../create-purchase-order-moda
 import { ViewPurchaseOrderModalComponent } from '../view-purchase-order-modal/view-purchase-order-modal.component';
 import { ReceiveItemsModalComponent } from '../receive-items-modal/receive-items-modal.component';
 import { InventoryAnalyticsService, PurchaseOrder, PurchaseOrdersResponse } from '../../../core/services/inventory-analytics.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-purchase-orders',
@@ -47,7 +48,7 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
     totalValue: 0
   };
 
-  constructor(private inventoryService: InventoryAnalyticsService) {}
+  constructor(private inventoryService: InventoryAnalyticsService, private currency: CurrencyService) {}
 
   ngOnInit(): void {
     this.loadPurchaseOrders();
@@ -323,17 +324,7 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatCurrency(amount: any): string {
-    // Convert to number and handle invalid values
-    const numAmount = Number(amount);
-
-    // Check if it's a valid number
-    if (isNaN(numAmount) || !isFinite(numAmount)) {
-      return 'AED 0.00';
-    }
-
-    return `AED ${numAmount.toFixed(2)}`;
-  }
+  formatCurrency(amount: any): string { return this.currency.format(amount); }
 
   formatDate(dateString: any): string {
     // Handle null, undefined, or invalid date strings

@@ -41,10 +41,22 @@ export interface TeamMember {
 }
 
 export interface TeamMemberStatistics {
+  // Team member counts
   total_team_members: number;
-  work_orders_count: number;
-  active_work_orders_count: number;
+  active_team_members: number;
+  pending_team_members: number;
+
+  // Work order assignment aggregates
+  assigned_work_orders_total_count: number;
+  assigned_work_orders_active_count: number;
+  assigned_work_orders_completed_count: number;
+
+  // Derived KPI
   completion_rate: number;
+
+  // Legacy optional fields for backward compatibility with older templates
+  work_orders_count?: number;
+  active_work_orders_count?: number;
 }
 
 export interface AvailableRole {

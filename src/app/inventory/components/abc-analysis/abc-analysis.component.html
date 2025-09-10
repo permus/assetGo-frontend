@@ -58,7 +58,7 @@
           </div>
           <div class="metric-row">
             <span class="metric-label">Value:</span>
-            <span class="metric-value">AED {{ abcData.classA.value.toLocaleString() }}</span>
+            <span class="metric-value">{{ abcData.classA.value | currency }}</span>
           </div>
           <div class="metric-row">
             <span class="metric-label">Value %:</span>
@@ -83,7 +83,7 @@
           </div>
           <div class="metric-row">
             <span class="metric-label">Value:</span>
-            <span class="metric-value">AED {{ abcData.classB.value.toLocaleString() }}</span>
+            <span class="metric-value">{{ abcData.classB.value | currency }}</span>
           </div>
           <div class="metric-row">
             <span class="metric-label">Value %:</span>
@@ -108,7 +108,7 @@
           </div>
           <div class="metric-row">
             <span class="metric-label">Value:</span>
-            <span class="metric-value">AED {{ abcData.classC.value.toLocaleString() }}</span>
+            <span class="metric-value">{{ abcData.classC.value | currency }}</span>
           </div>
           <div class="metric-row">
             <span class="metric-label">Value %:</span>
@@ -172,7 +172,7 @@
             <tr *ngFor="let item of filteredItems">
               <td class="part-number">{{ item.part_id }}</td>
               <td class="part-name">{{ item.name }}</td>
-              <td class="total-value">AED {{ item.value.toLocaleString() }}</td>
+              <td class="total-value">{{ item.value | currency }}</td>
                              <td class="value-percentage">{{ calculateValuePercentage(item.value).toFixed(2) }}%</td>
               <td class="cumulative-percentage">{{ (item.cumulative_ratio * 100).toFixed(2) }}%</td>
               <td class="abc-class">

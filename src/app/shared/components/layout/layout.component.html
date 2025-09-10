@@ -33,7 +33,7 @@
             <span [ngClass]="!sidebarOpen ? 'hidden' : ''">Dashboard</span>
           </a>
         </li>
-        <li>
+        <li *ngIf="modules()['assets']">
           <a routerLink="/assets/list" routerLinkActive="bg-blue-50 text-blue-700"
              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
              [class.!block]="!sidebarOpen">
@@ -49,7 +49,7 @@
             <span [ngClass]="!sidebarOpen ? 'hidden' : ''">Assets</span>
           </a>
         </li>
-        <li>
+        <li *ngIf="modules()['locations'] ?? true">
           <a routerLink="/locations" routerLinkActive="bg-blue-50 text-blue-700"
              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
              [class.!block]="!sidebarOpen">
@@ -65,7 +65,7 @@
                   [ngClass]="!sidebarOpen ? 'hidden' : ''">New</span>
           </a>
         </li>
-        <li>
+        <li *ngIf="modules()['roles'] ?? true">
           <a routerLink="/roles" routerLinkActive="bg-blue-50 text-blue-700"
              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
              [class.!block]="!sidebarOpen">
@@ -76,7 +76,7 @@
             <span [ngClass]="!sidebarOpen ? 'hidden' : ''">Roles</span>
           </a>
         </li>
-        <li>
+        <li *ngIf="modules()['work_orders']">
           <a routerLink="/work-orders" routerLinkActive="bg-blue-50 text-blue-700"
              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
              [class.!block]="!sidebarOpen">
@@ -87,7 +87,7 @@
             <span [ngClass]="!sidebarOpen ? 'hidden' : ''">Work Orders</span>
           </a>
         </li>
-        <li>
+        <li *ngIf="modules()['teams'] ?? true">
           <a routerLink="/teams" routerLinkActive="bg-blue-50 text-blue-700"
              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
              [class.!block]="!sidebarOpen">
@@ -104,7 +104,7 @@
                   [ngClass]="!sidebarOpen ? 'hidden' : ''">New</span>
           </a>
         </li>
-        <li>
+        <li *ngIf="modules()['maintenance']">
           <a routerLink="/maintenance" routerLinkActive="bg-blue-50 text-blue-700"
              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
              [class.!block]="!sidebarOpen">
@@ -120,7 +120,7 @@
             <span [ngClass]="!sidebarOpen ? 'hidden' : ''">Maintenance</span>
           </a>
         </li>
-        <li>
+        <li *ngIf="modules()['inventory']">
           <a routerLink="/inventory" routerLinkActive="bg-blue-50 text-blue-700"
              class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
              [class.!block]="!sidebarOpen">

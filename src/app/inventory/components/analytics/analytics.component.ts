@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem, TurnoverData, StockAgingData, KpisData, CategoryTurnoverItem, MonthlyTurnoverPoint } from '../../../core/services/inventory-analytics.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -56,7 +57,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   };
 
 
-  constructor(private analyticsService: InventoryAnalyticsService) { }
+  constructor(private analyticsService: InventoryAnalyticsService, private currency: CurrencyService) { }
 
   ngOnInit(): void {
     // Register Chart.js before any chart creation to avoid first-render issues
@@ -363,9 +364,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.loadAllAnalytics();
   }
 
-  formatCurrency(amount: number): string {
-    return `AED ${amount.toLocaleString()}`;
-  }
+  formatCurrency(amount: number): string { return this.currency.format(amount); }
 
   getAbcClassColor(abcClass: string): string {
     switch (abcClass) {
@@ -513,7 +512,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 const idx = ctx.dataIndex;
                 const count = counts[idx] ?? 0;
                 const val = values[idx] ?? 0;
-                return ` ${count} items — AED ${val.toLocaleString()}`;
+                return ` ${count} items — ${this.currency.getCurrent()} ${val.toLocaleString()}`;
               }
             }
           }

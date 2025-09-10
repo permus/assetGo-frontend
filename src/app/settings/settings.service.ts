@@ -1,4 +1,6 @@
 import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
@@ -56,6 +58,8 @@ export interface Preferences {
 export class SettingsService {
   private http = inject(HttpClient);
   private base = environment.apiUrl;
+  // Stream broadcasting module enablement state
+  private modulesEnabled$ = new BehaviorSubject<Record<string, boolean>>({});
 
   // Company
   getCompany() {
@@ -77,13 +81,19 @@ export class SettingsService {
 
   // Modules
   listModules() {
-    return this.http.get<ApiResponse<{ modules: ModuleItem[] }>>(`${this.base}/settings/modules`);
+    return this.http
+      .get<ApiResponse<{ modules: ModuleItem[] }>>(`${this.base}/settings/modules`)
+      .pipe(tap(res => this.pushModulesEnabled(res?.data?.modules || [])));
   }
   enableModule(moduleId: number) {
-    return this.http.post<ApiResponse<{ module_id: number }>>(`${this.base}/settings/modules/${moduleId}/enable`, {});
+    return this.http
+      .post<ApiResponse<{ module_id: number }>>(`${this.base}/settings/modules/${moduleId}/enable`, {})
+      .pipe(tap(() => this.refreshModulesEnabled().subscribe()));
   }
   disableModule(moduleId: number) {
-    return this.http.post<ApiResponse<{ module_id: number }>>(`${this.base}/settings/modules/${moduleId}/disable`, {});
+    return this.http
+      .post<ApiResponse<{ module_id: number }>>(`${this.base}/settings/modules/${moduleId}/disable`, {})
+      .pipe(tap(() => this.refreshModulesEnabled().subscribe()));
   }
 
   // Preferences
@@ -92,6 +102,21 @@ export class SettingsService {
   }
   updatePreferences(prefs: Preferences) {
     return this.http.put<ApiResponse<Preferences>>(`${this.base}/settings/preferences`, prefs);
+  }
+
+  // ----- Modules enabled stream helpers -----
+  getModulesEnabled$(): Observable<Record<string, boolean>> {
+    return this.modulesEnabled$.asObservable();
+  }
+
+  refreshModulesEnabled() {
+    return this.listModules();
+  }
+
+  private pushModulesEnabled(list: ModuleItem[]): void {
+    const map: Record<string, boolean> = {};
+    for (const m of list) map[m.key] = !!m.is_enabled;
+    this.modulesEnabled$.next(map);
   }
 }
 

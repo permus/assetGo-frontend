@@ -29,12 +29,10 @@ export class TeamListComponent implements OnInit {
   // Sorting
   selectedSort: any = null;
   selectedRole: any = {label: 'All Roles', value: ''};
-  selectedType: any = {label: 'All Types', value: ''};
   selectedStatus: any = {label: 'All Status', value: ''};
   selectedSortDir: 'asc' | 'desc' = 'asc';
   showSortDropdown = false;
   showRoleDropdown = false;
-  showTypeDropdown = false;
   showStatusDropdown = false;
 
   // Modal states
@@ -61,12 +59,7 @@ export class TeamListComponent implements OnInit {
     {label: 'Technician', value: 'technician'}
   ];
 
-  typeOptions = [
-    { label: 'All Types', value: '' },
-    { label: 'Admin', value: 'admin' },
-    { label: 'User', value: 'user' },
-    {label: 'Technician', value: 'technician'}
-  ];
+  // Removed redundant "Types" filter (duplicated Roles)
 
   statusOptions = [
     { label: 'All Status', value: '' },
@@ -113,7 +106,6 @@ export class TeamListComponent implements OnInit {
       search: this.searchTerm || undefined,
       role_name: this.selectedRole?.value || undefined,
       status: this.selectedStatus?.value || undefined,
-      type: this.selectedType?.value || undefined,
       sort_by: this.selectedSort?.value || undefined,
       sort_dir: this.selectedSortDir
     }).subscribe({
@@ -266,10 +258,6 @@ export class TeamListComponent implements OnInit {
     this.showRoleDropdown = !this.showRoleDropdown;
   }
 
-  toggleTypeDropdown(): void {
-    this.showTypeDropdown = !this.showTypeDropdown;
-  }
-
   toggleStatusDropdown(): void {
     this.showStatusDropdown = !this.showStatusDropdown;
   }
@@ -283,12 +271,6 @@ export class TeamListComponent implements OnInit {
   selectRole(role: any): void {
     this.selectedRole = role;
     this.showRoleDropdown = false;
-    this.loadTeamMembers(1);
-  }
-
-  selectType(type: any): void {
-    this.selectedType = type;
-    this.showTypeDropdown = false;
     this.loadTeamMembers(1);
   }
 

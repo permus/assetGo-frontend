@@ -36,7 +36,7 @@ export class AddSupplierModalComponent {
       state: [''],
       postal_code: [''],
       payment_terms: ['Net 30'],
-      currency: ['AED'],
+      currency: ['USD'],
       credit_limit: [0],
       delivery_lead_time: [7],
       notes: ['']

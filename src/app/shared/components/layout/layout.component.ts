@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, computed, effect, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterOutlet, RouterModule} from '@angular/router';
 import {AuthService, User} from '../../../core/services/auth.service';
 import {Router} from '@angular/router';
+import { SettingsService, ModuleItem } from '../../../settings/settings.service';
 import {HostListener} from '@angular/core';
 
 @Component({
@@ -16,12 +17,28 @@ export class LayoutComponent {
   public currentUser: User | null = null;
   public showUserDropdown = false;
   sidebarOpen = true;
+  modules = signal<Record<string, boolean>>({});
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private settings: SettingsService
   ) {
     this.currentUser = this.authService.getCurrentUser();
+    // Load enabled modules once to control sidebar visibility
+    this.settings.listModules().subscribe(res => {
+      const mapEnabled: Record<string, boolean> = {};
+      const list = (res?.data?.modules ?? []) as ModuleItem[];
+      list.forEach(m => (mapEnabled[m.key] = !!m.is_enabled));
+      this.modules.set(mapEnabled);
+    });
+
+    // React to runtime changes (when toggled in settings)
+    this.settings.getModulesEnabled$().subscribe(map => {
+      if (Object.keys(map).length) {
+        this.modules.set(map);
+      }
+    });
   }
 
   public getUserInitials(): string {

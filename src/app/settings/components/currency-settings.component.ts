@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { SettingsService } from '../settings.service';
+import { CurrencyService } from '../../core/services/currency.service';
 
 @Component({
   selector: 'currency-settings',
@@ -37,11 +38,13 @@ export class CurrencySettingsComponent implements OnInit {
   saving = signal(false);
   currentCurrency = signal('');
   private api = inject(SettingsService);
+  private currency = inject(CurrencyService);
 
   ngOnInit() {
     this.api.getCompany().subscribe(res => {
       const c = (res.data?.company?.currency ?? '').toString().toUpperCase();
       this.currentCurrency.set(c);
+      this.currency.refreshFromServer().subscribe();
     });
   }
 
@@ -50,7 +53,7 @@ export class CurrencySettingsComponent implements OnInit {
     if (this.currentCurrency() === code) return;
     this.saving.set(true);
     this.api.updateCurrency(code).subscribe({
-      next: () => { this.currentCurrency.set(code); this.saving.set(false); },
+      next: () => { this.currentCurrency.set(code); this.currency.refreshFromServer().subscribe(); this.saving.set(false); },
       error: () => this.saving.set(false)
     });
   }

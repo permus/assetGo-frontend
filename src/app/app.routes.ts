@@ -3,6 +3,7 @@ import {LandingComponent} from './pages/landing/landing.component';
 import {AuthGuard} from './core/guards/auth.guard';
 import {LayoutComponent} from './shared/components/layout/layout.component';
 import {SettingsComponent} from './settings/settings.component';
+import { moduleGuard } from './core/guards/module.guard';
 
 export const routes: Routes = [
   {path: '', component: LandingComponent},
@@ -30,7 +31,8 @@ export const routes: Routes = [
       },
       {
         path: 'assets',
-        loadChildren: () => import('./assets/assets.module').then(m => m.AssetsModule)
+        loadChildren: () => import('./assets/assets.module').then(m => m.AssetsModule),
+        canActivate: [moduleGuard('assets')]
       },
       {
         path: 'roles',
@@ -42,15 +44,18 @@ export const routes: Routes = [
       },
       {
         path: 'work-orders',
-        loadChildren: () => import('./work-orders/work-orders.module').then(m => m.WorkOrdersModule)
+        loadChildren: () => import('./work-orders/work-orders.module').then(m => m.WorkOrdersModule),
+        canActivate: [moduleGuard('work_orders')]
       },
       {
         path: 'inventory',
-        loadChildren: () => import('./inventory/inventory.module').then(m => m.InventoryModule)
+        loadChildren: () => import('./inventory/inventory.module').then(m => m.InventoryModule),
+        canActivate: [moduleGuard('inventory')]
       },
       {
         path: 'maintenance',
-        loadChildren: () => import('./maintenance/maintenance.module').then(m => m.MaintenanceModule)
+        loadChildren: () => import('./maintenance/maintenance.module').then(m => m.MaintenanceModule),
+        canActivate: [moduleGuard('maintenance')]
       },
       {
         path: 'settings',

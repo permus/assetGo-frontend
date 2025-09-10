@@ -197,7 +197,7 @@
 
                 <div class="form-field">
                   <label class="field-label">Line Total</label>
-                  <div class="line-total">{{ calculateItemTotal(i) | currency:'AED' }}</div>
+                  <div class="line-total">{{ calculateItemTotal(i) | currency }}</div>
                 </div>
               </div>
             </div>
@@ -206,15 +206,15 @@
           <div class="total-section">
             <div class="total-row">
               <div class="total-label">Subtotal:</div>
-              <div class="total-value">{{ calculateSubtotal() | currency:'AED' }}</div>
+              <div class="total-value">{{ calculateSubtotal() | currency }}</div>
             </div>
             <div class="total-row">
               <div class="total-label">Tax ({{ poForm.get('tax_rate')?.value || 0 }}%):</div>
-              <div class="total-value">{{ calculateTax() | currency:'AED' }}</div>
+              <div class="total-value">{{ calculateTax() | currency }}</div>
             </div>
             <div class="total-row total-final">
               <div class="total-label">Total Order Value:</div>
-              <div class="total-value">{{ calculateTotal() | currency:'AED' }}</div>
+              <div class="total-value">{{ calculateTotal() | currency }}</div>
             </div>
           </div>
         </div>
