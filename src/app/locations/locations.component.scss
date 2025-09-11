@@ -1,10 +1,95 @@
 // Custom styles for locations component
 .location-card {
   transition: all 0.2s ease-in-out;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.filter-button {
+  width: 100%;
+  padding: 0 1rem;
+  text-align: left;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+
+  &:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+
+  &.active {
+    border-color: #2563eb;
+    background: #eff6ff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+
+  .button-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .placeholder-text {
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    .selected-option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .status-indicator,
+      .priority-indicator,
+      .category-indicator,
+      .asset-indicator,
+      .location-indicator {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .selected-text {
+        color: #111827;
+        font-weight: 500;
+      }
+    }
+
+    .chevron-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      color: #9ca3af;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+
+      &.active {
+        transform: rotate(180deg);
+      }
+    }
   }
 }
 
@@ -32,7 +117,7 @@
 
 .search-input {
   transition: all 0.2s ease-in-out;
-  
+
   &:focus {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
@@ -41,7 +126,7 @@
 .view-toggle {
   button {
     transition: all 0.2s ease-in-out;
-    
+
     &.active {
       background: #3b82f6;
       color: white;
@@ -52,7 +137,7 @@
 
 .table-row {
   transition: background-color 0.15s ease-in-out;
-  
+
   &:hover {
     background-color: #f8fafc;
   }
@@ -60,7 +145,7 @@
 
 .action-button {
   transition: all 0.15s ease-in-out;
-  
+
   &:hover {
     transform: scale(1.1);
   }
@@ -85,11 +170,11 @@
   .location-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .filter-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .table-header,
   .table-row {
     .grid {

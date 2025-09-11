@@ -8,25 +8,26 @@
         Drag and drop locations to reorganize your hierarchy. Hold Ctrl/Cmd and click to select multiple locations for bulk operations.
       </p>
     </div>
-    <div class="flex items-center space-x-3">
-      <button
-        *ngIf="selectedNodes.size > 0"
-        (click)="moveSelectedToRoot()"
-        class="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium">
-        Move to Root ({{selectedNodes.size}})
-      </button>
-      <button
-        *ngIf="selectedNodes.size > 0"
-        (click)="deleteSelected()"
-        class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium">
-        Delete Selected ({{selectedNodes.size}})
-      </button>
-      <button
-        (click)="clearSelection()"
-        class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm font-medium">
-        Clear Selection
-      </button>
-    </div>
+    @if (selectedNodes.size > 0){
+      <div class="flex items-center space-x-3">
+        <button
+          (click)="moveSelectedToRoot()"
+          class="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm font-medium">
+          Move to Root ({{selectedNodes.size}})
+        </button>
+        <button
+          (click)="deleteSelected()"
+          class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium">
+          Delete Selected ({{selectedNodes.size}})
+        </button>
+        <button
+          (click)="clearSelection()"
+          class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm font-medium">
+          Clear Selection
+        </button>
+      </div>
+    }
+
   </div>
 
   <!-- Loading State -->
@@ -52,7 +53,7 @@
     </div>
     <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Hierarchy</h3>
     <p class="text-sm text-gray-500 mb-4">{{error}}</p>
-    <button 
+    <button
       (click)="loadHierarchy()"
       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
       Retry
@@ -62,7 +63,7 @@
   <!-- Hierarchy Content -->
   <div *ngIf="!loading && !error" class="space-y-4">
     <!-- Root Level Drop Zone -->
-    <div 
+    <div
       class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all"
       [class.border-blue-500]="dropZoneActive"
       [class.bg-blue-50]="dropZoneActive"
@@ -80,7 +81,7 @@
     <div class="space-y-4">
       <div *ngFor="let node of hierarchyData" class="hierarchy-card">
         <!-- Root Level Node -->
-        <div 
+        <div
           class="bg-white border border-gray-200 rounded-lg p-4 transition-all hover:shadow-sm"
           [class.ring-2]="node.selected"
           [class.ring-blue-500]="node.selected"
@@ -88,11 +89,11 @@
           (click)="toggleNodeSelection(node, $event)"
           (dragover)="onDragOver($event)"
           (drop)="onDropOnNode($event, node)">
-          
+
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
               <!-- Drag Handle -->
-              <div 
+              <div
                 class="drag-handle cursor-move p-1 hover:bg-gray-100 rounded"
                 draggable="true"
                 (dragstart)="onDragStart($event, node)"
@@ -136,7 +137,7 @@
 
           <!-- Child Nodes -->
           <div *ngIf="node.children.length > 0" class="mt-4 ml-7 space-y-3">
-            <div *ngFor="let child of node.children" 
+            <div *ngFor="let child of node.children"
                  class="bg-gray-50 rounded-lg p-3 transition-all hover:bg-gray-100"
                  [class.ring-2]="child.selected"
                  [class.ring-blue-500]="child.selected"
@@ -144,11 +145,11 @@
                  (click)="toggleNodeSelection(child, $event)"
                  (dragover)="onDragOver($event)"
                  (drop)="onDropOnNode($event, child)">
-              
+
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                   <!-- Drag Handle -->
-                  <div 
+                  <div
                     class="drag-handle cursor-move p-1 hover:bg-gray-200 rounded"
                     draggable="true"
                     (dragstart)="onDragStart($event, child)"
@@ -190,7 +191,7 @@
 
               <!-- Grandchild Nodes -->
               <div *ngIf="child.children.length > 0" class="mt-3 ml-7 space-y-2">
-                <div *ngFor="let grandchild of child.children" 
+                <div *ngFor="let grandchild of child.children"
                      class="bg-white rounded border border-gray-100 p-3 transition-all hover:shadow-sm"
                      [class.ring-2]="grandchild.selected"
                      [class.ring-blue-500]="grandchild.selected"
@@ -198,11 +199,11 @@
                      (click)="toggleNodeSelection(grandchild, $event)"
                      (dragover)="onDragOver($event)"
                      (drop)="onDropOnNode($event, grandchild)">
-                  
+
                   <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                       <!-- Drag Handle -->
-                      <div 
+                      <div
                         class="drag-handle cursor-move p-1 hover:bg-gray-100 rounded"
                         draggable="true"
                         (dragstart)="onDragStart($event, grandchild)"
@@ -256,3 +257,11 @@
     </div>
   </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<app-delete-confirmation-modal
+  [isOpen]="showDeleteConfirmationModal"
+  [location]="selectedLocation"
+  (closeModal)="closeDeleteConfirmationModal()"
+  (locationDeleted)="onLocationDeleted()">
+</app-delete-confirmation-modal>

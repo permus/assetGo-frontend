@@ -1,3 +1,6 @@
+/* standard dropdown */
+@use '../../components/plan-dialog/plan-dialog.scss';
+
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -29,8 +32,6 @@
 .btn-primary { background: #2563eb; color: #fff; }
 .btn-secondary { background: #fff; color: #374151; border: 1px solid #d1d5db; }
 
-/* standard dropdown */
-@import '../../components/plan-dialog/plan-dialog.scss';
 
 @keyframes slideIn { from { opacity: 0; transform: translateY(-20px);} to { opacity:1; transform: translateY(0);} }
 

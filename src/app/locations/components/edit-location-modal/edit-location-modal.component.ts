@@ -28,19 +28,19 @@ declare var google: any;
     ]),
     trigger('modalAnimation', [
       transition(':enter', [
-        style({ 
-          opacity: 0, 
-          transform: 'scale(0.7) translateY(-50px)' 
+        style({
+          opacity: 0,
+          transform: 'scale(0.7) translateY(-50px)'
         }),
-        animate('200ms ease-out', style({ 
-          opacity: 1, 
-          transform: 'scale(1) translateY(0)' 
+        animate('200ms ease-out', style({
+          opacity: 1,
+          transform: 'scale(1) translateY(0)'
         }))
       ]),
       transition(':leave', [
-        animate('150ms ease-in', style({ 
-          opacity: 0, 
-          transform: 'scale(0.7) translateY(-50px)' 
+        animate('150ms ease-in', style({
+          opacity: 0,
+          transform: 'scale(0.7) translateY(-50px)'
         }))
       ])
     ])
@@ -95,7 +95,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     if (changes['location'] && this.location) {
       this.populateForm();
     }
-    
+
     // Reinitialize autocomplete when modal opens
     if (changes['isOpen'] && this.isOpen && !changes['isOpen'].firstChange) {
       setTimeout(() => {
@@ -120,7 +120,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
                this.editForm.patchValue({
                  address: place.formatted_address
                });
-               
+
                // Trigger map display when address is selected
                if (place.geometry && place.geometry.location) {
                  const lat = place.geometry.location.lat();
@@ -164,7 +164,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
          location_type_id: this.location.location_type_id
        });
        this.selectedTypeId = this.location?.location_type_id || null;
-       
+
                // Show map if location has coordinates
         if (this.location && this.location.latitude !== undefined && this.location.longitude !== undefined) {
           this.showMap = true;
@@ -227,10 +227,10 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     if (this.autocomplete) {
       this.autocomplete = null;
     }
-    
+
     // Clean up map resources
     this.cleanupMap();
-    
+
     this.isOpen = false;
     this.closeModal.emit();
     this.resetForm();
@@ -247,7 +247,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
       }
       this.marker = undefined;
     }
-    
+
     if (this.map && typeof google !== 'undefined' && google.maps) {
       try {
         google.maps.event.clearInstanceListeners(this.map);
@@ -256,13 +256,13 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
       }
       this.map = undefined;
     }
-    
+
     // Clear the map container
     const mapElement = document.getElementById('edit-location-map');
     if (mapElement) {
       mapElement.innerHTML = '';
     }
-    
+
     this.geocoder = undefined;
     this.showMap = false;
   }
@@ -348,7 +348,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     } else {
       this.map.setCenter({ lat: lat, lng: lng });
     }
-    
+
     if (this.marker) {
       this.marker.setPosition({ lat: lat, lng: lng });
     } else {

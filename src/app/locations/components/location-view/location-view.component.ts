@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-import { LocationService, Location } from '../../services/location.service';
-import { AddLocationModalComponent } from '../add-location-modal/add-location-modal.component';
-import { EditLocationModalComponent } from '../edit-location-modal/edit-location-modal.component';
-import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
-import { Location as angularLocation } from '@angular/common';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {Subject, takeUntil} from 'rxjs';
+import {LocationService, Location} from '../../services/location.service';
+import {AddLocationModalComponent} from '../add-location-modal/add-location-modal.component';
+import {EditLocationModalComponent} from '../edit-location-modal/edit-location-modal.component';
+import {DeleteConfirmationModalComponent} from '../delete-confirmation-modal/delete-confirmation-modal.component';
+import {Location as angularLocation} from '@angular/common';
 
 @Component({
   selector: 'app-location-view',
@@ -19,6 +19,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   location: Location | null = null;
+  subLocation: Location | null = null;
   loading = true;
   error = '';
   ancestors: Location[] = [];
@@ -63,13 +64,15 @@ export class LocationViewComponent implements OnInit, OnDestroy {
       icon: 'shield'
     }
   ];
+  isEditingSubLocation = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private locationService: LocationService,
     private angularLocation: angularLocation,
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.route.params
@@ -155,13 +158,14 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   }
 
   editLocation() {
+    this.isEditingSubLocation = false;
     this.showEditLocationModal = true;
   }
 
   addAsset() {
     this.router.navigate(
       ['/assets/create'],
-      { queryParams: { location_id: this.location?.id } }
+      {queryParams: {location_id: this.location?.id}}
     );
   }
 
@@ -185,12 +189,23 @@ export class LocationViewComponent implements OnInit, OnDestroy {
 
   closeEditLocationModal() {
     this.showEditLocationModal = false;
+    this.isEditingSubLocation = false;
+    if (this.subLocation) {
+      this.subLocation = null;
+    }
   }
 
   onLocationUpdated(updatedLocation: Location) {
+    console.log(updatedLocation, 'updated location')
     // Update the current location with the updated data
+
     this.location = updatedLocation;
     this.updateMockStats();
+    this.showEditLocationModal = false;
+  }
+
+  onSubLocationUpdated() {
+  this.loadSubLocations();
     this.showEditLocationModal = false;
   }
 
@@ -202,6 +217,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     // Navigate back to locations list after successful deletion
     this.router.navigate(['/locations']);
   }
+
   onQRCodeError(event: any) {
     // Hide the broken image and show placeholder
     event.target.style.display = 'none';
@@ -225,11 +241,11 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     }
   }
 
- printLabel() {
-   if (this.location?.quick_chart_qr_url) {
-     const printWindow = window.open('', '_blank');
-     if (printWindow) {
-       printWindow.document.write(`
+  printLabel() {
+    if (this.location?.quick_chart_qr_url) {
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
          <html>
            <head>
              <title>Print Label</title>
@@ -243,27 +259,46 @@ export class LocationViewComponent implements OnInit, OnDestroy {
                  max-width: 100%;
                  height: auto;
                }
+                .info {
+               margin-top: 15px;
+               font-size: 14px;
+
+             }
+             .info strong {
+               display: inline-block;
+              margin: 0 auto;
+               width: 120px;
+             }
              </style>
            </head>
            <body>
              <h1>${this.location.name}</h1>
              <img src="${this.location.quick_chart_qr_url}" alt="QR Code for ${this.location.name}">
              <p>Scan this QR code to access location details.</p>
+
+              <div class="info text-center">
+             <p><strong>Branch:</strong> ${this.location.name}</p>
+             <p><strong>Location ID:</strong> ${this.location.id}</p>
+             <p><strong>Type:</strong> ${this.location.type.name}</p>
+             <p><strong>Address:</strong> ${this.location.address}</p>
+           </div>
              <script>
                window.onload = function() {
-                 window.print();
-                 window.close();
+                setTimeout(() => {
+                  window.print();
+                  window.close();
+                }, 200);
                };
              </script>
            </body>
          </html>
        `);
-       printWindow.document.close();
-     }
-   } else {
-     console.error('QR code URL is not available for printing.');
-   }
- }
+        printWindow.document.close();
+      }
+    } else {
+      console.error('QR code URL is not available for printing.');
+    }
+  }
 
   getActivityIcon(type: string): string {
     const icons: { [key: string]: string } = {
@@ -294,17 +329,18 @@ export class LocationViewComponent implements OnInit, OnDestroy {
             this.loadLocation(parseInt(locationId));
           }
         });
-    },500)
+    }, 500)
   }
 
   editSubLocation(subLocation: Location) {
-    // this.showEditLocationModal = true;
-    // TODO: Implement edit sublocation functionality
-    console.log('Edit sublocation:', subLocation);
+    this.subLocation = subLocation;
+    this.isEditingSubLocation = true;
+    this.showEditLocationModal = true;
   }
 
   deleteSubLocation(subLocation: Location) {
     // TODO: Implement delete sublocation functionality
     console.log('Delete sublocation:', subLocation);
   }
+
 }

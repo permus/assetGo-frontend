@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Subject, takeUntil } from 'rxjs';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, DragDropModule } from '@angular/cdk/drag-drop';
-import { LocationService, Location } from '../../services/location.service';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Subject, takeUntil} from 'rxjs';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {LocationService, Location} from '../../services/location.service';
+import {DeleteConfirmationModalComponent} from '../delete-confirmation-modal/delete-confirmation-modal.component';
 
 interface HierarchyNode {
   id: number;
@@ -19,23 +20,26 @@ interface HierarchyNode {
 @Component({
   selector: 'app-hierarchy-management',
   standalone: true,
-  imports: [CommonModule, DragDropModule],
+  imports: [CommonModule, DragDropModule, DeleteConfirmationModalComponent],
   templateUrl: './hierarchy-management.component.html',
   styleUrl: './hierarchy-management.component.scss'
 })
 export class HierarchyManagementComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   hierarchyData: HierarchyNode[] = [];
   selectedNodes: Set<number> = new Set();
   loading = false;
   error = '';
-  
+
   // Drag and drop state
   draggedNode: HierarchyNode | null = null;
   dropZoneActive = false;
+  showDeleteConfirmationModal = false;
+  selectedLocation: Location | null = null;
 
-  constructor(private locationService: LocationService) {}
+  constructor(private locationService: LocationService) {
+  }
 
   ngOnInit() {
     this.loadHierarchy();
@@ -49,7 +53,7 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
   loadHierarchy() {
     this.loading = true;
     this.error = '';
-    
+
     this.locationService.getHierarchy()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -85,7 +89,7 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
   // Selection methods
   toggleNodeSelection(node: HierarchyNode, event: MouseEvent) {
     event.stopPropagation();
-    
+
     if (event.ctrlKey || event.metaKey) {
       // Multi-select mode
       if (this.selectedNodes.has(node.id)) {
@@ -136,11 +140,11 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
 
   onDropToRoot(event: any) {
     event.preventDefault();
-    
+
     if (this.draggedNode) {
       this.moveToRoot(this.draggedNode);
     }
-    
+
     this.dropZoneActive = false;
     this.draggedNode = null;
   }
@@ -148,11 +152,11 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
   onDropOnNode(event: any, targetNode: HierarchyNode) {
     event.preventDefault();
     event.stopPropagation();
-    
+
     if (this.draggedNode && this.draggedNode.id !== targetNode.id) {
       this.moveToParent(this.draggedNode, targetNode);
     }
-    
+
     this.dropZoneActive = false;
     this.draggedNode = null;
   }
@@ -160,12 +164,12 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
   private moveToRoot(node: HierarchyNode) {
     // Remove from current parent
     this.removeNodeFromHierarchy(node);
-    
+
     // Add to root level
     node.hierarchy_level = 0;
     node.parent_id = undefined;
     this.hierarchyData.push(node);
-    
+
     // Call API to update
     this.updateLocationHierarchy(node.id, null);
   }
@@ -173,13 +177,13 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
   private moveToParent(node: HierarchyNode, newParent: HierarchyNode) {
     // Remove from current parent
     this.removeNodeFromHierarchy(node);
-    
+
     // Add to new parent
     node.hierarchy_level = newParent.hierarchy_level + 1;
     node.parent_id = newParent.id;
     newParent.children.push(node);
     newParent.expanded = true;
-    
+
     // Call API to update
     this.updateLocationHierarchy(node.id, newParent.id);
   }
@@ -191,7 +195,7 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
       this.hierarchyData.splice(rootIndex, 1);
       return;
     }
-    
+
     // Remove from children recursively
     this.removeFromChildren(this.hierarchyData, nodeToRemove);
   }
@@ -203,7 +207,7 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
         node.children.splice(childIndex, 1);
         return true;
       }
-      
+
       if (this.removeFromChildren(node.children, nodeToRemove)) {
         return true;
       }
@@ -235,7 +239,7 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
   // Bulk operations
   moveSelectedToRoot() {
     if (this.selectedNodes.size === 0) return;
-    
+
     const selectedIds = Array.from(this.selectedNodes);
     this.locationService.moveLocations(selectedIds, null)
       .pipe(takeUntil(this.destroy$))
@@ -254,9 +258,22 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
 
   deleteSelected() {
     if (this.selectedNodes.size === 0) return;
-    
-    // TODO: Implement bulk delete
-    console.log('Delete selected locations:', Array.from(this.selectedNodes));
+    this.selectedNodes.forEach(id => {
+      this.loadLocation(id) // modal will be open in the load location function after data getting
+    });
+  }
+
+  loadLocation(id: number) {
+    this.locationService.getLocation(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.selectedLocation = response.data.location;
+            this.showDeleteConfirmationModal = true;
+          }
+        },
+      });
   }
 
   // Utility methods
@@ -276,15 +293,18 @@ export class HierarchyManagementComponent implements OnInit, OnDestroy {
     return 'green';
   }
 
-  getLevelBadge(node: HierarchyNode): string {
-    return node.hierarchy_level === 0 ? 'L0' : 'LP';
-  }
-
   getLevelText(node: HierarchyNode): string {
     return node.hierarchy_level === 0 ? 'Level 0' : 'Parent';
   }
 
-  getChildrenCount(node: HierarchyNode): number {
-    return node.children.length;
+  closeDeleteConfirmationModal() {
+    this.showDeleteConfirmationModal = false;
+    this.selectedLocation = null;
   }
+
+  onLocationDeleted(){
+    this.loadHierarchy();
+    this.closeDeleteConfirmationModal();
+  }
+
 }
