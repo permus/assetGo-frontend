@@ -7,23 +7,43 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <div class="border bg-white border-gray-200 p-4 rounded-lg space-y-4">
-      <h2 class="text-xl font-medium">Company</h2>
-      <p class="text-sm text-gray-600">Company-wide settings and preferences</p>
+    <div class="space-y-4">
+      <div class="border bg-white shadow border-gray-200 p-5 rounded-2xl">
+        <h2 class="text-2xl font-medium flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+               stroke="currentColor" class="size-6 text-gray-600">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
+          </svg>
 
-      <div class="border border-gray-200 rounded-lg">
-        <div class="p-4 border-b border-gray-200 flex items-center gap-2">
-          <span class="font-medium">Company Information</span>
+          Company
+        </h2>
+        <p class="text-sm text-gray-500 mt-2">Company-wide settings and preferences</p>
+      </div>
+
+
+      <div class="border border-gray-200 rounded-2xl shadow bg-white">
+        <div class="p-5 pb-2 border-gray-200 flex items-center gap-2">
+          <span class="text-2xl font-medium">Company Information</span>
         </div>
-        <form [formGroup]="form" class="p-4 space-y-4">
+        <form [formGroup]="form" class="p-5 space-y-4">
           <div>
-            <div class="text-sm font-medium mb-1">Company Logo</div>
+            <div class="text-sm font-medium mb-2">Company Logo</div>
             <div class="flex items-center gap-4">
-              <img *ngIf="form.get('logo_url')?.value" [src]="form.get('logo_url')?.value || ''" class="h-12 w-12 object-cover rounded-lg border border-gray-200" alt="Company logo">
+              <img *ngIf="form.get('logo_url')?.value" [src]="form.get('logo_url')?.value || ''"
+                   class="h-12 w-12 object-cover rounded-lg border border-gray-200" alt="Company logo">
               <div class="space-y-1">
-                <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50" (click)="fileInput.click()">Upload Logo</button>
+                <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 inline-flex items-center gap-2"
+                        (click)="fileInput.click()">
+
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                  </svg>
+
+                  Upload Logo
+                </button>
                 <div class="text-xs text-gray-500">PNG, JPG up to 5MB. Recommended: 200×200px</div>
-                <input #fileInput type="file" class="input hidden" accept="image/*" (change)="onLogoChange($event)" />
+                <input #fileInput type="file" class="input hidden" accept="image/*" (change)="onLogoChange($event)"/>
               </div>
             </div>
           </div>
@@ -32,7 +52,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
             <div>
               <div class="form-row full-width">
                 <div class="form-group" [class.error]="hasFieldError('name')">
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Company Name <span class="text-red-500" *ngIf="isRequired('name')">*</span></label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Company Name <span class="text-red-500"
+                                                                                                 *ngIf="isRequired('name')">*</span></label>
                   <input
                     type="text"
                     class="input w-full"
@@ -67,7 +88,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
                     formControlName="business_type"
                     placeholder="e.g., LLC, Sole Proprietor"
                     [class.error-input]="hasFieldError('business_type')">
-                  <div class="field-error" *ngIf="hasFieldError('business_type')">{{ getFieldError('business_type') }}</div>
+                  <div class="field-error" *ngIf="hasFieldError('business_type')">{{ getFieldError('business_type') }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -115,15 +137,35 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
           </div>
 
           <div class="pt-2 flex justify-end">
-            <button class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" [disabled]="saving() || form.invalid" (click)="save()">Save Changes</button>
+            <button type="button"
+                    class="bg-blue-600 text-white px-4 py-3 font-medium rounded-xl disabled:opacity-50 transition-all duration-300 hover:bg-blue-700 cursor-pointer"
+                    [disabled]="saving() || form.invalid" (click)="save()">Save Changes
+            </button>
           </div>
         </form>
       </div>
     </div>
   `,
   styles: [`
-    .input { width: 100%; border-radius: 0.5rem; border: 1px solid #d1d5db; padding: 0.75rem 0.875rem; font-size: 1rem; background: #ffffff; transition: all 0.2s ease-in-out; }
-    .input::placeholder { color: #9ca3af; }
+    .input {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      padding: 0.75rem 0.875rem;
+      font-size: 1rem;
+      background: #ffffff;
+      transition: all 0.2s ease-in-out;
+      outline: none;
+    }
+
+    .input::placeholder {
+      color: #9ca3af;
+    }
+    .input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: #ffffff;
+    }
   `]
 })
 export class CompanySettingsComponent implements OnInit {

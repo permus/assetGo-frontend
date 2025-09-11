@@ -1,29 +1,37 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { SettingsService, ModuleItem } from '../settings.service';
-import { NgFor } from '@angular/common';
+import {Component, OnInit, inject, signal, computed} from '@angular/core';
+import {SettingsService, ModuleItem} from '../settings.service';
+import {NgFor} from '@angular/common';
 
 @Component({
   selector: 'module-settings',
   standalone: true,
   imports: [NgFor],
   template: `
-    <div class="  p-4 rounded-lg space-y-4">
-      <div>
-        <h2 class="text-xl font-medium">Modules</h2>
-        <p class="text-sm text-gray-600">Enable/disable features and manage permissions</p>
+    <div class="space-y-4">
+      <div class="border border-gray-200 p-5 rounded-2xl shadow bg-white">
+        <h2 class="text-2xl font-medium flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-gray-600">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+          </svg>
+
+          Modules
+        </h2>
+        <p class="text-sm text-gray-500 mt-2">Enable/disable features and manage permissions</p>
       </div>
 
-      <div class="border bg-white border-gray-200 rounded-lg">
-        <div class="border-b border-gray-200 p-4">
-          <h3 class="font-medium">Module Management</h3>
-          <p class="text-xs text-gray-500">Control which modules are available to your team. System modules cannot be disabled.</p>
+      <div class="border bg-white border-gray-200 rounded-2xl shadow">
+        <div class="p-5 pb-2">
+          <h3 class="text-2xl font-medium">Module Management</h3>
+          <p class="text-xs text-gray-500">Control which modules are available to your team. System modules cannot be
+            disabled.</p>
         </div>
 
-        <div class="p-4 space-y-6">
+        <div class="p-5 space-y-6">
           <div>
-            <div class="text-xs uppercase tracking-wide text-gray-500 mb-2">System Modules</div>
-            <div class="space-y-2">
-              <div *ngFor="let m of systemModules()" class="flex items-center justify-between border border-gray-200 rounded-lg p-3 bg-gray-50">
+            <div class="text-sm tracking-wide text-gray-500 mb-3">System Modules</div>
+            <div class="space-y-3">
+              <div *ngFor="let m of systemModules()"
+                   class="flex items-center justify-between border border-gray-200 rounded-2xl p-4 bg-gray-50">
                 <div>
                   <div class="font-medium">{{ m.display_name }}</div>
                   <div class="text-xs text-gray-600">{{ m.description }}</div>
@@ -34,17 +42,24 @@ import { NgFor } from '@angular/common';
           </div>
 
           <div>
-            <div class="text-xs uppercase tracking-wide text-gray-500 mb-2">Feature Modules</div>
-            <div class="space-y-2">
-              <div *ngFor="let m of featureModules()" class="flex items-center justify-between border border-gray-200 rounded-lg p-3">
+            <div class="text-sm tracking-wide text-gray-500 mb-2">Feature Modules</div>
+            <div class="space-y-3">
+              <div *ngFor="let m of featureModules()"
+                   class="flex items-center justify-between border border-gray-200 rounded-2xl p-4">
                 <div>
                   <div class="font-medium">{{ m.display_name }}</div>
                   <div class="text-xs text-gray-600">{{ m.description }}</div>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="text-[10px] px-2 py-1 rounded-full" [class.bg-blue-100]="m.is_enabled" [class.text-blue-700]="m.is_enabled" [class.bg-gray-100]="!m.is_enabled" [class.text-gray-600]="!m.is_enabled">{{ m.is_enabled ? 'Enabled' : 'Disabled' }}</span>
-                  <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full" [class.bg-blue-600]="m.is_enabled" [class.bg-gray-300]="!m.is_enabled" [disabled]="saving()" (click)="toggle(m)">
-                    <span class="inline-block h-5 w-5 transform rounded-full bg-white transition" [class.translate-x-5]="m.is_enabled" [class.translate-x-1]="!m.is_enabled"></span>
+                  <span class="text-[10px] px-2 py-1 rounded-full" [class.bg-blue-100]="m.is_enabled"
+                        [class.text-blue-700]="m.is_enabled" [class.bg-gray-100]="!m.is_enabled"
+                        [class.text-gray-600]="!m.is_enabled">{{ m.is_enabled ? 'Enabled' : 'Disabled' }}</span>
+
+                  <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 cursor-pointer"
+                          [class.bg-blue-600]="m.is_enabled" [class.bg-gray-300]="!m.is_enabled" [disabled]="saving()"
+                          (click)="toggle(m)">
+                    <span class="inline-block h-5 w-5 transform rounded-full bg-white transition-all duration-400"
+                          [class.translate-x-5]="m.is_enabled" [class.translate-x-1]="!m.is_enabled"></span>
                   </button>
                 </div>
               </div>
@@ -53,11 +68,7 @@ import { NgFor } from '@angular/common';
         </div>
       </div>
     </div>
-  `,
-  styles: [`
-    .input { width: 100%; border-radius: 0.5rem; border: 1px solid #d1d5db; padding: 0.75rem 0.875rem; font-size: 1rem; background: #ffffff; transition: all 0.2s ease-in-out; }
-    .input::placeholder { color: #9ca3af; }
-  `]
+  `
 })
 export class ModuleSettingsComponent implements OnInit {
   private api = inject(SettingsService);
@@ -66,7 +77,10 @@ export class ModuleSettingsComponent implements OnInit {
   systemModules = computed(() => this.modules().filter(m => m.is_system_module));
   featureModules = computed(() => this.modules().filter(m => !m.is_system_module));
 
-  ngOnInit() { this.refresh(); }
+  ngOnInit() {
+    this.refresh();
+  }
+
   refresh() {
     this.api.listModules().subscribe(res => {
       const list = res.data?.modules || [];
@@ -89,7 +103,7 @@ export class ModuleSettingsComponent implements OnInit {
     let remaining = modulesToEnable.length;
 
     // Optimistically update UI to enabled state
-    this.modules.update(arr => arr.map(m => modulesToEnable.some(t => t.id === m.id) ? { ...m, is_enabled: true } : m));
+    this.modules.update(arr => arr.map(m => modulesToEnable.some(t => t.id === m.id) ? {...m, is_enabled: true} : m));
 
     modulesToEnable.forEach(mod => {
       this.api.enableModule(mod.id).subscribe({
@@ -116,11 +130,14 @@ export class ModuleSettingsComponent implements OnInit {
     if (m.is_system_module) return;
     this.saving.set(true);
     const prev = m.is_enabled;
-    this.modules.update(list => list.map(x => x.id === m.id ? { ...x, is_enabled: !prev } : x));
+    this.modules.update(list => list.map(x => x.id === m.id ? {...x, is_enabled: !prev} : x));
     const req = prev ? this.api.disableModule(m.id) : this.api.enableModule(m.id);
     req.subscribe({
       next: () => this.saving.set(false),
-      error: () => { this.modules.update(list => list.map(x => x.id === m.id ? { ...x, is_enabled: prev } : x)); this.saving.set(false); }
+      error: () => {
+        this.modules.update(list => list.map(x => x.id === m.id ? {...x, is_enabled: prev} : x));
+        this.saving.set(false);
+      }
     });
   }
 }

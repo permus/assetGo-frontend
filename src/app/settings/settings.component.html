@@ -6,7 +6,7 @@
 
     <!--Tabs-->
     <div
-      class="tabs bg-white rounded-2xl grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 gap-2 p-2 my-4 text-center font-medium">
+      class="tabs bg-white shadow rounded-2xl grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 gap-2 p-2 my-4 text-center font-medium">
       <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer"
            [ngClass]="tab() === 'localisation' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('localisation')">
         Localization
@@ -35,14 +35,14 @@
 
     @if (tab() === 'localisation') {
       <ng-container>
-        <div class="border border-gray-200 bg-white p-4 rounded-lg mb-4">
+        <div class="shadow bg-white p-5 rounded-2xl mb-4">
           <h1 class="text-2xl font-medium flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM2.25 12h19.5M12 2.25c3.5 3 3.5 16.5 0 19.5M12 2.25c-3.5 3-3.5 16.5 0 19.5" />
             </svg>
             Localization
           </h1>
-          <p class="text-gray-600 text-sm">Language, currency, and regional settings</p>
+          <p class="text-gray-500 mt-2 text-sm">Language, currency, and regional settings</p>
         </div>
 
         <currency-settings [disabled]="!isAdmin()"></currency-settings>
