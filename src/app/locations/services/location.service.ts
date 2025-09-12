@@ -209,4 +209,12 @@ export class LocationService {
       ...this.getAuthHeaders()
     });
   }
+
+  // Export QR codes
+  exportQRCodes(): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/locations/export-qr`, {
+      ...this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
 }

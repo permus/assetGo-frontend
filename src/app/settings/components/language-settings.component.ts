@@ -1,8 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'language-settings',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="border border-gray-200 bg-white shadow p-5 rounded-2xl mb-4 bg-white">
       <h2 class="text-2xl font-medium mb-3">Language & Display</h2>

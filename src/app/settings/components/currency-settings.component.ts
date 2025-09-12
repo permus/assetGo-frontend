@@ -1,10 +1,12 @@
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { SettingsService } from '../settings.service';
 import { CurrencyService } from '../../core/services/currency.service';
 
 @Component({
   selector: 'currency-settings',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="border border-gray-200 shadow bg-white mb-4 p-5 rounded-2xl">
       <h2 class="text-2xl font-medium mb-3">Currency Settings</h2>

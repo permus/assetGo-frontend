@@ -1,11 +1,12 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { SettingsService, Company } from '../settings.service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'company-settings',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="space-y-4">
       <div class="border bg-white shadow border-gray-200 p-5 rounded-2xl">
@@ -30,17 +31,23 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
           <div>
             <div class="text-sm font-medium mb-2">Company Logo</div>
             <div class="flex items-center gap-4">
-              <img *ngIf="form.get('logo_url')?.value" [src]="form.get('logo_url')?.value || ''"
-                   class="h-12 w-12 object-cover rounded-lg border border-gray-200" alt="Company logo">
+              <div class="relative">
+                <img *ngIf="form.get('logo_url')?.value" [src]="form.get('logo_url')?.value || ''"
+                     class="h-12 w-12 object-cover rounded-lg border border-gray-200" alt="Company logo">
+                <div *ngIf="saving() && logoFile" class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                </div>
+              </div>
               <div class="space-y-1">
-                <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 inline-flex items-center gap-2"
+                <button type="button" 
+                        class="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 inline-flex items-center gap-2 disabled:opacity-50"
+                        [disabled]="saving()"
                         (click)="fileInput.click()">
-
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                  <svg *ngIf="!saving()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                   </svg>
-
-                  Upload Logo
+                  <div *ngIf="saving()" class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                  {{ saving() && logoFile ? 'Uploading...' : 'Upload Logo' }}
                 </button>
                 <div class="text-xs text-gray-500">PNG, JPG up to 5MB. Recommended: 200×200px</div>
                 <input #fileInput type="file" class="input hidden" accept="image/*" (change)="onLogoChange($event)"/>
@@ -181,7 +188,7 @@ export class CompanySettingsComponent implements OnInit {
     logo_url: ['']
   });
   saving = signal(false);
-  private logoFile: File | null = null;
+  logoFile: File | null = null;
 
   ngOnInit() {
     this.api.getCompany().subscribe(res => {
@@ -226,20 +233,58 @@ export class CompanySettingsComponent implements OnInit {
     } catch {}
     return controlName === 'name';
   }
-  onLogoChange(e: Event) { this.logoFile = (e.target as HTMLInputElement).files?.[0] || null; }
+  onLogoChange(e: Event) { 
+    this.logoFile = (e.target as HTMLInputElement).files?.[0] || null;
+    
+    // Show preview immediately
+    if (this.logoFile) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        this.form.patchValue({ logo_url: event.target?.result as string });
+      };
+      reader.readAsDataURL(this.logoFile);
+    }
+  }
 
   save() {
     this.saving.set(true);
+    
+    // Handle logo upload first if there's a new file
+    if (this.logoFile) {
+      this.api.uploadCompanyLogo(this.logoFile).subscribe({
+        next: (r) => {
+          // Update form with the server response
+          this.form.patchValue({ logo_url: r.data?.logo_url || this.form.get('logo_url')?.value });
+          
+          // Then update other company data
+          this.updateCompanyData();
+        },
+        error: (error) => {
+          console.error('Logo upload failed:', error);
+          this.saving.set(false);
+        }
+      });
+    } else {
+      // No new logo, just update company data
+      this.updateCompanyData();
+    }
+  }
+
+  private updateCompanyData() {
     const payload: Partial<Company> = this.form.value as any;
+    // Remove logo_url from payload as it's handled separately
+    delete payload.logo_url;
+    
     this.api.updateCompany(payload).subscribe({
       next: () => {
-        if (!this.logoFile) { this.saving.set(false); return; }
-        this.api.uploadCompanyLogo(this.logoFile).subscribe({
-          next: r => { this.form.patchValue({ logo_url: r.data?.logo_url || this.form.get('logo_url')?.value }); this.saving.set(false); },
-          error: () => this.saving.set(false)
-        });
+        this.saving.set(false);
+        // Reset logoFile after successful upload
+        this.logoFile = null;
       },
-      error: () => this.saving.set(false)
+      error: (error) => {
+        console.error('Company update failed:', error);
+        this.saving.set(false);
+      }
     });
   }
 }

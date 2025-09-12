@@ -433,8 +433,27 @@ export class LocationsComponent implements OnInit, OnDestroy {
   }
 
   exportQR() {
-    // TODO: Implement QR export
-    console.log('Export QR');
+    this.loading = true;
+    
+    this.locationService.exportQRCodes().subscribe({
+      next: (blob) => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `locations-qr-codes-${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Failed to export QR codes:', error);
+        this.loading = false;
+        // You might want to show a toast notification here
+      }
+    });
   }
 
   @HostListener('document:click', ['$event'])
