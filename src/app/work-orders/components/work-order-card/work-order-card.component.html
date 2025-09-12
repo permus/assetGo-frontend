@@ -1,4 +1,4 @@
-<div class="work-order-card h-[200px]" [class.list-view]="isListView">
+<div class="work-order-card h-[230px]" [class.list-view]="isListView">
   <!-- Bulk Selection Checkbox -->
   <div class="bulk-selection-checkbox" *ngIf="showBulkSelection">
     <input
@@ -8,70 +8,76 @@
       class="bulk-checkbox">
   </div>
 
-  <div class="card-header">
-    <div class="title-section">
-      <div class="icon">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-1.5a2.5 2.5 0 11-3.536 3.536l-7.5 7.5a2 2 0 102.828 2.828l7.5-7.5a2.5 2.5 0 013.536-3.536z" />
-        </svg>
+  <div class="card-header mb-3">
+    <div class="flex justify-between items-center gap-3 my-2">
+      <div class="title-section">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.867 19.125h.008v.008h-.008v-.008Z" />
+          </svg>
+
+        </div>
+        <h3 class="title truncate max-w-[250px]" [title]="workOrder.title">{{ workOrder.title }}</h3>
       </div>
-      <h3 class="title truncate" [title]="workOrder.title" [ngClass]="workOrder.status && workOrder.priority && workOrder.category ? 'w-[70px]' : 'w-[150px]'">{{ workOrder.title }}</h3>
+      <div class="header-actions">
+
+
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button
+            (click)="toggleMenu()"
+            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="6" r="1.5" />
+              <circle cx="12" cy="12" r="1.5" />
+              <circle cx="12" cy="18" r="1.5" />
+            </svg>
+          </button>
+
+          <!-- Dropdown Menu (matches assets UI) -->
+          <div *ngIf="showMenu" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+            <button
+              (click)="viewDetails()"
+              class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors cursor-pointer">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+              <span class="text-sm text-gray-700">View Details</span>
+            </button>
+
+            <button
+              (click)="editWorkOrder()"
+              class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors cursor-pointer">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              <span class="text-sm text-gray-700">Edit</span>
+            </button>
+
+            <div class="border-t border-gray-100 my-1"></div>
+
+            <button
+              (click)="requestDelete()"
+              class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-red-50 transition-colors cursor-pointer">
+              <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span class="text-sm text-red-600">Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="header-actions">
-      <div class="badges">
+
+    <div class="badges flex flex-wrap gap-2">
         <span class="badge status-badge" [ngClass]="'status-' + ($any(workOrder.status)?.slug || workOrder.status || 'open')">
           {{ getStatusLabel($any(workOrder.status)) }}
         </span>
-        <span class="badge priority-badge" [ngClass]="'priority-' + ($any(workOrder.priority)?.slug || workOrder.priority || 'medium')">
+      <span class="badge priority-badge" [ngClass]="'priority-' + ($any(workOrder.priority)?.slug || workOrder.priority || 'medium')">
           {{ getPriorityLabel($any(workOrder.priority)) }}
         </span>
-        <span *ngIf="getCategoryName()" class="badge category-badge">{{ getCategoryName() }}</span>
-      </div>
-
-      <div class="relative" (click)="$event.stopPropagation()">
-        <button
-          (click)="toggleMenu()"
-          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="6" r="1.5" />
-            <circle cx="12" cy="12" r="1.5" />
-            <circle cx="12" cy="18" r="1.5" />
-          </svg>
-        </button>
-
-        <!-- Dropdown Menu (matches assets UI) -->
-        <div *ngIf="showMenu" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-          <button
-            (click)="viewDetails()"
-            class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
-            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-            </svg>
-            <span class="text-sm text-gray-700">View Details</span>
-          </button>
-
-          <button
-            (click)="editWorkOrder()"
-            class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
-            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-            <span class="text-sm text-gray-700">Edit</span>
-          </button>
-
-          <div class="border-t border-gray-100 my-1"></div>
-
-          <button
-            (click)="requestDelete()"
-            class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-red-50 transition-colors">
-            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-            <span class="text-sm text-red-600">Delete</span>
-          </button>
-        </div>
-      </div>
+      <span *ngIf="getCategoryName()" class="badge bg-gray-100 text-gray-800">{{ getCategoryName() }}</span>
     </div>
   </div>
 
