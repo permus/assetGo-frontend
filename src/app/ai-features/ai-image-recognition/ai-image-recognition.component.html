@@ -1,0 +1,92 @@
+<div class="container">
+  <h2>AI Image Recognition</h2>
+
+  <div class="uploader">
+    <input type="file" multiple accept="image/png,image/jpeg" (change)="onSelect($event)" />
+    <p class="hint">PNG/JPG up to 10MB. Add 1–5 images. Include nameplate close-ups.</p>
+  </div>
+
+  <div class="previews" *ngIf="previews.length">
+    <div class="thumb" *ngFor="let p of previews; let i = index">
+      <img [src]="p" [alt]="'preview-'+i" />
+      <button (click)="remove(i)">Remove</button>
+    </div>
+  </div>
+
+  <button [disabled]="isAnalyzing || !previews.length" (click)="analyze()">
+    {{ isAnalyzing ? 'Analyzing…' : 'Analyze Image' }}
+  </button>
+
+  <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+  <section class="result" *ngIf="result">
+    <div class="header">
+      <div>
+        <div class="label">Asset Type</div>
+        <div class="value">{{ result.assetType }}</div>
+      </div>
+      <div class="chip">Confidence {{ result.confidence }}%</div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <span>Manufacturer</span>
+        <div class="field-content">
+          <strong>{{ result.manufacturer || '—' }}</strong>
+          <span class="confidence-chip" *ngIf="result.manufacturer" 
+                [class]="getConfidenceClass(result.evidence?.fieldsFound?.includes('manufacturer'))">
+            {{ result.evidence?.fieldsFound?.includes('manufacturer') ? 'High' : 'Low' }} confidence
+          </span>
+        </div>
+      </div>
+      <div class="field">
+        <span>Model</span>
+        <div class="field-content">
+          <strong>{{ result.model || '—' }}</strong>
+          <span class="confidence-chip" *ngIf="result.model" 
+                [class]="getConfidenceClass(result.evidence?.fieldsFound?.includes('model'))">
+            {{ result.evidence?.fieldsFound?.includes('model') ? 'High' : 'Low' }} confidence
+          </span>
+        </div>
+      </div>
+      <div class="field">
+        <span>Serial</span>
+        <div class="field-content">
+          <strong>{{ result.serialNumber || '—' }}</strong>
+          <span class="confidence-chip" *ngIf="result.serialNumber" 
+                [class]="getConfidenceClass(result.evidence?.fieldsFound?.includes('serialNumber'))">
+            {{ result.evidence?.fieldsFound?.includes('serialNumber') ? 'High' : 'Low' }} confidence
+          </span>
+        </div>
+      </div>
+      <div class="field">
+        <span>Condition</span>
+        <div class="field-content">
+          <strong>{{ result.condition }}</strong>
+          <span class="condition-badge" [class]="'condition-' + result.condition.toLowerCase()">
+            {{ result.condition }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="low-confidence-warning" *ngIf="result.confidence < 70">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-text">
+        <strong>Low confidence detected.</strong> For better results, try uploading a close-up of the nameplate or label.
+      </div>
+    </div>
+
+    <div class="recs">
+      <div class="label">Recommendations</div>
+      <ul>
+        <li *ngFor="let r of result.recommendations">{{ r }}</li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button>Generate QR</button>
+      <button class="primary">Create Asset Record</button>
+    </div>
+  </section>
+</div>

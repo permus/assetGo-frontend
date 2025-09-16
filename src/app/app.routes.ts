@@ -61,6 +61,11 @@ export const routes: Routes = [
         path: 'settings',
         component: SettingsComponent,
         title: 'Settings'
+      },
+      {
+        path: 'ai/image-recognition',
+        loadComponent: () => import('./ai-features/ai-image-recognition/ai-image-recognition.component').then(m => m.AIImageRecognitionComponent),
+        title: 'AI Image Recognition'
       }
     ]
   },
