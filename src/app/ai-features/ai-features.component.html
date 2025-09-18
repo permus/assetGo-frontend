@@ -2,7 +2,7 @@
   <!-- Header Section -->
   <div class="header-section">
     <h1 class="main-title">AI-Powered Features</h1>
-    <p class="main-description">Leverage artificial intelligence to optimize asset management and gain deeper insights.</p>
+    <p class="main-description">Transform your asset management with cutting-edge AI technology. Automate identification, predict maintenance needs, and optimize operations with intelligent insights.</p>
   </div>
 
   <!-- Tabs Navigation -->
@@ -27,54 +27,25 @@
     <div *ngIf="activeTab === 'image-recognition'" class="tab-panel">
       <div class="section-header">
         <h2 class="section-title">AI Image Recognition</h2>
-        <p class="section-description">Upload asset images for automatic identification and condition assessment.</p>
-      </div>
-
-      <!-- AI Image Analyzer Component -->
-      <div class="ai-assistant-card">
-        <div class="ai-gradient-bg"></div>
-        <div class="card-body">
-          <h5>EquiAI Assistant</h5>
-          <app-ai-image-analyzer
-            (analysisComplete)="onAIAnalysisComplete($event)"
-            (fieldUpdate)="onAIFieldUpdate($event)"
-            (imageUploaded)="onImageUploaded($event)">
-          </app-ai-image-analyzer>
-        </div>
+        <p class="section-description">Upload asset images for automatic identification, condition assessment, and intelligent data extraction.</p>
       </div>
 
       <!-- Asset Image Upload Section -->
       <div class="upload-section">
-        <div class="upload-header">
-          <div class="upload-title">
-            <svg class="upload-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2C13.1 2 14 2.9 14 4V6H16C17.1 6 18 6.9 18 8V20C18 21.1 17.1 22 16 22H8C6.9 22 6 21.1 6 20V8C6 6.9 6.9 6 8 6H10V4C10 2.9 10.9 2 12 2M12 4V6H12V4M12 8C10.9 8 10 8.9 10 10S10.9 12 12 12S14 11.1 14 10S13.1 8 12 8M12 14C10.9 14 10 14.9 10 16S10.9 18 12 18S14 17.1 14 16S13.1 14 12 14Z"></path>
+        <div class="upload-area" (click)="triggerFileInput()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+          <!-- Upload Placeholder (when no files) -->
+          <div class="upload-placeholder" *ngIf="selectedFiles.length === 0">
+            <div class="upload-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                <circle cx="12" cy="13" r="3"></circle>
             </svg>
-            <h3>Asset Image Upload</h3>
           </div>
-          <div class="upload-actions">
-            <button class="btn-secondary" (click)="triggerFileInput()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M17 8L12 3M12 3L7 8M12 3V15"></path>
-              </svg>
-              Upload Images
-            </button>
-            <button class="btn-primary" (click)="analyzeImages()" [disabled]="!selectedFiles.length || isAnalyzing">
-              <svg *ngIf="!isAnalyzing" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M17 8L12 3M12 3L7 8M12 3V15"></path>
-              </svg>
-              <svg *ngIf="isAnalyzing" class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 12a9 9 0 11-6.219-8.56"></path>
-              </svg>
-              {{ isAnalyzing ? 'Analyzing...' : 'Analyze Image' }}
-            </button>
-          </div>
+            <h3 class="upload-title">Upload Asset Image</h3>
+            <p class="upload-text">Drag & drop your image here, or click to browse</p>
+            <p class="upload-hint">PNG, JPG, JPEG up to 10MB • High-quality, well-lit images recommended</p>
         </div>
         
-        <p class="upload-description">Upload a high-quality, well-lit image of your asset (PNG, JPG, or JPEG up to 10MB) for optimal AI identification. Include clear views of nameplates and overall equipment for best results.</p>
-        
-          <!-- Upload Area -->
-          <div class="upload-area" (click)="triggerFileInput()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
             <!-- Single Image Preview -->
             <div class="single-image-preview" *ngIf="selectedFiles.length > 0">
               <div class="preview-item">
@@ -89,41 +60,62 @@
               </div>
             </div>
             
-            <!-- Upload Placeholder (when no files) -->
-            <div class="upload-placeholder" *ngIf="selectedFiles.length === 0">
-              <svg class="upload-placeholder-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M12 2C13.1 2 14 2.9 14 4V6H16C17.1 6 18 6.9 18 8V20C18 21.1 17.1 22 16 22H8C6.9 22 6 21.1 6 20V8C6 6.9 6.9 6 8 6H10V4C10 2.9 10.9 2 12 2M12 4V6H12V4M12 8C10.9 8 10 8.9 10 10S10.9 12 12 12S14 11.1 14 10S13.1 8 12 8M12 14C10.9 14 10 14.9 10 16S10.9 18 12 18S14 17.1 14 16S13.1 14 12 14Z"></path>
-              </svg>
-              <p class="upload-text">Upload asset image</p>
-              <p class="upload-hint">Click to browse or drag and drop file here</p>
-            </div>
             <input #fileInput type="file" accept="image/png,image/jpeg,image/jpg" (change)="onFileSelected($event)" style="display: none;">
           </div>
 
-        <!-- Selected Files Preview -->
-        <div class="selected-files" *ngIf="selectedFiles.length > 0">
-          <h4>Selected Files ({{ selectedFiles.length }})</h4>
-          <div class="file-list">
-            <div class="file-item" *ngFor="let file of selectedFiles; let i = index">
-              <div class="file-info">
-                <span class="file-name">{{ file.name }}</span>
-                <span class="file-size">({{ formatFileSize(file.size) }})</span>
+        <!-- Action Buttons -->
+        <div class="upload-actions">
+          <button class="btn-secondary" (click)="triggerFileInput()" [disabled]="isAnalyzing">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M17 8L12 3M12 3L7 8M12 3V15"></path>
+            </svg>
+            Upload Images
+          </button>
+          <button class="btn-primary" (click)="analyzeImages()" [disabled]="!selectedFiles.length || isAnalyzing">
+            <svg *ngIf="!isAnalyzing" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M17 8L12 3M12 3L7 8M12 3V15"></path>
+            </svg>
+            <svg *ngIf="isAnalyzing" class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12a9 9 0 11-6.219-8.56"></path>
+            </svg>
+            {{ isAnalyzing ? 'Analyzing...' : 'Analyze Image' }}
+          </button>
               </div>
-              <button class="remove-file" (click)="removeFile(i)">×</button>
-            </div>
-          </div>
-        </div>
 
         <!-- Loading Overlay -->
         <div class="loading-overlay" *ngIf="isAnalyzing">
           <div class="loading-content">
-            <div class="loading-spinner">
-              <svg class="animate-spin" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 12a9 9 0 11-6.219-8.56"></path>
-              </svg>
+            <div class="loading-animation">
+              <div class="ai-brain">
+                <div class="brain-pulse"></div>
+                <div class="brain-pulse delay-1"></div>
+                <div class="brain-pulse delay-2"></div>
+              </div>
             </div>
-            <h3>Analyzing Image...</h3>
-            <p>Our AI is examining your asset image to identify its type, condition, and provide recommendations.</p>
+            <h3>AI is Analyzing Your Image</h3>
+            <p class="loading-description">Our advanced AI is examining your asset image to identify its type, condition, and provide intelligent recommendations.</p>
+            <div class="loading-steps">
+              <div class="step active">
+                <div class="step-icon">🔍</div>
+                <span>Scanning image details</span>
+              </div>
+              <div class="step">
+                <div class="step-icon">🤖</div>
+                <span>AI processing</span>
+              </div>
+              <div class="step">
+                <div class="step-icon">📊</div>
+                <span>Generating results</span>
+              </div>
+              </div>
+            <div class="loading-tip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <path d="M12 17h.01"></path>
+              </svg>
+              <span>This usually takes 10-30 seconds</span>
+            </div>
           </div>
         </div>
 
@@ -134,206 +126,307 @@
 
         <!-- Recognition Results -->
         <div class="recognition-results" *ngIf="analysisResult">
+          <!-- Results Header -->
           <div class="results-header">
-            <div class="results-title">
-              <svg class="success-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <h3>Recognition Results</h3>
+            <div class="header-content">
+              <div class="header-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12l2 2 4-4"></path>
+                  <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
+                  <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
+                  <path d="M13 12h3a2 2 0 0 1 2 2v1"></path>
+                  <path d="M13 12H9"></path>
+                  <path d="M9 12H6a2 2 0 0 0-2 2v1"></path>
+                </svg>
+              </div>
+              <div class="header-text">
+                <h3>AI Recognition Complete</h3>
+                <p>Your asset has been successfully analyzed</p>
+              </div>
             </div>
           </div>
 
-          <div class="results-content">
-            <!-- Key Information -->
-            <div class="key-info">
-              <div class="info-item">
-                <span class="info-label">Asset Type</span>
-                <span class="info-value">{{ analysisResult.assetType }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Confidence</span>
-                <span class="info-value">
-                  {{ analysisResult.confidence }}%
-                  <span class="confidence-badge" [ngClass]="getConfidenceClass(analysisResult.confidence)">
-                    {{ getConfidenceLabel(analysisResult.confidence) }}
+          <!-- Main Results Card -->
+          <div class="results-card">
+            <div class="card-header">
+              <div class="asset-type">
+                <div class="type-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg>
+                </div>
+                <div class="type-info">
+                  <h4>{{ analysisResult.assetType }}</h4>
+                  <span class="confidence-badge confidence-{{ getConfidenceLevel(analysisResult.confidence) }}">
+                    {{ analysisResult.confidence }}% Confidence
                   </span>
-                </span>
-              </div>
-              <div class="info-item" *ngIf="analysisResult.manufacturer">
-                <span class="info-label">Manufacturer</span>
-                <span class="info-value">{{ analysisResult.manufacturer }}</span>
+                </div>
               </div>
             </div>
 
-            <!-- Condition Assessment -->
-            <div class="condition-section">
-              <h4>Condition Assessment</h4>
-              <div class="condition-badge" [ngClass]="getConditionClass(analysisResult.condition)">
-                {{ analysisResult.condition }}
-              </div>
-              <p class="condition-description">
-                Based on visual inspection, the asset appears to be in {{ analysisResult.condition.toLowerCase() }} condition.
-              </p>
-            </div>
+            <div class="card-content">
+              <div class="details-grid">
+                <div class="detail-item" *ngIf="analysisResult.manufacturer">
+                  <div class="detail-label">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    Manufacturer
+                  </div>
+                  <div class="detail-value">{{ analysisResult.manufacturer }}</div>
+                </div>
 
-            <!-- AI Recommendations -->
-            <div class="recommendations-section" *ngIf="analysisResult.recommendations?.length">
-              <h4>
-                <svg class="recommendations-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <div class="detail-item" *ngIf="analysisResult.model">
+                  <div class="detail-label">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    Model
+                  </div>
+                  <div class="detail-value">{{ analysisResult.model }}</div>
+                </div>
+
+                <div class="detail-item" *ngIf="analysisResult.serialNumber">
+                  <div class="detail-label">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Serial Number
+                  </div>
+                  <div class="detail-value">{{ analysisResult.serialNumber }}</div>
+                </div>
+
+                <div class="detail-item" *ngIf="analysisResult.assetTag">
+                  <div class="detail-label">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                      <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                    Asset Tag
+                  </div>
+                  <div class="detail-value">{{ analysisResult.assetTag }}</div>
+                </div>
+
+                <div class="detail-item condition-item" *ngIf="analysisResult.condition">
+                  <div class="detail-label">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                    </svg>
+                    Condition
+                  </div>
+                  <div class="detail-value condition-badge condition-{{ analysisResult.condition.toLowerCase() }}">
+                    {{ analysisResult.condition }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="description" *ngIf="analysisResult.evidence?.notes">
+                <div class="description-content">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                  <p>{{ analysisResult.evidence.notes }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recommendations Card -->
+          <div class="recommendations-card" *ngIf="analysisResult.recommendations && analysisResult.recommendations.length > 0">
+            <div class="card-header">
+              <div class="header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                   <line x1="12" y1="9" x2="12" y2="13"></line>
                   <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
-                AI Recommendations
-              </h4>
-              <ul class="recommendations-list">
-                <li *ngFor="let rec of analysisResult.recommendations">
-                  <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  {{ rec }}
-                </li>
-              </ul>
+              </div>
+              <div class="header-text">
+                <h4>AI Recommendations</h4>
+                <p>Based on the analysis, here are our suggestions</p>
+              </div>
             </div>
+            <div class="recommendations-list">
+              <div class="recommendation-item" *ngFor="let rec of analysisResult.recommendations">
+                <div class="rec-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </div>
+                <span>{{ rec }}</span>
+              </div>
+            </div>
+          </div>
 
-            <!-- Feedback Section -->
-            <div class="feedback-section" *ngIf="!feedbackSubmitted">
-              <h4>
-                <svg class="feedback-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- Feedback Section -->
+          <div class="feedback-card" *ngIf="!feedbackSubmitted">
+            <div class="card-header">
+              <div class="header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                Help Improve AI Recognition
-              </h4>
-              <p class="feedback-description">Was this recognition accurate? Your feedback helps improve our AI.</p>
-              
-              <div class="feedback-buttons">
+              </div>
+              <div class="header-text">
+                <h4>Help Improve AI Recognition</h4>
+                <p>Was this recognition accurate? Your feedback helps improve our AI.</p>
+              </div>
+            </div>
+            
+            <div class="feedback-content">
+              <div class="feedback-options">
                 <button 
                   class="feedback-btn accurate" 
                   [class.selected]="feedbackType === 'accurate'"
                   (click)="selectFeedback('accurate')">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-                  </svg>
-                  Accurate
+                  <div class="btn-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 9V5a3 3 0 0 0-6 0v4"></path>
+                      <rect x="2" y="9" width="20" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 13h10"></path>
+                    </svg>
+                  </div>
+                  <div class="btn-text">
+                    <span class="btn-title">Accurate</span>
+                    <span class="btn-subtitle">Recognition was correct</span>
+                  </div>
                 </button>
+                
                 <button 
                   class="feedback-btn needs-correction" 
                   [class.selected]="feedbackType === 'needs_correction'"
                   (click)="selectFeedback('needs_correction')">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
-                  </svg>
-                  Needs Correction
+                  <div class="btn-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0z"></path>
+                    </svg>
+                  </div>
+                  <div class="btn-text">
+                    <span class="btn-title">Needs Correction</span>
+                    <span class="btn-subtitle">Something was wrong</span>
+                  </div>
                 </button>
               </div>
 
-              <!-- Correction Input -->
-              <div class="correction-input" *ngIf="feedbackType === 'needs_correction'">
-                <h5>Provide Corrections</h5>
-                
-                <!-- Correction Rows -->
-                <div class="correction-rows">
-                  <div class="correction-row" *ngFor="let correction of corrections; let i = index">
-                    <div class="correction-fields">
-                      <div class="field-input">
-                        <label>Field (e.g., Asset Type)</label>
-                        <input 
-                          type="text" 
-                          [(ngModel)]="correction.field"
-                          placeholder="e.g., Asset Type, Manufacturer, Model"
-                          class="field-name-input">
-                      </div>
-                      <div class="value-input">
-                        <label>Correct value</label>
-                        <input 
-                          type="text" 
-                          [(ngModel)]="correction.value"
-                          placeholder="Enter correct value"
-                          class="correct-value-input">
-                      </div>
-                    </div>
-                    <button class="remove-correction" (click)="removeCorrection(i)" title="Remove correction">
+              <div class="correction-section" *ngIf="feedbackType === 'needs_correction'">
+                <div class="section-header">
+                  <h5>What needs to be corrected?</h5>
+                  <p>Please specify what was incorrect in the recognition</p>
+                </div>
+                <div class="corrections-list">
+                  <div class="correction-item" *ngFor="let correction of corrections; let i = index">
+                    <input 
+                      type="text" 
+                      [(ngModel)]="correction.value" 
+                      placeholder="Enter correction..."
+                      class="correction-input">
+                    <button 
+                      type="button" 
+                      class="remove-correction" 
+                      (click)="removeCorrection(i)">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6L18 18"></path>
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
                       </svg>
                     </button>
                   </div>
-                </div>
-
-                <!-- Add Correction Button -->
-                <button class="add-correction-btn" (click)="addCorrection()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 5v14M5 12h14"></path>
-                  </svg>
-                  Add Correction
-                </button>
-
-                <!-- Action Buttons -->
-                <div class="correction-actions">
-                  <button class="btn-secondary" (click)="cancelFeedback()">Cancel</button>
                   <button 
-                    class="btn-primary" 
-                    (click)="submitFeedback()"
-                    [disabled]="isSubmittingFeedback || corrections.length === 0">
-                    {{ isSubmittingFeedback ? 'Submitting...' : 'Submit Feedback' }}
+                    type="button" 
+                    class="add-correction" 
+                    (click)="addCorrection()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Correction
                   </button>
                 </div>
               </div>
 
-              <!-- Submit Feedback for Accurate -->
-              <div class="feedback-actions" *ngIf="feedbackType === 'accurate'">
+              <div class="feedback-actions" *ngIf="feedbackType">
+                <button 
+                  class="btn-secondary" 
+                  (click)="cancelFeedback()">
+                  Cancel
+                </button>
                 <button 
                   class="btn-primary" 
-                  (click)="submitFeedback()"
-                  [disabled]="isSubmittingFeedback">
+                  [disabled]="isSubmittingFeedback"
+                  (click)="submitFeedback()">
+                  <svg *ngIf="isSubmittingFeedback" class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 11-6.219-8.56"></path>
+                  </svg>
                   {{ isSubmittingFeedback ? 'Submitting...' : 'Submit Feedback' }}
                 </button>
               </div>
             </div>
+          </div>
 
-            <!-- Feedback Submitted -->
-            <div class="feedback-success" *ngIf="feedbackSubmitted">
-              <svg class="success-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <h4>Thank you for your feedback!</h4>
-              <p>Your input helps us improve our AI recognition accuracy.</p>
+          <!-- Feedback Success -->
+          <div class="success-card" *ngIf="feedbackSubmitted">
+            <div class="success-content">
+              <div class="success-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                </svg>
+              </div>
+              <h4>Thank You!</h4>
+              <p>Your feedback has been submitted and will help improve our AI recognition.</p>
             </div>
+          </div>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-              <button class="btn-primary" (click)="openCreateAssetModal()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- Create Asset Button -->
+          <div class="create-asset-section">
+            <button class="create-asset-btn" (click)="openCreateAssetModal()">
+              <div class="btn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14,2 14,8 20,8"></polyline>
                   <line x1="16" y1="13" x2="8" y2="13"></line>
                   <line x1="16" y1="17" x2="8" y2="17"></line>
                   <polyline points="10,9 9,9 8,9"></polyline>
                 </svg>
-                Create Asset Record
-              </button>
-            </div>
+              </div>
+              <div class="btn-text">
+                <span class="btn-title">Create Asset Record</span>
+                <span class="btn-subtitle">Save this recognition as a new asset</span>
+              </div>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Example Supported Assets Section -->
-      <div class="examples-section">
-        <h3 class="examples-title">Example Supported Assets</h3>
-        <p class="examples-description">Our AI can recognize and analyze various types of equipment.</p>
+      <!-- Supported Asset Types Section -->
+      <div class="supported-assets-section">
+        <div class="section-header">
+          <h3 class="section-title">Supported Asset Types</h3>
+          <p class="section-description">Our AI can recognize and analyze various types of industrial equipment and assets with high accuracy.</p>
+        </div>
         
         <div class="asset-types-grid">
           <div class="asset-type-card" *ngFor="let assetType of assetTypes">
+            <div class="asset-icon-wrapper">
             <div class="asset-type-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path [attr.d]="getAssetTypeIcon(assetType.icon)"></path>
               </svg>
             </div>
+            </div>
+            <div class="asset-type-info">
             <span class="asset-type-name">{{ assetType.name }}</span>
+              <span class="asset-type-status">Supported</span>
+            </div>
           </div>
         </div>
-        </div>
-
       </div>
 
       <!-- Other Tabs (Placeholder) -->

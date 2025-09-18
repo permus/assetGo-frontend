@@ -7,7 +7,6 @@ import { AIImageUploadService } from './shared/ai-image-upload.service';
 import { RecognitionResult } from './shared/ai-recognition-result.interface';
 import { LocationService, Location } from '../locations/services/location.service';
 import { AIAnalyticsService, AnalyticsResult, AssetContext } from './shared/ai-analytics.service';
-import { AIImageAnalysisService, TaskAnalysisResult } from './shared/ai-image-analysis.service';
 
 @Component({
   selector: 'app-ai-features',
@@ -79,8 +78,7 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
   constructor(
     private aiImageUploadService: AIImageUploadService,
     private locationService: LocationService,
-    private aiAnalyticsService: AIAnalyticsService,
-    private aiImageAnalysisService: AIImageAnalysisService
+    private aiAnalyticsService: AIAnalyticsService
   ) {}
 
   ngOnInit() {
@@ -257,34 +255,25 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
 
     this.isSubmittingFeedback = true;
 
-    // Use AI Image Analysis Service for feedback
-    this.aiImageAnalysisService.submitFeedback(
-      this.analysisResult?.id || 0, // Assuming we have an ID
-      this.feedbackType,
-      this.corrections.map(c => c.value) // Extract value from correction objects
-    ).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.feedbackSubmitted = true;
-          this.errorMessage = '';
-        } else {
-          this.errorMessage = response.message || 'Failed to submit feedback';
-        }
-        this.isSubmittingFeedback = false;
-        
-        // Reset after 3 seconds
-        setTimeout(() => {
-          this.feedbackSubmitted = false;
-          this.feedbackType = null;
-          this.correctionText = '';
-          this.corrections = [];
-        }, 3000);
-      },
-      error: (error) => {
-        this.errorMessage = error?.error?.message || 'Failed to submit feedback';
-        this.isSubmittingFeedback = false;
-      }
-    });
+    // Simulate feedback submission
+    setTimeout(() => {
+      this.feedbackSubmitted = true;
+      this.errorMessage = '';
+      this.isSubmittingFeedback = false;
+      
+      console.log('Feedback submitted:', {
+        type: this.feedbackType,
+        corrections: this.corrections.map(c => c.value)
+      });
+      
+      // Reset after 3 seconds
+      setTimeout(() => {
+        this.feedbackSubmitted = false;
+        this.feedbackType = null;
+        this.correctionText = '';
+        this.corrections = [];
+      }, 3000);
+    }, 1000);
   }
 
   cancelFeedback() {
@@ -309,6 +298,12 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
     if (confidence >= 80) return 'confidence-high';
     if (confidence >= 60) return 'confidence-medium';
     return 'confidence-low';
+  }
+
+  getConfidenceLevel(confidence: number): string {
+    if (confidence >= 80) return 'high';
+    if (confidence >= 60) return 'medium';
+    return 'low';
   }
 
   getConfidenceLabel(confidence: number): string {
@@ -579,36 +574,5 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
     };
   }
 
-  // AI Image Analyzer event handlers
-  onAIAnalysisComplete(result: TaskAnalysisResult): void {
-    console.log('AI Analysis Complete:', result);
-    // You can add additional logic here if needed
-  }
 
-  onAIFieldUpdate(fieldUpdate: { field: string, value: any }): void {
-    console.log('Field Update:', fieldUpdate);
-    // You can add real-time form updates here
-  }
-
-  onImageUploaded(file: File): void {
-    console.log('Image Uploaded:', file);
-    // You can add additional logic here if needed
-  }
-
-  // Load analysis history
-  loadAnalysisHistory() {
-    this.aiImageAnalysisService.getAnalysisHistory(1, 10).subscribe({
-      next: (response) => {
-        if (response.success) {
-          console.log('Analysis History:', response.data);
-          // You can display history in a modal or separate section
-        } else {
-          console.error('Failed to load history:', response.message);
-        }
-      },
-      error: (error) => {
-        console.error('Error loading history:', error);
-      }
-    });
-  }
 }
