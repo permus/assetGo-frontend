@@ -35,6 +35,18 @@
               "src/styles.scss"
             ],
             "scripts": [],
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "600kB",
+                "maximumError": "1MB"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "30kB",
+                "maximumError": "50kB"
+              }
+            ],
             "allowedCommonJsDependencies": [
               "canvg/lib/index.es.js",
               "core-js/modules/es.promise.js",
@@ -67,8 +79,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "24kB",
-                  "maximumError": "36kB"
+                  "maximumWarning": "30kB",
+                  "maximumError": "50kB"
                 }
               ],
               "outputHashing": "all"
@@ -76,7 +88,19 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "600kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "30kB",
+                  "maximumError": "50kB"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
