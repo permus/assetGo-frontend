@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -341,6 +341,10 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Dropdown state
+  showLocationDropdown = false;
+  selectedLocation: { id: number | string; name: string } | null = null;
+
   // Asset creation methods
   openCreateAssetModal() {
     if (this.analysisResult) {
@@ -367,6 +371,41 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
       serialNumber: '',
       location: ''
     };
+    this.selectedLocation = null;
+    this.showLocationDropdown = false;
+  }
+
+  // Dropdown methods
+  toggleLocationDropdown(): void {
+    this.showLocationDropdown = !this.showLocationDropdown;
+  }
+
+  selectLocation(location: any): void {
+    this.selectedLocation = location;
+    this.showLocationDropdown = false;
+    this.assetForm.location = location?.id ?? null;
+  }
+
+  getLocationDescription(location: any): string {
+    return location.description || `Location ID: ${location.id}`;
+  }
+
+  @HostListener('document:click')
+  closeOnOutsideClick(): void {
+    this.showLocationDropdown = false;
+  }
+
+  // Validation helpers
+  hasFieldError(controlName: string): boolean {
+    // For now, return false since we're using ngModel instead of reactive forms
+    // In a real implementation, you'd check the form control state
+    return false;
+  }
+
+  getFieldError(controlName: string): string {
+    // For now, return empty string since we're using ngModel instead of reactive forms
+    // In a real implementation, you'd return the actual validation error
+    return '';
   }
 
   createAsset() {
