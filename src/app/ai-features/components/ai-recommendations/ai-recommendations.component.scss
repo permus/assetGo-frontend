@@ -1,0 +1,25 @@
+.ai-recommendations-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f8fafc;
+  min-height: 100vh;
+
+  // Global styles for the page
+  * {
+    box-sizing: border-box;
+  }
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .ai-recommendations-page {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-recommendations-page {
+    padding: 1rem;
+  }
+}

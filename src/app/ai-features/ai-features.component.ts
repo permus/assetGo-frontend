@@ -6,12 +6,16 @@ import { takeUntil } from 'rxjs/operators';
 import { AIImageUploadService } from './shared/ai-image-upload.service';
 import { RecognitionResult } from './shared/ai-recognition-result.interface';
 import { LocationService, Location } from '../locations/services/location.service';
-import { AIAnalyticsService, AnalyticsResult, AssetContext } from './shared/ai-analytics.service';
+// Removed old analytics service import
+import { PredictiveMaintenanceComponent } from './components/predictive-maintenance/predictive-maintenance.component';
+import { NaturalLanguageComponent } from './components/natural-language/natural-language.component';
+import { AIRecommendationsComponent } from './components/ai-recommendations/ai-recommendations.component';
+import { AIAnalyticsComponent } from './components/ai-analytics/ai-analytics.component';
 
 @Component({
   selector: 'app-ai-features',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PredictiveMaintenanceComponent, NaturalLanguageComponent, AIRecommendationsComponent, AIAnalyticsComponent],
   templateUrl: './ai-features.component.html',
   styleUrls: ['./ai-features.component.scss']
 })
@@ -49,19 +53,14 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
   locations: Location[] = [];
   loadingLocations: boolean = false;
 
-  // AI Analytics properties
-  analyticsResult: AnalyticsResult | null = null;
-  isAnalyzingAssets: boolean = false;
-  selectedAssets: AssetContext[] = [];
-  analyticsImages: string[] = [];
-  analyticsFilePreviews: { [key: string]: string } = {};
+  // Removed old analytics properties
 
   tabs = [
     { id: 'image-recognition', label: 'Image Recognition', icon: 'camera' },
     { id: 'predictive-maintenance', label: 'Predictive Maintenance', icon: 'trending-up' },
     { id: 'natural-language', label: 'Natural Language', icon: 'message-circle' },
     { id: 'recommendations', label: 'Recommendations', icon: 'lightbulb' },
-    { id: 'ai-analytics', label: 'AI Analytics', icon: 'bar-chart' }
+    { id: 'analytics', label: 'AI Analytics', icon: 'bar-chart' }
   ];
 
   assetTypes = [
@@ -77,8 +76,7 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
 
   constructor(
     private aiImageUploadService: AIImageUploadService,
-    private locationService: LocationService,
-    private aiAnalyticsService: AIAnalyticsService
+    private locationService: LocationService
   ) {}
 
   ngOnInit() {
@@ -430,188 +428,11 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
     }, 1500);
   }
 
-  // AI Analytics methods
-  addSampleAssets() {
-    this.selectedAssets = [
-      {
-        id: 1,
-        name: 'HVAC Unit A',
-        type: 'HVAC',
-        manufacturer: 'Carrier',
-        model: 'Model 123',
-        age: 5,
-        condition: 'Good',
-        lastMaintenance: '2024-01-15',
-        nextMaintenance: '2024-07-15',
-        value: 25000,
-        location: 'Building A - Floor 2',
-        status: 'Active'
-      },
-      {
-        id: 2,
-        name: 'Generator B',
-        type: 'Generator',
-        manufacturer: 'Cummins',
-        model: 'C150D5',
-        age: 8,
-        condition: 'Fair',
-        lastMaintenance: '2023-12-01',
-        nextMaintenance: '2024-06-01',
-        value: 45000,
-        location: 'Building B - Basement',
-        status: 'Active'
-      },
-      {
-        id: 3,
-        name: 'Water Pump C',
-        type: 'Pump',
-        manufacturer: 'Grundfos',
-        model: 'CR 15-4',
-        age: 12,
-        condition: 'Poor',
-        lastMaintenance: '2023-08-15',
-        nextMaintenance: '2024-02-15',
-        value: 8500,
-        location: 'Building A - Mechanical Room',
-        status: 'Active'
-      }
-    ];
-  }
+  // Removed old analytics methods
 
-  clearSelectedAssets() {
-    this.selectedAssets = [];
-    this.analyticsImages = [];
-    this.analyticsResult = null;
-  }
+  // Removed old analytics methods
 
-  async analyzeAssets() {
-    if (this.selectedAssets.length === 0) {
-      this.errorMessage = 'Please select at least one asset for analysis';
-      return;
-    }
-
-    this.isAnalyzingAssets = true;
-    this.errorMessage = '';
-    this.analyticsResult = null;
-
-    try {
-      // Convert images to clean base64 format for backend
-      const cleanImages = this.analyticsImages.map(img => {
-        if (img.startsWith('data:image/')) {
-          // Extract base64 part from data URL
-          return img.split(',')[1] || img;
-        }
-        return img; // Already clean base64
-      });
-
-      this.aiAnalyticsService.analyzeAssets(this.selectedAssets, cleanImages)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (response) => {
-            if (response.success) {
-              this.analyticsResult = response.data;
-            } else {
-              this.errorMessage = response.message || 'Analysis failed. Please try again.';
-            }
-            this.isAnalyzingAssets = false;
-          },
-          error: (error) => {
-            console.error('Analytics error:', error);
-            this.errorMessage = error?.error?.message || 'Asset analysis failed. Please try again.';
-            this.isAnalyzingAssets = false;
-          }
-        });
-    } catch (error) {
-      console.error('Analytics error:', error);
-      this.errorMessage = 'Failed to analyze assets. Please try again.';
-      this.isAnalyzingAssets = false;
-    }
-  }
-
-  getHealthScoreClass(score: number): string {
-    if (score >= 80) return 'health-excellent';
-    if (score >= 60) return 'health-good';
-    if (score >= 40) return 'health-fair';
-    return 'health-poor';
-  }
-
-  getRiskLevelClass(level: string): string {
-    return `risk-${level}`;
-  }
-
-  getImpactClass(impact: string): string {
-    return `impact-${impact.toLowerCase()}`;
-  }
-
-  // Analytics image upload methods
-  async onAnalyticsFileSelected(event: any) {
-    const files = Array.from(event.target.files) as File[];
-    if (files.length === 0) return;
-
-    // Limit to 5 images total
-    const remainingSlots = 5 - this.analyticsImages.length;
-    const filesToProcess = files.slice(0, remainingSlots);
-
-    for (const file of filesToProcess) {
-      try {
-        const dataUrl = await this.aiImageUploadService.toDataUrl(file);
-        this.analyticsImages.push(dataUrl);
-        this.analyticsFilePreviews[file.name] = dataUrl;
-      } catch (error) {
-        console.error('Error processing file:', error);
-        this.errorMessage = 'Error processing image. Please try again.';
-      }
-    }
-
-    // Reset file input
-    event.target.value = '';
-  }
-
-  removeAnalyticsImage(index: number) {
-    this.analyticsImages.splice(index, 1);
-    // Remove from previews
-    const keys = Object.keys(this.analyticsFilePreviews);
-    if (keys[index]) {
-      delete this.analyticsFilePreviews[keys[index]];
-    }
-  }
-
-  clearAnalyticsImages() {
-    this.analyticsImages = [];
-    this.analyticsFilePreviews = {};
-  }
-
-  // Convert AnalyticsResult to RecognitionResult for image analysis compatibility
-  private convertAnalyticsToRecognition(analytics: AnalyticsResult): RecognitionResult {
-    // Extract asset information from risk assets if available
-    const firstRiskAsset = analytics.riskAssets.length > 0 ? analytics.riskAssets[0] : null;
-    
-    // Convert health score to condition
-    let condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' = 'Fair';
-    if (analytics.healthScore >= 80) condition = 'Excellent';
-    else if (analytics.healthScore >= 60) condition = 'Good';
-    else if (analytics.healthScore >= 40) condition = 'Fair';
-    else condition = 'Poor';
-
-    // Extract recommendations from insights
-    const recommendations = analytics.insights.map(insight => insight.action);
-
-    return {
-      assetType: firstRiskAsset?.name || 'Asset',
-      confidence: Math.round(analytics.healthScore),
-      manufacturer: null,
-      model: null,
-      serialNumber: null,
-      assetTag: null,
-      condition: condition,
-      recommendations: recommendations,
-      evidence: {
-        fieldsFound: ['assetType', 'condition', 'recommendations'],
-        imagesUsed: 1,
-        notes: `Health Score: ${analytics.healthScore}%`
-      }
-    };
-  }
+  // Removed old analytics methods
 
 
 }

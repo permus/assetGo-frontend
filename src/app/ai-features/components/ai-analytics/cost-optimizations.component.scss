@@ -1,0 +1,288 @@
+.cost-optimizations-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-color: #d1d5db;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0;
+    }
+
+    .optimizations-count {
+      padding: 0.25rem 0.75rem;
+      background: #f3f4f6;
+      color: #6b7280;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+  }
+
+  .optimizations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .optimization-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      &.category-energy {
+        border-left: 4px solid #f59e0b;
+        background: #fffbeb;
+      }
+
+      &.category-maintenance {
+        border-left: 4px solid #3b82f6;
+        background: #eff6ff;
+      }
+
+      &.category-vendor {
+        border-left: 4px solid #8b5cf6;
+        background: #faf5ff;
+      }
+
+      &.category-lifecycle {
+        border-left: 4px solid #10b981;
+        background: #f0fdf4;
+      }
+
+      &.category-general {
+        border-left: 4px solid #6b7280;
+        background: #f9fafb;
+      }
+
+      .optimization-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+
+        .optimization-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.5rem;
+          height: 2.5rem;
+          background: #f3f4f6;
+          border-radius: 0.5rem;
+          color: #6b7280;
+          flex-shrink: 0;
+
+          svg {
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+        }
+
+        .optimization-title {
+          flex: 1;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        .category-badge {
+          padding: 0.25rem 0.5rem;
+          background: #f3f4f6;
+          color: #6b7280;
+          border-radius: 0.375rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          text-transform: capitalize;
+        }
+      }
+
+      .optimization-description {
+        font-size: 0.875rem;
+        color: #6b7280;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+
+      .optimization-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+
+        .metric-item {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .metric-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+          }
+
+          .metric-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+
+            &.savings {
+              color: #059669;
+            }
+
+            .confidence-chip {
+              display: flex;
+              align-items: center;
+              gap: 0.25rem;
+              padding: 0.25rem 0.5rem;
+              background: #e0e7ff;
+              color: #4338ca;
+              border-radius: 0.375rem;
+              font-size: 0.75rem;
+              font-weight: 500;
+              width: fit-content;
+
+              svg {
+                width: 0.75rem;
+                height: 0.75rem;
+              }
+            }
+          }
+        }
+      }
+
+      .optimization-actions {
+        display: flex;
+        gap: 0.5rem;
+
+        .action-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.5rem 0.75rem;
+          border-radius: 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          border: 1px solid transparent;
+
+          &.primary {
+            background: #059669;
+            color: white;
+            border-color: #059669;
+
+            &:hover {
+              background: #047857;
+              transform: translateY(-1px);
+            }
+          }
+
+          &.secondary {
+            background: white;
+            color: #374151;
+            border-color: #d1d5db;
+
+            &:hover {
+              background: #f9fafb;
+              border-color: #9ca3af;
+              transform: translateY(-1px);
+            }
+          }
+
+          svg {
+            width: 0.875rem;
+            height: 0.875rem;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    text-align: center;
+
+    .empty-icon {
+      color: #d1d5db;
+      margin-bottom: 1rem;
+    }
+
+    .empty-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .empty-description {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .cost-optimizations-card {
+    padding: 1rem;
+
+    .card-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    .optimizations-list {
+      .optimization-item {
+        .optimization-header {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.5rem;
+          text-align: center;
+        }
+
+        .optimization-metrics {
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
+        }
+
+        .optimization-actions {
+          flex-direction: column;
+
+          .action-btn {
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+}

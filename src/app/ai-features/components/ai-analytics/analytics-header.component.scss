@@ -1,0 +1,216 @@
+.analytics-header {
+  margin-bottom: 2rem;
+
+  .header-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+
+    .header-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      flex: 1;
+
+      .header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 4rem;
+        height: 4rem;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        border-radius: 1rem;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
+
+        svg {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+
+      .header-text {
+        flex: 1;
+
+        .header-title {
+          font-size: 2.25rem;
+          font-weight: 700;
+          color: #1f2937;
+          margin: 0 0 0.75rem 0;
+          line-height: 1.2;
+        }
+
+        .header-description {
+          font-size: 1.125rem;
+          color: #6b7280;
+          margin: 0;
+          line-height: 1.6;
+          max-width: 42rem;
+        }
+      }
+    }
+
+    .last-updated {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+
+      .update-icon {
+        width: 1rem;
+        height: 1rem;
+        color: #3b82f6;
+      }
+    }
+  }
+
+  .action-bar {
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        text-decoration: none;
+
+        .btn-icon {
+          width: 1rem;
+          height: 1rem;
+          flex-shrink: 0;
+        }
+
+        .btn-text {
+          white-space: nowrap;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none !important;
+        }
+
+        &.btn-primary {
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+          color: white;
+          border-color: #3b82f6;
+
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+        }
+
+        &.btn-secondary {
+          background: white;
+          color: #374151;
+          border-color: #d1d5db;
+
+          &:hover:not(:disabled) {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+        }
+
+        &.btn-outline {
+          background: transparent;
+          color: #3b82f6;
+          border-color: #3b82f6;
+
+          &:hover:not(:disabled) {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .analytics-header {
+    .header-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.5rem;
+
+      .header-main {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+
+        .header-icon {
+          width: 3rem;
+          height: 3rem;
+
+          svg {
+            width: 1.5rem;
+            height: 1.5rem;
+          }
+        }
+
+        .header-text {
+          .header-title {
+            font-size: 1.875rem;
+          }
+
+          .header-description {
+            font-size: 1rem;
+          }
+        }
+      }
+
+      .last-updated {
+        align-self: center;
+      }
+    }
+
+    .action-bar {
+      .action-buttons {
+        justify-content: center;
+        gap: 0.75rem;
+
+        .btn {
+          padding: 0.625rem 1.25rem;
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}
