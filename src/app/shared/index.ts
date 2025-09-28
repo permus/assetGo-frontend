@@ -7,5 +7,3 @@ export * from './services';
 // Shared Directives
 export * from './directives';
 
-// Shared Types
-export * from './types';

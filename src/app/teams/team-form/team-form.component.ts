@@ -95,7 +95,7 @@ export class TeamFormComponent implements OnInit {
           this.teamForm.patchValue({
             name: this.team.name,
             description: this.team.description || '',
-            role_id: this.team.role_id || ''
+            role_id: ''
           });
         }
         this.loading = false;

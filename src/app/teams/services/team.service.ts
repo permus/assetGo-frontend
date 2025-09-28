@@ -5,6 +5,18 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 
+// Team interfaces
+export interface Team {
+  id: number;
+  name: string;
+  description?: string;
+  company_id: number;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+  members?: TeamMember[];
+}
+
 // Team Member interfaces (users with user_type = 'team')
 export interface TeamMember {
   id: number;
@@ -241,5 +253,18 @@ export class TeamService {
   // Get available roles for team members
   getAvailableRoles(): Observable<AvailableRolesResponse> {
     return this.http.get<AvailableRolesResponse>(`${this.apiUrl}/available-roles`, this.getAuthHeaders());
+  }
+
+  // Team management methods
+  getTeam(id: number): Observable<{ success: boolean; data: Team }> {
+    return this.http.get<{ success: boolean; data: Team }>(`${this.apiUrl}/teams/${id}`, this.getAuthHeaders());
+  }
+
+  createTeam(teamData: Partial<Team>): Observable<{ success: boolean; data: Team }> {
+    return this.http.post<{ success: boolean; data: Team }>(`${this.apiUrl}/teams`, teamData, this.getAuthHeaders());
+  }
+
+  updateTeam(id: number, teamData: Partial<Team>): Observable<{ success: boolean; data: Team }> {
+    return this.http.put<{ success: boolean; data: Team }>(`${this.apiUrl}/teams/${id}`, teamData, this.getAuthHeaders());
   }
 }
