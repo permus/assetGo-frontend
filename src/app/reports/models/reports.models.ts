@@ -223,6 +223,14 @@ export interface ExportResponse {
     status: ReportStatus;
     message: string;
   };
+  error?: string;
+}
+
+// Full export response with complete data (for status checking)
+export interface ExportStatusResponse {
+  success: boolean;
+  data: ReportRunStatus;
+  error?: string;
 }
 
 export interface ReportRunStatus {
@@ -235,11 +243,11 @@ export interface ReportRunStatus {
   execution_time_ms: number;
   execution_time_formatted: string;
   created_at: string;
-  started_at: string;
-  completed_at: string;
-  error_message?: string;
-  download_url?: string;
-  file_size?: number;
+  started_at: string | null;
+  completed_at: string | null;
+  error_message?: string | null;
+  download_url?: string | null;
+  file_size?: number | null;
 }
 
 export interface ExportHistoryResponse {

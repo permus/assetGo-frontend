@@ -240,10 +240,32 @@
             transition: all 0.2s ease;
             box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
 
-            &:hover {
+            &:hover:not(:disabled) {
               background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
               transform: translateY(-1px);
               box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 4px 6px -2px rgba(59, 130, 246, 0.05);
+            }
+
+            &:disabled {
+              background: #9ca3af;
+              cursor: not-allowed;
+              transform: none;
+              box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            }
+
+            .loading-content {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+
+              .loading-spinner {
+                width: 1rem;
+                height: 1rem;
+                border: 2px solid transparent;
+                border-top: 2px solid currentColor;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+              }
             }
           }
 
@@ -338,7 +360,7 @@
           .report-item {
             position: relative;
 
-            input[type="radio"] {
+            input[type="checkbox"] {
               position: absolute;
               opacity: 0;
               pointer-events: none;
@@ -366,11 +388,45 @@
               transition: all 0.2s ease;
               background: white;
 
+              .checkbox-indicator {
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid #d1d5db;
+                border-radius: 4px;
+                background: white;
+                transition: all 0.2s ease;
+                flex-shrink: 0;
+
+                svg {
+                  color: #3b82f6;
+                  stroke-width: 3;
+                }
+              }
+
               &:hover {
                 border-color: #d1d5db;
                 background: #f9fafb;
                 transform: translateY(-1px);
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+              }
+
+              &.selected {
+                background: #f0f9ff;
+                border-color: #3b82f6;
+                box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
+
+                .checkbox-indicator {
+                  background: #3b82f6;
+                  border-color: #3b82f6;
+                }
+
+                .report-icon {
+                  background: #dbeafe;
+                  color: #3b82f6;
+                }
               }
 
               .report-icon {

@@ -85,7 +85,13 @@
               </select>
             </div>
           </div>
-          <button class="generate-button">Generate Selected Reports (0)</button>
+          <button class="generate-button" (click)="onGenerateSelectedReports()" [disabled]="selectedReports.length === 0 || isGenerating">
+            <span *ngIf="!isGenerating">Generate Selected Reports ({{ selectedReports.length }})</span>
+            <span *ngIf="isGenerating" class="loading-content">
+              <i class="loading-spinner"></i>
+              Generating Report...
+            </span>
+          </button>
         </div>
 
         <div class="quick-reports-card">
@@ -125,8 +131,13 @@
         
         <div class="report-list">
           <div class="report-item" *ngFor="let report of assetReports">
-            <input type="radio" [id]="report.id" name="assetReport" [(ngModel)]="selectedReport" [value]="report.id">
-            <label [for]="report.id" class="report-card">
+            <input type="checkbox" [id]="report.id" name="assetReport" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
+            <label [for]="report.id" class="report-card" [class.selected]="isReportSelected(report.id)">
+              <div class="checkbox-indicator">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="isReportSelected(report.id)">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+              </div>
               <div class="report-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -655,4 +666,5 @@
       </div>
     </div>
   </div>
+
 </div>

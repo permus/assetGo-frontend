@@ -28,6 +28,9 @@ export class ReportsPage implements OnInit, OnDestroy {
   pagination: any = null;
   kpiCards: any[] = [];
   selectedReport: string = '';
+  selectedReports: string[] = [];
+  isGenerating: boolean = false;
+  successMessage: string = '';
 
   // Configuration
   reportConfig: ReportConfig = {
@@ -568,6 +571,7 @@ export class ReportsPage implements OnInit, OnDestroy {
   onTabChange(tabId: ReportCategory): void {
     this.activeTab = tabId;
     this.selectedReport = '';
+    this.selectedReports = [];
     this.loadReportData();
   }
 
@@ -726,5 +730,223 @@ export class ReportsPage implements OnInit, OnDestroy {
   useTemplate(template: any): void {
     console.log('Using template:', template);
     // TODO: Implement template usage
+  }
+
+  /**
+   * Handle report selection change
+   */
+  onReportSelectionChange(reportId: string, event: any): void {
+    const isChecked = event.target.checked;
+    
+    if (isChecked) {
+      // Add to selected reports if not already present
+      if (!this.selectedReports.includes(reportId)) {
+        this.selectedReports.push(reportId);
+      }
+    } else {
+      // Remove from selected reports
+      this.selectedReports = this.selectedReports.filter(id => id !== reportId);
+    }
+    
+    // Keep selectedReport for backward compatibility (first selected)
+    this.selectedReport = this.selectedReports.length > 0 ? this.selectedReports[0] : '';
+    
+    console.log('Report selection changed:', reportId, 'checked:', isChecked);
+    console.log('Selected reports:', this.selectedReports);
+  }
+
+  /**
+   * Check if a report is selected
+   */
+  isReportSelected(reportId: string): boolean {
+    return this.selectedReports.includes(reportId);
+  }
+
+  /**
+   * Generate selected reports
+   */
+  onGenerateSelectedReports(): void {
+    if (this.selectedReports.length === 0) {
+      console.warn('No reports selected');
+      return;
+    }
+
+    console.log('Generating selected reports:', this.selectedReports);
+    console.log('Export format:', this.exportFormat);
+    console.log('Date range:', this.reportConfig.dateRange);
+
+    // Set loading state
+    this.isGenerating = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    // For now, handle only the first selected report
+    // TODO: Handle multiple reports if needed
+    const reportId = this.selectedReports[0];
+    const reportKey = `assets.${reportId}`;
+    const exportParams = {
+      date_from: this.reportConfig.dateRange.start,
+      date_to: this.reportConfig.dateRange.end,
+      format: this.exportFormat
+    };
+
+      // Call the API to start the export
+      this.reportsApi.exportReport({
+        report_key: reportKey,
+        format: this.exportFormat as any, // Type assertion for now
+        params: exportParams
+      }).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            console.log('Export job queued successfully:', response.data);
+            
+            // Start polling for the export status
+            this.pollExportStatus(response.data.run_id, reportKey);
+          } else {
+            this.errorMessage = 'Export failed: ' + (response.error || 'Unknown error');
+            this.isGenerating = false;
+          }
+        },
+        error: (error) => {
+          console.error('Export failed:', error);
+          this.errorMessage = 'Export failed: ' + error.message;
+          this.isGenerating = false;
+        }
+      });
+  }
+
+  /**
+   * Poll export status until completion
+   */
+  private pollExportStatus(runId: number, reportKey: string): void {
+    const maxPolls = 15; // 30 seconds max
+    let pollCount = 0;
+    
+    const pollInterval = setInterval(() => {
+      pollCount++;
+      
+      this.reportsApi.getExportStatus(runId).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (statusResponse) => {
+          if (statusResponse.success && statusResponse.data) {
+            const status = statusResponse.data;
+            console.log(`Poll ${pollCount}: Export status for run ${runId}:`, status.status);
+            
+            if (status.status === 'success') {
+              // Export completed successfully
+              clearInterval(pollInterval);
+              this.isGenerating = false;
+              
+              if (status.download_url) {
+                this.downloadFile(status.download_url, status.report_key, status.format);
+                this.successMessage = `Report generated successfully! (${status.execution_time_formatted})`;
+              } else {
+                this.errorMessage = 'Export completed but no download URL provided';
+              }
+            } else if (status.status === 'failed') {
+              // Export failed
+              clearInterval(pollInterval);
+              this.isGenerating = false;
+              this.errorMessage = 'Export failed: ' + (status.error_message || 'Unknown error');
+            } else if (pollCount >= maxPolls) {
+              // Timeout
+              clearInterval(pollInterval);
+              this.isGenerating = false;
+              this.errorMessage = 'Export timed out. Please check the export status manually.';
+            }
+            // Continue polling for 'queued' or 'running' status
+          } else {
+            // API error
+            clearInterval(pollInterval);
+            this.isGenerating = false;
+            this.errorMessage = 'Failed to check export status: ' + (statusResponse.error || 'Unknown error');
+          }
+        },
+        error: (error) => {
+          clearInterval(pollInterval);
+          this.isGenerating = false;
+          this.errorMessage = 'Error checking export status: ' + error.message;
+        }
+      });
+    }, 2000); // Poll every 2 seconds
+  }
+
+  /**
+   * Download file from URL
+   */
+  downloadFile(downloadUrl: string, reportKey: string, format: string): void {
+    // Construct full URL
+    const baseUrl = 'http://assetgo-backend.test';
+    const fullUrl = downloadUrl.startsWith('http') ? downloadUrl : `${baseUrl}${downloadUrl}`;
+    
+    console.log('Downloading file from URL:', fullUrl);
+    
+    // Generate filename
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const reportName = reportKey.replace(/\./g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+    const filename = `${reportName}-${timestamp}.${format}`;
+    
+    // Create a temporary link and click it to trigger download
+    const link = document.createElement('a');
+    link.href = fullUrl;
+    link.target = '_blank';
+    link.download = filename;
+    link.rel = 'noopener noreferrer';
+    
+    // Add to DOM, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    console.log('Download initiated for:', filename);
+  }
+
+  /**
+   * Handle export request from export panel
+   */
+  onExportRequest(exportData: { format: string, params: any }): void {
+    console.log('Export request from panel:', exportData);
+    
+    // Use the selected reports or fall back to single report
+    const reportsToExport = this.selectedReports.length > 0 ? this.selectedReports : [this.selectedReport];
+    
+    if (reportsToExport.length === 0) {
+      console.warn('No reports selected for export');
+      return;
+    }
+
+    const reportKeys = reportsToExport.map(reportId => `assets.${reportId}`);
+    const exportParams = {
+      date_from: this.reportConfig.dateRange.start,
+      date_to: this.reportConfig.dateRange.end,
+      format: exportData.format,
+      ...exportData.params
+    };
+
+    // Create export requests for each selected report
+    const exportRequests = reportKeys.map(reportKey => 
+      this.exportService.exportReport(
+        reportKey,
+        exportData.format as any,
+        exportParams
+      ).pipe(
+        takeUntil(this.destroy$)
+      )
+    );
+
+    // Process all exports
+    exportRequests.forEach((request, index) => {
+      request.subscribe({
+        next: (runId) => {
+          console.log(`Export ${index + 1}/${reportKeys.length} started:`, reportKeys[index], 'Run ID:', runId);
+        },
+        error: (error) => {
+          console.error(`Export ${index + 1}/${reportKeys.length} failed:`, reportKeys[index], error);
+        }
+      });
+    });
   }
 }

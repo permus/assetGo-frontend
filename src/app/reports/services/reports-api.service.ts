@@ -17,6 +17,7 @@ import {
   TechnicianPerformanceRow,
   ExportRequest,
   ExportResponse,
+  ExportStatusResponse,
   ReportRunStatus,
   ExportHistoryResponse,
   ReportDefinition,
@@ -110,8 +111,8 @@ export class ReportsApiService {
     return this.http.post<ExportResponse>(`${this.apiUrl}/export`, request);
   }
 
-  getExportStatus(runId: number): Observable<ReportRunStatus> {
-    return this.http.get<ReportRunStatus>(`${this.apiUrl}/runs/${runId}`);
+  getExportStatus(runId: number): Observable<ExportStatusResponse> {
+    return this.http.get<ExportStatusResponse>(`${this.apiUrl}/runs/${runId}`);
   }
 
   downloadExport(runId: number): Observable<Blob> {

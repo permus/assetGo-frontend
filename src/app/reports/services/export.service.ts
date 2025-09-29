@@ -10,6 +10,12 @@ import { ReportRunStatus, ExportFormat } from '../models/reports.models';
 export class ExportService {
   private exportStatusSubject = new BehaviorSubject<Map<number, ReportRunStatus>>(new Map());
   public exportStatus$ = this.exportStatusSubject.asObservable();
+  
+  // Configuration for auto-download
+  private autoDownloadEnabled = true;
+  
+  // Track active polling subscriptions
+  private activePollingSubscriptions = new Map<number, any>();
 
   constructor(private reportsApi: ReportsApiService) { }
 
@@ -24,9 +30,40 @@ export class ExportService {
     }).pipe(
       switchMap(response => {
         if (response.success && response.data.run_id) {
+          const runId = response.data.run_id;
+          
+          // Check if we're already tracking this run ID
+          const currentStatus = this.exportStatusSubject.value;
+          if (currentStatus.has(runId)) {
+            console.log(`Run ID ${runId} already being tracked, skipping duplicate tracking`);
+            return [runId];
+          }
+          
+          // Add export to status tracking immediately
+          const initialStatus: ReportRunStatus = {
+            id: runId,
+            report_key: reportKey,
+            format: format,
+            status: 'queued',
+            status_label: 'Queued',
+            row_count: 0,
+            execution_time_ms: 0,
+            execution_time_formatted: '0ms',
+            created_at: new Date().toISOString(),
+            started_at: null,
+            completed_at: null,
+            error_message: null,
+            download_url: null,
+            file_size: null
+          };
+          
+          currentStatus.set(runId, initialStatus);
+          this.exportStatusSubject.next(new Map(currentStatus));
+          console.log('Export service - Added export to tracking:', runId, initialStatus);
+          
           // Start polling for status
-          this.startStatusPolling(response.data.run_id);
-          return [response.data.run_id];
+          this.startStatusPolling(runId);
+          return [runId];
         }
         throw new Error(response.data.message || 'Export request failed');
       })
@@ -37,21 +74,98 @@ export class ExportService {
    * Start polling for export status
    */
   private startStatusPolling(runId: number): void {
-    timer(0, 2000) // Poll every 2 seconds
+    // Check if already polling this run ID
+    if (this.activePollingSubscriptions.has(runId)) {
+      console.log(`Already polling run ID ${runId}, skipping duplicate polling`);
+      return;
+    }
+    
+    let pollCount = 0;
+    const maxPolls = 15; // Reduced to 15 polls (30 seconds max)
+    
+    console.log(`Starting polling for run ID ${runId}`);
+    
+    // Add a timeout to force stop polling after 30 seconds
+    const timeoutId = setTimeout(() => {
+      console.log(`Force stopping polling for run ID ${runId} after timeout`);
+      this.stopPolling(runId);
+    }, 30000); // 30 seconds timeout
+    
+    const subscription = timer(0, 2000) // Poll every 2 seconds
       .pipe(
-        switchMap(() => this.reportsApi.getExportStatus(runId)),
-        takeWhile(status => status.status === 'queued' || status.status === 'running', true),
+        switchMap(() => {
+          pollCount++;
+          return this.reportsApi.getExportStatus(runId);
+        }),
+        takeWhile(response => {
+          // Extract the actual status from the response
+          const status = response.success ? response.data : null;
+          if (!status) return false;
+          
+          // Stop polling if export is complete (success or failed) OR if we've reached max polls
+          const isComplete = status.status === 'success' || status.status === 'failed';
+          const hasReachedMaxPolls = pollCount >= maxPolls;
+          
+          // Continue polling only if not complete AND not reached max polls
+          const shouldContinue = !isComplete && !hasReachedMaxPolls;
+          
+          if (!shouldContinue) {
+            console.log(`Stopping polling for run ID ${runId}: complete=${isComplete}, maxPolls=${hasReachedMaxPolls}, status=${status.status}`);
+          }
+          
+          return shouldContinue;
+        }, false), // Don't include the final value that caused the condition to become false
         catchError(error => {
           console.error('Error polling export status:', error);
           return [];
         })
       )
-      .subscribe(status => {
-        const currentStatus = this.exportStatusSubject.value;
-        currentStatus.set(runId, status);
-        this.exportStatusSubject.next(new Map(currentStatus));
+      .subscribe({
+        next: response => {
+          if (response.success && response.data) {
+            const status = response.data;
+            const currentStatus = this.exportStatusSubject.value;
+            currentStatus.set(runId, status);
+            this.exportStatusSubject.next(new Map(currentStatus));
+            
+            // Check if export completed successfully and trigger auto-download
+            if (status.status === 'success' && this.autoDownloadEnabled) {
+              console.log('Export completed successfully, triggering auto-download for run ID:', runId);
+              this.autoDownloadExport(runId);
+            }
+            
+            // Log completion or max polls reached
+            if (status.status === 'success' || status.status === 'failed') {
+              console.log(`Export polling stopped for run ID ${runId}: ${status.status}`);
+              clearTimeout(timeoutId);
+              this.stopPolling(runId);
+            } else if (pollCount >= maxPolls) {
+              console.log(`Export polling stopped for run ID ${runId}: reached max polls (${maxPolls})`);
+              clearTimeout(timeoutId);
+              this.stopPolling(runId);
+            }
+          } else {
+            console.error('Export status response failed:', response);
+            clearTimeout(timeoutId);
+            this.stopPolling(runId);
+          }
+        },
+        complete: () => {
+          console.log(`Export polling completed for run ID ${runId}`);
+          clearTimeout(timeoutId);
+          this.stopPolling(runId);
+        },
+        error: error => {
+          console.error(`Export polling error for run ID ${runId}:`, error);
+          clearTimeout(timeoutId);
+          this.stopPolling(runId);
+        }
       });
+    
+    // Store the subscription for potential cleanup
+    this.activePollingSubscriptions.set(runId, subscription);
   }
+
 
   /**
    * Get export status for a specific run
@@ -76,6 +190,27 @@ export class ExportService {
         return [blob];
       })
     );
+  }
+
+  /**
+   * Auto download export when it completes successfully
+   */
+  private autoDownloadExport(runId: number): void {
+    // Get the current status to check if download URL is available
+    const currentStatus = this.exportStatusSubject.value;
+    const exportStatus = currentStatus.get(runId);
+    
+    if (exportStatus && exportStatus.status === 'success') {
+      console.log('Auto-downloading export for run ID:', runId);
+      
+      // Generate filename based on report key and format
+      const filename = this.generateFilename(exportStatus.report_key, exportStatus.format);
+      
+      // Open download in new tab
+      this.downloadInNewTab(runId, filename);
+    } else {
+      console.warn('Cannot auto-download: export not ready for run ID:', runId);
+    }
   }
 
   /**
@@ -111,6 +246,118 @@ export class ExportService {
   }
 
   /**
+   * Generate filename for export
+   */
+  generateFilename(reportKey: string, format: string): string {
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const reportName = reportKey.replace(/\./g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+    return `${reportName}-${timestamp}.${format}`;
+  }
+
+  /**
+   * Download file in new tab using API endpoint
+   */
+  downloadInNewTab(runId: number, filename?: string): void {
+    // Construct the API download URL
+    const baseUrl = 'http://assetgo-backend.test'; // Use the same base URL as the API
+    const downloadUrl = `${baseUrl}/api/reports/runs/${runId}/download`;
+    
+    console.log('Opening download in new tab:', downloadUrl);
+    
+    // Create a temporary link and click it to trigger download in new tab
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.target = '_blank'; // Open in new tab
+    link.download = filename || 'export.pdf';
+    link.rel = 'noopener noreferrer'; // Security best practice
+    
+    // Add to DOM, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    console.log('Download initiated in new tab for:', filename || 'export.pdf');
+  }
+
+  /**
+   * Enable or disable auto-download
+   */
+  setAutoDownload(enabled: boolean): void {
+    this.autoDownloadEnabled = enabled;
+    console.log('Auto-download', enabled ? 'enabled' : 'disabled');
+  }
+
+  /**
+   * Check if auto-download is enabled
+   */
+  isAutoDownloadEnabled(): boolean {
+    return this.autoDownloadEnabled;
+  }
+
+  /**
+   * Stop polling for a specific run ID
+   */
+  private stopPolling(runId: number): void {
+    const subscription = this.activePollingSubscriptions.get(runId);
+    if (subscription) {
+      subscription.unsubscribe();
+      this.activePollingSubscriptions.delete(runId);
+      console.log(`Stopped polling for run ID ${runId}`);
+    }
+  }
+
+  /**
+   * Stop all active polling
+   */
+  stopAllPolling(): void {
+    this.activePollingSubscriptions.forEach((subscription, runId) => {
+      subscription.unsubscribe();
+      console.log(`Stopped polling for run ID ${runId}`);
+    });
+    this.activePollingSubscriptions.clear();
+    console.log('Stopped all export polling');
+  }
+
+  /**
+   * Force stop polling for a specific run ID (emergency stop)
+   */
+  forceStopPolling(runId: number): void {
+    const subscription = this.activePollingSubscriptions.get(runId);
+    if (subscription) {
+      subscription.unsubscribe();
+      this.activePollingSubscriptions.delete(runId);
+      console.log(`Force stopped polling for run ID ${runId}`);
+    }
+  }
+
+  /**
+   * Get active polling count
+   */
+  getActivePollingCount(): number {
+    return this.activePollingSubscriptions.size;
+  }
+
+  /**
+   * Clear all export tracking data
+   */
+  clearAllTracking(): void {
+    this.stopAllPolling();
+    this.exportStatusSubject.next(new Map());
+    console.log('Cleared all export tracking data');
+  }
+
+  /**
+   * Get tracking status for debugging
+   */
+  getTrackingStatus(): { activePolling: number, trackedExports: number } {
+    const trackedExports = this.exportStatusSubject.value.size;
+    const activePolling = this.activePollingSubscriptions.size;
+    
+    console.log(`Tracking Status: ${trackedExports} exports tracked, ${activePolling} actively polling`);
+    return { activePolling, trackedExports };
+  }
+
+  /**
    * Get file extension from MIME type
    */
   private getFileExtension(mimeType: string): string {
@@ -123,14 +370,6 @@ export class ExportService {
     return extensions[mimeType] || 'file';
   }
 
-  /**
-   * Generate filename for export
-   */
-  generateFilename(reportKey: string, format: ExportFormat): string {
-    const timestamp = new Date().toISOString().split('T')[0];
-    const cleanReportKey = reportKey.replace(/\./g, '-');
-    return `report-${cleanReportKey}-${timestamp}.${format}`;
-  }
 
   /**
    * Get export progress percentage
@@ -221,6 +460,19 @@ export class ExportService {
         const activeExports = Array.from(statusMap.values())
           .filter(status => status.status === 'queued' || status.status === 'running');
         observer.next(activeExports);
+      });
+      return () => subscription.unsubscribe();
+    });
+  }
+
+  /**
+   * Get all recent exports (including completed ones)
+   */
+  getAllExports(): Observable<ReportRunStatus[]> {
+    return new Observable(observer => {
+      const subscription = this.exportStatus$.subscribe(statusMap => {
+        const allExports = Array.from(statusMap.values());
+        observer.next(allExports);
       });
       return () => subscription.unsubscribe();
     });

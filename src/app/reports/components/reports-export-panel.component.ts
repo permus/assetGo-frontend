@@ -9,226 +9,7 @@ import { ReportCategory, ExportFormat, ReportRunStatus } from '../models/reports
   selector: 'app-reports-export-panel',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <div class="export-panel-overlay" *ngIf="isOpen" (click)="onClose()">
-      <div class="export-panel" (click)="$event.stopPropagation()">
-        <!-- Panel Header -->
-        <div class="panel-header">
-          <h3 class="panel-title">
-            <svg class="panel-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7,10 12,15 17,10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Export Report
-          </h3>
-          <button class="close-button" (click)="onClose()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Panel Content -->
-        <div class="panel-content">
-          <!-- Export Options -->
-          <div class="export-options">
-            <div class="option-group">
-              <label class="option-label">Export Format</label>
-              <div class="format-options">
-                <label 
-                  *ngFor="let format of exportFormats" 
-                  class="format-option"
-                  [class.selected]="selectedFormat === format.value">
-                  <input 
-                    type="radio" 
-                    name="format" 
-                    [value]="format.value"
-                    [(ngModel)]="selectedFormat"
-                    class="format-radio">
-                  <div class="format-content">
-                    <svg class="format-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <ng-container [ngSwitch]="format.value">
-                        <g *ngSwitchCase="'pdf'">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14,2 14,8 20,8"></polyline>
-                          <line x1="16" y1="13" x2="8" y2="13"></line>
-                          <line x1="16" y1="17" x2="8" y2="17"></line>
-                          <polyline points="10,9 9,9 8,9"></polyline>
-                        </g>
-                        <g *ngSwitchCase="'xlsx'">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14,2 14,8 20,8"></polyline>
-                          <line x1="16" y1="13" x2="8" y2="13"></line>
-                          <line x1="16" y1="17" x2="8" y2="17"></line>
-                          <polyline points="10,9 9,9 8,9"></polyline>
-                        </g>
-                        <g *ngSwitchCase="'csv'">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14,2 14,8 20,8"></polyline>
-                          <line x1="16" y1="13" x2="8" y2="13"></line>
-                          <line x1="16" y1="17" x2="8" y2="17"></line>
-                          <polyline points="10,9 9,9 8,9"></polyline>
-                        </g>
-                        <g *ngSwitchCase="'json'">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14,2 14,8 20,8"></polyline>
-                          <line x1="16" y1="13" x2="8" y2="13"></line>
-                          <line x1="16" y1="17" x2="8" y2="17"></line>
-                          <polyline points="10,9 9,9 8,9"></polyline>
-                        </g>
-                      </ng-container>
-                    </svg>
-                    <div class="format-info">
-                      <span class="format-name">{{ format.label }}</span>
-                      <span class="format-description">{{ format.description }}</span>
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- Export Parameters -->
-            <div class="option-group">
-              <label class="option-label">Export Parameters</label>
-              <div class="parameter-options">
-                <label class="parameter-option">
-                  <input 
-                    type="checkbox" 
-                    [(ngModel)]="includeCharts"
-                    class="parameter-checkbox">
-                  <span class="parameter-text">Include charts and graphs</span>
-                </label>
-                <label class="parameter-option">
-                  <input 
-                    type="checkbox" 
-                    [(ngModel)]="includeKPIs"
-                    class="parameter-checkbox">
-                  <span class="parameter-text">Include KPI summary</span>
-                </label>
-                <label class="parameter-option">
-                  <input 
-                    type="checkbox" 
-                    [(ngModel)]="includeFilters"
-                    class="parameter-checkbox">
-                  <span class="parameter-text">Include applied filters</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- File Name -->
-            <div class="option-group">
-              <label class="option-label">File Name</label>
-              <input 
-                type="text" 
-                class="filename-input"
-                [(ngModel)]="filename"
-                placeholder="Enter custom filename (optional)">
-              <div class="filename-preview">
-                Preview: {{ getFilenamePreview() }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Active Exports -->
-          <div class="active-exports" *ngIf="activeExports.length > 0">
-            <h4 class="exports-title">Active Exports</h4>
-            <div class="exports-list">
-              <div 
-                *ngFor="let exportRun of activeExports" 
-                class="export-item"
-                [class]="'export-' + exportRun.status">
-                
-                <div class="export-info">
-                  <div class="export-header">
-                    <span class="export-name">{{ getReportName(exportRun.report_key) }}</span>
-                    <span class="export-format">{{ exportRun.format.toUpperCase() }}</span>
-                  </div>
-                  <div class="export-status">
-                    <div class="status-indicator" [class]="'status-' + exportRun.status"></div>
-                    <span class="status-text">{{ getStatusLabel(exportRun.status) }}</span>
-                    <span class="status-progress" *ngIf="exportRun.status === 'running'">
-                      ({{ getProgress(exportRun) }}%)
-                    </span>
-                  </div>
-                  <div class="export-details" *ngIf="exportRun.row_count > 0">
-                    {{ formatNumber(exportRun.row_count) }} records
-                  </div>
-                </div>
-
-                <div class="export-actions">
-                  <button 
-                    *ngIf="exportRun.status === 'success'"
-                    class="action-button download-button"
-                    (click)="onDownload(exportRun)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                      <polyline points="7,10 12,15 17,10"></polyline>
-                      <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Download
-                  </button>
-                  <button 
-                    *ngIf="exportRun.status === 'queued' || exportRun.status === 'running'"
-                    class="action-button cancel-button"
-                    (click)="onCancel(exportRun)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel Footer -->
-        <div class="panel-footer">
-          <button 
-            class="footer-button cancel-button"
-            (click)="onClose()">
-            Cancel
-          </button>
-          <button 
-            class="footer-button export-button"
-            [disabled]="isExporting"
-            (click)="onExport()">
-            <svg 
-              *ngIf="isExporting" 
-              class="button-icon spinning"
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              stroke-width="2">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-              <path d="M21 3v5h-5"></path>
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-              <path d="M3 21v-5h5"></path>
-            </svg>
-            <svg 
-              *ngIf="!isExporting" 
-              class="button-icon"
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7,10 12,15 17,10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            {{ isExporting ? 'Exporting...' : 'Export Report' }}
-          </button>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './reports-export-panel.component.html',
   styleUrls: ['./reports-export-panel.component.scss']
 })
 export class ReportsExportPanelComponent implements OnInit, OnDestroy {
@@ -251,6 +32,7 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
   // Export state
   isExporting: boolean = false;
   activeExports: ReportRunStatus[] = [];
+  showHistory: boolean = false;
 
   // Export formats
   exportFormats = [
@@ -275,9 +57,23 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
    * Load active exports
    */
   private loadActiveExports(): void {
-    this.exportService.getActiveExports()
+    this.exportService.getAllExports()
       .pipe(takeUntil(this.destroy$))
       .subscribe(exports => {
+        console.log('Export panel - Active exports updated:', exports);
+        console.log('Export panel - Number of exports:', exports.length);
+        
+        // Debug each export
+        exports.forEach((exportRun, index) => {
+          console.log(`Export ${index + 1}:`, {
+            id: exportRun.id,
+            report_key: exportRun.report_key,
+            format: exportRun.format,
+            status: exportRun.status,
+            status_label: exportRun.status_label
+          });
+        });
+        
         this.activeExports = exports;
       });
   }
@@ -315,6 +111,21 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
    */
   getReportName(reportKey: string): string {
     const names: Record<string, string> = {
+      // New frontend format
+      'assets.asset-summary': 'Asset Summary',
+      'assets.asset-utilization': 'Asset Utilization',
+      'assets.depreciation-analysis': 'Depreciation Analysis',
+      'assets.warranty-status': 'Warranty Status',
+      'assets.compliance-report': 'Compliance Report',
+      'maintenance.maintenance-summary': 'Maintenance Summary',
+      'maintenance.maintenance-compliance': 'Maintenance Compliance',
+      'maintenance.maintenance-costs': 'Maintenance Costs',
+      'maintenance.downtime-analysis': 'Downtime Analysis',
+      'maintenance.failure-analysis': 'Failure Analysis',
+      'maintenance.technician-performance': 'Technician Performance',
+      'inventory.stock-levels': 'Inventory Stock Levels',
+      'financial.total-cost-ownership': 'Total Cost of Ownership',
+      // Old format (for backward compatibility)
       'assets.summary': 'Asset Summary',
       'assets.utilization': 'Asset Utilization',
       'assets.depreciation': 'Asset Depreciation',
@@ -387,16 +198,11 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
    * Handle download
    */
   onDownload(exportRun: ReportRunStatus): void {
-    this.exportService.downloadExport(exportRun.id, this.filename)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          console.log('Download started');
-        },
-        error: (error) => {
-          console.error('Download failed:', error);
-        }
-      });
+    // Use API download endpoint for security and reliability
+    const filename = this.exportService.generateFilename(exportRun.report_key, exportRun.format);
+    
+    // Open download in new tab
+    this.exportService.downloadInNewTab(exportRun.id, filename);
   }
 
   /**
@@ -422,5 +228,73 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
    */
   onClose(): void {
     this.close.emit();
+  }
+
+  /**
+   * Get report display name
+   */
+  getReportDisplayName(reportKey: string): string {
+    if (!reportKey) return 'Unknown Report';
+    return this.getReportName(reportKey);
+  }
+
+  /**
+   * Format file size
+   */
+  formatFileSize(bytes: number): string {
+    if (!bytes || bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  /**
+   * Track by run ID for ngFor
+   */
+  trackByRunId(index: number, exportRun: ReportRunStatus): number {
+    return exportRun.id;
+  }
+
+  /**
+   * Handle retry
+   */
+  onRetry(exportRun: ReportRunStatus): void {
+    console.log('Retrying export:', exportRun);
+    // Implement retry logic if needed
+  }
+
+  /**
+   * Handle view history
+   */
+  onViewHistory(): void {
+    console.log('Viewing export history');
+    // Implement history view logic if needed
+  }
+
+  /**
+   * Refresh exports manually
+   */
+  refreshExports(): void {
+    console.log('Manually refreshing exports...');
+    this.loadActiveExports();
+  }
+
+  /**
+   * Clear all exports (for debugging)
+   */
+  clearExports(): void {
+    console.log('Clearing all exports...');
+    this.exportService.clearAllTracking();
+    this.activeExports = [];
+  }
+
+  /**
+   * Force stop all polling (emergency stop)
+   */
+  forceStopAllPolling(): void {
+    console.log('Force stopping all polling...');
+    this.exportService.stopAllPolling();
+    this.activeExports = [];
   }
 }
