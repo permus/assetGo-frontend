@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/shared/directives/click-outside/click-outside.directive.ts"],
+  "sourcesContent": ["import { Directive, ElementRef, EventEmitter, HostListener, Output } from '@angular/core';\r\n\r\n@Directive({\r\n  selector: '[clickOutside]'\r\n})\r\nexport class ClickOutsideDirective {\r\n  @Output() clickOutside = new EventEmitter<void>();\r\n\r\n  constructor(private elementRef: ElementRef) {}\r\n\r\n  @HostListener('document:click', ['$event.target'])\r\n  onClick(target: HTMLElement) {\r\n    if (!this.elementRef.nativeElement.contains(target)) {\r\n      this.clickOutside.emit();\r\n    }\r\n  }\r\n}\r\n"],
+  "mappings": ";;;;;;;;;;;;;;AAKM,IAAO,wBAAP,MAAO,uBAAqB;EAGZ;EAFV,eAAe,IAAI,aAAY;EAEzC,YAAoB,YAAsB;AAAtB,SAAA,aAAA;EAAyB;EAG7C,QAAQ,QAAmB;AACzB,QAAI,CAAC,KAAK,WAAW,cAAc,SAAS,MAAM,GAAG;AACnD,WAAK,aAAa,KAAI;IACxB;EACF;;qCAVW,wBAAqB,4BAAA,UAAA,CAAA;EAAA;yEAArB,wBAAqB,WAAA,CAAA,CAAA,IAAA,gBAAA,EAAA,CAAA,GAAA,cAAA,SAAA,mCAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAArB,MAAA,qBAAA,SAAA,SAAA,+CAAA,QAAA;AAAA,eAAA,IAAA,QAAA,OAAA,MAAA;MAAsB,GAAA,OAAA,2BAAA;;;;;sEAAtB,uBAAqB,CAAA;UAHjC;WAAU;MACT,UAAU;KACX;sCAEW,cAAY,CAAA;UAArB;MAKD,SAAO,CAAA;UADN;WAAa,kBAAkB,CAAC,eAAe,CAAC;;;",
+  "names": []
+}

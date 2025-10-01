@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/environments/environment.ts"],
+  "sourcesContent": ["export const environment = {\r\n  production: false,\r\n  // apiUrl: 'https://assetgo.equidesk.io/api',\r\n  apiUrl: 'http://assetgo-backend.test/api',\r\n  googleMapsApiKey: 'AIzaSyDbaa1B-gzqHyUe0iSPWUZsyI5Kl28JUHA',\r\n  APP_URL: 'https://portal.assetgo.thethemeai.com',\r\n};\r\n"],
+  "mappings": ";AAAO,IAAM,cAAc;EACzB,YAAY;;EAEZ,QAAQ;EACR,kBAAkB;EAClB,SAAS;;",
+  "names": []
+}
