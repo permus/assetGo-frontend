@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import {
   BaseResponse,
@@ -41,69 +42,92 @@ export class ReportsApiService {
   // Asset Reports
   getAssetSummary(config: ReportConfig): Observable<AssetSummaryResponse> {
     const params = this.buildParams(config);
-    console.log('Making API request to:', `${this.apiUrl}/assets/summary`);
-    console.log('With params:', params);
-    console.log('Auth token:', localStorage.getItem('token'));
-    return this.http.get<AssetSummaryResponse>(`${this.apiUrl}/assets/summary`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/assets/summary`, { params })
+      .pipe(map(res => res.data as AssetSummaryResponse));
   }
 
   getAssetUtilization(config: ReportConfig): Observable<{assets: AssetUtilizationRow[], pagination: any}> {
     const params = this.buildParams(config);
-    return this.http.get<{assets: AssetUtilizationRow[], pagination: any}>(`${this.apiUrl}/assets/utilization`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/assets/utilization`, { params })
+      .pipe(map(res => res.data as {assets: AssetUtilizationRow[], pagination: any}));
   }
 
   getAssetDepreciation(config: ReportConfig): Observable<{assets: AssetDepreciationRow[], totals: any, pagination: any}> {
     const params = this.buildParams(config);
-    return this.http.get<{assets: AssetDepreciationRow[], totals: any, pagination: any}>(`${this.apiUrl}/assets/depreciation`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/assets/depreciation`, { params })
+      .pipe(map(res => res.data as {assets: AssetDepreciationRow[], totals: any, pagination: any}));
   }
 
   getAssetWarranty(config: ReportConfig): Observable<{assets: AssetWarrantyRow[], summary: any, pagination: any}> {
     const params = this.buildParams(config);
-    return this.http.get<{assets: AssetWarrantyRow[], summary: any, pagination: any}>(`${this.apiUrl}/assets/warranty`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/assets/warranty`, { params })
+      .pipe(map(res => res.data as {assets: AssetWarrantyRow[], summary: any, pagination: any}));
   }
 
   getAssetCompliance(config: ReportConfig): Observable<{assets: AssetComplianceRow[], pagination: any}> {
     const params = this.buildParams(config);
-    return this.http.get<{assets: AssetComplianceRow[], pagination: any}>(`${this.apiUrl}/assets/compliance`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/assets/compliance`, { params })
+      .pipe(map(res => res.data as {assets: AssetComplianceRow[], pagination: any}));
   }
 
   getAvailableAssetReports(): Observable<Record<string, ReportDefinition>> {
-    return this.http.get<Record<string, ReportDefinition>>(`${this.apiUrl}/assets/available`);
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/assets/available`)
+      .pipe(map(res => res.data as Record<string, ReportDefinition>));
   }
 
   // Maintenance Reports
   getMaintenanceSummary(config: ReportConfig): Observable<MaintenanceSummaryResponse> {
     const params = this.buildParams(config);
-    return this.http.get<MaintenanceSummaryResponse>(`${this.apiUrl}/maintenance/summary`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/maintenance/summary`, { params })
+      .pipe(map(res => res.data as MaintenanceSummaryResponse));
   }
 
   getMaintenanceCompliance(config: ReportConfig): Observable<{work_orders: MaintenanceComplianceRow[], pagination: any}> {
     const params = this.buildParams(config);
-    return this.http.get<{work_orders: MaintenanceComplianceRow[], pagination: any}>(`${this.apiUrl}/maintenance/compliance`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/maintenance/compliance`, { params })
+      .pipe(map(res => res.data as {work_orders: MaintenanceComplianceRow[], pagination: any}));
   }
 
   getMaintenanceCosts(config: ReportConfig): Observable<{work_orders: MaintenanceCostRow[], cost_trends: any[], pagination: any}> {
     const params = this.buildParams(config);
-    return this.http.get<{work_orders: MaintenanceCostRow[], cost_trends: any[], pagination: any}>(`${this.apiUrl}/maintenance/costs`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/maintenance/costs`, { params })
+      .pipe(map(res => res.data as {work_orders: MaintenanceCostRow[], cost_trends: any[], pagination: any}));
   }
 
   getMaintenanceDowntime(config: ReportConfig): Observable<{work_orders: DowntimeRow[], pagination: any}> {
     const params = this.buildParams(config);
-    return this.http.get<{work_orders: DowntimeRow[], pagination: any}>(`${this.apiUrl}/maintenance/downtime`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/maintenance/downtime`, { params })
+      .pipe(map(res => res.data as {work_orders: DowntimeRow[], pagination: any}));
   }
 
   getMaintenanceFailureAnalysis(config: ReportConfig): Observable<{work_orders: FailureAnalysisRow[], pagination: any}> {
     const params = this.buildParams(config);
-    return this.http.get<{work_orders: FailureAnalysisRow[], pagination: any}>(`${this.apiUrl}/maintenance/failure-analysis`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/maintenance/failure-analysis`, { params })
+      .pipe(map(res => res.data as {work_orders: FailureAnalysisRow[], pagination: any}));
   }
 
   getMaintenanceTechnicianPerformance(config: ReportConfig): Observable<{technicians: TechnicianPerformanceRow[]}> {
     const params = this.buildParams(config);
-    return this.http.get<{technicians: TechnicianPerformanceRow[]}>(`${this.apiUrl}/maintenance/technician-performance`, { params });
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/maintenance/technician-performance`, { params })
+      .pipe(map(res => res.data as {technicians: TechnicianPerformanceRow[]}));
   }
 
   getAvailableMaintenanceReports(): Observable<Record<string, ReportDefinition>> {
-    return this.http.get<Record<string, ReportDefinition>>(`${this.apiUrl}/maintenance/available`);
+    return this.http
+      .get<BaseResponse>(`${this.apiUrl}/maintenance/available`)
+      .pipe(map(res => res.data as Record<string, ReportDefinition>));
   }
 
   // Export Functions
@@ -151,15 +175,15 @@ export class ReportsApiService {
   }
 
   getWorkOrderStatuses(): Observable<StatusOption[]> {
-    return this.http.get<StatusOption[]>(`${environment.apiUrl}/work-order-statuses`);
+    return this.http.get<StatusOption[]>(`${environment.apiUrl}/meta/work-orders/status`);
   }
 
   getWorkOrderPriorities(): Observable<PriorityOption[]> {
-    return this.http.get<PriorityOption[]>(`${environment.apiUrl}/work-order-priorities`);
+    return this.http.get<PriorityOption[]>(`${environment.apiUrl}/meta/work-orders/priorities`);
   }
 
   getWorkOrderCategories(): Observable<CategoryOption[]> {
-    return this.http.get<CategoryOption[]>(`${environment.apiUrl}/work-order-categories`);
+    return this.http.get<CategoryOption[]>(`${environment.apiUrl}/meta/work-orders/categories`);
   }
 
   getAssetCategories(): Observable<CategoryOption[]> {

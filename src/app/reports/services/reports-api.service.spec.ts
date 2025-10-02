@@ -49,7 +49,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getAssetSummary(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/assets/summary?page=1&page_size=50&date_from=2024-01-01&date_to=2024-12-31`);
@@ -83,7 +83,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getAssetUtilization(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/assets/utilization?page=1&page_size=50`);
@@ -118,7 +118,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getAssetDepreciation(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/assets/depreciation?page=1&page_size=50`);
@@ -153,7 +153,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getAssetWarranty(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/assets/warranty?page=1&page_size=50`);
@@ -187,7 +187,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getAssetCompliance(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/assets/compliance?page=1&page_size=50`);
@@ -202,7 +202,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getAvailableAssetReports().subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/assets/available`);
@@ -239,7 +239,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getMaintenanceSummary(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/maintenance/summary?page=1&page_size=50`);
@@ -273,7 +273,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getMaintenanceCompliance(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/maintenance/compliance?page=1&page_size=50`);
@@ -308,7 +308,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getMaintenanceCosts(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/maintenance/costs?page=1&page_size=50`);
@@ -342,7 +342,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getMaintenanceDowntime(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/maintenance/downtime?page=1&page_size=50`);
@@ -376,7 +376,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getMaintenanceFailureAnalysis(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/maintenance/failure-analysis?page=1&page_size=50`);
@@ -409,7 +409,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getMaintenanceTechnicianPerformance(config).subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/maintenance/technician-performance?page=1&page_size=50`);
@@ -424,7 +424,7 @@ describe('ReportsApiService', () => {
       };
 
       service.getAvailableMaintenanceReports().subscribe(response => {
-        expect(response).toEqual(mockResponse);
+        expect(response).toEqual(mockResponse.data as any);
       });
 
       const req = httpMock.expectOne(`${environment.apiUrl}/reports/maintenance/available`);
@@ -577,7 +577,7 @@ describe('ReportsApiService', () => {
         expect(response).toEqual(mockResponse);
       });
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/work-order-statuses`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/meta/work-orders/status`);
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
     });
@@ -591,7 +591,7 @@ describe('ReportsApiService', () => {
         expect(response).toEqual(mockResponse);
       });
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/work-order-priorities`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/meta/work-orders/priorities`);
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
     });
@@ -605,7 +605,7 @@ describe('ReportsApiService', () => {
         expect(response).toEqual(mockResponse);
       });
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/work-order-categories`);
+      const req = httpMock.expectOne(`${environment.apiUrl}/meta/work-orders/categories`);
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
     });
