@@ -1,8 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { ExportService } from '../services/export.service';
+import { ReportsApiService } from '../services/reports-api.service';
 import { ReportCategory, ExportFormat, ReportRunStatus } from '../models/reports.models';
 
 @Component({
@@ -12,10 +13,12 @@ import { ReportCategory, ExportFormat, ReportRunStatus } from '../models/reports
   templateUrl: './reports-export-panel.component.html',
   styleUrls: ['./reports-export-panel.component.scss']
 })
-export class ReportsExportPanelComponent implements OnInit, OnDestroy {
+export class ReportsExportPanelComponent implements OnInit, OnDestroy, OnChanges {
   @Input() isOpen: boolean = false;
   @Input() activeTab: ReportCategory = 'assets';
   @Input() config: any = {};
+  @Input() selectedReports: string[] = [];
+  @Input() selectedReport: string = '';
 
   @Output() close = new EventEmitter<void>();
   @Output() exportRequest = new EventEmitter<{ format: string, params: any }>();
@@ -33,6 +36,7 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
   isExporting: boolean = false;
   activeExports: ReportRunStatus[] = [];
   showHistory: boolean = false;
+  historyRuns: ReportRunStatus[] = [];
 
   // Export formats
   exportFormats = [
@@ -42,7 +46,10 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
     { value: 'json', label: 'JSON', description: 'JavaScript Object Notation' }
   ];
 
-  constructor(private exportService: ExportService) {}
+  constructor(
+    private exportService: ExportService,
+    private reportsApi: ReportsApiService
+  ) {}
 
   ngOnInit(): void {
     this.loadActiveExports();
@@ -51,6 +58,27 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen'] && this.isOpen) {
+      this.resetPanelState();
+    }
+  }
+
+  /**
+   * Reset modal state when opened
+   */
+  private resetPanelState(): void {
+    // Clear previous runs and UI flags
+    this.showHistory = false;
+    this.isExporting = false;
+    this.filename = '';
+    this.selectedFormat = 'xlsx';
+    this.activeExports = [];
+
+    // Clear global export tracking so stale runs are not shown
+    this.exportService.clearAllTracking();
   }
 
   /**
@@ -79,6 +107,24 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Load recent export history
+   */
+  private loadHistory(): void {
+    this.reportsApi.getExportHistory(1, 10)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          const runs = res?.runs || res?.data?.runs || [];
+          this.historyRuns = runs as ReportRunStatus[];
+        },
+        error: err => {
+          console.error('Failed to load export history', err);
+          this.historyRuns = [];
+        }
+      });
+  }
+
+  /**
    * Get filename preview
    */
   getFilenamePreview(): string {
@@ -92,6 +138,44 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
    * Get report key based on active tab
    */
   private getReportKey(): string {
+    // Prefer explicit selection from parent if provided
+    const explicit = this.selectedReports?.[0] || this.selectedReport;
+    if (explicit) {
+      const prefix = this.activeTab === 'maintenance' ? 'maintenance' : this.activeTab;
+      // Avoid duplicate prefix if parent already sends full key
+      if (explicit.includes('.')) return explicit;
+
+      // Map UI ids to backend report keys
+      const maintenanceMap: Record<string, string> = {
+        'maintenance-summary': 'maintenance.summary',
+        'preventive-compliance': 'maintenance.compliance',
+        'maintenance-costs': 'maintenance.costs',
+        'equipment-downtime': 'maintenance.downtime',
+        'failure-analysis': 'maintenance.failure_analysis',
+        'technician-performance': 'maintenance.technician_performance'
+      };
+
+      const assetMap: Record<string, string> = {
+        'asset-summary': 'assets.asset-summary',
+        'asset-utilization': 'assets.asset-utilization',
+        'depreciation-analysis': 'assets.depreciation-analysis',
+        'warranty-status': 'assets.warranty-status',
+        'compliance-report': 'assets.compliance-report'
+      };
+
+      if (prefix === 'maintenance' && maintenanceMap[explicit]) {
+        return maintenanceMap[explicit];
+      }
+
+      if (prefix === 'assets' && assetMap[explicit]) {
+        return assetMap[explicit];
+      }
+
+      // Fallback: normalize dashes to dots under the current prefix
+      const normalized = explicit.replace(/-/g, '.');
+      return `${prefix}.${normalized}`;
+    }
+
     switch (this.activeTab) {
       case 'assets':
         return 'assets.summary';
@@ -268,8 +352,8 @@ export class ReportsExportPanelComponent implements OnInit, OnDestroy {
    * Handle view history
    */
   onViewHistory(): void {
-    console.log('Viewing export history');
-    // Implement history view logic if needed
+    this.showHistory = true;
+    this.loadHistory();
   }
 
   /**

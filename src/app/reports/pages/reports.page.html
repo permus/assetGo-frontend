@@ -57,6 +57,17 @@
     </button>
   </div>
 
+  <!-- Export Drawer -->
+  <app-reports-export-panel
+    [isOpen]="showExportPanel"
+    [activeTab]="activeTab"
+    [config]="reportConfig"
+    [selectedReports]="selectedReports"
+    [selectedReport]="selectedReport"
+    (close)="onCloseExportPanel()"
+    (exportRequest)="onExportRequest($event)">
+  </app-reports-export-panel>
+
   <!-- Main Content Area -->
   <div class="reports-content">
     
@@ -164,21 +175,21 @@
       <div class="filters-section">
         <div class="filter-card">
           <h3>Time Period</h3>
-          <select class="filter-select" [(ngModel)]="maintenanceFilters.period">
-            <option value="last_month">Last Month</option>
-            <option value="this_month">This Month</option>
-            <option value="last_quarter">Last Quarter</option>
-            <option value="this_quarter">This Quarter</option>
-          </select>
+          <app-global-dropdown
+            [options]="maintenancePeriodOptions"
+            [selectedOption]="selectedMaintenancePeriod"
+            placeholder="Select period"
+            (selectionChange)="onSelectMaintenancePeriod($event)">
+          </app-global-dropdown>
         </div>
         <div class="filter-card">
           <h3>Maintenance Type</h3>
-          <select class="filter-select" [(ngModel)]="maintenanceFilters.type">
-            <option value="all">All Types</option>
-            <option value="preventive">Preventive</option>
-            <option value="corrective">Corrective</option>
-            <option value="emergency">Emergency</option>
-          </select>
+          <app-global-dropdown
+            [options]="maintenanceTypeOptions"
+            [selectedOption]="selectedMaintenanceType"
+            placeholder="Select type"
+            (selectionChange)="onSelectMaintenanceType($event)">
+          </app-global-dropdown>
         </div>
         <div class="quick-actions-card">
           <h3>Quick Actions</h3>
@@ -207,9 +218,21 @@
         <h3>Maintenance Reports</h3>
         <p>Select the maintenance reports you want to generate and analyze.</p>
         
+        <!-- Export Controls -->
+        <div class="export-controls">
+          <button class="export-button" (click)="onExport()" [disabled]="!selectedReport && selectedReports.length === 0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7,10 12,15 17,10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export Selected
+          </button>
+        </div>
+        
         <div class="report-grid">
           <div class="report-card" *ngFor="let report of maintenanceReports">
-            <input type="radio" [id]="report.id" name="maintenanceReport" [(ngModel)]="selectedReport" [value]="report.id">
+            <input type="checkbox" [id]="report.id" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
             <label [for]="report.id" class="report-card-content">
               <div class="report-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -287,21 +310,21 @@
       <div class="filters-section">
         <div class="filter-card">
           <h3>Category Filter</h3>
-          <select class="filter-select" [(ngModel)]="inventoryFilters.category">
-            <option value="all">All Categories</option>
-            <option value="parts">Parts</option>
-            <option value="supplies">Supplies</option>
-            <option value="tools">Tools</option>
-          </select>
+          <app-global-dropdown
+            [options]="inventoryCategoryOptions"
+            [selectedOption]="selectedInventoryCategory"
+            placeholder="Select category"
+            (selectionChange)="onSelectInventoryCategory($event)">
+          </app-global-dropdown>
         </div>
         <div class="filter-card">
           <h3>Location Filter</h3>
-          <select class="filter-select" [(ngModel)]="inventoryFilters.location">
-            <option value="all">All Locations</option>
-            <option value="warehouse">Warehouse</option>
-            <option value="office">Office</option>
-            <option value="field">Field</option>
-          </select>
+          <app-global-dropdown
+            [options]="inventoryLocationOptions"
+            [selectedOption]="selectedInventoryLocation"
+            placeholder="Select location"
+            (selectionChange)="onSelectInventoryLocation($event)">
+          </app-global-dropdown>
         </div>
         <div class="quick-insights-card">
           <h3>Quick Insights</h3>
@@ -385,10 +408,22 @@
       <div class="inventory-reports">
         <h3>Inventory Reports</h3>
         <p>Generate comprehensive inventory analysis and management reports</p>
+
+        <!-- Export Controls -->
+        <div class="export-controls">
+          <button class="export-button" (click)="onExport()" [disabled]="selectedReports.length === 0 && !selectedReport">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7,10 12,15 17,10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export Selected
+          </button>
+        </div>
         
         <div class="report-grid">
           <div class="report-card" *ngFor="let report of inventoryReports">
-            <input type="radio" [id]="report.id" name="inventoryReport" [(ngModel)]="selectedReport" [value]="report.id">
+            <input type="checkbox" [id]="report.id" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
             <label [for]="report.id" class="report-card-content">
               <div class="report-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -414,19 +449,21 @@
       <div class="filters-section">
         <div class="filter-card">
           <h3>Reporting Period</h3>
-          <select class="filter-select" [(ngModel)]="financialFilters.period">
-            <option value="monthly">Monthly</option>
-            <option value="quarterly">Quarterly</option>
-            <option value="yearly">Yearly</option>
-          </select>
+          <app-global-dropdown
+            [options]="financialPeriodOptions"
+            [selectedOption]="selectedFinancialPeriod"
+            placeholder="Select period"
+            (selectionChange)="onSelectFinancialPeriod($event)">
+          </app-global-dropdown>
         </div>
         <div class="filter-card">
           <h3>Currency</h3>
-          <select class="filter-select" [(ngModel)]="financialFilters.currency">
-            <option value="AED">AED (Dirham)</option>
-            <option value="USD">USD (Dollar)</option>
-            <option value="EUR">EUR (Euro)</option>
-          </select>
+          <app-global-dropdown
+            [options]="financialCurrencyOptions"
+            [selectedOption]="selectedFinancialCurrency"
+            placeholder="Select currency"
+            (selectionChange)="onSelectFinancialCurrency($event)">
+          </app-global-dropdown>
         </div>
         <div class="executive-summary-card">
           <h3>Executive Summary</h3>
@@ -509,10 +546,22 @@
       <div class="financial-reports">
         <h3>Financial Reports</h3>
         <p>Generate comprehensive financial analysis and cost management reports</p>
+
+        <!-- Export Controls -->
+        <div class="export-controls">
+          <button class="export-button" (click)="onExport()" [disabled]="selectedReports.length === 0 && !selectedReport">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7,10 12,15 17,10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export Selected
+          </button>
+        </div>
         
         <div class="report-grid">
           <div class="report-card" *ngFor="let report of financialReports">
-            <input type="radio" [id]="report.id" name="financialReport" [(ngModel)]="selectedReport" [value]="report.id">
+            <input type="checkbox" [id]="report.id" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
             <label [for]="report.id" class="report-card-content">
               <div class="report-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

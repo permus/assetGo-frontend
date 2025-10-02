@@ -201,11 +201,37 @@
         padding-top: 2rem;
         border-top: 1px solid #e2e8f0;
 
-        .exports-title {
-          font-size: 1rem;
-          font-weight: 600;
-          color: #374151;
-          margin: 0 0 1rem 0;
+        .export-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+
+          h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+          }
+
+          .debug-buttons {
+            display: flex;
+            gap: .5rem;
+            opacity: .7;
+
+            .toolbar-button {
+              background: none;
+              border: 1px solid #e5e7eb;
+              border-radius: .375rem;
+              padding: .25rem .5rem;
+              font-size: .75rem;
+              color: #4b5563;
+              cursor: pointer;
+              transition: background .2s, border-color .2s;
+
+              &:hover { background: #f9fafb; border-color: #d1d5db; }
+            }
+          }
         }
 
         .exports-list {
@@ -246,7 +272,7 @@
             .export-info {
               flex: 1;
 
-              .export-header {
+              .row-header {
                 display: flex;
                 align-items: center;
                 gap: 0.75rem;

@@ -114,7 +114,7 @@ export class ExportService {
           }
           
           return shouldContinue;
-        }, false), // Don't include the final value that caused the condition to become false
+        }, true), // Include the final emission (e.g., success/failed) so UI and auto-download update
         catchError(error => {
           console.error('Error polling export status:', error);
           return [];
@@ -123,7 +123,7 @@ export class ExportService {
       .subscribe({
         next: response => {
           if (response.success && response.data) {
-            const status = response.data;
+            const status = response.data as any;
             const currentStatus = this.exportStatusSubject.value;
             currentStatus.set(runId, status);
             this.exportStatusSubject.next(new Map(currentStatus));
@@ -207,7 +207,20 @@ export class ExportService {
       const filename = this.generateFilename(exportStatus.report_key, exportStatus.format);
       
       // Open download in new tab
-      this.downloadInNewTab(runId, filename);
+      // Prefer backend-provided direct URL if available to avoid popup blockers
+      if ((exportStatus as any).download_url) {
+        const url = (exportStatus as any).download_url as string;
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.download = filename;
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        this.downloadInNewTab(runId, filename);
+      }
     } else {
       console.warn('Cannot auto-download: export not ready for run ID:', runId);
     }

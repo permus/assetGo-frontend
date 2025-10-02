@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { GlobalDropdownComponent, DropdownOption } from '../../shared/components/global-dropdown/global-dropdown.component';
+import { ReportsExportPanelComponent } from '../components/reports-export-panel.component';
 import { Subject, takeUntil } from 'rxjs';
 import { ReportsApiService } from '../services/reports-api.service';
 import { ExportService } from '../services/export.service';
@@ -9,7 +11,7 @@ import { ReportCategory, ReportConfig, DateRange, ReportPeriod, AssetSummaryResp
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReportsExportPanelComponent, GlobalDropdownComponent],
   templateUrl: './reports.page.html',
   styleUrls: ['./reports.page.scss']
 })
@@ -61,23 +63,95 @@ export class ReportsPage implements OnInit, OnDestroy {
     type: 'all'
   };
 
+  // Custom select options/state for Maintenance
+  maintenancePeriodOptions: DropdownOption[] = [
+    { id: 'last_month', name: 'Last Month' },
+    { id: 'this_month', name: 'This Month' },
+    { id: 'last_quarter', name: 'Last Quarter' },
+    { id: 'this_quarter', name: 'This Quarter' }
+  ];
+  selectedMaintenancePeriod: DropdownOption | null = this.maintenancePeriodOptions[0];
+
+  maintenanceTypeOptions: DropdownOption[] = [
+    { id: 'all', name: 'All Types' },
+    { id: 'preventive', name: 'Preventive' },
+    { id: 'corrective', name: 'Corrective' },
+    { id: 'emergency', name: 'Emergency' }
+  ];
+  selectedMaintenanceType: DropdownOption | null = this.maintenanceTypeOptions[0];
+
   inventoryFilters = {
     category: 'all',
     location: 'all'
   };
+
+  // Custom select options/state for Inventory
+  inventoryCategoryOptions: DropdownOption[] = [
+    { id: 'all', name: 'All Categories' },
+    { id: 'parts', name: 'Parts' },
+    { id: 'supplies', name: 'Supplies' },
+    { id: 'tools', name: 'Tools' }
+  ];
+  selectedInventoryCategory: DropdownOption | null = this.inventoryCategoryOptions[0];
+
+  inventoryLocationOptions: DropdownOption[] = [
+    { id: 'all', name: 'All Locations' },
+    { id: 'warehouse', name: 'Warehouse' },
+    { id: 'office', name: 'Office' },
+    { id: 'field', name: 'Field' }
+  ];
+  selectedInventoryLocation: DropdownOption | null = this.inventoryLocationOptions[0];
 
   financialFilters = {
     period: 'monthly',
     currency: 'AED'
   };
 
+  // Global report key maps to avoid redeclarations and scope issues
+  private readonly maintenanceKeyMap: Record<string, string> = {
+    'maintenance-summary': 'maintenance.summary',
+    'preventive-compliance': 'maintenance.compliance',
+    'maintenance-costs': 'maintenance.costs',
+    'equipment-downtime': 'maintenance.downtime',
+    'failure-analysis': 'maintenance.failure_analysis',
+    'technician-performance': 'maintenance.technician_performance'
+  };
+
+  private readonly assetKeyMap: Record<string, string> = {
+    'asset-summary': 'assets.asset-summary',
+    'asset-utilization': 'assets.asset-utilization',
+    'depreciation-analysis': 'assets.depreciation-analysis',
+    'warranty-status': 'assets.warranty-status',
+    'compliance-report': 'assets.compliance-report'
+  };
+
+  private readonly financialKeyMap: Record<string, string> = {
+    'total-cost-ownership': 'financial.total_cost_ownership',
+    'maintenance-cost-breakdown': 'financial.maintenance_cost_breakdown',
+    'budget-vs-actual': 'financial.budget.vs.actual'
+  };
+
+  // Custom select options/state for Financial
+  financialPeriodOptions: DropdownOption[] = [
+    { id: 'monthly', name: 'Monthly' },
+    { id: 'quarterly', name: 'Quarterly' },
+    { id: 'yearly', name: 'Yearly' }
+  ];
+  selectedFinancialPeriod: DropdownOption | null = this.financialPeriodOptions[0];
+
+  financialCurrencyOptions: DropdownOption[] = [
+    { id: 'AED', name: 'AED (Dirham)' },
+    { id: 'USD', name: 'USD (Dollar)' },
+    { id: 'EUR', name: 'EUR (Euro)' }
+  ];
+  selectedFinancialCurrency: DropdownOption | null = this.financialCurrencyOptions[0];
+
   // Available tabs
   tabs = [
     { id: 'assets', label: 'Asset Reports', icon: 'package' },
     { id: 'maintenance', label: 'Maintenance Reports', icon: 'wrench' },
     { id: 'inventory', label: 'Inventory Reports', icon: 'box' },
-    { id: 'financial', label: 'Financial Reports', icon: 'dollar-sign' },
-    { id: 'custom', label: 'Custom Reports', icon: 'settings' }
+    { id: 'financial', label: 'Financial Reports', icon: 'dollar-sign' }
   ];
 
   // Report data for each category
@@ -596,6 +670,39 @@ export class ReportsPage implements OnInit, OnDestroy {
     this.reportConfig = { ...config };
   }
 
+  // Maintenance dropdown handlers
+  onSelectMaintenancePeriod(option: DropdownOption): void {
+    this.selectedMaintenancePeriod = option;
+    this.maintenanceFilters.period = option?.id ?? this.maintenanceFilters.period;
+  }
+
+  onSelectMaintenanceType(option: DropdownOption): void {
+    this.selectedMaintenanceType = option;
+    this.maintenanceFilters.type = option?.id ?? this.maintenanceFilters.type;
+  }
+
+  // Inventory dropdown handlers
+  onSelectInventoryCategory(option: DropdownOption): void {
+    this.selectedInventoryCategory = option;
+    this.inventoryFilters.category = option?.id ?? this.inventoryFilters.category;
+  }
+
+  onSelectInventoryLocation(option: DropdownOption): void {
+    this.selectedInventoryLocation = option;
+    this.inventoryFilters.location = option?.id ?? this.inventoryFilters.location;
+  }
+
+  // Financial dropdown handlers
+  onSelectFinancialPeriod(option: DropdownOption): void {
+    this.selectedFinancialPeriod = option;
+    this.financialFilters.period = option?.id ?? this.financialFilters.period;
+  }
+
+  onSelectFinancialCurrency(option: DropdownOption): void {
+    this.selectedFinancialCurrency = option;
+    this.financialFilters.currency = option?.id ?? this.financialFilters.currency;
+  }
+
   /**
    * Handle apply filters
    */
@@ -783,7 +890,30 @@ export class ReportsPage implements OnInit, OnDestroy {
     // For now, handle only the first selected report
     // TODO: Handle multiple reports if needed
     const reportId = this.selectedReports[0];
-    const reportKey = `assets.${reportId}`;
+    // Map maintenance UI ids to backend keys
+    const maintenanceMap: Record<string, string> = {
+      'maintenance-summary': 'maintenance.summary',
+      'preventive-compliance': 'maintenance.compliance',
+      'maintenance-costs': 'maintenance.costs',
+      'equipment-downtime': 'maintenance.downtime',
+      'failure-analysis': 'maintenance.failure_analysis',
+      'technician-performance': 'maintenance.technician_performance'
+    };
+    const assetMap: Record<string, string> = {
+      'asset-summary': 'assets.asset-summary',
+      'asset-utilization': 'assets.asset-utilization',
+      'depreciation-analysis': 'assets.depreciation-analysis',
+      'warranty-status': 'assets.warranty-status',
+      'compliance-report': 'assets.compliance-report'
+    };
+    const financialMap: Record<string, string> = {
+      'total-cost-ownership': 'financial.total_cost_ownership',
+      'maintenance-cost-breakdown': 'financial.maintenance_cost_breakdown'
+    };
+    let reportKey = maintenanceMap[reportId] || assetMap[reportId] || financialMap[reportId] || reportId;
+    if (!reportKey.includes('.')) {
+      reportKey = `${this.activeTab}.${reportKey.replace(/-/g, '.')}`;
+    }
     const exportParams = {
       date_from: this.reportConfig.dateRange.start,
       date_to: this.reportConfig.dateRange.end,
@@ -918,7 +1048,14 @@ export class ReportsPage implements OnInit, OnDestroy {
       return;
     }
 
-    const reportKeys = reportsToExport.map(reportId => `assets.${reportId}`);
+    // Map UI ids to backend keys using global maps
+    const reportKeys = reportsToExport.map(id => {
+      let key = this.maintenanceKeyMap[id] || this.assetKeyMap[id] || this.financialKeyMap[id] || id;
+      if (!key.includes('.')) {
+        key = `${this.activeTab}.${key.replace(/-/g, '.')}`;
+      }
+      return key;
+    });
     const exportParams = {
       date_from: this.reportConfig.dateRange.start,
       date_to: this.reportConfig.dateRange.end,
