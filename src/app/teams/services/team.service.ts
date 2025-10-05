@@ -129,6 +129,8 @@ export interface CreateTeamMemberRequest {
   hourly_rate?: number | null;
   location_ids?: number[] | null; // omit or null => full access
   expand_descendants?: boolean;   // default true
+  password?: string;              // optional custom password
+  password_confirmation?: string; // required if password is provided
 }
 
 export interface UpdateTeamMemberRequest {

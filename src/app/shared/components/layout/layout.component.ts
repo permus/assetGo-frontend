@@ -4,6 +4,7 @@ import {RouterOutlet, RouterModule} from '@angular/router';
 import {AuthService, User} from '../../../core/services/auth.service';
 import {Router} from '@angular/router';
 import { SettingsService, ModuleItem } from '../../../settings/settings.service';
+import { ModuleAccessService } from '../../../core/services/module-access.service';
 import {HostListener} from '@angular/core';
 
 @Component({
@@ -22,22 +23,14 @@ export class LayoutComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private settings: SettingsService
+    private settings: SettingsService,
+    private moduleAccessService: ModuleAccessService
   ) {
     this.currentUser = this.authService.getCurrentUser();
-    // Load enabled modules once to control sidebar visibility
-    this.settings.listModules().subscribe(res => {
-      const mapEnabled: Record<string, boolean> = {};
-      const list = (res?.data?.modules ?? []) as ModuleItem[];
-      list.forEach(m => (mapEnabled[m.key] = !!m.is_enabled));
-      this.modules.set(mapEnabled);
-    });
-
-    // React to runtime changes (when toggled in settings)
-    this.settings.getModulesEnabled$().subscribe(map => {
-      if (Object.keys(map).length) {
-        this.modules.set(map);
-      }
+    
+    // Use module access service to determine visible modules
+    this.moduleAccessService.visibleModules$.subscribe(visibleModules => {
+      this.modules.set(visibleModules);
     });
   }
 

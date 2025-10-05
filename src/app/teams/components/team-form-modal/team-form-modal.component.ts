@@ -48,7 +48,9 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
       hourly_rate: [null, [Validators.min(0)]],
       location_ids: [[] as number[]],
       expand_descendants: [true],
-    });
+      password: ['', [Validators.minLength(8), Validators.maxLength(72)]],
+      password_confirmation: [''],
+    }, { validators: TeamFormModalComponent.passwordMatchValidator });
     this.loadAvailableRoles();
   }
 
@@ -214,6 +216,12 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
     if (formData.expand_descendants === undefined || formData.expand_descendants === null) {
       formData.expand_descendants = true;
     }
+    
+    // Handle password fields - only send if password is provided
+    if (!formData.password || formData.password.trim() === '') {
+      delete formData.password;
+      delete formData.password_confirmation;
+    }
 
     if (this.isEditMode && this.teamMember) {
       this.teamService.updateTeamMember(this.teamMember.id, formData).subscribe({
@@ -262,7 +270,16 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
       if (field?.errors?.['min']) {
         return `${this.getFieldLabel(fieldName)} must be at least ${field.errors['min'].min}.`;
       }
+      if (field?.errors?.['passwordMismatch']) {
+        return 'Password confirmation does not match.';
+      }
     }
+    
+    // Check for form-level password mismatch error
+    if (fieldName === 'password_confirmation' && this.teamMemberForm.hasError('passwordMismatch')) {
+      return 'Password confirmation does not match.';
+    }
+    
     return '';
   }
 
@@ -272,7 +289,9 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
       last_name: 'Last name',
       email: 'Email',
       role_id: 'Team role',
-      hourly_rate: 'Hourly rate'
+      hourly_rate: 'Hourly rate',
+      password: 'Password',
+      password_confirmation: 'Confirm Password'
     };
     return labels[fieldName] || fieldName;
   }
@@ -351,5 +370,28 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
       }
     }
     return acc;
+  }
+
+  // Custom validator for password confirmation (static method)
+  static passwordMatchValidator(form: FormGroup) {
+    const password = form.get('password');
+    const passwordConfirmation = form.get('password_confirmation');
+    
+    if (!password || !passwordConfirmation) {
+      return null;
+    }
+    
+    // Only validate if password is provided
+    if (password.value && passwordConfirmation.value !== password.value) {
+      passwordConfirmation.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
+    
+    // Clear errors if passwords match
+    if (passwordConfirmation.hasError('passwordMismatch')) {
+      passwordConfirmation.setErrors(null);
+    }
+    
+    return null;
   }
 }
