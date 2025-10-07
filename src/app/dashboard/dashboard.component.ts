@@ -2,9 +2,9 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil, timer, switchMap } from 'rxjs';
 import { DashboardService, DashboardData } from './dashboard.service';
-import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Chart, ArcElement, Tooltip, Legend, DoughnutController } from 'chart.js';
 
-Chart.register(ArcElement, Tooltip, Legend);
+Chart.register(ArcElement, Tooltip, Legend, DoughnutController);
 
 @Component({
   selector: 'app-dashboard',

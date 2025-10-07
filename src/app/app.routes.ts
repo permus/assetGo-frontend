@@ -27,7 +27,8 @@ export const routes: Routes = [
       },
       {
         path: 'locations',
-        loadChildren: () => import('./locations/locations.module').then(m => m.LocationsModule)
+        loadChildren: () => import('./locations/locations.module').then(m => m.LocationsModule),
+        canActivate: [moduleGuard('locations')]
       },
       {
         path: 'assets',
@@ -36,11 +37,13 @@ export const routes: Routes = [
       },
       {
         path: 'roles',
-        loadChildren: () => import('./roles/roles.module').then(m => m.RolesModule)
+        loadChildren: () => import('./roles/roles.module').then(m => m.RolesModule),
+        canActivate: [moduleGuard('roles')]
       },
       {
         path: 'teams',
-        loadChildren: () => import('./teams/teams.module').then(m => m.TeamsModule)
+        loadChildren: () => import('./teams/teams.module').then(m => m.TeamsModule),
+        canActivate: [moduleGuard('teams')]
       },
       {
         path: 'work-orders',
@@ -60,12 +63,14 @@ export const routes: Routes = [
       {
         path: 'settings',
         component: SettingsComponent,
-        title: 'Settings'
+        title: 'Settings',
+        canActivate: [moduleGuard('settings')]
       },
       {
         path: 'ai',
         loadComponent: () => import('./ai-features/ai-features.component').then(m => m.AIFeaturesComponent),
-        title: 'AI Features'
+        title: 'AI Features',
+        canActivate: [moduleGuard('ai_features')]
       },
       {
         path: 'ai/image-recognition',
@@ -74,7 +79,8 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
-        loadChildren: () => import('./reports/reports.module').then(m => m.ReportsModule)
+        loadChildren: () => import('./reports/reports.module').then(m => m.ReportsModule),
+        canActivate: [moduleGuard('reports')]
       }
     ]
   },

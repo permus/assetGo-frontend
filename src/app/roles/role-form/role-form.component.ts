@@ -152,6 +152,42 @@ export class RoleFormComponent implements OnInit {
     ).join(' ');
   }
 
+  /**
+   * Check if a module has any permissions enabled
+   */
+  hasAnyPermission(moduleKey: string): boolean {
+    const moduleGroup = this.roleForm.get(`permissions.${moduleKey}`) as FormGroup;
+    if (!moduleGroup) return false;
+    
+    const permissions = moduleGroup.value;
+    return permissions.can_view || 
+           permissions.can_create || 
+           permissions.can_edit || 
+           permissions.can_delete || 
+           permissions.can_export;
+  }
+
+  /**
+   * Get filtered modules that have at least one permission enabled
+   * Only shows modules where at least one permission checkbox is checked
+   */
+  getFilteredModules(): Array<{key: string, value: any}> {
+    const allModules = Object.keys(this.availablePermissions).map(key => ({
+      key,
+      value: this.availablePermissions[key]
+    }));
+
+    // Filter to show only modules with at least one permission enabled
+    return allModules.filter(module => this.hasAnyPermission(module.key));
+  }
+
+  /**
+   * Check if any module has permissions enabled (for showing empty state)
+   */
+  hasAnyModuleWithPermissions(): boolean {
+    return Object.keys(this.availablePermissions).some(key => this.hasAnyPermission(key));
+  }
+
   toggleAllPermissions(module: string, value: boolean): void {
     const moduleGroup = this.roleForm.get(`permissions.${module}`) as FormGroup;
     Object.keys(moduleGroup.controls).forEach(control => {
