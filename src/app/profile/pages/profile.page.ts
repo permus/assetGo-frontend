@@ -7,11 +7,12 @@ import { ProfileService, UserProfile } from '../services/profile.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileFormComponent } from '../components/profile-form/profile-form.component';
 import { PasswordChangeFormComponent } from '../components/password-change-form/password-change-form.component';
+import { AvatarUploadComponent } from '../components/avatar-upload/avatar-upload.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ProfileFormComponent, PasswordChangeFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, ProfileFormComponent, PasswordChangeFormComponent, AvatarUploadComponent],
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss']
 })
@@ -79,6 +80,10 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   onPasswordChanged(): void {
     this.showSuccessMessage('Password changed successfully');
+  }
+
+  onAvatarUpdated(avatarUrl: string): void {
+    this.showSuccessMessage('Avatar updated successfully');
   }
 
   private showSuccessMessage(message: string): void {

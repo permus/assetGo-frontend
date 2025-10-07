@@ -10,6 +10,8 @@ export interface User {
   last_name: string;
   email: string;
   email_verified_at?: string;
+  avatar?: string;
+  avatar_url?: string;
   user_type: string;
   company_id: number;
   company?: Company;

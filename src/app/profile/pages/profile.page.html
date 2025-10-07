@@ -11,7 +11,12 @@
       <div class="header-right">
         <div class="user-avatar">
           <div class="avatar-circle">
-            {{ getUserInitials() }}
+            <img 
+              *ngIf="userProfile?.avatar_url" 
+              [src]="userProfile.avatar_url" 
+              [alt]="userProfile.first_name + ' ' + userProfile.last_name"
+              class="avatar-image">
+            <span *ngIf="!userProfile?.avatar_url">{{ getUserInitials() }}</span>
           </div>
           <div class="avatar-info">
             <div class="user-name">{{ userProfile?.first_name }} {{ userProfile?.last_name }}</div>
@@ -77,6 +82,13 @@
           <p class="panel-subtitle">Update your personal details and contact information</p>
         </div>
         
+        <!-- Avatar Upload Section -->
+        <app-avatar-upload 
+          [userProfile]="userProfile"
+          (avatarUpdated)="onAvatarUpdated($event)">
+        </app-avatar-upload>
+
+        <!-- Profile Form Section -->
         <app-profile-form 
           [userProfile]="userProfile"
           (profileUpdated)="onProfileUpdated($event)">

@@ -1,0 +1,224 @@
+.avatar-upload {
+  .avatar-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+      margin: 0 0 8px 0;
+    }
+    
+    .section-description {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 24px 0;
+    }
+  }
+  
+  .avatar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  
+  .avatar-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .avatar-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #e5e7eb;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    
+    &.has-avatar {
+      border-color: #3b82f6;
+    }
+    
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    
+    .avatar-initials {
+      font-size: 36px;
+      font-weight: 600;
+      color: #6b7280;
+    }
+  }
+  
+  .avatar-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .file-input {
+    display: none;
+  }
+  
+  .upload-button,
+  .remove-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+  
+  .upload-button {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    
+    &:hover:not(:disabled) {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+  }
+  
+  .remove-button {
+    background: white;
+    color: #dc2626;
+    border-color: #dc2626;
+    
+    &:hover:not(:disabled) {
+      background: #fef2f2;
+    }
+  }
+  
+  .button-icon {
+    width: 16px;
+    height: 16px;
+    
+    &.animate-spin {
+      animation: spin 1s linear infinite;
+    }
+  }
+  
+  .upload-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  
+  .save-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    &:hover:not(:disabled) {
+      background: #059669;
+    }
+  }
+  
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #dc2626;
+    font-size: 14px;
+    margin-top: 16px;
+    
+    .error-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+  }
+  
+  .help-text {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    
+    p {
+      font-size: 12px;
+      color: #6b7280;
+      margin: 4px 0;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive design
+@media (max-width: 640px) {
+  .avatar-upload {
+    .avatar-section {
+      padding: 16px;
+    }
+    
+    .avatar-circle {
+      width: 100px;
+      height: 100px;
+      
+      .avatar-initials {
+        font-size: 28px;
+      }
+    }
+    
+    .avatar-controls {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .upload-button,
+    .remove-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

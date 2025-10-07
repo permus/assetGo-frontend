@@ -10,6 +10,8 @@ export interface UserProfile {
   email: string;
   user_type: 'admin' | 'user' | 'manager' | 'team';
   email_verified_at?: string;
+  avatar?: string;
+  avatar_url?: string;
   created_at: string;
   updated_at: string;
   company?: {
@@ -48,5 +50,12 @@ export class ProfileService {
 
   changePassword(data: PasswordChangeRequest): Observable<{success: boolean, message: string}> {
     return this.http.post<{success: boolean, message: string}>(`${this.apiUrl}/change-password`, data);
+  }
+
+  uploadAvatar(file: File): Observable<{success: boolean, message: string, data: {avatar_url: string, avatar_path: string}}> {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    
+    return this.http.post<{success: boolean, message: string, data: {avatar_url: string, avatar_path: string}}>(`${this.apiUrl}/profile/avatar`, formData);
   }
 }
