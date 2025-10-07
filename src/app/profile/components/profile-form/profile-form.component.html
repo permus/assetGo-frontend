@@ -1,0 +1,90 @@
+<div class="profile-form-card">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+    <!-- Error Message -->
+    <div *ngIf="error" class="form-error">
+      <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      {{ error }}
+    </div>
+
+    <div class="form-grid">
+      <!-- First Name -->
+      <div class="form-group">
+        <label for="first_name" class="form-label">
+          First Name <span class="required">*</span>
+        </label>
+        <input
+          id="first_name"
+          type="text"
+          formControlName="first_name"
+          class="form-input"
+          [class.error]="hasFieldError('first_name')"
+          placeholder="Enter your first name">
+        <div *ngIf="hasFieldError('first_name')" class="field-error">
+          {{ getFieldError('first_name') }}
+        </div>
+      </div>
+
+      <!-- Last Name -->
+      <div class="form-group">
+        <label for="last_name" class="form-label">
+          Last Name <span class="required">*</span>
+        </label>
+        <input
+          id="last_name"
+          type="text"
+          formControlName="last_name"
+          class="form-input"
+          [class.error]="hasFieldError('last_name')"
+          placeholder="Enter your last name">
+        <div *ngIf="hasFieldError('last_name')" class="field-error">
+          {{ getFieldError('last_name') }}
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email" class="form-label">
+          Email Address <span class="required">*</span>
+        </label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="form-input"
+          [class.error]="hasFieldError('email')"
+          placeholder="Enter your email address">
+        <div *ngIf="hasFieldError('email')" class="field-error">
+          {{ getFieldError('email') }}
+        </div>
+      </div>
+
+      <!-- User Type (Read-only) -->
+      <div class="form-group">
+        <label for="user_type" class="form-label">User Type</label>
+        <input
+          id="user_type"
+          type="text"
+          formControlName="user_type"
+          class="form-input"
+          readonly
+          [class.error]="hasFieldError('user_type')">
+        <div class="form-help">
+          Your user type is managed by your administrator
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading || profileForm.invalid">
+        <span *ngIf="loading" class="loading-spinner"></span>
+        {{ loading ? 'Updating...' : 'Update Profile' }}
+      </button>
+    </div>
+  </form>
+</div>

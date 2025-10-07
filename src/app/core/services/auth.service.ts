@@ -236,4 +236,12 @@ export class AuthService {
       }
     }
   }
+
+  /**
+   * Update the current user data (used when profile is updated)
+   */
+  public updateCurrentUser(user: User): void {
+    this.currentUserSubject.next(user);
+    localStorage.setItem('user', JSON.stringify(user));
+  }
 }

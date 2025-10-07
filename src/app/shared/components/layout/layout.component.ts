@@ -1,4 +1,4 @@
-import {Component, computed, effect, inject, signal} from '@angular/core';
+import {Component, computed, effect, inject, signal, OnInit, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterOutlet, RouterModule} from '@angular/router';
 import {AuthService, User} from '../../../core/services/auth.service';
@@ -6,6 +6,7 @@ import {Router} from '@angular/router';
 import { SettingsService, ModuleItem } from '../../../settings/settings.service';
 import { ModuleAccessService } from '../../../core/services/module-access.service';
 import {HostListener} from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
@@ -14,24 +15,39 @@ import {HostListener} from '@angular/core';
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss'
 })
-export class LayoutComponent {
+export class LayoutComponent implements OnInit, OnDestroy {
   public currentUser: User | null = null;
   public showUserDropdown = false;
   sidebarOpen = true;
   modules = signal<Record<string, boolean>>({});
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private settings: SettingsService,
     private moduleAccessService: ModuleAccessService
-  ) {
-    this.currentUser = this.authService.getCurrentUser();
+  ) {}
+
+  ngOnInit(): void {
+    // Subscribe to current user changes
+    this.authService.currentUser$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(user => {
+      this.currentUser = user;
+    });
     
     // Use module access service to determine visible modules
-    this.moduleAccessService.visibleModules$.subscribe(visibleModules => {
+    this.moduleAccessService.visibleModules$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(visibleModules => {
       this.modules.set(visibleModules);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   public getUserInitials(): string {

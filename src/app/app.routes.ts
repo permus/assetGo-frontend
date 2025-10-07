@@ -81,6 +81,11 @@ export const routes: Routes = [
         path: 'reports',
         loadChildren: () => import('./reports/reports.module').then(m => m.ReportsModule),
         canActivate: [moduleGuard('reports')]
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./profile/pages/profile.page').then(m => m.ProfilePage),
+        title: 'Profile Settings'
       }
     ]
   },
