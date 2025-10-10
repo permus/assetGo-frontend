@@ -9,6 +9,11 @@ export type CurrencyCode = 'USD' | 'AED' | string;
 export class CurrencyService {
   private readonly settings = inject(SettingsService);
   private readonly currency$ = new BehaviorSubject<CurrencyCode>('USD');
+  
+  private readonly currencySymbols: Record<string, string> = {
+    'USD': '$',
+    'AED': 'د.إ',
+  };
 
   // Load from server and broadcast
   refreshFromServer(): Observable<CurrencyCode> {
@@ -26,11 +31,16 @@ export class CurrencyService {
     return this.currency$.getValue();
   }
 
+  getSymbol(): string {
+    const code = this.getCurrent();
+    return this.currencySymbols[code] || code;
+  }
+
   // Helper to format amounts consistently
   format(amount: number | string | null | undefined): string {
     const num = Number(amount ?? 0);
-    if (!isFinite(num)) return `${this.getCurrent()} 0.00`;
-    return `${this.getCurrent()} ${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (!isFinite(num)) return `${this.getSymbol()}0.00`;
+    return `${this.getSymbol()}${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 }
 

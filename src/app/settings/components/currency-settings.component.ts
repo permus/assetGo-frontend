@@ -24,7 +24,7 @@ import { CurrencyService } from '../../core/services/currency.service';
           class="px-3 py-2 rounded-xl border border-gray-200 flex items-center gap-2 transition-all duration-300 cursor-pointer hover:border-blue-500 font-medium"
           [class.bg-blue-600]="currentCurrency()==='AED'" [class.text-white]="currentCurrency()==='AED'"
           [disabled]="disabled || saving()" (click)="quickSet('AED')">
-          <span>•</span>
+          <span>د.إ</span>
           <span>AED - UAE Dirham</span>
         </button>
       </div>

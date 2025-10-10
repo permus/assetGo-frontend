@@ -245,7 +245,7 @@
               <span class="time-label">{{ (totalMinutes / 60) | number:'1.2-2' }} hrs Total Time</span>
             </div>
             <div class="total-cost">
-              <span class="cost-label">${{ totalCost | number:'1.2-2' }} Total Cost</span>
+              <span class="cost-label">{{ getCurrencySymbol() }}{{ totalCost | number:'1.2-2' }} Total Cost</span>
             </div>
           </div>
 

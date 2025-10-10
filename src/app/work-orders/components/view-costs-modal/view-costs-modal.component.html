@@ -10,15 +10,15 @@
       <div class="summary">
         <div>
           <div class="label">Labor</div>
-          <div class="value">{{ (laborMinutes/60) | number:'1.2-2' }} hrs • ${{ laborCost | number:'1.2-2' }}</div>
+          <div class="value">{{ (laborMinutes/60) | number:'1.2-2' }} hrs • {{ getCurrencySymbol() }}{{ laborCost | number:'1.2-2' }}</div>
         </div>
         <div>
           <div class="label">Parts</div>
-          <div class="value">${{ partsCost | number:'1.2-2' }}</div>
+          <div class="value">{{ getCurrencySymbol() }}{{ partsCost | number:'1.2-2' }}</div>
         </div>
         <div>
           <div class="label">Total</div>
-          <div class="value total">${{ totalCost | number:'1.2-2' }}</div>
+          <div class="value total">{{ getCurrencySymbol() }}{{ totalCost | number:'1.2-2' }}</div>
         </div>
       </div>
 
@@ -28,7 +28,7 @@
         <div class="row" *ngFor="let p of parts">
           <div class="name">{{ p.part?.name || ('Part #' + p.part_id) }}</div>
           <div class="qty">x{{ p.qty }}</div>
-          <div class="cost">${{ ((($any(p).unit_cost || 0) * ($any(p).qty || 0)) | number:'1.2-2') }}</div>
+          <div class="cost">{{ getCurrencySymbol() }}{{ ((($any(p).unit_cost || 0) * ($any(p).qty || 0)) | number:'1.2-2') }}</div>
         </div>
       </div>
     </div>

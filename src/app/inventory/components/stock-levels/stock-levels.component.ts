@@ -10,6 +10,7 @@ import {
   StockCountRequest,
   LocationResponse
 } from '../../../core/services/inventory-analytics.service';
+import {CurrencyService} from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-stock-levels',
@@ -84,7 +85,11 @@ export class StockLevelsComponent implements OnInit {
   availableLocations: any[] = [];
   availableParts: any[] = [];
   releaseQuantities: { [stockId: number]: number } = {};
-  constructor(private analyticsService: InventoryAnalyticsService) {
+  constructor(private analyticsService: InventoryAnalyticsService, private currencyService: CurrencyService) {
+  }
+
+  getCurrencySymbol(): string {
+    return this.currencyService.getSymbol();
   }
 
   ngOnInit(): void {

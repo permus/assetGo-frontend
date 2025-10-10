@@ -6,6 +6,7 @@ import { MetaWorkOrdersService } from '../../../core/services/meta-work-orders.s
 import { MetaItem } from '../../../core/types/work-order.types';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-work-order-preview',
@@ -163,7 +164,8 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
     private workOrderService: WorkOrderService,
     private metaService: MetaWorkOrdersService,
     private fb: FormBuilder,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private currencyService: CurrencyService
   ) {
     this.commentForm = this.fb.group({
       comment: ['', Validators.required]
@@ -185,6 +187,10 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
         this.statusOptions = [];
       }
     });
+  }
+
+  getCurrencySymbol(): string {
+    return this.currencyService.getSymbol();
   }
 
   ngOnDestroy(): void {

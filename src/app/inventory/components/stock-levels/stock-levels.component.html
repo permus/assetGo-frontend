@@ -46,7 +46,7 @@
           </svg>
         </div>
         <div class="card-content">
-          <div class="card-value">${{ summaryData.totalValue.toLocaleString() }}</div>
+          <div class="card-value">{{ getCurrencySymbol() }}{{ summaryData.totalValue.toLocaleString() }}</div>
           <div class="card-label">Total Inventory Value</div>
         </div>
       </div>
@@ -212,7 +212,7 @@
             <span class="quantity" *ngIf="stock.reserved === 0">-</span>
           </td>
           <td class="stock-cost">
-            <span class="cost" *ngIf="stock.average_cost > 0">${{ stock.average_cost | number:'1.2-2' }}</span>
+            <span class="cost" *ngIf="stock.average_cost > 0">{{ getCurrencySymbol() }}{{ stock.average_cost | number:'1.2-2' }}</span>
             <span class="cost" *ngIf="!stock.average_cost || stock.average_cost === 0">-</span>
           </td>
           <td class="stock-status">

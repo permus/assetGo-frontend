@@ -59,7 +59,7 @@
           </svg>
         </div>
         <div class="card-content">
-          <div class="card-value">${{ summaryData.totalValue.toLocaleString() }}</div>
+          <div class="card-value">{{ getCurrencySymbol() }}{{ summaryData.totalValue.toLocaleString() }}</div>
           <div class="card-label">Total Inventory Value</div>
         </div>
       </div>
@@ -200,7 +200,7 @@
           <div class="part-details">
             <div class="detail-row" *ngIf="part.unit_cost">
               <span class="detail-label">Unit Cost:</span>
-              <span class="detail-value">${{ part.unit_cost.toLocaleString() }}</span>
+              <span class="detail-value">{{ getCurrencySymbol() }}{{ part.unit_cost.toLocaleString() }}</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">UOM:</span>
@@ -257,7 +257,7 @@
             <td class="part-name">{{ part.name }}</td>
             <td class="part-description truncate" title="{{ part.description }}">{{ part.description || '-' }}</td>
             <td class="part-uom">{{ part.uom }}</td>
-            <td class="part-cost" *ngIf="part.unit_cost">${{ part.unit_cost.toLocaleString() }}</td>
+            <td class="part-cost" *ngIf="part.unit_cost">{{ getCurrencySymbol() }}{{ part.unit_cost.toLocaleString() }}</td>
             <td class="part-cost" *ngIf="!part.unit_cost">-</td>
             <td class="part-reorder">{{ part.reorder_point || '-' }}</td>
             <td class="part-abc">{{ part.abc_class || '-' }}</td>

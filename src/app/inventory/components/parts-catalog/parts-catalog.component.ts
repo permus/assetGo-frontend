@@ -7,6 +7,7 @@ import { AddPartModalComponent } from '../add-part-modal/add-part-modal.componen
 import {
   DeleteConfirmationModalComponent
 } from '../../../assets/components/delete-confirmation-modal/delete-confirmation-modal.component';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-parts-catalog',
@@ -44,7 +45,11 @@ export class PartsCatalogComponent implements OnInit {
     totalValue: 0
   };
 
-  constructor(private analyticsService: InventoryAnalyticsService) { }
+  constructor(private analyticsService: InventoryAnalyticsService, private currencyService: CurrencyService) { }
+
+  getCurrencySymbol(): string {
+    return this.currencyService.getSymbol();
+  }
 
   ngOnInit(): void {
     this.loadPartsCatalog();

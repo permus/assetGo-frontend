@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem, TurnoverData, StockAgingData } from '../../../core/services/inventory-analytics.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-dashboard-overview',
@@ -33,7 +34,11 @@ export class DashboardOverviewComponent implements OnInit {
     totalValue: 0
   };
 
-  constructor(private analyticsService: InventoryAnalyticsService) { }
+  constructor(private analyticsService: InventoryAnalyticsService, private currencyService: CurrencyService) { }
+
+  getCurrencySymbol(): string {
+    return this.currencyService.getSymbol();
+  }
 
   ngOnInit(): void {
     this.loadDashboardData();

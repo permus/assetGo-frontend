@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { WorkOrderService, WorkOrderPartItem, TimeLog } from '../../services/work-order.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-view-costs-modal',
@@ -20,7 +21,11 @@ export class ViewCostsModalComponent implements OnChanges {
   partsCost = 0;
   totalCost = 0;
 
-  constructor(private woService: WorkOrderService) {}
+  constructor(private woService: WorkOrderService, private currencyService: CurrencyService) {}
+
+  getCurrencySymbol(): string {
+    return this.currencyService.getSymbol();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen'] && this.isOpen && this.workOrderId) {

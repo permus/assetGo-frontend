@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { CurrencyService } from '../../core/services/currency.service';
 import {
   BaseResponse,
   AssetSummaryResponse,
@@ -37,7 +38,7 @@ import {
 export class ReportsApiService {
   private apiUrl = `${environment.apiUrl}/reports`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private currencyService: CurrencyService) { }
 
   // Asset Reports
   getAssetSummary(config: ReportConfig): Observable<AssetSummaryResponse> {
@@ -250,7 +251,8 @@ export class ReportsApiService {
   }
 
   // Utility Methods
-  formatCurrency(value: number, currency: string = 'AED'): string {
+  formatCurrency(value: number): string {
+    const currency = this.currencyService.getCurrent();
     return new Intl.NumberFormat('en-AE', {
       style: 'currency',
       currency: currency

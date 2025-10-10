@@ -21,6 +21,7 @@ import {TransferAssetModalComponent} from '../transfer-asset-modal/transfer-asse
 import * as QRCode from 'qrcode';
 import {Chart, ChartConfiguration, ChartData, ChartOptions} from 'chart.js';
 import {registerables} from 'chart.js';
+import {CurrencyService} from '../../../core/services/currency.service';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -148,7 +149,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     private angularLocation: angularLocation,
     private pdfExportService: PdfExportService,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private currencyService: CurrencyService
   ) {
     this.maintenanceForm = this.fb.group({
       schedule_type: ['', Validators.required],
@@ -467,11 +469,11 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         <div class="info-grid">
           <div class="info-item">
             <div class="info-label">Purchase Price</div>
-            <div class="info-value">$${this.formatCurrency(asset.purchase_price || 0)}</div>
+            <div class="info-value">${this.getCurrencySymbol()}${this.formatCurrency(asset.purchase_price || 0)}</div>
           </div>
           <div class="info-item">
             <div class="info-label">Current Value</div>
-            <div class="info-value">$${this.formatCurrency(this.calculateCurrentValue())}</div>
+            <div class="info-value">${this.getCurrencySymbol()}${this.formatCurrency(this.calculateCurrentValue())}</div>
           </div>
           <div class="info-item">
             <div class="info-label">Purchase Date</div>
@@ -501,7 +503,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
           </div>
           <div class="info-item">
             <div class="info-label">Total Cost of Ownership</div>
-            <div class="info-value">$${this.formatCurrency(this.calculateTotalCostOfOwnership())}</div>
+            <div class="info-value">${this.getCurrencySymbol()}${this.formatCurrency(this.calculateTotalCostOfOwnership())}</div>
           </div>
         </div>
       </div>
@@ -902,7 +904,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
                   label: (context) => {
                     const label = context.dataset.label || '';
                     const value = context.parsed.y;
-                    return `${label}: $${value.toLocaleString()}`;
+                    return `${label}: ${this.getCurrencySymbol()}${value.toLocaleString()}`;
                   }
                 }
               }
@@ -921,7 +923,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
                 },
                 beginAtZero: true,
                 ticks: {
-                  callback: (value) => `$${Number(value).toLocaleString()}`
+                  callback: (value) => `${this.getCurrencySymbol()}${Number(value).toLocaleString()}`
                 }
               }
             },
@@ -1510,6 +1512,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2
     });
+  }
+
+  getCurrencySymbol(): string {
+    return this.currencyService.getSymbol();
   }
 
   calculateCurrentValue(): number {
@@ -2209,7 +2215,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (typeof value === 'number') {
       // Format currency for price fields
       if (value.toString().includes('.')) {
-        return `$${value.toFixed(2)}`;
+        return `${this.getCurrencySymbol()}${value.toFixed(2)}`;
       }
       return value.toString();
     }
