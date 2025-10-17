@@ -1,5 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { SettingsService, Preferences } from '../settings.service';
+import { ToastService } from '../../core/services/toast.service';
+import { PreferencesService } from '../../core/services/preferences.service';
 
 @Component({
   selector: 'preferences-settings',
@@ -43,6 +45,8 @@ import { SettingsService, Preferences } from '../settings.service';
                     [class.translate-x-1]="!form().email_notifications"></span>
             </button>
           </div>
+          <!-- Push Notifications - Hidden (not implemented yet) -->
+          <!--
           <div class="flex items-center justify-between">
             <div>
               <div class="font-medium text-sm">Push Notifications</div>
@@ -56,6 +60,7 @@ import { SettingsService, Preferences } from '../settings.service';
                     [class.translate-x-1]="!form().push_notifications"></span>
             </button>
           </div>
+          -->
           <div class="flex items-center justify-between">
             <div>
               <div class="font-medium text-sm">Maintenance Alerts</div>
@@ -208,6 +213,8 @@ import { SettingsService, Preferences } from '../settings.service';
 })
 export class PreferencesComponent implements OnInit {
   private api = inject(SettingsService);
+  private toast = inject(ToastService);
+  private prefsService = inject(PreferencesService);
   form = signal<Preferences>({});
   saving = signal(false);
 
@@ -218,8 +225,17 @@ export class PreferencesComponent implements OnInit {
   save() {
     this.saving.set(true);
     this.api.updatePreferences(this.form()).subscribe({
-      next: () => { this.saving.set(false); localStorage.setItem('app.preferences', JSON.stringify(this.form())); },
-      error: () => this.saving.set(false)
+      next: () => { 
+        this.saving.set(false); 
+        localStorage.setItem('app.preferences', JSON.stringify(this.form()));
+        // Update global preferences service to apply changes
+        this.prefsService.updatePreferences(this.form());
+        this.toast.success('Preferences saved successfully!');
+      },
+      error: (error) => {
+        this.toast.error(error.error?.message || 'Failed to save preferences');
+        this.saving.set(false);
+      }
     });
   }
 }

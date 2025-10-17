@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LocationTreeService, LocationTreeNode } from '../../../locations/services/location-tree.service';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-team-form-modal',
@@ -38,7 +39,8 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private teamService: TeamService,
     private roleService: RoleService,
-    private locationTreeService: LocationTreeService
+    private locationTreeService: LocationTreeService,
+    private toastService: ToastService
   ) {
     this.teamMemberForm = this.fb.group({
       first_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -120,7 +122,6 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
       next: (response: any) => {
         this.availableRoles = response.data || [];
         this.loadingRoles = false;
-        console.log('Available roles loaded:', this.availableRoles);
         
         // If we're in edit mode and have team member data, reload the form
         if (this.isEditMode && this.teamMember) {
@@ -128,13 +129,11 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
         }
       },
       error: (error: any) => {
-        console.error('Error loading available roles:', error);
         // Fallback to team service available roles
         this.teamService.getAvailableRoles().subscribe({
           next: (response: any) => {
             this.availableRoles = response.data || [];
             this.loadingRoles = false;
-            console.log('Available roles loaded (fallback):', this.availableRoles);
             
             // If we're in edit mode and have team member data, reload the form
             if (this.isEditMode && this.teamMember) {
@@ -142,9 +141,9 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
             }
           },
           error: (fallbackError: any) => {
-            console.error('Fallback also failed:', fallbackError);
             this.rolesError = 'Failed to load roles. Please try again.';
             this.loadingRoles = false;
+            this.toastService.error('Failed to load available roles');
           }
         });
       }
@@ -153,16 +152,11 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
 
   loadTeamMember(): void {
     if (this.teamMember) {
-      console.log('Loading team member data:', this.teamMember);
-      
       // Get role_id from role_id, role.id or roles[0].id
       const roleId = (this.teamMember as any).role_id
         || (this.teamMember as any).role?.id
         || (Array.isArray((this.teamMember as any).roles) ? (this.teamMember as any).roles[0]?.id : undefined);
       const hourlyRate = this.teamMember.hourly_rate;
-      
-      console.log('Role ID:', roleId, 'Type:', typeof roleId);
-      console.log('Hourly Rate:', hourlyRate, 'Type:', typeof hourlyRate);
       
       // Convert role_id to number if it's a string
       const roleIdNumber = roleId ? Number(roleId) : '';
@@ -188,9 +182,6 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
           this.teamMemberForm.patchValue({ location_ids: [] });
         }
       }
-      
-      console.log('Form values after patch:', this.teamMemberForm.value);
-      console.log('Available roles:', this.availableRoles);
     }
   }
 
@@ -204,6 +195,7 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
   onSubmit(): void {
     if (this.teamMemberForm.invalid) {
       this.markFormGroupTouched();
+      this.toastService.warning('Please fill in all required fields correctly');
       return;
     }
 
@@ -232,6 +224,7 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
         error: (error: any) => {
           this.loading = false;
           this.error = error.error?.message || 'Failed to update team member. Please try again.';
+          this.toastService.error(this.error);
         }
       });
     } else {
@@ -243,6 +236,7 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
         error: (error: any) => {
           this.loading = false;
           this.error = error.error?.message || 'Failed to create team member. Please try again.';
+          this.toastService.error(this.error);
         }
       });
     }
@@ -326,6 +320,7 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
       error: (err) => {
         this.treeError = 'Failed to load locations tree.';
         this.loadingTree = false;
+        this.toastService.error('Failed to load location tree');
       }
     });
   }

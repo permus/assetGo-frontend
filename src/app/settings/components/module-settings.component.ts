@@ -1,5 +1,6 @@
 import {Component, OnInit, inject, signal, computed} from '@angular/core';
 import {SettingsService, ModuleItem} from '../settings.service';
+import {ToastService} from '../../core/services/toast.service';
 import {NgFor} from '@angular/common';
 
 @Component({
@@ -72,6 +73,7 @@ import {NgFor} from '@angular/common';
 })
 export class ModuleSettingsComponent implements OnInit {
   private api = inject(SettingsService);
+  private toast = inject(ToastService);
   modules = signal<ModuleItem[]>([]);
   saving = signal(false);
   systemModules = computed(() => this.modules().filter(m => m.is_system_module));
@@ -130,12 +132,17 @@ export class ModuleSettingsComponent implements OnInit {
     if (m.is_system_module) return;
     this.saving.set(true);
     const prev = m.is_enabled;
+    const action = prev ? 'disabled' : 'enabled';
     this.modules.update(list => list.map(x => x.id === m.id ? {...x, is_enabled: !prev} : x));
     const req = prev ? this.api.disableModule(m.id) : this.api.enableModule(m.id);
     req.subscribe({
-      next: () => this.saving.set(false),
-      error: () => {
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(`Module ${action} successfully!`);
+      },
+      error: (error) => {
         this.modules.update(list => list.map(x => x.id === m.id ? {...x, is_enabled: prev} : x));
+        this.toast.error(error.error?.message || `Failed to ${action.slice(0, -1)} module`);
         this.saving.set(false);
       }
     });

@@ -5,6 +5,7 @@ import { AssetService } from '../assets/services/asset.service';
 import { LocationService } from '../locations/services/location.service';
 import { TeamService } from '../teams/services/team.service';
 import { MetaWorkOrdersService } from '../core/services/meta-work-orders.service';
+import { ToastService } from '../core/services/toast.service';
 import { Subscription } from 'rxjs';
 import { WorkOrderListComponent } from './components/work-order-list/work-order-list.component';
 import { WorkOrderStatsComponent } from './components/work-order-stats/work-order-stats.component';
@@ -60,7 +61,8 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     private assetService: AssetService,
     private locationService: LocationService,
     private teamService: TeamService,
-    private metaWorkOrdersService: MetaWorkOrdersService
+    private metaWorkOrdersService: MetaWorkOrdersService,
+    private toastService: ToastService
   ) {
     this.workOrderForm = this.fb.group({
       title: ['', Validators.required],
@@ -114,6 +116,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading statuses:', error);
+          this.toastService.error('Failed to load status options');
           this.statusOptions = [];
         }
       })
@@ -133,6 +136,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading priorities:', error);
+          this.toastService.error('Failed to load priority options');
           this.priorityOptions = [];
         }
       })
@@ -146,6 +150,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading categories:', error);
+          this.toastService.error('Failed to load category options');
           this.categoryOptions = [];
         }
       })
@@ -443,7 +448,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       this.subscription.add(
         this.workOrderService.createWorkOrder(workOrderData).subscribe({
           next: (response) => {
-            this.showSuccess();
+            this.toastService.success('Work order created successfully');
             this.closeCreateModal();
             this.workOrderForm.reset({
               status_id: this.selectedStatus?.id || null,
@@ -469,10 +474,14 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
               const fieldErrors = error.error.errors;
               const message = error.error?.message || 'Please fix the validation errors below.';
               this.showError(message, fieldErrors);
+              this.toastService.error(message);
             } else if (error.error?.message) {
               this.showError(error.error.message);
+              this.toastService.error(error.error.message);
             } else {
-              this.showError('Failed to create work order. Please try again.');
+              const message = 'Failed to create work order. Please try again.';
+              this.showError(message);
+              this.toastService.error(message);
             }
           },
           complete: () => {

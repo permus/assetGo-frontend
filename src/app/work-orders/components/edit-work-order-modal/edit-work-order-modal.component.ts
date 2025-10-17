@@ -5,6 +5,7 @@ import {AssetService} from '../../../assets/services/asset.service';
 import {LocationService} from '../../../locations/services/location.service';
 import {TeamService} from '../../../teams/services/team.service';
 import {AuthService} from '../../../core/services/auth.service';
+import {ToastService} from '../../../core/services/toast.service';
 import {firstValueFrom, Subscription} from 'rxjs';
 import {MetaItem} from '../../../core/types/work-order.types';
 import {MetaWorkOrdersService} from '../../../core/services/meta-work-orders.service';
@@ -124,7 +125,7 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
     private teamService: TeamService,
     protected authService: AuthService,
     private metaWorkOrdersService: MetaWorkOrdersService,
-
+    private toastService: ToastService
   ) {
   }
 
@@ -351,6 +352,7 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
       // Update the work order
       const updatedWorkOrder = await firstValueFrom(this.workOrderService.updateWorkOrder(this.workOrder.id, updatePayload));
       if (updatedWorkOrder) {
+        this.toastService.success('Work order updated successfully');
         this.workOrderUpdated.emit(updatedWorkOrder);
         this.closeModal();
       }
@@ -360,9 +362,14 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
       // Handle specific error cases
       if (error && typeof error === 'object' && 'error' in error && error.error && typeof error.error === 'object' && 'message' in error.error) {
         // Show error message to user
-        console.error('API Error:', (error.error as any).message);
+        const message = (error.error as any).message;
+        console.error('API Error:', message);
+        this.toastService.error(message || 'Failed to update work order');
       } else if (error instanceof Error && error.message) {
         console.error('Network Error:', error.message);
+        this.toastService.error('Network error: Failed to update work order');
+      } else {
+        this.toastService.error('Failed to update work order');
       }
     } finally {
       this.isSubmitting = false;

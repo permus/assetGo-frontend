@@ -1,5 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ToastService } from '../../core/services/toast.service';
+import { PreferencesService } from '../../core/services/preferences.service';
 
 @Component({
   selector: 'language-settings',
@@ -51,6 +53,8 @@ import { CommonModule } from '@angular/common';
 export class LanguageSettingsComponent implements OnInit {
   language = signal(localStorage.getItem('app.language') || 'en');
   rtl = signal(localStorage.getItem('app.rtl') === 'true');
+  private toast = inject(ToastService);
+  private prefsService = inject(PreferencesService);
 
   ngOnInit() { this.apply(); }
 
@@ -58,12 +62,15 @@ export class LanguageSettingsComponent implements OnInit {
     this.language.set(lang);
     localStorage.setItem('app.language', lang);
     this.apply();
+    this.toast.success(`Language changed to ${lang === 'en' ? 'English' : 'Arabic'}`);
   }
 
   setRtl(v: boolean) {
     this.rtl.set(v);
     localStorage.setItem('app.rtl', String(v));
+    this.prefsService.set('rtl', v);
     this.apply();
+    this.toast.success(`RTL layout ${v ? 'enabled' : 'disabled'}`);
   }
 
   private apply() {

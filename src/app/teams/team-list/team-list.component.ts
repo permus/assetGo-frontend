@@ -5,6 +5,7 @@ import { TeamService, TeamMember, TeamMemberStatistics, TeamMembersPaginatedResp
 import { TeamDeleteConfirmationModalComponent } from '../components/team-delete-confirmation-modal/team-delete-confirmation-modal.component';
 import { TeamFormModalComponent } from '../components/team-form-modal/team-form-modal.component';
 import { AssignWorkOrderModalComponent } from '../components/assign-work-order-modal/assign-work-order-modal.component';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-team-list',
@@ -68,7 +69,8 @@ export class TeamListComponent implements OnInit {
   ];
 
   constructor(
-    private teamService: TeamService
+    private teamService: TeamService,
+    private toastService: ToastService
   ) {}
 
   @HostListener('document:click', ['$event'])
@@ -118,7 +120,7 @@ export class TeamListComponent implements OnInit {
       error: (error: any) => {
         this.error = 'Failed to load team members';
         this.loading = false;
-        console.error('Error loading team members:', error);
+        this.toastService.error('Failed to load team members');
       }
     });
   }
@@ -129,14 +131,14 @@ export class TeamListComponent implements OnInit {
         this.statistics = response.data;
       },
       error: (error: any) => {
-        console.error('Error loading team member statistics:', error);
+        this.toastService.error('Failed to load team statistics');
       }
     });
 
     // Load analytics panel data
     this.teamService.getTeamAnalytics({ date_range: 30 }).subscribe({
       next: (res) => { this.analytics = res.data; },
-      error: (e) => { console.error('Error loading team analytics:', e); }
+      error: (e) => { this.toastService.error('Failed to load team analytics'); }
     });
   }
 
@@ -167,13 +169,8 @@ export class TeamListComponent implements OnInit {
   }
 
   onAssignmentSubmitted(data: { work_order_id: number; due_date?: string; notes?: string }): void {
-    // Set success message
-    this.successMessage = `Work order successfully assigned to ${this.teamMemberToAssign?.first_name} ${this.teamMemberToAssign?.last_name}`;
-
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      this.successMessage = '';
-    }, 3000);
+    // Show success toast
+    this.toastService.success(`Work order successfully assigned to ${this.teamMemberToAssign?.first_name} ${this.teamMemberToAssign?.last_name}`);
 
     // Refresh the team member list to update the assigned work order count
     this.loadTeamMembers();
@@ -182,7 +179,7 @@ export class TeamListComponent implements OnInit {
 
   viewTeamMember(teamMember: TeamMember): void {
     // For now, we'll just show the team member details in a modal or navigate to a view page
-    console.log('View team member:', teamMember);
+    this.toastService.info('View team member feature coming soon');
   }
 
   deleteTeamMember(teamMember: TeamMember): void {
@@ -198,15 +195,19 @@ export class TeamListComponent implements OnInit {
   confirmDeleteTeamMember(data: { teamId: number, reason: string }): void {
     if (!this.teamMemberToDelete) return;
 
+    const memberName = `${this.teamMemberToDelete.first_name} ${this.teamMemberToDelete.last_name}`;
+
     this.teamService.deleteTeamMember(this.teamMemberToDelete.id).subscribe({
       next: (response: any) => {
         this.teamMembers = this.teamMembers.filter(tm => tm.id !== this.teamMemberToDelete!.id);
         this.filteredTeamMembers = this.filteredTeamMembers.filter(tm => tm.id !== this.teamMemberToDelete!.id);
+        this.toastService.success(`Team member ${memberName} removed successfully`);
         this.closeDeleteModal();
       },
       error: (error: any) => {
         this.error = 'Failed to delete team member';
-        console.error('Error deleting team member:', error);
+        this.toastService.error('Failed to delete team member');
+        this.closeDeleteModal();
       }
     });
   }
@@ -218,6 +219,8 @@ export class TeamListComponent implements OnInit {
   }
 
   onTeamMemberSaved(teamMember: TeamMember): void {
+    const memberName = `${teamMember.first_name} ${teamMember.last_name}`;
+    
     if (this.isEditMode) {
       const index = this.teamMembers.findIndex(tm => tm.id === teamMember.id);
       if (index !== -1) {
@@ -226,9 +229,11 @@ export class TeamListComponent implements OnInit {
           tm.id === teamMember.id ? teamMember : tm
         );
       }
+      this.toastService.success(`Team member ${memberName} updated successfully`);
     } else {
       this.teamMembers.unshift(teamMember);
       this.filteredTeamMembers.unshift(teamMember);
+      this.toastService.success(`Team member ${memberName} created successfully`);
     }
     this.closeFormModal();
   }

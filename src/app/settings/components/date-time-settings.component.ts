@@ -1,5 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { SettingsService, Preferences } from '../settings.service';
+import { ToastService } from '../../core/services/toast.service';
+import { PreferencesService } from '../../core/services/preferences.service';
 
 @Component({
   selector: 'date-time-settings',
@@ -177,6 +179,8 @@ import { SettingsService, Preferences } from '../settings.service';
 })
 export class DateTimeSettingsComponent implements OnInit {
   private api = inject(SettingsService);
+  private toast = inject(ToastService);
+  private prefsService = inject(PreferencesService);
   form = signal<Preferences>({});
   saving = signal(false);
 
@@ -199,8 +203,15 @@ export class DateTimeSettingsComponent implements OnInit {
   save() {
     this.saving.set(true);
     this.api.updatePreferences(this.form()).subscribe({
-      next: () => this.saving.set(false),
-      error: () => this.saving.set(false)
+      next: () => {
+        this.saving.set(false);
+        this.prefsService.updatePreferences(this.form());
+        this.toast.success('Date & time settings saved successfully!');
+      },
+      error: (error) => {
+        this.toast.error(error.error?.message || 'Failed to save settings');
+        this.saving.set(false);
+      }
     });
   }
 }

@@ -29,6 +29,10 @@
            [ngClass]="tab() === 'date' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('date')">
         Date & Time
       </div>
+      <div class="tab bg-white hover:bg-gray-200 p-2 rounded-lg cursor-pointer transition-all duration-200"
+           [ngClass]="tab() === 'security' ? '!bg-blue-600 text-white' : ''" (click)="onTabChange('security')">
+        Security
+      </div>
     </div>
 
     <!--Module content-->
@@ -64,6 +68,10 @@
 
     @if (tab() === 'date') {
       <date-time-settings></date-time-settings>
+    }
+
+    @if (tab() === 'security') {
+      <security-settings></security-settings>
     }
 
   </div>

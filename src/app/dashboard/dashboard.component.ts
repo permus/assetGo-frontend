@@ -1,7 +1,8 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil, timer, switchMap } from 'rxjs';
 import { DashboardService, DashboardData } from './dashboard.service';
+import { PreferencesService } from '../core/services/preferences.service';
 import { Chart, ArcElement, Tooltip, Legend, DoughnutController } from 'chart.js';
 
 Chart.register(ArcElement, Tooltip, Legend, DoughnutController);
@@ -14,11 +15,13 @@ Chart.register(ArcElement, Tooltip, Legend, DoughnutController);
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private prefsService = inject(PreferencesService);
   loading = false;
   data: DashboardData | null = null;
   @ViewChild('assetHealthChart') assetHealthChartRef!: ElementRef<HTMLCanvasElement>;
   private assetHealthChart: Chart | null = null;
   showAiInsights = false;
+  private refreshInterval: any;
   
   // Archive analytics
   archiveAnalytics = {
@@ -47,11 +50,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(private dashboardApi: DashboardService) {}
 
-  ngOnInit() { this.fetch(); /* optional auto-refresh */ /* this.autoRefresh(); */ }
+  ngOnInit() { 
+    this.fetch(); 
+    
+    // Check if auto-refresh is enabled in preferences
+    if (this.prefsService.get('auto_refresh')) {
+      this.startAutoRefresh();
+    }
+  }
 
   ngOnDestroy() {
+    this.stopAutoRefresh();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+  
+  startAutoRefresh() {
+    this.stopAutoRefresh(); // Clear any existing interval
+    this.refreshInterval = setInterval(() => {
+      this.fetch();
+    }, 30000); // 30 seconds
+  }
+  
+  stopAutoRefresh() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   fetch() {

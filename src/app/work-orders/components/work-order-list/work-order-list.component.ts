@@ -1,8 +1,10 @@
-import {Component, OnInit, OnDestroy, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, OnDestroy, Output, EventEmitter, inject} from '@angular/core';
 import {WorkOrderService, WorkOrder,} from '../../services';
 import {Subscription} from 'rxjs';
 import {PaginationData} from '../../../shared/components/pagination/pagination.component';
 import {Router} from '@angular/router';
+import {PreferencesService} from '../../../core/services/preferences.service';
+import {ToastService} from '../../../core/services/toast.service';
 
 // Interfaces for nested objects
 interface User {
@@ -33,6 +35,7 @@ interface Location {
 })
 export class WorkOrderListComponent implements OnInit, OnDestroy {
   @Output() createWorkOrderRequested = new EventEmitter<void>();
+  private prefsService = inject(PreferencesService);
 
   workOrders: any[] = [];
   viewMode: 'grid' | 'list' = 'grid';
@@ -71,10 +74,19 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
 
   private subscription = new Subscription();
 
-  constructor(private workOrderService: WorkOrderService, private router: Router) {
+  constructor(
+    private workOrderService: WorkOrderService, 
+    private router: Router,
+    private toastService: ToastService
+  ) {
   }
 
   ngOnInit(): void {
+    // Apply items per page from user preferences
+    const itemsPerPage = this.prefsService.get('items_per_page') || 20;
+    this.perPage = itemsPerPage;
+    this.pagination.per_page = itemsPerPage;
+    
     this.loadWorkOrders();
   }
 
@@ -159,6 +171,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('WorkOrderListComponent: Error loading work orders:', error);
+          this.toastService.error('Failed to load work orders');
           this.workOrders = [];
           this.isLoading = false;
         },
@@ -370,9 +383,13 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     ids.forEach((id) => {
       this.subscription.add(
         this.workOrderService.deleteWorkOrder(id).subscribe({
-          next: () => finalize(),
+          next: () => {
+            this.toastService.success('Work order deleted successfully');
+            finalize();
+          },
           error: (error) => {
             console.error('Failed to delete work order:', error);
+            this.toastService.error('Failed to delete work order');
             finalize();
           }
         })
@@ -395,7 +412,8 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     // Close the modal
     this.closeEditModal();
 
-    // Show success message (optional)
+    // Show success message
+    this.toastService.success('Work order updated successfully');
     console.log('Work order updated successfully:', updatedWorkOrder);
   }
 

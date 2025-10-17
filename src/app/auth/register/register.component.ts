@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { NgIf} from '@angular/common';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { Component, OnDestroy } from '@angular/core';
+import { NgIf, NgClass } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { OnDestroy } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
+import { PasswordValidator, PasswordStrength } from '../../core/validators/password.validator';
 
 @Component({
   selector: 'app-register',
@@ -11,6 +11,7 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [
     NgIf,
+    NgClass,
     ReactiveFormsModule
   ],
   styleUrl: './register.component.scss'
@@ -22,6 +23,10 @@ export class RegisterComponent implements OnDestroy {
   showSuccessMessage = false;
   countdown = 60;
   countdownInterval: any;
+  passwordStrength: PasswordStrength | null = null;
+  showPasswordRequirements = false;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -33,9 +38,18 @@ export class RegisterComponent implements OnDestroy {
       last_name: ['', [Validators.required]],
       company_name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [
+        Validators.required, 
+        Validators.minLength(8),
+        PasswordValidator.strong()
+      ]],
       password_confirmation: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
+    
+    // Watch password field for strength calculation
+    this.registerForm.get('password')?.valueChanges.subscribe(password => {
+      this.passwordStrength = PasswordValidator.calculateStrength(password || '');
+    });
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -82,6 +96,19 @@ export class RegisterComponent implements OnDestroy {
         this.router.navigate(['/login']);
       }
     }, 1000);
+  }
+
+  getPasswordRequirements() {
+    const password = this.registerForm.get('password')?.value || '';
+    return PasswordValidator.meetsRequirements(password);
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   ngOnDestroy() {

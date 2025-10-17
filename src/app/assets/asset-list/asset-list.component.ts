@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CurrencyPipe, NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +12,7 @@ import { PdfExportService } from '../../shared/services/pdf-export.service';
 import { RouterModule } from '@angular/router';
 import { PaginationComponent, PaginationData } from '../../shared/components/pagination/pagination.component';
 import { GlobalDropdownComponent, DropdownOption } from '../../shared/components/global-dropdown/global-dropdown.component';
+import { PreferencesService } from '../../core/services/preferences.service';
 import * as QRCode from 'qrcode';
 
 @Component({
@@ -23,6 +24,7 @@ import * as QRCode from 'qrcode';
 })
 export class AssetListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private prefsService = inject(PreferencesService);
 
   constructor(
     private router: Router,
@@ -139,6 +141,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
   selectAllAssets = false;
 
   ngOnInit() {
+    // Apply items per page from user preferences
+    const itemsPerPage = this.prefsService.get('items_per_page') || 20;
+    this.currentFilters.per_page = itemsPerPage;
+    this.pagination.per_page = itemsPerPage;
+    
     this.loadAssetStatistics();
     this.loadAssets();
     this.loadCategories();

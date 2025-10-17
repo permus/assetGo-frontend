@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { WorkOrderPartItem, WorkOrderService } from '../../services/work-order.service';
 import { InventoryAnalyticsService, InventoryPart, PartsCatalogResponse } from '../../../core/services/inventory-analytics.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-add-work-order-parts-modal',
@@ -19,7 +20,11 @@ export class AddWorkOrderPartsModalComponent implements OnChanges {
   cart: Array<{ part: InventoryPart; qty: number; unit_cost?: number }> = [];
   loading = false;
 
-  constructor(private woService: WorkOrderService, private inv: InventoryAnalyticsService) {}
+  constructor(
+    private woService: WorkOrderService, 
+    private inv: InventoryAnalyticsService,
+    private toastService: ToastService
+  ) {}
 
   search(): void {
     this.loading = true;
@@ -28,7 +33,10 @@ export class AddWorkOrderPartsModalComponent implements OnChanges {
         this.results = resp?.data?.data || [];
         this.loading = false;
       },
-      error: () => { this.loading = false; }
+      error: () => { 
+        this.loading = false;
+        this.toastService.error('Failed to search parts');
+      }
     });
   }
 
@@ -36,13 +44,16 @@ export class AddWorkOrderPartsModalComponent implements OnChanges {
     const existing = this.cart.find((c) => c.part.id === part.id);
     if (existing) {
       existing.qty += 1;
+      this.toastService.success('Part quantity updated');
       return;
     }
     this.cart.push({ part, qty: 1, unit_cost: part.unit_cost || undefined });
+    this.toastService.success('Part added to cart');
   }
 
   removeFromCart(partId: number): void {
     this.cart = this.cart.filter((c) => c.part.id !== partId);
+    this.toastService.success('Part removed from cart');
   }
 
   async save(): Promise<void> {
@@ -53,8 +64,12 @@ export class AddWorkOrderPartsModalComponent implements OnChanges {
     const payload = this.cart.map((c) => ({ part_id: c.part.id, qty: c.qty, unit_cost: c.unit_cost }));
     this.woService.addParts(this.workOrderId, payload).subscribe({
       next: (items) => {
+        this.toastService.success('Parts added to work order successfully');
         this.saved.emit(items);
         this.closed.emit();
+      },
+      error: () => {
+        this.toastService.error('Failed to add parts to work order');
       }
     });
   }

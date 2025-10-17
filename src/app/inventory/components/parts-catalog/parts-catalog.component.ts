@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InventoryAnalyticsService, InventoryPart, PartsCatalogResponse, CreatePartRequest, UpdatePartRequest } from '../../../core/services/inventory-analytics.service';
@@ -8,6 +8,7 @@ import {
   DeleteConfirmationModalComponent
 } from '../../../assets/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { PreferencesService } from '../../../core/services/preferences.service';
 
 @Component({
   selector: 'app-parts-catalog',
@@ -17,6 +18,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
   styleUrls: ['./parts-catalog.component.scss']
 })
 export class PartsCatalogComponent implements OnInit {
+  private prefsService = inject(PreferencesService);
+  
   // Data properties
   parts: InventoryPart[] = [];
   loading = true;
@@ -52,6 +55,9 @@ export class PartsCatalogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Apply items per page from user preferences
+    this.perPage = this.prefsService.get('items_per_page') || 15;
+    
     this.loadPartsCatalog();
     this.loadPartsOverview();
   }

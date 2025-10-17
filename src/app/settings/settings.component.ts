@@ -8,6 +8,7 @@ import { CompanySettingsComponent } from './components/company-settings.componen
 import { ModuleSettingsComponent } from './components/module-settings.component';
 import { PreferencesComponent } from './components/preferences.component';
 import { DateTimeSettingsComponent } from './components/date-time-settings.component';
+import { SecuritySettingsComponent } from './components/security-settings.component';
 
 @Component({
   selector: 'app-settings',
@@ -15,7 +16,8 @@ import { DateTimeSettingsComponent } from './components/date-time-settings.compo
     NgClass,
     CurrencySettingsComponent, LanguageSettingsComponent,
     CompanySettingsComponent, ModuleSettingsComponent,
-    PreferencesComponent, DateTimeSettingsComponent
+    PreferencesComponent, DateTimeSettingsComponent,
+    SecuritySettingsComponent
   ],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
@@ -24,11 +26,11 @@ export class SettingsComponent {
   private access = inject(SettingsAccessService);
   private auth = inject(AuthService);
 
-  tab = signal<'localisation'|'modules'|'company'|'preference'|'date'>('localisation');
+  tab = signal<'localisation'|'modules'|'company'|'preference'|'date'|'security'>('localisation');
   user = computed(() => this.auth.getCurrentUser());
   isAdmin = computed(() => this.access.isAdmin(this.user() as any));
 
-  onTabChange(tab: 'localisation'|'modules'|'company'|'preference'|'date') {
+  onTabChange(tab: 'localisation'|'modules'|'company'|'preference'|'date'|'security') {
     this.tab.set(tab);
   }
 }

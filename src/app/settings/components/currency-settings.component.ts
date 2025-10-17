@@ -2,6 +2,7 @@ import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsService } from '../settings.service';
 import { CurrencyService } from '../../core/services/currency.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'currency-settings',
@@ -40,6 +41,7 @@ export class CurrencySettingsComponent implements OnInit {
   currentCurrency = signal('');
   private api = inject(SettingsService);
   private currency = inject(CurrencyService);
+  private toast = inject(ToastService);
 
   ngOnInit() {
     this.api.getCompany().subscribe(res => {
@@ -54,8 +56,16 @@ export class CurrencySettingsComponent implements OnInit {
     if (this.currentCurrency() === code) return;
     this.saving.set(true);
     this.api.updateCurrency(code).subscribe({
-      next: () => { this.currentCurrency.set(code); this.currency.refreshFromServer().subscribe(); this.saving.set(false); },
-      error: () => this.saving.set(false)
+      next: () => { 
+        this.currentCurrency.set(code); 
+        this.currency.refreshFromServer().subscribe(); 
+        this.saving.set(false);
+        this.toast.success('Currency updated successfully!');
+      },
+      error: (error) => {
+        this.toast.error(error.error?.message || 'Failed to update currency');
+        this.saving.set(false);
+      }
     });
   }
 

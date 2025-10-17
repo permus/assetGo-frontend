@@ -11,6 +11,7 @@ import {
   LocationResponse
 } from '../../../core/services/inventory-analytics.service';
 import {CurrencyService} from '../../../core/services/currency.service';
+import {ToastService} from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-stock-levels',
@@ -85,7 +86,11 @@ export class StockLevelsComponent implements OnInit {
   availableLocations: any[] = [];
   availableParts: any[] = [];
   releaseQuantities: { [stockId: number]: number } = {};
-  constructor(private analyticsService: InventoryAnalyticsService, private currencyService: CurrencyService) {
+  constructor(
+    private analyticsService: InventoryAnalyticsService,
+    private currencyService: CurrencyService,
+    private toastService: ToastService
+  ) {
   }
 
   getCurrencySymbol(): string {
@@ -129,7 +134,7 @@ export class StockLevelsComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error loading stock levels:', err);
+        this.toastService.error('Error loading stock levels. Please try again.');
         this.error = 'Error loading stock levels. Please try again.';
         this.loading = false;
       }
@@ -137,15 +142,9 @@ export class StockLevelsComponent implements OnInit {
   }
 
   loadAvailableLocations(): void {
-    console.log('Loading available locations...');
-    console.log('API URL:', this.analyticsService['apiUrl']);
-
     // Fetch locations from the API with exact parameters as specified
     this.analyticsService.getLocations(1, 100, 0, 'created', 'desc').subscribe({
       next: (response: any) => {
-        console.log('Locations API response:', response);
-        console.log('Response success:', response.success);
-        console.log('Response data:', response.data);
 
         // Handle different possible response structures
         let locationsData: any[] = [];
@@ -171,17 +170,8 @@ export class StockLevelsComponent implements OnInit {
             name: location.name || location.title || location.display_name || 'Unknown Location',
             code: location.code || location.short_code || (location.name ? location.name.substring(0, 2).toUpperCase() : 'LO')
           }));
-          console.log('Available locations loaded:', this.availableLocations);
-          console.log('Locations count:', this.availableLocations.length);
         } else {
-          console.error('Failed to load locations for dropdown - no valid data found');
-          console.error('Response structure:', {
-            success: response.success,
-            hasData: !!response.data,
-            dataType: typeof response.data,
-            isArray: Array.isArray(response.data),
-            dataKeys: response.data ? Object.keys(response.data) : []
-          });
+          this.toastService.warning('No locations found, using fallback data');
           // Fallback to mock data if API response is not successful
           this.availableLocations = [
             {id: 1, name: 'Main Warehouse', code: 'MW'},
@@ -191,39 +181,29 @@ export class StockLevelsComponent implements OnInit {
         }
       },
       error: (err: any) => {
-        console.error('Error loading locations:', err);
-        console.error('Error details:', {
-          status: err.status,
-          statusText: err.statusText,
-          message: err.message,
-          error: err.error
-        });
+        this.toastService.error('Error loading locations. Using fallback data.');
         // Fallback to mock data if API fails
         this.availableLocations = [
           {id: 1, name: 'Main Warehouse', code: 'MW'},
           {id: 2, name: 'Secondary Storage', code: 'SS'},
           {id: 3, name: 'Field Office', code: 'FO'}
         ];
-        console.log('Using fallback locations:', this.availableLocations);
       }
     });
   }
 
   loadAvailableParts(): void {
-    console.log('Loading available parts...');
     // Fetch parts from the API
     this.analyticsService.getPartsCatalog('', 'active', 1, 100).subscribe({
       next: (response: any) => {
-        console.log('Parts API response:', response);
         if (response.success) {
           this.availableParts = response.data.data.map((part: any) => ({
             id: part.id,
             name: part.name,
             part_number: part.part_number
           }));
-          console.log('Available parts loaded:', this.availableParts);
         } else {
-          console.error('Failed to load parts for dropdown');
+          this.toastService.warning('Failed to load parts, using fallback data');
           // Fallback to mock data if API response is not successful
           this.availableParts = [
             {id: 1, name: 'Sample Part 1', part_number: 'P001'},
@@ -233,14 +213,13 @@ export class StockLevelsComponent implements OnInit {
         }
       },
       error: (err: any) => {
-        console.error('Error loading parts for dropdown:', err);
+        this.toastService.error('Error loading parts. Using fallback data.');
         // Fallback to mock data if API fails
         this.availableParts = [
           {id: 1, name: 'Sample Part 1', part_number: 'P001'},
           {id: 2, name: 'Sample Part 2', part_number: 'P002'},
           {id: 3, name: 'Sample Part 3', part_number: 'P003'}
         ];
-        console.log('Using fallback parts:', this.availableParts);
       }
     });
   }
@@ -278,13 +257,8 @@ export class StockLevelsComponent implements OnInit {
 
   // Stock Adjustment
   openAdjustmentModal(stock?: InventoryStock): void {
-    console.log('Opening adjustment modal...');
-    console.log('Available locations:', this.availableLocations);
-    console.log('Available parts:', this.availableParts);
-
     // Ensure locations are loaded when modal opens
     if (this.availableLocations.length === 0) {
-      console.log('No locations available, reloading...');
       this.loadAvailableLocations();
     }
 
@@ -323,15 +297,14 @@ export class StockLevelsComponent implements OnInit {
       this.analyticsService.adjustStock(adjustmentData).subscribe({
         next: (response) => {
           if (response.success) {
+            this.toastService.success('Stock adjusted successfully');
             this.closeAdjustmentModal();
             this.loadStockLevels();
-            // You could add a success notification here
           }
         },
         error: (err) => {
           this.adjustStockLoading = false;
-          console.error('Error adjusting stock:', err);
-          // You could add an error notification here
+          this.toastService.error('Error adjusting stock: ' + (err.error?.message || 'Please try again'));
         }
       }).add(() => {
         this.adjustStockLoading = false;
@@ -370,15 +343,14 @@ export class StockLevelsComponent implements OnInit {
       this.analyticsService.transferStock(this.transferForm).subscribe({
         next: (response) => {
           if (response.success) {
+            this.toastService.success('Stock transferred successfully');
             this.closeTransferModal();
             this.loadStockLevels();
-            // You could add a success notification here
           }
         },
         error: (err) => {
           this.transferLoading = false;
-          console.error('Error transferring stock:', err);
-          // You could add an error notification here
+          this.toastService.error('Error transferring stock: ' + (err.error?.message || 'Please try again'));
         }
       }).add(() => {
         this.transferLoading = false;
@@ -413,15 +385,14 @@ export class StockLevelsComponent implements OnInit {
       this.analyticsService.reserveStock(this.reserveForm).subscribe({
         next: (response) => {
           if (response.success) {
+            this.toastService.success('Stock reserved successfully');
             this.closeReserveModal();
             this.loadStockLevels();
-            // You could add a success notification here
           }
         },
         error: (err) => {
           this.reserveLoading = false;
-          console.error('Error reserving stock:', err);
-          // You could add an error notification here
+          this.toastService.error('Error reserving stock: ' + (err.error?.message || 'Please try again'));
         }
       }).add(() => {
         this.reserveLoading = false;
@@ -456,15 +427,14 @@ export class StockLevelsComponent implements OnInit {
       this.analyticsService.performStockCount(this.countForm).subscribe({
         next: (response) => {
           if (response.success) {
+            this.toastService.success('Stock count completed successfully');
             this.closeCountModal();
             this.loadStockLevels();
-            // You could add a success notification here
           }
         },
         error: (err) => {
           this.countLoading = false;
-          console.error('Error performing stock count:', err);
-          // You could add an error notification here
+          this.toastService.error('Error performing stock count: ' + (err.error?.message || 'Please try again'));
         }
       }).add(() => {
         this.countLoading = false;
@@ -487,14 +457,14 @@ export class StockLevelsComponent implements OnInit {
       this.analyticsService.releaseStock(releaseData).subscribe({
         next: (response) => {
           if (response.success) {
+            this.toastService.success('Stock released successfully');
             this.loadStockLevels();
             this.releaseQuantities = {};
           }
         },
         error: (err) => {
           this.releaseLoading = false;
-          console.error('Error releasing stock:', err);
-          // You could add an error notification here
+          this.toastService.error('Error releasing stock: ' + (err.error?.message || 'Please try again'));
         }
       }).add(() => {
         this.releaseLoading = false;
@@ -534,76 +504,16 @@ export class StockLevelsComponent implements OnInit {
     return ['receipt', 'issue', 'adjustment', 'return'];
   }
 
-  // Debug method to test API calls
-  testAPIs(): void {
-    console.log('Testing APIs...');
-    console.log('Environment API URL:', this.analyticsService['apiUrl']);
-
-    // Test locations API with exact parameters
-    this.analyticsService.getLocations(1, 100, 0, 'created', 'desc').subscribe({
-      next: (response) => {
-        console.log('Locations API test response:', response);
-      },
-      error: (err) => {
-        console.error('Locations API test error:', err);
-      }
-    });
-
-    // Test parts API
-    this.analyticsService.getPartsCatalog('', 'active', 1, 5).subscribe({
-      next: (response) => {
-        console.log('Parts API test response:', response);
-      },
-      error: (err) => {
-        console.error('Parts API test error:', err);
-      }
-    });
-  }
-
   // Method to refresh locations data
   refreshLocations(): void {
-    console.log('Refreshing locations data...');
     this.loadAvailableLocations();
+    this.toastService.info('Refreshing locations...');
   }
 
   // Method to force reload locations and show status
   forceReloadLocations(): void {
-    console.log('Force reloading locations...');
     this.availableLocations = []; // Clear current locations
     this.loadAvailableLocations();
-
-    // Show a temporary message
-    setTimeout(() => {
-      if (this.availableLocations.length === 0) {
-        console.log('Still no locations after force reload');
-      } else {
-        console.log('Locations successfully loaded after force reload');
-      }
-    }, 2000);
-  }
-
-  // Method to manually test the locations API
-  testLocationsAPI(): void {
-    console.log('=== Testing Locations API ===');
-    console.log('Current token:', localStorage.getItem('token'));
-    console.log('Current API URL:', this.analyticsService['apiUrl']);
-
-    // Test with a simple HTTP call to see what we get
-    this.analyticsService.getLocations(1, 5, 0, 'created', 'desc').subscribe({
-      next: (response) => {
-        console.log('✅ Locations API test successful:', response);
-        if (response.success && response.data && response.data.data) {
-          console.log('✅ Locations found:', response.data.data.length);
-          console.log('✅ First location:', response.data.data[0]);
-        } else {
-          console.log('❌ No locations in response');
-        }
-      },
-      error: (err) => {
-        console.log('❌ Locations API test failed:', err);
-        console.log('❌ Error status:', err.status);
-        console.log('❌ Error message:', err.message);
-      }
-    });
+    this.toastService.info('Reloading locations...');
   }
 }

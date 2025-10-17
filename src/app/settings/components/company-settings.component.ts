@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsService, Company } from '../settings.service';
+import { ToastService } from '../../core/services/toast.service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
@@ -178,6 +179,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 export class CompanySettingsComponent implements OnInit {
   private api = inject(SettingsService);
   private fb = inject(FormBuilder);
+  private toast = inject(ToastService);
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     industry: [''],
@@ -255,12 +257,13 @@ export class CompanySettingsComponent implements OnInit {
         next: (r) => {
           // Update form with the server response
           this.form.patchValue({ logo_url: r.data?.logo_url || this.form.get('logo_url')?.value });
+          this.toast.success('Logo uploaded successfully!');
           
           // Then update other company data
           this.updateCompanyData();
         },
         error: (error) => {
-          console.error('Logo upload failed:', error);
+          this.toast.error(error.error?.message || 'Failed to upload logo');
           this.saving.set(false);
         }
       });
@@ -280,9 +283,10 @@ export class CompanySettingsComponent implements OnInit {
         this.saving.set(false);
         // Reset logoFile after successful upload
         this.logoFile = null;
+        this.toast.success('Company settings saved successfully!');
       },
       error: (error) => {
-        console.error('Company update failed:', error);
+        this.toast.error(error.error?.message || 'Failed to save company settings');
         this.saving.set(false);
       }
     });
