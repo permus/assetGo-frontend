@@ -6,12 +6,13 @@ import {LocationService, Location} from '../../services/location.service';
 import {AddLocationModalComponent} from '../add-location-modal/add-location-modal.component';
 import {EditLocationModalComponent} from '../edit-location-modal/edit-location-modal.component';
 import {DeleteConfirmationModalComponent} from '../delete-confirmation-modal/delete-confirmation-modal.component';
+import {AssignAssetsModalComponent} from '../assign-assets-modal/assign-assets-modal.component';
 import {Location as angularLocation} from '@angular/common';
 
 @Component({
   selector: 'app-location-view',
   standalone: true,
-  imports: [CommonModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent],
+  imports: [CommonModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, AssignAssetsModalComponent],
   templateUrl: './location-view.component.html',
   styleUrl: './location-view.component.scss'
 })
@@ -28,10 +29,16 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   subLocations: Location[] = [];
   subLocationsLoading = false;
 
+  // Assets data
+  assets: any[] = [];
+  assetsLoading = false;
+
   // Modal state
   showAddSubLocationModal = false;
   showEditLocationModal = false;
   showDeleteConfirmationModal = false;
+  showAssignAssetsModal = false;
+  showAddAssetDropdown = false;
 
   // Mock data for demonstration
   mockStats = {
@@ -103,6 +110,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
             this.ancestors = response.data.ancestors || [];
             this.updateMockStats();
             this.loadSubLocations();
+            this.loadAssets();
           } else {
             this.error = response.message || 'Failed to load location';
           }
@@ -115,6 +123,28 @@ export class LocationViewComponent implements OnInit, OnDestroy {
       });
   }
 
+  loadAssets() {
+    if (!this.location) return;
+
+    this.assetsLoading = true;
+    this.locationService.getLocationAssets(this.location.id, { per_page: 100 })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.assets = response.data.assets;
+            // Update stats with real data
+            this.mockStats.totalAssets = response.data.pagination.total;
+          }
+          this.assetsLoading = false;
+        },
+        error: (error) => {
+          console.error('Failed to load assets:', error);
+          this.assetsLoading = false;
+        }
+      });
+  }
+
   loadSubLocations() {
     if (!this.location) return;
 
@@ -122,7 +152,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
 
     const params = {
       parent_id: this.location.id,
-      per_page: 50 // Load more sublocations
+      per_page: 100
     };
 
     this.locationService.getLocations(params)
@@ -131,6 +161,12 @@ export class LocationViewComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success) {
             this.subLocations = response.data.locations;
+            
+            // Load children for each sub-location recursively
+            this.subLocations.forEach(subLoc => {
+              this.loadChildrenRecursively(subLoc);
+            });
+            
             this.updateMockStats();
           }
           this.subLocationsLoading = false;
@@ -138,6 +174,31 @@ export class LocationViewComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading sub-locations:', error);
           this.subLocationsLoading = false;
+        }
+      });
+  }
+
+  loadChildrenRecursively(location: any) {
+    const params = {
+      parent_id: location.id,
+      per_page: 100
+    };
+
+    this.locationService.getLocations(params)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data.locations.length > 0) {
+            location.children = response.data.locations;
+            
+            // Continue loading for deeper levels
+            location.children.forEach((child: any) => {
+              this.loadChildrenRecursively(child);
+            });
+          }
+        },
+        error: (error) => {
+          console.error('Error loading nested children:', error);
         }
       });
   }
@@ -167,6 +228,27 @@ export class LocationViewComponent implements OnInit, OnDestroy {
       ['/assets/create'],
       {queryParams: {location_id: this.location?.id}}
     );
+    this.showAddAssetDropdown = false;
+  }
+
+  openAssignAssetsModal() {
+    this.showAssignAssetsModal = true;
+    this.showAddAssetDropdown = false;
+  }
+
+  closeAssignAssetsModal() {
+    this.showAssignAssetsModal = false;
+  }
+
+  onAssetsAssigned(count: number) {
+    // Refresh assets list to show newly assigned assets
+    this.loadAssets();
+    // Show success message (you can add a toast notification service if available)
+    console.log(`${count} asset(s) assigned successfully`);
+  }
+
+  toggleAddAssetDropdown() {
+    this.showAddAssetDropdown = !this.showAddAssetDropdown;
   }
 
   deleteLocation() {

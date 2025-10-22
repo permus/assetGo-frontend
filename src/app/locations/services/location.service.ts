@@ -217,4 +217,61 @@ export class LocationService {
       responseType: 'blob'
     });
   }
+
+  // Get assets currently assigned to a location
+  getLocationAssets(locationId: number, params: {
+    search?: string;
+    per_page?: number;
+    page?: number;
+  } = {}): Observable<any> {
+    let httpParams = new HttpParams();
+    
+    Object.keys(params).forEach(key => {
+      const value = params[key as keyof typeof params];
+      if (value !== undefined && value !== null && value !== '') {
+        httpParams = httpParams.set(key, value.toString());
+      }
+    });
+
+    return this.http.get(`${this.apiUrl}/${locationId}/assets`, {
+      params: httpParams,
+      ...this.getAuthHeaders()
+    });
+  }
+
+  // Get assignable assets for a location
+  getAssignableAssets(locationId: number, params: {
+    search?: string;
+    category_id?: number;
+    status?: string;
+    per_page?: number;
+    page?: number;
+  } = {}): Observable<any> {
+    let httpParams = new HttpParams();
+    
+    Object.keys(params).forEach(key => {
+      const value = params[key as keyof typeof params];
+      if (value !== undefined && value !== null && value !== '') {
+        httpParams = httpParams.set(key, value.toString());
+      }
+    });
+
+    return this.http.get(`${this.apiUrl}/${locationId}/assignable-assets`, {
+      params: httpParams,
+      ...this.getAuthHeaders()
+    });
+  }
+
+  // Assign assets to a location
+  assignAssets(locationId: number, assetIds: number[], departmentId?: number): Observable<any> {
+    const payload: any = {
+      asset_ids: assetIds
+    };
+    
+    if (departmentId) {
+      payload.department_id = departmentId;
+    }
+
+    return this.http.post(`${this.apiUrl}/${locationId}/assign-assets`, payload, this.getAuthHeaders());
+  }
 }

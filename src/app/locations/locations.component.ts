@@ -14,10 +14,11 @@ import {
 import {BulkCreateModalComponent} from './components/bulk-create-modal/bulk-create-modal.component';
 import {HierarchyManagementComponent} from './components/hierarchy-management/hierarchy-management.component';
 import {QrViewComponent} from './components/qr-view/qr-view.component';
+import {TooltipDirective} from '../shared/directives/tooltip.directive';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent, HierarchyManagementComponent, QrViewComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, AddLocationModalComponent, EditLocationModalComponent, DeleteConfirmationModalComponent, BulkCreateModalComponent, HierarchyManagementComponent, QrViewComponent, TooltipDirective],
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrl: './locations.component.scss'

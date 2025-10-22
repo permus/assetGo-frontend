@@ -58,7 +58,6 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
   selectedTypeId: number | null = null;
   loading = false;
   errorMessage = '';
-  showAllTypes = false;
   autocomplete: any;
 
   // Google Maps properties
@@ -179,7 +178,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
    }
 
   getDisplayedTypes() {
-    return this.showAllTypes ? this.locationTypes : this.locationTypes.slice(0, 6);
+    return this.locationTypes.slice(0, 6);
   }
 
   selectLocationType(type: LocationType) {
@@ -271,11 +270,6 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
     this.editForm.reset();
     this.selectedTypeId = null;
     this.errorMessage = '';
-    this.showAllTypes = false;
-  }
-
-  public toggleShowAllTypes() {
-    this.showAllTypes = !this.showAllTypes;
   }
 
   // Map methods
