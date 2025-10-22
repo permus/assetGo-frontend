@@ -114,7 +114,7 @@
         </span>
       </div>
       <div class="text-3xl font-bold text-gray-900">{{ summary.totalAssets }}</div>
-      <a href="#" class="text-sm text-blue-600 font-medium mt-1">Assets in system</a>
+      <span class="text-sm text-blue-600 font-medium mt-1">Assets in system</span>
     </div>
     <!-- Active Assets -->
     <div
@@ -174,7 +174,7 @@
         </span>
       </div>
       <div class="text-3xl font-bold text-gray-900">{{ summary.assetHealth }}%</div>
-      <span class="text-sm text-cyan-600 font-medium mt-1">Excellent health</span>
+      <span class="text-sm text-cyan-600 font-medium mt-1">{{ getHealthLabel(summary.assetHealth) }}</span>
     </div>
   </div>
 

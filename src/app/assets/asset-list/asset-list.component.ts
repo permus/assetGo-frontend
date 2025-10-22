@@ -194,8 +194,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
               activeAssets: data.active_assets || 0,
               maintenance: data.maintenance || 0,
               totalValue: data.total_asset_value || 0,
-              assetHealth: data.total_asset_health && data.total_assets ?
-                Math.round(data.total_asset_health / data.total_assets) : 100
+              assetHealth: data.average_health_score || 0
             };
           }
         },
@@ -211,6 +210,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  getHealthLabel(health: number): string {
+    if (health === 0) return 'No data';
+    if (health >= 90) return 'Excellent health';
+    if (health >= 75) return 'Good health';
+    if (health >= 60) return 'Fair health';
+    if (health >= 40) return 'Poor health';
+    return 'Critical';
+  }
+
   // loadAssetStatistics() {
   //   this.assetService.getAssetStatistics()
   //     .pipe(takeUntil(this.destroy$))
@@ -223,7 +231,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   //             activeAssets: data.active_assets || 0,
   //             maintenance: data.maintenance || 0,
   //             totalValue: data.total_asset_value || 0,
-  //             assetHealth: data.total_asset_health ? Math.round(data.total_asset_health / (data.total_assets || 1)) : 100
+  //             assetHealth: data.average_health_score || 0
   //           };
   //         }
   //       },
