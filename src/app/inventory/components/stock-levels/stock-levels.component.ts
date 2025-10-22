@@ -230,7 +230,7 @@ export class StockLevelsComponent implements OnInit {
       sum + (stock.on_hand * stock.average_cost), 0
     );
     this.summaryData.lowStockItems = this.stockLevels.filter(stock =>
-      stock.on_hand <= (stock.part.reorder_point || 0)
+      stock.part && stock.on_hand <= (stock.part.reorder_point || 0)
     ).length;
     this.summaryData.outOfStockItems = this.stockLevels.filter(stock =>
       stock.on_hand <= 0
@@ -477,7 +477,7 @@ export class StockLevelsComponent implements OnInit {
       return {status: 'Out of Stock', class: 'out-of-stock', icon: 'x-circle'};
     }
 
-    if (stock.on_hand <= (stock.part.reorder_point || 0)) {
+    if (stock.part && stock.on_hand <= (stock.part.reorder_point || 0)) {
       return {status: 'Low Stock', class: 'low-stock', icon: 'exclamation-triangle'};
     }
 

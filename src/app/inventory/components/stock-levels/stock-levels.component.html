@@ -192,12 +192,12 @@
         <tbody>
         <tr *ngFor="let stock of stockLevels">
           <td class="part-info">
-            <div class="part-name">{{ stock.part.name }}</div>
-            <div class="part-number">{{ stock.part.part_number }}</div>
+            <div class="part-name">{{ stock.part?.name || 'N/A' }}</div>
+            <div class="part-number">{{ stock.part?.part_number || 'N/A' }}</div>
           </td>
           <td class="location-info">
-            <div class="location-name">{{ stock.location.name }}</div>
-            <div class="location-code" *ngIf="stock.location.code">{{ stock.location.code }}</div>
+            <div class="location-name">{{ stock.location?.name || 'N/A' }}</div>
+            <div class="location-code" *ngIf="stock.location?.code">{{ stock.location.code }}</div>
           </td>
           <td class="stock-quantity">
               <span class="quantity" [class]="getStockLevelClass(stock)">
