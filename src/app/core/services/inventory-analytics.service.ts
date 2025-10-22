@@ -690,7 +690,8 @@ export class InventoryAnalyticsService {
     search?: string,
     status?: string,
     page: number = 1,
-    perPage: number = 15
+    perPage: number = 15,
+    includeArchived: boolean = false
   ): Observable<PartsCatalogResponse> {
     console.log('Calling parts API:', `${this.apiUrl}/inventory/parts`);
     let params = new HttpParams()
@@ -703,6 +704,10 @@ export class InventoryAnalyticsService {
 
     if (status) {
       params = params.set('status', status);
+    }
+
+    if (includeArchived) {
+      params = params.set('include_archived', 'true');
     }
 
     console.log('Parts API params:', params.toString());
@@ -747,6 +752,22 @@ export class InventoryAnalyticsService {
   deletePart(partId: number): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(
       `${this.apiUrl}/inventory/parts/${partId}`,
+      this.getAuthHeaders()
+    );
+  }
+
+  archivePart(partId: number, force: boolean = false): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/inventory/parts/${partId}/archive`,
+      { force },
+      this.getAuthHeaders()
+    );
+  }
+
+  restorePart(partId: number): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/inventory/parts/${partId}/restore`,
+      {},
       this.getAuthHeaders()
     );
   }

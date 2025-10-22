@@ -9,6 +9,7 @@ import {
 } from '../../../assets/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PreferencesService } from '../../../core/services/preferences.service';
+import { ModuleAccessService } from '../../../core/services/module-access.service';
 
 @Component({
   selector: 'app-parts-catalog',
@@ -26,6 +27,9 @@ export class PartsCatalogComponent implements OnInit {
   error: string | null = null;
   isDropdownOpen = false;
   showDeleteConfirmationModal = false;
+  showArchiveModal = false;
+  archiveWarningData: any = null;
+  includeArchived = false;
   // Search and filter properties
   searchTerm = '';
   selectedStatus = '';
@@ -48,7 +52,11 @@ export class PartsCatalogComponent implements OnInit {
     totalValue: 0
   };
 
-  constructor(private analyticsService: InventoryAnalyticsService, private currencyService: CurrencyService) { }
+  constructor(
+    private analyticsService: InventoryAnalyticsService, 
+    private currencyService: CurrencyService,
+    private moduleAccessService: ModuleAccessService
+  ) { }
 
   getCurrencySymbol(): string {
     return this.currencyService.getSymbol();
@@ -70,7 +78,8 @@ export class PartsCatalogComponent implements OnInit {
       this.searchTerm || undefined,
       this.selectedStatus || undefined,
       this.currentPage,
-      this.perPage
+      this.perPage,
+      this.includeArchived
     ).subscribe({
       next: (response) => {
         if (response.success) {
@@ -250,6 +259,71 @@ export class PartsCatalogComponent implements OnInit {
 
   closeDeleteModal(): void {
     this.showDeleteConfirmationModal = false;
+  }
+
+  onIncludeArchivedChange(): void {
+    this.currentPage = 1;
+    this.loadPartsCatalog();
+  }
+
+  hasPermission(module: string, action: string): boolean {
+    return this.moduleAccessService.hasPermission(module, action);
+  }
+
+  openArchiveModal(part: InventoryPart): void {
+    this.selectedPart = part;
+    this.archiveWarningData = null;
+    this.showArchiveModal = true;
+  }
+
+  closeArchiveModal(): void {
+    this.showArchiveModal = false;
+    this.selectedPart = null;
+    this.archiveWarningData = null;
+  }
+
+  onArchivePart(force: boolean = false): void {
+    if (!this.selectedPart) return;
+
+    this.partLoading = true;
+    this.analyticsService.archivePart(this.selectedPart.id, force).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.closeArchiveModal();
+          this.loadPartsCatalog();
+          this.loadPartsOverview();
+        }
+        this.partLoading = false;
+      },
+      error: (err) => {
+        console.error('Error archiving part:', err);
+        if (err.status === 422 && err.error?.requires_force) {
+          // Show warning with affected POs
+          this.archiveWarningData = err.error;
+        } else {
+          console.error('Archive error:', err.error?.message || 'Failed to archive part');
+          this.partLoading = false;
+        }
+        this.partLoading = false;
+      }
+    });
+  }
+
+  onRestorePart(part: InventoryPart): void {
+    this.partLoading = true;
+    this.analyticsService.restorePart(part.id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadPartsCatalog();
+          this.loadPartsOverview();
+        }
+        this.partLoading = false;
+      },
+      error: (err) => {
+        console.error('Error restoring part:', err);
+        this.partLoading = false;
+      }
+    });
   }
 
 }
