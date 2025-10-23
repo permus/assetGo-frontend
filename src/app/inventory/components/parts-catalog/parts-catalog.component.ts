@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InventoryAnalyticsService, InventoryPart, PartsCatalogResponse, CreatePartRequest, UpdatePartRequest } from '../../../core/services/inventory-analytics.service';
-import { EditPartModalComponent } from '../edit-part-modal/edit-part-modal.component';
 import { AddPartModalComponent } from '../add-part-modal/add-part-modal.component';
 import {
   DeleteConfirmationModalComponent
@@ -14,7 +13,7 @@ import { ModuleAccessService } from '../../../core/services/module-access.servic
 @Component({
   selector: 'app-parts-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, EditPartModalComponent, AddPartModalComponent, DeleteConfirmationModalComponent],
+  imports: [CommonModule, FormsModule, AddPartModalComponent, DeleteConfirmationModalComponent],
   templateUrl: './parts-catalog.component.html',
   styleUrls: ['./parts-catalog.component.scss']
 })
@@ -87,7 +86,7 @@ export class PartsCatalogComponent implements OnInit {
           this.totalParts = response.data.total;
           this.totalPages = response.data.last_page;
           this.currentPage = response.data.current_page;
-          this.calculateSummaryData();
+          // Note: Summary data is now loaded from API via loadPartsOverview()
         } else {
           this.error = 'Failed to load parts catalog';
         }
@@ -118,7 +117,8 @@ export class PartsCatalogComponent implements OnInit {
           this.summaryData.totalParts = response.data.total_parts;
           this.summaryData.lowStockItems = response.data.low_stock_count;
           this.summaryData.totalValue = response.data.total_value;
-          console.log('Parts overview:', this.summaryData.totalValue);
+        } else {
+          console.error('API returned success: false', response);
         }
       },
       error: (err) => {
@@ -132,7 +132,8 @@ export class PartsCatalogComponent implements OnInit {
   }
 
   onStatusFilterChange(): void {
-    // No-op; apply on button click
+    this.currentPage = 1;
+    this.loadPartsCatalog();
   }
 
   applyFilters(): void {

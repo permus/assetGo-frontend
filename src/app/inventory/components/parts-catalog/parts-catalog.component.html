@@ -80,7 +80,7 @@
             [(ngModel)]="searchTerm">
 
           <div class="grid-cols-2">
-            @if (searchTerm || selectedStatus) {
+            @if (searchTerm) {
               <button class="btn btn-outline" (click)="clearFilters()" style="margin-left: 0.5rem;">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: .5rem;">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -102,7 +102,7 @@
         <div class="status-filter relative">
           <select
             (mousedown)="isDropdownOpen = true"
-            (change)="isDropdownOpen =false"
+            (change)="onStatusFilterChange(); isDropdownOpen = false"
             (blur)="isDropdownOpen = false"
             class="status-select"
             [(ngModel)]="selectedStatus">
@@ -410,22 +410,16 @@
     </svg>
   </button>
 
-  <!-- Add Part Modal -->
+  <!-- Unified Part Modal -->
   <app-add-part-modal
-    *ngIf="showAddPartModal"
+    *ngIf="showAddPartModal || showEditPartModal"
     [manageLoading]="partLoading"
-    (closeModal)="closeAddPartModal()"
-    (createPart)="onCreatePart($event)">
-  </app-add-part-modal>
-
-  <!-- Edit Part Modal -->
-  <app-edit-part-modal
-    *ngIf="showEditPartModal && selectedPart"
-    [manageLoading]="partLoading"
+    [isEditMode]="showEditPartModal"
     [part]="selectedPart"
-    (closeModal)="closeEditPartModal()"
+    (closeModal)="showEditPartModal ? closeEditPartModal() : closeAddPartModal()"
+    (createPart)="onCreatePart($event)"
     (updatePart)="onUpdatePart($event)">
-  </app-edit-part-modal>
+  </app-add-part-modal>
 
   <!--Delete Part Modal-->
   <app-delete-confirmation-modal
@@ -433,6 +427,7 @@
     [selectedCount]="selectedPart ? 1 : 0"
     [entitySingular]="'Part'"
     [entityPlural]="'Parts'"
+    [itemName]="selectedPart?.name"
     [warningText]="null"
     (closeModal)="closeDeleteModal()"
     (confirmDelete)="onDeletePart(selectedPart?.id)">

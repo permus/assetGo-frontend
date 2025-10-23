@@ -84,7 +84,15 @@
             
             <div class="form-field">
               <label for="primaryPhone" class="field-label">Primary Phone *</label>
-              <input type="tel" id="primaryPhone" formControlName="phone" class="form-input" placeholder="Enter primary phone">
+              <input 
+                type="tel" 
+                id="primaryPhone" 
+                formControlName="phone" 
+                class="form-input" 
+                placeholder="Enter primary phone"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                (keypress)="onPhoneKeyPress($event)">
               <div class="error-message" *ngIf="getFieldError('phone')">
                 {{ getFieldError('phone') }}
               </div>
@@ -94,7 +102,15 @@
           <div class="form-row">
             <div class="form-field">
               <label for="alternatePhone" class="field-label">Alternate Phone</label>
-              <input type="tel" id="alternatePhone" formControlName="alternate_phone" class="form-input" placeholder="Enter alternate phone">
+              <input 
+                type="tel" 
+                id="alternatePhone" 
+                formControlName="alternate_phone" 
+                class="form-input" 
+                placeholder="Enter alternate phone"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                (keypress)="onPhoneKeyPress($event)">
             </div>
             
             <div class="form-field">

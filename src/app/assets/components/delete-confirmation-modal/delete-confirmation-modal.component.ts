@@ -47,6 +47,8 @@ export class DeleteConfirmationModalComponent {
   @Input() entityPlural = 'Assets';
   @Input() title: string | null = null;
   @Input() warningText: string | null = '⚠️ Warning: Only archived assets can be permanently deleted';
+  // For showing specific item name instead of generic text
+  @Input() itemName: string | null = null;
   @Output() closeModal = new EventEmitter<void>();
   @Output() confirmDelete = new EventEmitter<string>();
 

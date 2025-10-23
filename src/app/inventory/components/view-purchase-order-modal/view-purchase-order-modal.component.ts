@@ -81,8 +81,8 @@ export class ViewPurchaseOrderModalComponent {
     if (!items || !Array.isArray(items) || items.length === 0) return 0;
     return items.reduce((sum, item) => {
       const qty = Number(item?.ordered_qty) || 0;
-      const price = Number(item?.unit_price) || 0;
-      return sum + (qty * price);
+      const cost = Number(item?.unit_cost) || 0;
+      return sum + (qty * cost);
     }, 0);
   }
 

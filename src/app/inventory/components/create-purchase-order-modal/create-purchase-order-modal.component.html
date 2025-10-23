@@ -74,7 +74,15 @@
           <div class="form-row">
             <div class="form-field">
               <label for="orderDate" class="field-label">Order Date *</label>
-              <input type="date" id="orderDate" formControlName="order_date" class="form-input">
+              <input
+                type="text"
+                id="orderDate"
+                #dateInput
+                formControlName="order_date"
+                class="form-input flatpickr-input"
+                [class.error]="getFieldError('order_date')"
+                placeholder="Select order date"
+                readonly>
               <div class="error-message" *ngIf="getFieldError('order_date')">
                 {{ getFieldError('order_date') }}
               </div>
@@ -82,11 +90,27 @@
 
             <div class="form-field">
               <label for="expectedDelivery" class="field-label">Expected Delivery *</label>
-              <input type="date" id="expectedDelivery" formControlName="expected_date" class="form-input">
+              <input
+                type="text"
+                id="expectedDelivery"
+                #dateInput
+                formControlName="expected_date"
+                class="form-input flatpickr-input"
+                [class.error]="getFieldError('expected_date')"
+                placeholder="Select expected delivery date"
+                readonly>
               <div class="error-message" *ngIf="getFieldError('expected_date')">
                 {{ getFieldError('expected_date') }}
               </div>
             </div>
+          </div>
+
+          <!-- Date validation hint -->
+          <div class="form-hint">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Order date should be on or before the expected delivery date</span>
           </div>
 
           <div class="form-row">
@@ -150,7 +174,7 @@
 
                 <div class="form-field">
                   <label [for]="'partNumber_' + i" class="field-label">Part Number *</label>
-                  <input type="text" [id]="'partNumber_' + i" formControlName="part_number" class="form-input" placeholder="Enter part number">
+                  <input type="text" [id]="'partNumber_' + i" formControlName="part_number" class="form-input" placeholder="Auto-populated when part is selected" readonly>
                   <div class="error-message" *ngIf="getArrayFieldError('items', i, 'part_number')">
                     {{ getArrayFieldError('items', i, 'part_number') }}
                   </div>
@@ -160,7 +184,7 @@
               <div class="form-row">
                 <div class="form-field full-width">
                   <label [for]="'description_' + i" class="field-label">Description *</label>
-                  <input type="text" [id]="'description_' + i" formControlName="description" class="form-input" placeholder="Enter item description">
+                  <input type="text" [id]="'description_' + i" formControlName="description" class="form-input" placeholder="Auto-populated when part is selected" readonly>
                   <div class="error-message" *ngIf="getArrayFieldError('items', i, 'description')">
                     {{ getArrayFieldError('items', i, 'description') }}
                   </div>
@@ -246,8 +270,12 @@
       <button type="button" class="btn btn-secondary" (click)="onCancel()">
         Cancel
       </button>
-      <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="!poForm.valid">
-        Create Purchase Order
+      <button type="submit" class="btn btn-primary gap-2 flex items-center" (click)="onSubmit()" [disabled]="!poForm.valid || submitting">
+        @if (submitting){
+          <span class="border-t border-white border-opacity-25 ml-2 w-4 h-4 rounded-full animate-spin inline-block"></span>
+        }
+
+        {{ submitting ? 'Creating...' : 'Create Purchase Order' }}
       </button>
     </div>
   </div>

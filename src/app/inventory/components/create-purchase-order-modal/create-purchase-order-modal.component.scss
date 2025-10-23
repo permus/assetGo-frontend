@@ -196,6 +196,15 @@
         &.ng-invalid.ng-touched {
           border-color: #ef4444;
         }
+
+        &.flatpickr-input {
+          cursor: pointer;
+          background-color: #ffffff;
+          
+          &:hover {
+            border-color: #9ca3af;
+          }
+        }
       }
 
       .form-textarea {
@@ -447,4 +456,41 @@
   .modal-footer {
     padding: 0.75rem 1rem 1rem 1rem;
   }
+}
+
+// Form hint styling
+.form-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 0.5rem;
+  margin: 0.75rem 0;
+  font-size: 0.875rem;
+  color: #0369a1;
+
+  svg {
+    flex-shrink: 0;
+    color: #0284c7;
+  }
+
+  span {
+    line-height: 1.4;
+  }
+}
+
+// Loading spinner animation
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }

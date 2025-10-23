@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, AfterViewInit, OnDestroy, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { InventoryAnalyticsService, InventoryPart, CreatePurchaseOrderRequest, Supplier } from '../../../core/services/inventory-analytics.service';
 import { AddSupplierModalComponent } from '../add-supplier-modal/add-supplier-modal.component';
+import flatpickr from 'flatpickr';
 
 @Component({
   selector: 'app-create-purchase-order-modal',
@@ -11,13 +12,18 @@ import { AddSupplierModalComponent } from '../add-supplier-modal/add-supplier-mo
   templateUrl: './create-purchase-order-modal.component.html',
   styleUrls: ['./create-purchase-order-modal.component.scss']
 })
-export class CreatePurchaseOrderModalComponent implements OnInit {
+export class CreatePurchaseOrderModalComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() closeModal = new EventEmitter<void>();
   @Output() createPurchaseOrder = new EventEmitter<CreatePurchaseOrderRequest>();
+  @ViewChildren('dateInput') dateInputs!: QueryList<ElementRef>;
 
   poForm: FormGroup;
   loading = false;
+  submitting = false;
   error: string | null = null;
+
+  // Flatpickr instances
+  flatpickrInstances: any[] = [];
 
   // Data for dropdowns
   suppliers: Supplier[] = [];
@@ -47,6 +53,30 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
     this.loadSuppliers();
     this.loadParts();
     this.addItem(); // Add first item by default
+    
+    // Add date validation listeners
+    this.setupDateValidation();
+    
+    // Listen for supplier selection changes
+    this.poForm.get('supplier_id')?.valueChanges.subscribe(supplierId => {
+      this.onSupplierChange();
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize Flatpickr after view is ready
+    setTimeout(() => {
+      this.initializeFlatpickr();
+    }, 100);
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup Flatpickr instances
+    this.flatpickrInstances.forEach(instance => {
+      if (instance) {
+        instance.destroy();
+      }
+    });
   }
 
   loadSuppliers(): void {
@@ -95,6 +125,12 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
     });
 
     this.itemsArray.push(itemGroup);
+    
+    // Add change listener for part selection after adding to array
+    const itemIndex = this.itemsArray.length - 1;
+    itemGroup.get('part_id')?.valueChanges.subscribe(partId => {
+      this.onPartChange(itemIndex);
+    });
   }
 
   removeItem(index: number): void {
@@ -106,6 +142,31 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
   getItemPartName(partId: number): string {
     const part = this.parts.find(p => p.id === partId);
     return part ? part.name : 'Unknown Part';
+  }
+
+  onPartChange(itemIndex: number): void {
+    const itemGroup = this.itemsArray.at(itemIndex);
+    const partId = itemGroup.get('part_id')?.value;
+    
+    if (partId && partId !== '') {
+      // Convert to number if it's a string
+      const id = typeof partId === 'string' ? parseInt(partId) : partId;
+      const selectedPart = this.parts.find(p => p.id === id);
+      
+      if (selectedPart) {
+        // Populate part number and description with selected part data
+        itemGroup.patchValue({
+          part_number: selectedPart.part_number,
+          description: selectedPart.description || selectedPart.name
+        });
+      }
+    } else {
+      // Clear fields when no part is selected
+      itemGroup.patchValue({
+        part_number: '',
+        description: ''
+      });
+    }
   }
 
   calculateItemTotal(index: number): number {
@@ -139,7 +200,8 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.poForm.valid) {
+    if (this.poForm.valid && !this.submitting) {
+      this.submitting = true;
       this.loading = true;
       this.error = null;
 
@@ -164,6 +226,7 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
 
       this.inventoryService.createPurchaseOrder(poData).subscribe({
         next: (response) => {
+          this.submitting = false;
           this.loading = false;
           if (response.success) {
             this.createPurchaseOrder.emit(poData);
@@ -173,11 +236,12 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
           }
         },
         error: (err) => {
+          this.submitting = false;
           this.loading = false;
           this.error = 'Error creating purchase order: ' + (err.error?.message || err.message);
         }
       });
-    } else {
+    } else if (!this.poForm.valid) {
       this.markFormGroupTouched();
     }
   }
@@ -202,6 +266,9 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
       if (field.errors['min']) {
         return `Minimum value is ${field.errors['min'].min}`;
       }
+      if (field.errors['dateOrder']) {
+        return 'Order date cannot be after expected delivery date';
+      }
     }
     return '';
   }
@@ -217,6 +284,97 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
       }
     }
     return '';
+  }
+
+  setupDateValidation(): void {
+    // Listen to order_date changes
+    this.poForm.get('order_date')?.valueChanges.subscribe(() => {
+      this.validateDateOrder();
+    });
+
+    // Listen to expected_date changes
+    this.poForm.get('expected_date')?.valueChanges.subscribe(() => {
+      this.validateDateOrder();
+    });
+  }
+
+  validateDateOrder(): void {
+    const orderDate = this.poForm.get('order_date')?.value;
+    const expectedDate = this.poForm.get('expected_date')?.value;
+
+    if (orderDate && expectedDate) {
+      const orderDateObj = new Date(orderDate);
+      const expectedDateObj = new Date(expectedDate);
+
+      if (orderDateObj > expectedDateObj) {
+        this.poForm.get('order_date')?.setErrors({ dateOrder: true });
+        this.poForm.get('expected_date')?.setErrors({ dateOrder: true });
+      } else {
+        // Clear the error if dates are valid
+        const orderDateErrors = this.poForm.get('order_date')?.errors;
+        const expectedDateErrors = this.poForm.get('expected_date')?.errors;
+        
+        if (orderDateErrors?.['dateOrder']) {
+          delete orderDateErrors['dateOrder'];
+          if (Object.keys(orderDateErrors).length === 0) {
+            this.poForm.get('order_date')?.setErrors(null);
+          } else {
+            this.poForm.get('order_date')?.setErrors(orderDateErrors);
+          }
+        }
+        
+        if (expectedDateErrors?.['dateOrder']) {
+          delete expectedDateErrors['dateOrder'];
+          if (Object.keys(expectedDateErrors).length === 0) {
+            this.poForm.get('expected_date')?.setErrors(null);
+          } else {
+            this.poForm.get('expected_date')?.setErrors(expectedDateErrors);
+          }
+        }
+      }
+    }
+  }
+
+  private initializeFlatpickr(): void {
+    // Cleanup existing instances
+    this.flatpickrInstances.forEach(instance => {
+      if (instance) {
+        instance.destroy();
+      }
+    });
+    this.flatpickrInstances = [];
+
+    // Initialize new instances
+    if (this.dateInputs) {
+      this.dateInputs.forEach((inputRef, index) => {
+        if (inputRef?.nativeElement) {
+          const inputElement = inputRef.nativeElement;
+          const fieldName = inputElement.getAttribute('formControlName');
+          
+          let config: any = {
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            clickOpens: true,
+            onChange: (selectedDates: Date[], dateStr: string) => {
+              // Update form control value
+              if (fieldName) {
+                this.poForm.get(fieldName)?.setValue(dateStr);
+                // Trigger validation
+                this.validateDateOrder();
+              }
+            }
+          };
+
+          // Set specific configurations for each field
+          if (fieldName === 'expected_date') {
+            config.minDate = 'today'; // Expected date should be today or in the future
+          }
+
+          const instance = flatpickr(inputElement, config);
+          this.flatpickrInstances.push(instance);
+        }
+      });
+    }
   }
 
   getSelectedSupplierName(): string {
@@ -240,7 +398,37 @@ export class CreatePurchaseOrderModalComponent implements OnInit {
     // Select the newly created supplier
     this.poForm.patchValue({ supplier_id: supplier.id });
 
+    // Populate vendor fields with the new supplier's information
+    this.poForm.patchValue({
+      vendor_name: supplier.name,
+      vendor_contact: supplier.contact_person + ' - ' + supplier.phone
+    });
+
     // Close the modal
     this.closeAddSupplierModal();
+  }
+
+  onSupplierChange(): void {
+    const supplierId = this.poForm.get('supplier_id')?.value;
+    
+    if (supplierId && supplierId !== '') {
+      // Convert to number if it's a string
+      const id = typeof supplierId === 'string' ? parseInt(supplierId) : supplierId;
+      const selectedSupplier = this.suppliers.find(s => s.id === id);
+      
+      if (selectedSupplier) {
+        // Populate vendor name and contact with supplier information
+        this.poForm.patchValue({
+          vendor_name: selectedSupplier.name,
+          vendor_contact: selectedSupplier.contact_person + ' - ' + selectedSupplier.phone
+        });
+      }
+    } else {
+      // Clear vendor fields when no supplier is selected
+      this.poForm.patchValue({
+        vendor_name: '',
+        vendor_contact: ''
+      });
+    }
   }
 }

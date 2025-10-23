@@ -28,8 +28,8 @@ export class AddSupplierModalComponent {
       contact_person: ['', [Validators.required]],
       tax_registration_number: [''],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
-      alternate_phone: [''],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      alternate_phone: ['', [Validators.pattern(/^[0-9]*$/)]],
       website: [''],
       street_address: [''],
       city: [''],
@@ -117,10 +117,33 @@ export class AddSupplierModalComponent {
       if (field.errors['email']) {
         return 'Please enter a valid email address';
       }
+      if (field.errors['pattern']) {
+        if (fieldName === 'phone' || fieldName === 'alternate_phone') {
+          return 'Please enter numbers only';
+        }
+        return 'Invalid format';
+      }
       if (field.errors['min']) {
         return `Minimum value is ${field.errors['min'].min}`;
       }
     }
     return '';
+  }
+
+  onPhoneKeyPress(event: KeyboardEvent): boolean {
+    // Allow: backspace, delete, tab, escape, enter, home, end, left, right, up, down
+    if ([8, 9, 27, 13, 46, 35, 36, 37, 38, 39, 40].indexOf(event.keyCode) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (event.ctrlKey === true && [65, 67, 86, 88].indexOf(event.keyCode) !== -1) ||
+        // Allow: home, end, left, right, down, up
+        (event.keyCode >= 35 && event.keyCode <= 40)) {
+      return true;
+    }
+    // Ensure that it is a number and stop the keypress
+    if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
   }
 }

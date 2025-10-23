@@ -206,6 +206,8 @@ export interface CreatePartRequest {
   reorder_point?: number;
   reorder_qty?: number;
   barcode?: string;
+  status?: string;
+  abc_class?: string;
 }
 
 export interface UpdatePartRequest {
