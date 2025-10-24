@@ -40,6 +40,9 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
     search: ''
   };
 
+  // Search timeout for debounced search
+  searchTimeout: any;
+
   // Overview stats
   overviewStats = {
     totalPOs: 0,
@@ -215,6 +218,19 @@ export class PurchaseOrdersComponent implements OnInit, OnDestroy {
   applyFilters(): void {
     this.currentPage = 1;
     this.loadPurchaseOrders();
+  }
+
+  onStatusChange(): void {
+    this.currentPage = 1;
+    this.loadPurchaseOrders();
+  }
+
+  searchData(): void {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.currentPage = 1;
+      this.loadPurchaseOrders();
+    }, 800);
   }
 
   clearFilters(): void {

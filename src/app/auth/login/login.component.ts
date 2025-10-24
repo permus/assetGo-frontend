@@ -11,7 +11,6 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [
     NgIf,
-    NgClass,
     ReactiveFormsModule
   ],
   styleUrl: './login.component.scss'
@@ -39,13 +38,13 @@ export class LoginComponent implements OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
-    
+
     // Check for session expired message
     const message = localStorage.getItem('session_message');
     if (message) {
       this.sessionMessage = message;
       localStorage.removeItem('session_message');
-      
+
       // Auto-clear after 5 seconds
       setTimeout(() => {
         this.sessionMessage = '';
@@ -82,18 +81,18 @@ export class LoginComponent implements OnDestroy {
         },
         error: (error) => {
           const errorResponse = error.error;
-          
+
           // Handle 429 - Rate limiting / Account lockout
           if (error.status === 429) {
             this.isLocked = true;
             this.errorMessage = errorResponse?.message || 'Too many login attempts. Please try again later.';
-            
+
             // Calculate lockout time if provided
             if (errorResponse?.retry_after) {
               this.lockoutCountdown = errorResponse.retry_after;
               this.startLockoutTimer();
             }
-          } 
+          }
           // Handle 403 - Email verification
           else if (error.status === 403 && errorResponse?.email_verified === false) {
             this.emailVerificationMessage = errorResponse.message;
@@ -153,7 +152,7 @@ export class LoginComponent implements OnDestroy {
 
     this.lockoutInterval = setInterval(() => {
       this.lockoutCountdown--;
-      
+
       if (this.lockoutCountdown <= 0) {
         clearInterval(this.lockoutInterval);
         this.isLocked = false;

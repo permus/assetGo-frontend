@@ -55,6 +55,7 @@ export class ReceiveItemsModalComponent implements OnInit {
   initializeItemsForm(): void {
     if (!this.purchaseOrder?.items) return;
 
+
     const itemsArray = this.receiveForm.get('items') as FormArray;
     itemsArray.clear();
 
@@ -64,7 +65,7 @@ export class ReceiveItemsModalComponent implements OnInit {
         const itemGroup = this.fb.group({
           item_id: [item.id, [Validators.required]],
           receive_qty: ['', [Validators.required, Validators.min(1), Validators.max(remainingQty)]],
-          part_name: [item.part?.name || 'Unknown Part'],
+          part_number: [item.part_number || 'Unknown Part'],
           ordered_qty: [item.ordered_qty],
           received_qty: [item.received_qty || 0],
           remaining_qty: [remainingQty]

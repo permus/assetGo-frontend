@@ -54,6 +54,10 @@ export class StockLevelsComponent implements OnInit {
   showReserveModal = false;
   showCountModal = false;
 
+  // Location dropdown states
+  showLocationDropdown = false;
+  selectedLocation: any = null;
+
   // Form data
   adjustmentForm: StockAdjustmentRequest = {
     part_id: null,
@@ -62,6 +66,11 @@ export class StockLevelsComponent implements OnInit {
     quantity: 0,
     reason: '',
   };
+
+  // Field errors for forms
+  adjustmentFormErrors: { [key: string]: string[] } = {};
+  transferFormErrors: { [key: string]: string[] } = {};
+  reserveFormErrors: { [key: string]: string[] } = {};
 
   transferForm: StockTransferRequest = {
     part_id: 0,
@@ -165,11 +174,8 @@ export class StockLevelsComponent implements OnInit {
         }
 
         if (locationsData.length > 0) {
-          this.availableLocations = locationsData.map(location => ({
-            id: location.id,
-            name: location.name || location.title || location.display_name || 'Unknown Location',
-            code: location.code || location.short_code || (location.name ? location.name.substring(0, 2).toUpperCase() : 'LO')
-          }));
+          // Flatten hierarchical locations to include all children
+          this.availableLocations = this.flattenLocations(locationsData);
         } else {
           this.toastService.warning('No locations found, using fallback data');
           // Fallback to mock data if API response is not successful
@@ -190,6 +196,36 @@ export class StockLevelsComponent implements OnInit {
         ];
       }
     });
+  }
+
+  // Helper method to flatten hierarchical locations
+  flattenLocations(locations: any[]): any[] {
+    const flattened: any[] = [];
+    
+    const processLocation = (location: any, level: number = 0) => {
+      // Add current location with indentation based on hierarchy level
+      const indent = '  '.repeat(level);
+      flattened.push({
+        id: location.id,
+        name: `${indent}${location.name}`,
+        full_path: location.full_path || location.name,
+        code: location.code || location.short_code || location.name.substring(0, 2).toUpperCase(),
+        hierarchy_level: level
+      });
+      
+      // Process children if they exist
+      if (location.children && Array.isArray(location.children)) {
+        location.children.forEach((child: any) => {
+          processLocation(child, level + 1);
+        });
+      }
+    };
+    
+    locations.forEach(location => {
+      processLocation(location);
+    });
+    
+    return flattened;
   }
 
   loadAvailableParts(): void {
@@ -283,11 +319,16 @@ export class StockLevelsComponent implements OnInit {
       reason: '',
       notes: '',
     };
+    this.adjustmentFormErrors = {};
+    this.selectedLocation = null;
+    this.showLocationDropdown = false;
   }
 
   onAdjustStock(): void {
     if (this.adjustmentForm.part_id && this.adjustmentForm.location_id && this.adjustmentForm.quantity !== 0) {
       this.adjustStockLoading = true;
+      this.adjustmentFormErrors = {}; // Clear previous errors
+      
       // Set a default type based on quantity (positive = receipt, negative = issue)
       const adjustmentData: StockAdjustmentRequest = {
         ...this.adjustmentForm,
@@ -304,7 +345,14 @@ export class StockLevelsComponent implements OnInit {
         },
         error: (err) => {
           this.adjustStockLoading = false;
-          this.toastService.error('Error adjusting stock: ' + (err.error?.message || 'Please try again'));
+          
+          // Handle field validation errors
+          if (err.error?.errors) {
+            this.adjustmentFormErrors = err.error.errors;
+            this.toastService.error('Please fix the validation errors below');
+          } else {
+            this.toastService.error('Error adjusting stock: ' + (err.error?.message || 'Please try again'));
+          }
         }
       }).add(() => {
         this.adjustStockLoading = false;
@@ -333,6 +381,7 @@ export class StockLevelsComponent implements OnInit {
       to_location_id: 0,
       quantity: 1
     };
+    this.transferFormErrors = {};
   }
 
   onTransferStock(): void {
@@ -340,6 +389,8 @@ export class StockLevelsComponent implements OnInit {
       this.transferForm.to_location_id && this.transferForm.quantity > 0 &&
       this.transferForm.from_location_id !== this.transferForm.to_location_id) {
       this.transferLoading = true;
+      this.transferFormErrors = {}; // Clear previous errors
+      
       this.analyticsService.transferStock(this.transferForm).subscribe({
         next: (response) => {
           if (response.success) {
@@ -350,7 +401,14 @@ export class StockLevelsComponent implements OnInit {
         },
         error: (err) => {
           this.transferLoading = false;
-          this.toastService.error('Error transferring stock: ' + (err.error?.message || 'Please try again'));
+          
+          // Handle field validation errors
+          if (err.error?.errors) {
+            this.transferFormErrors = err.error.errors;
+            this.toastService.error('Please fix the validation errors below');
+          } else {
+            this.toastService.error('Error transferring stock: ' + (err.error?.message || 'Please try again'));
+          }
         }
       }).add(() => {
         this.transferLoading = false;
@@ -377,11 +435,14 @@ export class StockLevelsComponent implements OnInit {
       location_id: 0,
       quantity: 1
     };
+    this.reserveFormErrors = {};
   }
 
   onReserveStock(): void {
     if (this.reserveForm.part_id && this.reserveForm.location_id && this.reserveForm.quantity > 0) {
       this.reserveLoading = true;
+      this.reserveFormErrors = {}; // Clear previous errors
+      
       this.analyticsService.reserveStock(this.reserveForm).subscribe({
         next: (response) => {
           if (response.success) {
@@ -392,7 +453,20 @@ export class StockLevelsComponent implements OnInit {
         },
         error: (err) => {
           this.reserveLoading = false;
-          this.toastService.error('Error reserving stock: ' + (err.error?.message || 'Please try again'));
+          
+          // Handle field validation errors
+          if (err.error?.errors) {
+            this.reserveFormErrors = err.error.errors;
+            this.toastService.error('Please fix the validation errors below');
+          } else {
+            // Handle specific error messages like "Quantity exceeds available stock"
+            if (err.error?.message) {
+              this.reserveFormErrors = { quantity: [err.error.message] };
+              this.toastService.error('Please fix the validation errors below');
+            } else {
+              this.toastService.error('Error reserving stock: ' + (err.error?.message || 'Please try again'));
+            }
+          }
         }
       }).add(() => {
         this.reserveLoading = false;
@@ -515,5 +589,90 @@ export class StockLevelsComponent implements OnInit {
     this.availableLocations = []; // Clear current locations
     this.loadAvailableLocations();
     this.toastService.info('Reloading locations...');
+  }
+
+  // Helper method to get field errors
+  getFieldErrors(fieldName: string): string[] {
+    return this.adjustmentFormErrors[fieldName] || [];
+  }
+
+  // Helper method to check if field has errors
+  hasFieldErrors(fieldName: string): boolean {
+    return this.getFieldErrors(fieldName).length > 0;
+  }
+
+  // Helper method to check if adjustment form is valid
+  isAdjustmentFormValid(): boolean {
+    return !!(
+      this.adjustmentForm.part_id && 
+      this.adjustmentForm.location_id && 
+      this.adjustmentForm.quantity !== 0 &&
+      this.adjustmentForm.part_id !== null &&
+      this.adjustmentForm.location_id !== null
+    );
+  }
+
+  // Helper methods for transfer form
+  getTransferFieldErrors(fieldName: string): string[] {
+    return this.transferFormErrors[fieldName] || [];
+  }
+
+  hasTransferFieldErrors(fieldName: string): boolean {
+    return this.getTransferFieldErrors(fieldName).length > 0;
+  }
+
+  isTransferFormValid(): boolean {
+    return !!(
+      this.transferForm.part_id && 
+      this.transferForm.from_location_id && 
+      this.transferForm.to_location_id && 
+      this.transferForm.quantity > 0 &&
+      this.transferForm.from_location_id !== this.transferForm.to_location_id
+    );
+  }
+
+  // Helper methods for reserve form
+  getReserveFieldErrors(fieldName: string): string[] {
+    return this.reserveFormErrors[fieldName] || [];
+  }
+
+  hasReserveFieldErrors(fieldName: string): boolean {
+    return this.getReserveFieldErrors(fieldName).length > 0;
+  }
+
+  isReserveFormValid(): boolean {
+    return !!(
+      this.reserveForm.part_id && 
+      this.reserveForm.location_id && 
+      this.reserveForm.quantity > 0
+    );
+  }
+
+  // Location dropdown methods
+  toggleLocationDropdown(): void {
+    this.showLocationDropdown = !this.showLocationDropdown;
+  }
+
+  selectLocation(location: any): void {
+    this.selectedLocation = location;
+    this.adjustmentForm.location_id = location.id;
+    this.showLocationDropdown = false;
+  }
+
+  getLocationLabel(loc: any): string {
+    return this.buildLocationLabel(loc);
+  }
+
+  private buildLocationLabel(loc: any): string {
+    if (!loc) return '';
+    // Prefer full_path if API provides it, otherwise build from complete_hierarchy or name
+    if (loc.full_path) return loc.full_path;
+    if (Array.isArray(loc.complete_hierarchy) && loc.complete_hierarchy.length > 0) {
+      return loc.complete_hierarchy.map((n: any) => n.name).join(' → ');
+    }
+    if (Array.isArray(loc.ancestors_with_details) && loc.ancestors_with_details.length > 0) {
+      return loc.ancestors_with_details.map((n: any) => n.name).join(' → ') + ' → ' + (loc.name || '');
+    }
+    return loc.name || '';
   }
 }

@@ -58,13 +58,15 @@
           placeholder="Search purchase orders..."
           class="search-input"
           [(ngModel)]="filters.search"
+          (ngModelChange)="searchData()"
         >
       </div>
 
       <div class="status-dropdown">
         <select
           class="status-select"
-          [(ngModel)]="filters.status">
+          [(ngModel)]="filters.status"
+          (ngModelChange)="onStatusChange()">
           <option value="">All Status</option>
           <option value="draft">Draft</option>
           <option value="pending">Pending</option>
@@ -79,22 +81,6 @@
         </svg>
       </div>
 
-      @if (filters.search || filters.status) {
-        <button class="btn btn-secondary" (click)="clearFilters()">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-          Clear Filters
-        </button>
-
-        <button class="btn btn-primary" (click)="applyFilters()">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          Apply Filters
-        </button>
-      }
 
     </div>
 
@@ -261,15 +247,6 @@
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                   Receive Items
-                </button>
-
-                <button class="dropdown-item" (click)="sendEmail(po)"
-                        *ngIf="po.status === 'received' || po.status === 'closed'">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M16 12H8m8 0H8m8 0H8m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  Send Email
                 </button>
 
                 <button class="dropdown-item" (click)="closePurchaseOrder(po)"

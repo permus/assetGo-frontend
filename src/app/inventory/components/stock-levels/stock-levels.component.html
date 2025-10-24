@@ -359,6 +359,7 @@
             <select
               id="adjustment-part"
               class="form-select"
+              [class.error]="hasFieldErrors('part_id')"
               [(ngModel)]="adjustmentForm.part_id"
               name="part_id"
               required>
@@ -367,6 +368,11 @@
                 {{ part.part_number }} - {{ part.name }}
               </option>
             </select>
+            <div *ngIf="hasFieldErrors('part_id')" class="field-errors">
+              <div *ngFor="let error of getFieldErrors('part_id')" class="error-message">
+                {{ error }}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -383,17 +389,61 @@
           </div>
           <div class="form-group">
             <label for="adjustment-location" class="form-label">Location *</label>
-            <select
-              id="adjustment-location"
-              class="form-select"
-              [(ngModel)]="adjustmentForm.location_id"
-              name="location_id"
-              required>
-              <option value="null">Select a location</option>
-              <option *ngFor="let location of availableLocations" [value]="location.id">
-                {{ location.name }}
-              </option>
-            </select>
+            <!-- Custom Location Dropdown -->
+            <div class="relative" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                (click)="toggleLocationDropdown()"
+                class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                [class.border-blue-500]="showLocationDropdown"
+                [class.border-red-500]="hasFieldErrors('location_id')">
+                <div class="flex items-center justify-between">
+                  <span *ngIf="!selectedLocation" class="text-gray-400">Select location</span>
+                  <div *ngIf="selectedLocation" class="flex items-center space-x-3">
+                    <div class="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
+                      <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                    </div>
+                    <span class="text-gray-900">{{selectedLocation.label || selectedLocation.name}}</span>
+                  </div>
+                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div *ngIf="showLocationDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Select location</div>
+                <button
+                  *ngFor="let loc of availableLocations"
+                  type="button"
+                  (click)="selectLocation(loc)"
+                  class="w-full px-3 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors"
+                  [class.bg-blue-50]="selectedLocation?.id === loc.id"
+                  [class.text-blue-700]="selectedLocation?.id === loc.id">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                      <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">{{ getLocationLabel(loc) }}</div>
+                      <div *ngIf="loc.type" class="text-sm text-gray-500">{{loc.type.name}}</div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="hasFieldErrors('location_id')" class="field-errors">
+              <div *ngFor="let error of getFieldErrors('location_id')" class="error-message">
+                {{ error }}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -463,8 +513,8 @@
             Cancel
           </button>
           <button type="submit" class="btn btn-primary"
-                  [class.opacity-50]="adjustStockLoading && !adjustmentForm.part_id && !adjustmentForm.location_id && adjustmentForm.quantity == 0"
-                  [disabled]="!adjustmentForm.part_id && !adjustmentForm.location_id && adjustmentForm.quantity == 0">
+                  [class.opacity-50]="!isAdjustmentFormValid() || adjustStockLoading"
+                  [disabled]="!isAdjustmentFormValid() || adjustStockLoading">
 
             @if (adjustStockLoading) {
               Adjusting...
@@ -497,14 +547,20 @@
           <select
             id="transfer-from"
             class="form-select"
+            [class.error]="hasTransferFieldErrors('from_location_id')"
             [(ngModel)]="transferForm.from_location_id"
             name="from_location_id"
             required>
             <option value="">Select source location</option>
             <option *ngFor="let location of availableLocations" [value]="location.id">
-              {{ location.name }}
+              {{ location.full_path || location.name }}
             </option>
           </select>
+          <div *ngIf="hasTransferFieldErrors('from_location_id')" class="field-errors">
+            <div *ngFor="let error of getTransferFieldErrors('from_location_id')" class="error-message">
+              {{ error }}
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -512,14 +568,20 @@
           <select
             id="transfer-to"
             class="form-select"
+            [class.error]="hasTransferFieldErrors('to_location_id')"
             [(ngModel)]="transferForm.to_location_id"
             name="to_location_id"
             required>
             <option value="">Select destination location</option>
             <option *ngFor="let location of availableLocations" [value]="location.id">
-              {{ location.name }}
+              {{ location.full_path || location.name }}
             </option>
           </select>
+          <div *ngIf="hasTransferFieldErrors('to_location_id')" class="field-errors">
+            <div *ngFor="let error of getTransferFieldErrors('to_location_id')" class="error-message">
+              {{ error }}
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -528,10 +590,16 @@
             type="number"
             id="transfer-quantity"
             class="form-input"
+            [class.error]="hasTransferFieldErrors('quantity')"
             [(ngModel)]="transferForm.quantity"
             name="quantity"
             min="1"
             required>
+          <div *ngIf="hasTransferFieldErrors('quantity')" class="field-errors">
+            <div *ngFor="let error of getTransferFieldErrors('quantity')" class="error-message">
+              {{ error }}
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -571,8 +639,9 @@
           <button type="button" class="btn btn-secondary" (click)="closeTransferModal()">
             Cancel
           </button>
-          <button type="submit" class="btn btn-primary" [class.opacity-50]="transferLoading"
-                  [disabled]="transferLoading">
+          <button type="submit" class="btn btn-primary" 
+                  [class.opacity-50]="!isTransferFormValid() || transferLoading"
+                  [disabled]="!isTransferFormValid() || transferLoading">
             @if (transferLoading) {
               Transferring...
               <span
@@ -605,10 +674,16 @@
             type="number"
             id="reserve-quantity"
             class="form-input"
+            [class.error]="hasReserveFieldErrors('quantity')"
             [(ngModel)]="reserveForm.quantity"
             name="quantity"
             min="1"
             required>
+          <div *ngIf="hasReserveFieldErrors('quantity')" class="field-errors">
+            <div *ngFor="let error of getReserveFieldErrors('quantity')" class="error-message">
+              {{ error }}
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -626,7 +701,9 @@
           <button type="button" class="btn btn-secondary" (click)="closeReserveModal()">
             Cancel
           </button>
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary"
+                  [class.opacity-50]="!isReserveFormValid() || reserveLoading"
+                  [disabled]="!isReserveFormValid() || reserveLoading">
             @if (reserveLoading){
               Reserving Stock...
               <span class="border-t border-white animate-spin border-opacity-25 ml-2 w-4 h-4 rounded-full inline-block"></span>

@@ -63,19 +63,21 @@
       <div class="filter-group">
         <label class="filter-label">Start Date</label>
         <input
-          type="date"
-          [(ngModel)]="filters.start_date"
+          id="start-date-picker"
+          type="text"
+          placeholder="Select start date"
           class="filter-input"
-         >
+          readonly>
       </div>
 
       <div class="filter-group">
         <label class="filter-label">End Date</label>
         <input
-          type="date"
-          [(ngModel)]="filters.end_date"
+          id="end-date-picker"
+          type="text"
+          placeholder="Select end date"
           class="filter-input"
-          >
+          readonly>
       </div>
 
       <!-- Search Filter -->
@@ -84,12 +86,13 @@
         <input
           type="text"
           [(ngModel)]="filters.search"
+          (ngModelChange)="searchData()"
           placeholder="Search transactions..."
           class="filter-input">
       </div>
     </div>
 
-    @if (filters.type || filters.part_id || filters.location_id || filters.start_date || filters.end_date || filters.search){
+    @if (filters.type || filters.part_id || filters.location_id || filters.start_date || filters.end_date){
       <div class="filter-actions mt-6">
         <button
           (click)="clearFilters()"

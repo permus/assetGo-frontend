@@ -62,7 +62,7 @@
           <div formArrayName="items" class="items-container">
             <div *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i" class="item-row">
               <div class="item-header">
-                <h4 class="item-title">{{ item.get('part_name')?.value }}</h4>
+                <h4 class="item-title">{{ item.get('part_number')?.value }} 21123</h4>
                 <div class="item-summary">
                   <span class="ordered">Ordered: {{ item.get('ordered_qty')?.value }}</span>
                   <span class="received">Received: {{ item.get('received_qty')?.value }}</span>

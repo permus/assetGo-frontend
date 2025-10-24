@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InventoryAnalyticsService, InventoryTransaction, TransactionsResponse } from '../../../core/services/inventory-analytics.service';
+import flatpickr from 'flatpickr';
 
 @Component({
   selector: 'app-transactions',
@@ -10,10 +11,11 @@ import { InventoryAnalyticsService, InventoryTransaction, TransactionsResponse }
   templateUrl: './transactions.component.html',
   styleUrls: ['./transactions.component.scss']
 })
-export class TransactionsComponent implements OnInit {
+export class TransactionsComponent implements OnInit, AfterViewInit {
   transactions: InventoryTransaction[] = [];
   loading = false;
   error: string | null = null;
+  searchTimeout: any;
 
   // Pagination
   currentPage = 1;
@@ -44,12 +46,20 @@ export class TransactionsComponent implements OnInit {
     { value: 'return', label: 'Return' }
   ];
 
+  // Flatpickr instances
+  startDatePicker: any;
+  endDatePicker: any;
+
   constructor(private inventoryService: InventoryAnalyticsService) {}
 
   ngOnInit(): void {
     this.loadTransactions();
     this.loadAvailableParts();
     this.loadAvailableLocations();
+  }
+
+  ngAfterViewInit(): void {
+    this.initializeDatePickers();
   }
 
   loadTransactions(): void {
@@ -65,6 +75,7 @@ export class TransactionsComponent implements OnInit {
     if (this.filters.location_id) params.set('location_id', this.filters.location_id);
     if (this.filters.start_date) params.set('start_date', this.filters.start_date);
     if (this.filters.end_date) params.set('end_date', this.filters.end_date);
+    if (this.filters.search) params.set('keyword', this.filters.search);
 
     this.inventoryService.getTransactions(params.toString()).subscribe({
       next: (response: TransactionsResponse) => {
@@ -122,6 +133,19 @@ export class TransactionsComponent implements OnInit {
       end_date: '',
       search: ''
     };
+    
+    // Reset date picker restrictions
+    if (this.startDatePicker) {
+      this.startDatePicker.set('maxDate', null);
+      this.startDatePicker.set('minDate', null);
+      this.startDatePicker.clear();
+    }
+    if (this.endDatePicker) {
+      this.endDatePicker.set('maxDate', null);
+      this.endDatePicker.set('minDate', null);
+      this.endDatePicker.clear();
+    }
+    
     this.currentPage = 1;
     this.loadTransactions();
   }
@@ -168,5 +192,44 @@ export class TransactionsComponent implements OnInit {
 
   refreshData(): void {
     this.loadTransactions();
+  }
+
+  searchData(): void {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.currentPage = 1;
+      this.loadTransactions();
+    }, 800);
+  }
+
+  initializeDatePickers(): void {
+    // Initialize start date picker
+    this.startDatePicker = flatpickr('#start-date-picker', {
+      dateFormat: 'Y-m-d',
+      onChange: (selectedDates, dateStr) => {
+        this.filters.start_date = dateStr;
+        // Update end date picker max date when start date changes
+        if (dateStr && this.endDatePicker) {
+          this.endDatePicker.set('maxDate', null);
+          this.endDatePicker.set('minDate', dateStr);
+        }
+        this.currentPage = 1;
+        this.loadTransactions();
+      }
+    });
+
+    // Initialize end date picker
+    this.endDatePicker = flatpickr('#end-date-picker', {
+      dateFormat: 'Y-m-d',
+      onChange: (selectedDates, dateStr) => {
+        this.filters.end_date = dateStr;
+        // Update start date picker max date when end date changes
+        if (dateStr && this.startDatePicker) {
+          this.startDatePicker.set('maxDate', dateStr);
+        }
+        this.currentPage = 1;
+        this.loadTransactions();
+      }
+    });
   }
 }
