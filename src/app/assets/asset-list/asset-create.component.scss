@@ -203,3 +203,55 @@
 .slider-input:focus {
   outline: none;
 }
+
+// AI Analyze Button Styles
+// Analyze button hover effect
+.bg-gradient-to-r {
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+// Loading spinner smooth animation
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+// Success message styling
+.submit-success-message {
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -7,6 +7,9 @@ import { Router } from '@angular/router';
 import {NgForOf, NgIf} from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import flatpickr from 'flatpickr';
+import { AIImageUploadService } from '../../ai-features/shared/ai-image-upload.service';
+import { RecognitionResult } from '../../ai-features/shared/ai-recognition-result.interface';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-asset-create',
@@ -18,9 +21,13 @@ import flatpickr from 'flatpickr';
 export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('dateInput') dateInputs!: QueryList<ElementRef>;
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('analyzeFileInput', { static: false }) analyzeFileInput!: ElementRef<HTMLInputElement>;
 
   // Flatpickr instances
   flatpickrInstances: any[] = [];
+
+  // AI Analyze properties
+  isAnalyzing = false;
 
   // Asset form fields
   name: string = '';
@@ -289,7 +296,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     private assetService: AssetService,
     private router: Router,
     public route: ActivatedRoute,
-    private http: HttpClient
+    private http: HttpClient,
+    private aiImageUploadService: AIImageUploadService,
+    private toastService: ToastService
   ) {
 
   }
@@ -1059,5 +1068,120 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getSelectedParent() {
     return this.possibleParents.find(p => p.id === this.parent_id);
+  }
+
+  // AI Analyze Method
+  async onAnalyzeFileSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file using the service
+    const validation = this.aiImageUploadService.validate(file);
+    if (!validation.ok) {
+      this.toastService.error(validation.reason || 'Invalid file');
+      // Clear the file input
+      if (this.analyzeFileInput) {
+        this.analyzeFileInput.nativeElement.value = '';
+      }
+      return;
+    }
+
+    this.isAnalyzing = true;
+
+    try {
+      // Convert file to data URL
+      const dataUrl = await this.aiImageUploadService.toDataUrl(file);
+
+      // Call AI recognition service
+      this.aiImageUploadService.analyze([dataUrl]).subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.mapRecognitionToForm(response.data);
+            this.toastService.success('Form fields populated from AI analysis. Please review and edit as needed.');
+          } else {
+            this.toastService.error('Analysis failed. Please try again.');
+          }
+          this.isAnalyzing = false;
+          // Clear the file input for next use
+          if (this.analyzeFileInput) {
+            this.analyzeFileInput.nativeElement.value = '';
+          }
+        },
+        error: (error) => {
+          this.toastService.error(error?.error?.message || 'Analysis failed. Please try again.');
+          this.isAnalyzing = false;
+          // Clear the file input
+          if (this.analyzeFileInput) {
+            this.analyzeFileInput.nativeElement.value = '';
+          }
+        }
+      });
+    } catch (error) {
+      this.toastService.error('Failed to process image. Please try again.');
+      this.isAnalyzing = false;
+      // Clear the file input
+      if (this.analyzeFileInput) {
+        this.analyzeFileInput.nativeElement.value = '';
+      }
+    }
+  }
+
+  private mapRecognitionToForm(result: RecognitionResult) {
+    // Only populate empty fields to avoid overwriting user input
+    
+    // Asset name from assetType if empty
+    if (!this.name && result.assetType) {
+      this.name = result.assetType;
+    }
+
+    // Manufacturer
+    if (!this.manufacturer && result.manufacturer) {
+      this.manufacturer = result.manufacturer;
+    }
+
+    // Model
+    if (!this.model && result.model) {
+      this.model = result.model;
+    }
+
+    // Serial number
+    if (!this.serial_number && result.serialNumber) {
+      this.serial_number = result.serialNumber;
+    }
+
+    // Health score based on condition (only if still default value of 85)
+    if (this.health_score === 85 && result.condition) {
+      const conditionMapping: { [key: string]: number } = {
+        'Excellent': 95,
+        'Good': 80,
+        'Fair': 60,
+        'Poor': 40
+      };
+      this.health_score = conditionMapping[result.condition] || 85;
+    }
+
+    // Add recommendations to description if available
+    if (result.recommendations && result.recommendations.length > 0) {
+      const recommendationsText = '\n\nAI Recommendations:\n' + 
+        result.recommendations.map(rec => `• ${rec}`).join('\n');
+      
+      if (!this.description) {
+        this.description = recommendationsText.trim();
+      } else if (!this.description.includes('AI Recommendations:')) {
+        this.description += recommendationsText;
+      }
+    }
+
+    // Add asset tag to description if available
+    if (result.assetTag && !this.description.includes(result.assetTag)) {
+      const assetTagText = result.assetTag ? `Asset Tag: ${result.assetTag}` : '';
+      if (assetTagText) {
+        if (!this.description) {
+          this.description = assetTagText;
+        } else if (!this.description.includes('Asset Tag:')) {
+          this.description = assetTagText + '\n\n' + this.description;
+        }
+      }
+    }
   }
 }
