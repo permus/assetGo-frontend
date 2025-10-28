@@ -92,54 +92,54 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
 
     // Safely prepare status distribution chart data with null checks
     this.statusChartData = [
-      { 
-        name: 'Completed', 
-        value: this.analyticsData.status_distribution?.['completed'] || 0, 
-        color: '#10b981' 
+      {
+        name: 'Completed',
+        value: this.analyticsData.status_distribution?.['completed'] || 0,
+        color: '#10b981'
       },
-      { 
-        name: 'Open', 
-        value: this.analyticsData.status_distribution?.['open'] || 0, 
-        color: '#ef4444' 
+      {
+        name: 'Open',
+        value: this.analyticsData.status_distribution?.['open'] || 0,
+        color: '#ef4444'
       },
-      { 
-        name: 'In Progress', 
-        value: this.analyticsData.status_distribution?.['in-progress'] || 0, 
-        color: '#3b82f6' 
+      {
+        name: 'In Progress',
+        value: this.analyticsData.status_distribution?.['in-progress'] || 0,
+        color: '#3b82f6'
       },
-      { 
-        name: 'On Hold', 
-        value: this.analyticsData.status_distribution?.['on_hold'] || 0, 
-        color: '#f59e0b' 
+      {
+        name: 'On Hold',
+        value: this.analyticsData.status_distribution?.['on-hold'] || 0,
+        color: '#f59e0b'
       },
-      { 
-        name: 'Cancelled', 
-        value: this.analyticsData.status_distribution?.['cancelled'] || 0, 
-        color: '#6b7280' 
+      {
+        name: 'Cancelled',
+        value: this.analyticsData.status_distribution?.['cancelled'] || 0,
+        color: '#6b7280'
       }
     ];
 
     // Safely prepare priority distribution chart data with null checks
     this.priorityChartData = [
-      { 
-        name: 'Critical', 
-        value: this.analyticsData.priority_distribution?.['critical'] || 0, 
-        color: '#dc2626' 
+      {
+        name: 'Critical',
+        value: this.analyticsData.priority_distribution?.['critical'] || 0,
+        color: '#dc2626'
       },
-      { 
-        name: 'High', 
-        value: this.analyticsData.priority_distribution?.['high'] || 0, 
-        color: '#f59e0b' 
+      {
+        name: 'High',
+        value: this.analyticsData.priority_distribution?.['high'] || 0,
+        color: '#f59e0b'
       },
-      { 
-        name: 'Medium', 
-        value: this.analyticsData.priority_distribution?.['medium'] || 0, 
-        color: '#3b82f6' 
+      {
+        name: 'Medium',
+        value: this.analyticsData.priority_distribution?.['medium'] || 0,
+        color: '#3b82f6'
       },
-      { 
-        name: 'Low', 
-        value: this.analyticsData.priority_distribution?.['low'] || 0, 
-        color: '#10b981' 
+      {
+        name: 'Low',
+        value: this.analyticsData.priority_distribution?.['low'] || 0,
+        color: '#10b981'
       }
     ];
 

@@ -62,6 +62,9 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     to: 0
   };
 
+  // Current filters to preserve during pagination
+  currentFilters: any = {};
+
 
   // Bulk operations properties
   selectedWorkOrders: Set<number> = new Set();
@@ -87,7 +90,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     this.perPage = itemsPerPage;
     this.pagination.per_page = itemsPerPage;
     
-    this.loadWorkOrders();
+    this.loadWorkOrders(1, this.currentFilters);
   }
 
   ngOnDestroy(): void {
@@ -184,11 +187,13 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
   }
 
   refreshWorkOrders(): void {
-    this.loadWorkOrders(this.currentPage);
+    this.loadWorkOrders(this.currentPage, this.currentFilters);
   }
 
   onFiltersChanged(filters: any): void {
     console.log('WorkOrderListComponent: Filters changed:', filters);
+    // Store current filters for pagination
+    this.currentFilters = { ...filters };
     // Reset to first page when filters change
     this.loadWorkOrders(1, filters);
   }
@@ -377,7 +382,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
       if (completed >= ids.length) {
         this.showDeleteConfirmationModal = false;
         this.selectedWorkOrders.clear();
-        this.loadWorkOrders(this.currentPage);
+        this.loadWorkOrders(this.currentPage, this.currentFilters);
       }
     };
     ids.forEach((id) => {
@@ -423,7 +428,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
    */
   onPageChange(page: number): void {
     this.currentPage = page;
-    this.loadWorkOrders(page);
+    this.loadWorkOrders(page, this.currentFilters);
   }
 
   /**
@@ -432,7 +437,7 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
   onPerPageChange(perPage: number): void {
     this.perPage = perPage;
     this.currentPage = 1; // Reset to first page when changing per page
-    this.loadWorkOrders();
+    this.loadWorkOrders(1, this.currentFilters);
   }
 
 }
