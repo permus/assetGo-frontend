@@ -90,7 +90,7 @@
           <table class="items-table">
             <thead>
               <tr>
-                <th>Item</th>
+                <th>Received From</th>
                 <th>Part Number</th>
                 <th>Description</th>
                 <th>Quantity</th>
@@ -100,7 +100,9 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of (purchaseOrder?.items || [])">
-                <td class="item-name">{{ item?.part?.name || item?.part_number || 'N/A' }}</td>
+                <td>
+                  {{ item?.location_info?.name || 'N/A' }}
+                </td>
                 <td class="part-number">{{ item?.part_number || 'N/A' }}</td>
                 <td class="description">{{ item?.description || 'No description' }}</td>
                 <td class="quantity">{{ item?.ordered_qty || 0 }}</td>
@@ -135,7 +137,9 @@
           </div>
           <div class="info-item">
             <label>Created By</label>
-            <span>{{ purchaseOrder?.created_by || 'System' }}</span>
+            @if (purchaseOrder?.created_by){
+              <span>{{ purchaseOrder?.created_by.first_name + ' ' + purchaseOrder?.created_by.last_name || 'System' }}</span>
+            }
           </div>
           <div class="info-item">
             <label>Created Date</label>

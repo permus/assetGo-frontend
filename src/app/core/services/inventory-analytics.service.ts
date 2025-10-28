@@ -299,6 +299,7 @@ export interface PurchaseOrderItem {
   line_total?: number;
   notes?: string;
   part?: InventoryPart;
+  location_info?: InventoryLocation;
 }
 
 export interface PurchaseOrder {
@@ -316,7 +317,15 @@ export interface PurchaseOrder {
   total: number;
   terms?: string;
   notes?: string;
-  created_by?: number;
+  created_by?: {
+    id:number,
+    first_name:string,
+    last_name:string,
+    email:string,
+    phone:string,
+    role:string,
+    avatar:string
+  };
   approved_by?: number;
   approved_at?: string;
   reject_comment?: string;

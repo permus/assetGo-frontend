@@ -413,6 +413,7 @@
     </button>
   </div>
 
+  <!--Grid view-->
   <div *ngIf="viewType === 'grid' && !loading && !error && assetList.length > 0"
        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-2 mb-6">
     <div *ngFor="let asset of assetList"
