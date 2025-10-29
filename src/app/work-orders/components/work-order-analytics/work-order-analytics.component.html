@@ -205,7 +205,7 @@
             </div>
           </div>
           <div class="performance-bar">
-            <div class="bar-fill" [style.width]="(tech.score * 100) + '%'"></div>
+            <div class="bar-fill" [style.width]="getProgressBarWidth(tech.score) + '%'"></div>
           </div>
         </div>
       </div>

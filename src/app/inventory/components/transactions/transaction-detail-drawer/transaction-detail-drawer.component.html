@@ -1,0 +1,157 @@
+<div class="drawer-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="drawer-container" (click)="$event.stopPropagation()">
+    <!-- Drawer Header -->
+    <div class="drawer-header">
+      <div class="header-content">
+        <h2 class="drawer-title">Transaction Details</h2>
+        <p class="transaction-id" *ngIf="selectedTransaction">
+          ID: {{ selectedTransaction.id }}
+        </p>
+      </div>
+      <button class="close-btn" (click)="onClose()" title="Close drawer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Drawer Content -->
+    <div class="drawer-content" *ngIf="selectedTransaction">
+      <!-- Transaction Details Section -->
+      <div class="detail-section">
+        <h3 class="section-title">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Transaction Details
+        </h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label class="detail-label">Type</label>
+            <span class="detail-value">
+              <span class="transaction-type-badge" [ngClass]="getTransactionTypeClass(selectedTransaction.type)">
+                {{ getTransactionTypeLabel(selectedTransaction.type) }}
+              </span>
+            </span>
+          </div>
+          <div class="detail-item">
+            <label class="detail-label">Date</label>
+            <span class="detail-value">{{ formatDate(selectedTransaction.created_at) }}</span>
+          </div>
+          <div class="detail-item">
+            <label class="detail-label">Quantity</label>
+            <span class="detail-value quantity-value" [ngClass]="{
+              'positive': selectedTransaction.type === 'receipt' || selectedTransaction.type === 'transfer_in' || selectedTransaction.type === 'return',
+              'negative': selectedTransaction.type === 'issue' || selectedTransaction.type === 'transfer_out',
+              'neutral': selectedTransaction.type === 'adjustment'
+            }">
+              {{ selectedTransaction.type === 'issue' || selectedTransaction.type === 'transfer_out' ? '-' : '+' }}{{ selectedTransaction.quantity }}
+            </span>
+          </div>
+          <div class="detail-item">
+            <label class="detail-label">Unit Cost</label>
+            <span class="detail-value">{{ formatCurrency(selectedTransaction.unit_cost || 0) }}</span>
+          </div>
+          <div class="detail-item">
+            <label class="detail-label">Total Cost</label>
+            <span class="detail-value total-cost">{{ formatCurrency(selectedTransaction.total_cost || 0) }}</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedTransaction.reason">
+            <label class="detail-label">Reason</label>
+            <span class="detail-value">{{ selectedTransaction.reason }}</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedTransaction.notes">
+            <label class="detail-label">Notes</label>
+            <span class="detail-value">{{ selectedTransaction.notes }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Part Information Section -->
+      <div class="detail-section" *ngIf="selectedTransaction.part">
+        <h3 class="section-title">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          Part Information
+        </h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label class="detail-label">Part Name</label>
+            <span class="detail-value">{{ selectedTransaction.part.name || 'Unknown Part' }}</span>
+          </div>
+          <div class="detail-item">
+            <label class="detail-label">Part Number</label>
+            <span class="detail-value">{{ selectedTransaction.part.part_number || 'N/A' }}</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedTransaction.part.manufacturer">
+            <label class="detail-label">Manufacturer</label>
+            <span class="detail-value">{{ selectedTransaction.part.manufacturer }}</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedTransaction.part.uom">
+            <label class="detail-label">Unit of Measure</label>
+            <span class="detail-value">{{ selectedTransaction.part.uom }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Section -->
+      <div class="detail-section" *ngIf="selectedTransaction.location">
+        <h3 class="section-title">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          Location
+        </h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label class="detail-label">Location Name</label>
+            <span class="detail-value">{{ selectedTransaction.location.name || 'Unknown Location' }}</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedTransaction.location.address">
+            <label class="detail-label">Address</label>
+            <span class="detail-value">{{ selectedTransaction.location.address }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Linked Reference Section -->
+      <div class="detail-section" *ngIf="selectedTransaction.reference">
+        <h3 class="section-title">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+          </svg>
+          Linked Reference
+        </h3>
+        <div class="detail-grid">
+          <div class="detail-item" *ngIf="selectedTransaction.reference_type">
+            <label class="detail-label">Reference Type</label>
+            <span class="detail-value">{{ selectedTransaction.reference_type }}</span>
+          </div>
+          <div class="detail-item">
+            <label class="detail-label">Reference Code</label>
+            <span class="detail-value reference-code">{{ selectedTransaction.reference }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="drawer-footer" *ngIf="selectedTransaction">
+      <button 
+        *ngIf="canReverse" 
+        class="btn btn-danger" 
+        (click)="onReverseTransaction()"
+        title="Reverse this transaction">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Reverse Transaction
+      </button>
+      <button class="btn btn-secondary" (click)="onClose()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>

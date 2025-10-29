@@ -8,6 +8,7 @@ import {
 } from '../../../assets/components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ArchiveConfirmationModalComponent } from './archive-confirmation-modal/archive-confirmation-modal.component';
 import { RestoreConfirmationModalComponent } from './restore-confirmation-modal/restore-confirmation-modal.component';
+import { PartsBulkImportModalComponent } from '../parts-bulk-import-modal/parts-bulk-import-modal.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PreferencesService } from '../../../core/services/preferences.service';
 import { ModuleAccessService } from '../../../core/services/module-access.service';
@@ -17,7 +18,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-parts-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, AddPartModalComponent, DeleteConfirmationModalComponent, ArchiveConfirmationModalComponent, RestoreConfirmationModalComponent],
+  imports: [CommonModule, FormsModule, AddPartModalComponent, DeleteConfirmationModalComponent, ArchiveConfirmationModalComponent, RestoreConfirmationModalComponent, PartsBulkImportModalComponent],
   templateUrl: './parts-catalog.component.html',
   styleUrls: ['./parts-catalog.component.scss']
 })
@@ -35,6 +36,7 @@ export class PartsCatalogComponent implements OnInit {
   archiveWarningData: any = null;
   includeArchived = false;
   hasOpenPOs = false; // Track if selected part has open POs
+  showBulkImportModal = false; // Bulk import modal flag
   // Search and filter properties
   searchTerm = '';
   selectedStatus = '';
@@ -359,6 +361,21 @@ export class PartsCatalogComponent implements OnInit {
 
   isArchived(part: InventoryPart): boolean {
     return part.is_archived === true;
+  }
+
+  // Bulk Import Methods
+  openBulkImportModal(): void {
+    this.showBulkImportModal = true;
+  }
+
+  closeBulkImportModal(): void {
+    this.showBulkImportModal = false;
+  }
+
+  onBulkImportComplete(): void {
+    this.closeBulkImportModal();
+    this.loadPartsCatalog();
+    this.loadPartsOverview();
   }
 
 }

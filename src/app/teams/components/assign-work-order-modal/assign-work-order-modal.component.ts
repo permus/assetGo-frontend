@@ -33,21 +33,36 @@ export class AssignWorkOrderModalComponent implements OnInit {
 
   fetchWorkOrders(): void {
     this.loading = true;
+    this.errorMessage = '';
     
-    this.workOrderService.getWorkOrders({ page: 1, per_page: 1000 }).subscribe({
+    // Fetch work orders that are not completed and not already assigned to this user
+    this.workOrderService.getWorkOrders({ 
+      page: 1, 
+      per_page: 1000
+      // Note: We'll filter by status on the frontend since the API doesn't support multiple status_id values
+    }).subscribe({
       next: (response: any) => {
+        console.log('Work orders response:', response);
+        // Filter out work orders already assigned to this team member and completed work orders
+        const availableWorkOrders = (response.data.data || []).filter((workOrder: any) => 
+          workOrder.assigned_to !== this.teamMemberId &&
+          workOrder.status?.slug !== 'completed' &&
+          workOrder.status?.slug !== 'cancelled'
+        );
+        
         // Transform work orders to DropdownOption format
-        this.workOrders = (response.data || []).map((workOrder: any) => ({
+        this.workOrders = availableWorkOrders.map((workOrder: any) => ({
           id: workOrder.id,
           name: workOrder.title,
-          description: workOrder.description || `Status: ${workOrder.status_id}`,
+          description: workOrder.description || `Status: ${workOrder.status?.name || 'Unknown'}`,
           icon: 'work-order'
         }));
+        console.log('Transformed work orders:', this.workOrders);
         this.loading = false;
       },
       error: (error: any) => {
         console.error('Error fetching work orders:', error);
-        this.errorMessage = 'Failed to load work orders';
+        this.errorMessage = 'Failed to load work orders. Please try again.';
         this.loading = false;
       }
     });
@@ -60,6 +75,7 @@ export class AssignWorkOrderModalComponent implements OnInit {
     }
 
     this.errorMessage = '';
+    this.loading = true;
     
     // Call the backend API to assign the work order
     this.workOrderService.assignWorkOrder(this.selectedWorkOrderId, {
@@ -68,6 +84,8 @@ export class AssignWorkOrderModalComponent implements OnInit {
       notes: this.notes || undefined
     }).subscribe({
       next: (response: any) => {
+        console.log('Work order assigned successfully:', response);
+        this.loading = false;
         this.submitted.emit({ 
           work_order_id: this.selectedWorkOrderId!, 
           due_date: this.dueDate || undefined, 
@@ -76,6 +94,7 @@ export class AssignWorkOrderModalComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error assigning work order:', error);
+        this.loading = false;
         if (error.error && error.error.message) {
           this.errorMessage = error.error.message;
         } else {

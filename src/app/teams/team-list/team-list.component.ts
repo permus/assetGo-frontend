@@ -5,6 +5,7 @@ import { TeamService, TeamMember, TeamMemberStatistics, TeamMembersPaginatedResp
 import { TeamDeleteConfirmationModalComponent } from '../components/team-delete-confirmation-modal/team-delete-confirmation-modal.component';
 import { TeamFormModalComponent } from '../components/team-form-modal/team-form-modal.component';
 import { AssignWorkOrderModalComponent } from '../components/assign-work-order-modal/assign-work-order-modal.component';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { ToastService } from '../../core/services/toast.service';
 
 @Component({
@@ -12,7 +13,7 @@ import { ToastService } from '../../core/services/toast.service';
   templateUrl: './team-list.component.html',
   styleUrls: ['./team-list.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent, AssignWorkOrderModalComponent]
+  imports: [CommonModule, FormsModule, TeamDeleteConfirmationModalComponent, TeamFormModalComponent, AssignWorkOrderModalComponent, PaginationComponent]
 })
 export class TeamListComponent implements OnInit {
   teamMembers: TeamMember[] = [];
@@ -23,6 +24,7 @@ export class TeamListComponent implements OnInit {
   successMessage = '';
   statistics: TeamMemberStatistics | null = null;
   analytics: TeamAnalyticsResponse['data'] | null = null;
+  currentPerPage = 15;
 
   // Search and filtering
   searchTerm = '';
@@ -100,11 +102,11 @@ export class TeamListComponent implements OnInit {
     this.loadStatistics();
   }
 
-  loadTeamMembers(page: number = 1): void {
+  loadTeamMembers(page: number = 1, perPage: number = 10): void {
     this.loading = true;
     this.error = '';
 
-    this.teamService.getTeamMembers(page, 15, {
+    this.teamService.getTeamMembers(page, perPage, {
       search: this.searchTerm || undefined,
       role_name: this.selectedRole?.value || undefined,
       status: this.selectedStatus?.value || undefined,
@@ -170,10 +172,11 @@ export class TeamListComponent implements OnInit {
 
   onAssignmentSubmitted(data: { work_order_id: number; due_date?: string; notes?: string }): void {
     // Show success toast
-    this.toastService.success(`Work order successfully assigned to ${this.teamMemberToAssign?.first_name} ${this.teamMemberToAssign?.last_name}`);
+    this.toastService.success(`Work order #${data.work_order_id} successfully assigned to ${this.teamMemberToAssign?.first_name} ${this.teamMemberToAssign?.last_name}`);
 
     // Refresh the team member list to update the assigned work order count
-    this.loadTeamMembers();
+    this.loadTeamMembers(this.pagination?.current_page || 1, this.currentPerPage);
+    this.loadStatistics(); // Also refresh statistics
     this.closeAssign();
   }
 
@@ -220,7 +223,7 @@ export class TeamListComponent implements OnInit {
 
   onTeamMemberSaved(teamMember: TeamMember): void {
     const memberName = `${teamMember.first_name} ${teamMember.last_name}`;
-    
+
     if (this.isEditMode) {
       const index = this.teamMembers.findIndex(tm => tm.id === teamMember.id);
       if (index !== -1) {
@@ -346,5 +349,16 @@ export class TeamListComponent implements OnInit {
       ...tm,
       showMenu: tm.id === teamMemberId ? !tm.showMenu : false
     }));
+  }
+
+  // Pagination event handlers
+  onPageChange(page: number): void {
+    this.loadTeamMembers(page, this.currentPerPage);
+  }
+
+  onPerPageChange(perPage: number): void {
+    // Update the per_page parameter and reload from page 1
+    this.currentPerPage = perPage;
+    this.loadTeamMembers(1, perPage);
   }
 }

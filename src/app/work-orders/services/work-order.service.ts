@@ -204,14 +204,17 @@ export interface WorkOrderAnalytics {
     completed_count: number;
   }>;
   top_technician_performance: Array<{
-    assigned_to: number;
-    completed_count: number;
-    avg_resolution_days: number;
-    assignedTo?: {
+    assigned_to: {
       id: number;
       first_name: string;
       last_name: string;
     };
+    completed_count: number;
+    avg_resolution_days: number;
+    is_overdue: boolean;
+    days_until_due: number | null;
+    days_since_created: number | null;
+    resolution_time_days: number | null;
   }>;
 }
 

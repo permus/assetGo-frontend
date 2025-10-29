@@ -260,6 +260,14 @@
           svg {
             color: white;
           }
+
+          &.bulk-import-btn {
+            background-color: #10b981;
+
+            &:hover {
+              background-color: #059669;
+            }
+          }
         }
       }
     }

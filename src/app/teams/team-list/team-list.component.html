@@ -26,29 +26,6 @@
         </svg>
         <span class="text-green-800 font-medium">{{ successMessage }}</span>
       </div>
-      <!-- Pagination Controls -->
-      <div class="xl:col-span-2" *ngIf="pagination">
-        <div class="flex items-center justify-between mt-4">
-          <div class="text-sm text-gray-600">
-            Showing {{ pagination.from }} - {{ pagination.to }} of {{ pagination.total }}
-          </div>
-          <div class="flex gap-2">
-            <button
-              class="px-3 py-1.5 rounded border text-sm"
-              [disabled]="pagination.current_page <= 1"
-              (click)="loadTeamMembers(pagination.current_page - 1)">
-              Prev
-            </button>
-            <span class="px-3 py-1.5 text-sm">Page {{ pagination.current_page }} / {{ pagination.last_page }}</span>
-            <button
-              class="px-3 py-1.5 rounded border text-sm"
-              [disabled]="pagination.current_page >= pagination.last_page"
-              (click)="loadTeamMembers(pagination.current_page + 1)">
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   }
 
@@ -314,7 +291,7 @@
 
   <!-- Team Members Cards -->
 
-    <div class="grid grid-cols-1 gap-6">
+    <div class="grid grid-cols-1 gap-6 mb-5">
       @if (!loading) {
       <!--Team Card grid-->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -720,6 +697,14 @@
 
 
 
+
+  <!-- Pagination -->
+  <app-pagination
+    *ngIf="pagination && (teamMembers.length > 0 || pagination.total > 0)"
+    [pagination]="pagination"
+    (pageChange)="onPageChange($event)"
+    (perPageChange)="onPerPageChange($event)">
+  </app-pagination>
 
   <!-- Modals -->
   <app-team-delete-confirmation-modal

@@ -140,6 +140,11 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
         name: 'Low',
         value: this.analyticsData.priority_distribution?.['low'] || 0,
         color: '#10b981'
+      },
+      {
+        name: 'PPM',
+        value: this.analyticsData.priority_distribution?.['ppm'] || 0,
+        color: '#8b5cf6'
       }
     ];
 
@@ -157,8 +162,8 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
     // Safely prepare technician performance data with null checks
     if (this.analyticsData.top_technician_performance && this.analyticsData.top_technician_performance.length > 0) {
       this.technicianData = this.analyticsData.top_technician_performance.map(tech => ({
-        name: tech.assignedTo ? `${tech.assignedTo.first_name} ${tech.assignedTo.last_name}` : 'Unknown',
-        score: Math.round((tech.completed_count / Math.max(tech.avg_resolution_days, 1)) * 100), // Performance score based on completion rate and speed
+        name: tech.assigned_to ? `${tech.assigned_to.first_name} ${tech.assigned_to.last_name}` : 'Unknown',
+        score: tech.completed_count || 0, // Use completed count as the primary metric
         completed: tech.completed_count || 0,
         avgTime: tech.avg_resolution_days || 0
       }));
@@ -174,9 +179,18 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
 
 
   formatDays(days: number): string {
-    if (!days || days <= 0) return '0 days';
+    if (!days || days === 0) return '0 days';
+    
+    // Handle negative values (completed ahead of schedule)
+    if (days < 0) {
+      const absDays = Math.abs(days);
+      if (absDays === 1) return '1 day ahead';
+      return `${absDays.toFixed(1)} days ahead`;
+    }
+    
+    // Handle positive values (completed after schedule)
     if (days === 1) return '1 day';
-    return `${days} days`;
+    return `${days.toFixed(1)} days`;
   }
 
   formatPercentage(value: number): string {
@@ -211,5 +225,15 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
   get totalStatusCount(): number {
     if (!this.analyticsData?.status_distribution) return 0;
     return Object.values(this.analyticsData.status_distribution).reduce((sum, count) => sum + count, 0);
+  }
+
+  getProgressBarWidth(completedCount: number): number {
+    if (!this.technicianData || this.technicianData.length === 0) return 0;
+    
+    // Find the maximum completed count to calculate relative percentage
+    const maxCompleted = Math.max(...this.technicianData.map(tech => tech.completed));
+    if (maxCompleted === 0) return 0;
+    
+    return (completedCount / maxCompleted) * 100;
   }
 }

@@ -18,11 +18,21 @@
         [required]="true"
         [options]="workOrders"
         [selectedOption]="selectedWorkOrder"
-        placeholder="Select a work order"
+        [placeholder]="loading ? 'Loading work orders...' : 'Select a work order'"
         [searchable]="true"
         [disabled]="loading"
         (selectionChange)="selectWorkOrder($event)">
       </app-global-dropdown>
+      <div *ngIf="loading" class="loading-indicator">
+        <div class="spinner"></div>
+        <span>Loading work orders...</span>
+      </div>
+      <div *ngIf="!loading && workOrders.length === 0" class="no-work-orders">
+        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <span>No available work orders to assign</span>
+      </div>
     </div>
     
     <div class="form-group">
@@ -37,7 +47,7 @@
     
     <div class="modal-actions">
       <button class="btn secondary" (click)="close()">Cancel</button>
-      <button class="btn primary" [disabled]="!selectedWorkOrderId || loading" (click)="submit()">
+      <button class="btn primary" [disabled]="!selectedWorkOrderId || loading || workOrders.length === 0" (click)="submit()">
         <span *ngIf="loading">Assigning...</span>
         <span *ngIf="!loading">Assign Work Order</span>
       </button>

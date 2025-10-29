@@ -785,7 +785,38 @@ export class InventoryAnalyticsService {
     );
   }
 
-  // Stock Levels Methods
+  // Bulk Import Methods
+  downloadPartsImportTemplate(): Observable<Blob> {
+    return this.http.get(
+      `${this.apiUrl}/inventory/parts/import/template`,
+      {
+        headers: this.getAuthHeaders().headers,
+        responseType: 'blob' as 'json'
+      }
+    ) as unknown as Observable<Blob>;
+  }
+
+  importParts(formData: FormData): Observable<any> {
+    // Don't set Content-Type header - let browser set it with boundary for multipart/form-data
+    // Remove Content-Type from headers to allow browser to set it automatically
+    const headers: any = {};
+    const authHeaders = this.getAuthHeaders();
+    
+    // Copy only authorization headers, exclude Content-Type
+    Object.keys(authHeaders.headers || {}).forEach(key => {
+      if (key.toLowerCase() !== 'content-type') {
+        headers[key] = authHeaders.headers[key];
+      }
+    });
+
+    return this.http.post<any>(
+      `${this.apiUrl}/inventory/parts/import`,
+      formData,
+      {
+        headers: headers
+      }
+    );
+  }
   getStockLevels(
     locationId?: number,
     partId?: number,
