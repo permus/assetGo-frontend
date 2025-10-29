@@ -292,7 +292,7 @@ ${this.prediction.recommendedAction}`;
       description: this.form.value.description,
       priority_id: this.selectedPriority.id,
       status_id: this.selectedStatus.id,
-      category_id: this.selectedCategory?.id || null,
+      category_id: this.selectedCategory?.id || undefined,
       due_date: this.form.value.due_date || undefined,
       asset_id: this.form.value.asset_id || undefined,
       location_id: this.form.value.location_id || undefined,

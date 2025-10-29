@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GlobalDropdownComponent, DropdownOption } from '../../shared/components/global-dropdown/global-dropdown.component';
 import { ReportsExportPanelComponent } from '../components/reports-export-panel.component';
+import { PieChartComponent } from '../components/charts/pie-chart.component';
+import { BarChartComponent } from '../components/charts/bar-chart.component';
 import { Subject, takeUntil } from 'rxjs';
 import { ReportsApiService } from '../services/reports-api.service';
 import { ExportService } from '../services/export.service';
@@ -11,7 +13,14 @@ import { ReportCategory, ReportConfig, DateRange, ReportPeriod, AssetSummaryResp
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReportsExportPanelComponent, GlobalDropdownComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ReportsExportPanelComponent, 
+    GlobalDropdownComponent,
+    PieChartComponent,
+    BarChartComponent
+  ],
   templateUrl: './reports.page.html',
   styleUrls: ['./reports.page.scss']
 })
@@ -33,6 +42,8 @@ export class ReportsPage implements OnInit, OnDestroy {
   selectedReports: string[] = [];
   isGenerating: boolean = false;
   successMessage: string = '';
+  assetSummaryData: AssetSummaryResponse | null = null;
+  maintenanceSummaryData: MaintenanceSummaryResponse | null = null;
 
   // Configuration
   reportConfig: ReportConfig = {
@@ -129,6 +140,13 @@ export class ReportsPage implements OnInit, OnDestroy {
     'total-cost-ownership': 'financial.total_cost_ownership',
     'maintenance-cost-breakdown': 'financial.maintenance_cost_breakdown',
     'budget-vs-actual': 'financial.budget.vs.actual'
+  };
+
+  private readonly inventoryKeyMap: Record<string, string> = {
+    'current-stock': 'inventory.current.stock',
+    'abc-analysis': 'inventory.abc.analysis',
+    'slow-moving': 'inventory.slow_moving',
+    'reorder-analysis': 'inventory.reorder_analysis'
   };
 
   // Custom select options/state for Financial
@@ -550,10 +568,12 @@ export class ReportsPage implements OnInit, OnDestroy {
     
     // Handle different response types
     if ('assets' in response) {
-      // AssetSummaryResponse
+      // AssetSummaryResponse - store the full response for charts
+      this.assetSummaryData = response as AssetSummaryResponse;
       this.reportData = response.assets || [];
     } else if ('work_orders' in response) {
-      // MaintenanceSummaryResponse
+      // MaintenanceSummaryResponse - store the full response for charts
+      this.maintenanceSummaryData = response as MaintenanceSummaryResponse;
       this.reportData = response.work_orders || [];
     } else {
       this.reportData = [];
@@ -1050,7 +1070,7 @@ export class ReportsPage implements OnInit, OnDestroy {
 
     // Map UI ids to backend keys using global maps
     const reportKeys = reportsToExport.map(id => {
-      let key = this.maintenanceKeyMap[id] || this.assetKeyMap[id] || this.financialKeyMap[id] || id;
+      let key = this.maintenanceKeyMap[id] || this.assetKeyMap[id] || this.financialKeyMap[id] || this.inventoryKeyMap[id] || id;
       if (!key.includes('.')) {
         key = `${this.activeTab}.${key.replace(/-/g, '.')}`;
       }
@@ -1085,5 +1105,48 @@ export class ReportsPage implements OnInit, OnDestroy {
         }
       });
     });
+  }
+
+  /**
+   * Get status chart data for pie chart
+   */
+  getStatusChartData(): { label: string; value: number; color?: string }[] {
+    if (!this.assetSummaryData?.status_distribution) {
+      return [];
+    }
+
+    const colorMap: { [key: string]: string } = {
+      'active': '#10B981',
+      'maintenance': '#F59E0B',
+      'inactive': '#6B7280',
+      'retired': '#EF4444'
+    };
+
+    return Object.entries(this.assetSummaryData.status_distribution).map(([status, count]) => ({
+      label: status.charAt(0).toUpperCase() + status.slice(1),
+      value: count as number,
+      color: colorMap[status.toLowerCase()] || '#4F46E5'
+    }));
+  }
+
+  /**
+   * Get category chart data for bar chart
+   */
+  getCategoryChartData(): { label: string; value: number }[] {
+    if (!this.assetSummaryData?.category_distribution) {
+      return [];
+    }
+
+    return Object.entries(this.assetSummaryData.category_distribution).map(([category, count]) => ({
+      label: category,
+      value: count as number
+    }));
+  }
+
+  /**
+   * Format number for display
+   */
+  formatNumber(value: number): string {
+    return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
   }
 }

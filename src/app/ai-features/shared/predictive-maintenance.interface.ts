@@ -49,6 +49,7 @@ export interface GeneratePredictionsResponse {
     predictions: Prediction[];
     summary: Summary;
     generatedAt: string;
+    job_id?: string;
   };
   message?: string;
 }

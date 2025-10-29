@@ -904,7 +904,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
                   label: (context) => {
                     const label = context.dataset.label || '';
                     const value = context.parsed.y;
-                    return `${label}: ${this.getCurrencySymbol()}${value.toLocaleString()}`;
+                    return `${label}: ${this.getCurrencySymbol()}${value !== null ? value.toLocaleString() : '0'}`;
                   }
                 }
               }

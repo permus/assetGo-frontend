@@ -322,7 +322,7 @@ export class PredictiveMaintenanceComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          if (response.success && response.data.job_id) {
+          if (response.success && response.data?.job_id) {
             this.generationJobId = response.data.job_id;
             this.startPollingJobStatus();
           }

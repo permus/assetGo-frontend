@@ -16,7 +16,7 @@
         <h1 class="title">Reports</h1>
         <p class="subtitle">Generate and export comprehensive reports for your asset management</p>
       </div>
-      <div class="header-actions">
+      <div class="header-actions" style="display: none;">
         <button class="action-button refresh-button" (click)="onRefresh()" [disabled]="isLoading">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
@@ -135,6 +135,94 @@
         </div>
       </div>
 
+      <!-- Asset Overview Section -->
+      <div class="asset-overview-section" *ngIf="assetSummaryData">
+        <!-- KPI Cards - Hidden -->
+        <div class="overview-card kpi-overview-card" style="display: none;">
+          <h3>Asset Overview</h3>
+          <p>Key metrics and statistics for your asset portfolio</p>
+          <div class="kpi-grid">
+            <div class="kpi-item">
+              <div class="kpi-icon-wrapper success">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <div class="kpi-details">
+                <div class="kpi-label">Total Assets</div>
+                <div class="kpi-value">{{ assetSummaryData?.totals?.total_count || 0 }}</div>
+              </div>
+            </div>
+            
+            <div class="kpi-item">
+              <div class="kpi-icon-wrapper primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+              <div class="kpi-details">
+                <div class="kpi-label">Total Value</div>
+                <div class="kpi-value">${{ formatNumber(assetSummaryData?.totals?.total_value || 0) }}</div>
+              </div>
+            </div>
+            
+            <div class="kpi-item">
+              <div class="kpi-icon-wrapper success">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <div class="kpi-details">
+                <div class="kpi-label">Active Assets</div>
+                <div class="kpi-value">{{ assetSummaryData?.totals?.active_count || 0 }}</div>
+              </div>
+            </div>
+            
+            <div class="kpi-item">
+              <div class="kpi-icon-wrapper warning">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <div class="kpi-details">
+                <div class="kpi-label">In Maintenance</div>
+                <div class="kpi-value">{{ assetSummaryData?.totals?.maintenance_count || 0 }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section - Hidden -->
+        <div class="overview-card charts-overview-card" style="display: none;">
+          <h3>Asset Distribution</h3>
+          <p>Visual representation of your asset data</p>
+          <div class="charts-grid">
+            <!-- Status Distribution Pie Chart -->
+            <div class="chart-card">
+              <h4>Assets by Status</h4>
+              <app-pie-chart
+                [data]="getStatusChartData()"
+                [height]="280"
+                [showLegend]="true">
+              </app-pie-chart>
+            </div>
+            
+            <!-- Category Distribution Bar Chart - Hidden -->
+            <div class="chart-card" style="display: none;">
+              <h4>Assets by Category</h4>
+              <app-bar-chart
+                [data]="getCategoryChartData()"
+                [height]="280"
+                [horizontal]="false"
+                [color]="'#4F46E5'">
+              </app-bar-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Available Reports -->
       <div class="available-reports">
         <h3>Available Asset Reports</h3>
@@ -171,55 +259,68 @@
 
     <!-- Maintenance Reports UI -->
     <div *ngIf="activeTab === 'maintenance'" class="report-category">
-      <!-- Filters -->
+      <!-- Filters and Configuration -->
       <div class="filters-section">
         <div class="filter-card">
-          <h3>Time Period</h3>
-          <app-global-dropdown
-            [options]="maintenancePeriodOptions"
-            [selectedOption]="selectedMaintenancePeriod"
-            placeholder="Select period"
-            (selectionChange)="onSelectMaintenancePeriod($event)">
-          </app-global-dropdown>
+          <h3>Report Configuration</h3>
+          <p>Configure your maintenance reports with custom date ranges and filters</p>
+          <div class="filter-row">
+            <div class="filter-group">
+              <label>Start Date</label>
+              <input type="date" class="filter-input" [(ngModel)]="reportConfig.dateRange.start">
+            </div>
+            <div class="filter-group">
+              <label>End Date</label>
+              <input type="date" class="filter-input" [(ngModel)]="reportConfig.dateRange.end">
+            </div>
+            <div class="filter-group">
+              <label>Export Format</label>
+              <select class="filter-select" [(ngModel)]="exportFormat">
+                <option value="pdf">PDF Document</option>
+                <option value="xlsx">Excel Spreadsheet</option>
+                <option value="csv">CSV File</option>
+              </select>
+            </div>
+          </div>
+          <button class="generate-button" (click)="onGenerateSelectedReports()" [disabled]="selectedReports.length === 0 || isGenerating">
+            <span *ngIf="!isGenerating">Generate Selected Reports ({{ selectedReports.length }})</span>
+            <span *ngIf="isGenerating" class="loading-content">
+              <i class="loading-spinner"></i>
+              Generating Report...
+            </span>
+          </button>
         </div>
-        <div class="filter-card">
-          <h3>Maintenance Type</h3>
-          <app-global-dropdown
-            [options]="maintenanceTypeOptions"
-            [selectedOption]="selectedMaintenanceType"
-            placeholder="Select type"
-            (selectionChange)="onSelectMaintenanceType($event)">
-          </app-global-dropdown>
-        </div>
-        <div class="quick-actions-card">
-          <h3>Quick Actions</h3>
-          <button class="quick-action-button" (click)="generateQuickReport('monthly-summary')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <div class="quick-reports-card">
+          <h3>Quick Reports</h3>
+          <p>Generate commonly requested reports instantly</p>
+          <div class="quick-report-item" (click)="generateQuickReport('monthly-summary')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
               <line x1="16" y1="2" x2="16" y2="6"></line>
               <line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
-            Monthly Summary
-          </button>
-          <button class="quick-action-button" (click)="generateQuickReport('overdue-tasks')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <span>Monthly Summary</span>
+          </div>
+          <div class="quick-report-item" (click)="generateQuickReport('overdue-tasks')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
               <line x1="12" y1="9" x2="12" y2="13"></line>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
-            Overdue Tasks
-          </button>
+            <span>Overdue Tasks</span>
+          </div>
         </div>
       </div>
 
-      <!-- Maintenance Reports List -->
-      <div class="maintenance-reports">
-        <h3>Maintenance Reports</h3>
-        <p>Select the maintenance reports you want to generate and analyze.</p>
+      <!-- Available Maintenance Reports -->
+      <div class="available-reports">
+        <h3>Available Maintenance Reports</h3>
+        <p>Select the reports you want to generate. Multiple reports can be combined into a single export.</p>
         
-        <!-- Export Controls -->
-        <div class="export-controls">
+        <!-- Export Controls - Hidden -->
+        <div class="export-controls" style="display: none;">
           <button class="export-button" (click)="onExport()" [disabled]="!selectedReport && selectedReports.length === 0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -230,10 +331,15 @@
           </button>
         </div>
         
-        <div class="report-grid">
-          <div class="report-card" *ngFor="let report of maintenanceReports">
-            <input type="checkbox" [id]="report.id" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
-            <label [for]="report.id" class="report-card-content">
+        <div class="report-list">
+          <div class="report-item" *ngFor="let report of maintenanceReports">
+            <input type="checkbox" [id]="report.id" name="maintenanceReport" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
+            <label [for]="report.id" class="report-card" [class.selected]="isReportSelected(report.id)">
+              <div class="checkbox-indicator">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="isReportSelected(report.id)">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+              </div>
               <div class="report-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
@@ -249,8 +355,8 @@
         </div>
       </div>
 
-      <!-- Maintenance KPIs -->
-      <div class="kpi-section">
+      <!-- Maintenance KPIs - Hidden -->
+      <div class="kpi-section" style="display: none;">
         <div class="kpi-card">
           <div class="kpi-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -306,38 +412,51 @@
 
     <!-- Inventory Reports UI -->
     <div *ngIf="activeTab === 'inventory'" class="report-category">
-      <!-- Filters -->
+      <!-- Filters and Configuration -->
       <div class="filters-section">
         <div class="filter-card">
-          <h3>Category Filter</h3>
-          <app-global-dropdown
-            [options]="inventoryCategoryOptions"
-            [selectedOption]="selectedInventoryCategory"
-            placeholder="Select category"
-            (selectionChange)="onSelectInventoryCategory($event)">
-          </app-global-dropdown>
+          <h3>Report Configuration</h3>
+          <p>Configure your inventory reports with custom date ranges and filters</p>
+          <div class="filter-row">
+            <div class="filter-group">
+              <label>Start Date</label>
+              <input type="date" class="filter-input" [(ngModel)]="reportConfig.dateRange.start">
+            </div>
+            <div class="filter-group">
+              <label>End Date</label>
+              <input type="date" class="filter-input" [(ngModel)]="reportConfig.dateRange.end">
+            </div>
+            <div class="filter-group">
+              <label>Export Format</label>
+              <select class="filter-select" [(ngModel)]="exportFormat">
+                <option value="pdf">PDF Document</option>
+                <option value="xlsx">Excel Spreadsheet</option>
+                <option value="csv">CSV File</option>
+              </select>
+            </div>
+          </div>
+          <button class="generate-button" (click)="onGenerateSelectedReports()" [disabled]="selectedReports.length === 0 || isGenerating">
+            <span *ngIf="!isGenerating">Generate Selected Reports ({{ selectedReports.length }})</span>
+            <span *ngIf="isGenerating" class="loading-content">
+              <i class="loading-spinner"></i>
+              Generating Report...
+            </span>
+          </button>
         </div>
-        <div class="filter-card">
-          <h3>Location Filter</h3>
-          <app-global-dropdown
-            [options]="inventoryLocationOptions"
-            [selectedOption]="selectedInventoryLocation"
-            placeholder="Select location"
-            (selectionChange)="onSelectInventoryLocation($event)">
-          </app-global-dropdown>
-        </div>
-        <div class="quick-insights-card">
-          <h3>Quick Insights</h3>
-          <div class="insight-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <div class="quick-reports-card">
+          <h3>Quick Reports</h3>
+          <p>Generate commonly requested reports instantly</p>
+          <div class="quick-report-item" (click)="generateQuickReport('low-stock-alerts')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
               <line x1="12" y1="9" x2="12" y2="13"></line>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
             <span>Low Stock Alerts</span>
           </div>
-          <div class="insight-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="quick-report-item" (click)="generateQuickReport('top-consumed-items')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 3v18h18"></path>
               <path d="M18 17V9M13 17V5M8 17v-3"></path>
             </svg>
@@ -346,8 +465,8 @@
         </div>
       </div>
 
-      <!-- Inventory KPIs -->
-      <div class="kpi-section">
+      <!-- Inventory KPIs - Hidden -->
+      <div class="kpi-section" style="display: none;">
         <div class="kpi-card">
           <div class="kpi-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -405,12 +524,12 @@
       </div>
 
       <!-- Inventory Reports List -->
-      <div class="inventory-reports">
-        <h3>Inventory Reports</h3>
+      <div class="available-reports">
+        <h3>Available Inventory Reports</h3>
         <p>Generate comprehensive inventory analysis and management reports</p>
 
-        <!-- Export Controls -->
-        <div class="export-controls">
+        <!-- Export Controls - Hidden -->
+        <div class="export-controls" style="display: none;">
           <button class="export-button" (click)="onExport()" [disabled]="selectedReports.length === 0 && !selectedReport">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -421,10 +540,15 @@
           </button>
         </div>
         
-        <div class="report-grid">
-          <div class="report-card" *ngFor="let report of inventoryReports">
-            <input type="checkbox" [id]="report.id" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
-            <label [for]="report.id" class="report-card-content">
+        <div class="report-list">
+          <div class="report-item" *ngFor="let report of inventoryReports">
+            <input type="checkbox" [id]="report.id" name="inventoryReport" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
+            <label [for]="report.id" class="report-card" [class.selected]="isReportSelected(report.id)">
+              <div class="checkbox-indicator">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="isReportSelected(report.id)">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+              </div>
               <div class="report-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
@@ -445,37 +569,50 @@
 
     <!-- Financial Reports UI -->
     <div *ngIf="activeTab === 'financial'" class="report-category">
-      <!-- Filters -->
+      <!-- Filters and Configuration -->
       <div class="filters-section">
         <div class="filter-card">
-          <h3>Reporting Period</h3>
-          <app-global-dropdown
-            [options]="financialPeriodOptions"
-            [selectedOption]="selectedFinancialPeriod"
-            placeholder="Select period"
-            (selectionChange)="onSelectFinancialPeriod($event)">
-          </app-global-dropdown>
+          <h3>Report Configuration</h3>
+          <p>Configure your financial reports with custom date ranges and filters</p>
+          <div class="filter-row">
+            <div class="filter-group">
+              <label>Start Date</label>
+              <input type="date" class="filter-input" [(ngModel)]="reportConfig.dateRange.start">
+            </div>
+            <div class="filter-group">
+              <label>End Date</label>
+              <input type="date" class="filter-input" [(ngModel)]="reportConfig.dateRange.end">
+            </div>
+            <div class="filter-group">
+              <label>Export Format</label>
+              <select class="filter-select" [(ngModel)]="exportFormat">
+                <option value="pdf">PDF Document</option>
+                <option value="xlsx">Excel Spreadsheet</option>
+                <option value="csv">CSV File</option>
+              </select>
+            </div>
+          </div>
+          <button class="generate-button" (click)="onGenerateSelectedReports()" [disabled]="selectedReports.length === 0 || isGenerating">
+            <span *ngIf="!isGenerating">Generate Selected Reports ({{ selectedReports.length }})</span>
+            <span *ngIf="isGenerating" class="loading-content">
+              <i class="loading-spinner"></i>
+              Generating Report...
+            </span>
+          </button>
         </div>
-        <div class="filter-card">
-          <h3>Currency</h3>
-          <app-global-dropdown
-            [options]="financialCurrencyOptions"
-            [selectedOption]="selectedFinancialCurrency"
-            placeholder="Select currency"
-            (selectionChange)="onSelectFinancialCurrency($event)">
-          </app-global-dropdown>
-        </div>
-        <div class="executive-summary-card">
-          <h3>Executive Summary</h3>
-          <div class="summary-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <div class="quick-reports-card">
+          <h3>Quick Reports</h3>
+          <p>Generate commonly requested reports instantly</p>
+          <div class="quick-report-item" (click)="generateQuickReport('monthly-pl')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="1" x2="12" y2="23"></line>
               <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
             </svg>
             <span>Monthly P&L</span>
           </div>
-          <div class="summary-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="quick-report-item" (click)="generateQuickReport('cost-trends')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 3v18h18"></path>
               <path d="M18 17V9M13 17V5M8 17v-3"></path>
             </svg>
@@ -484,8 +621,8 @@
         </div>
       </div>
 
-      <!-- Financial KPIs -->
-      <div class="kpi-section">
+      <!-- Financial KPIs - Hidden -->
+      <div class="kpi-section" style="display: none;">
         <div class="kpi-card">
           <div class="kpi-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -543,12 +680,12 @@
       </div>
 
       <!-- Financial Reports List -->
-      <div class="financial-reports">
-        <h3>Financial Reports</h3>
+      <div class="available-reports">
+        <h3>Available Financial Reports</h3>
         <p>Generate comprehensive financial analysis and cost management reports</p>
 
-        <!-- Export Controls -->
-        <div class="export-controls">
+        <!-- Export Controls - Hidden -->
+        <div class="export-controls" style="display: none;">
           <button class="export-button" (click)="onExport()" [disabled]="selectedReports.length === 0 && !selectedReport">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -559,10 +696,15 @@
           </button>
         </div>
         
-        <div class="report-grid">
-          <div class="report-card" *ngFor="let report of financialReports">
-            <input type="checkbox" [id]="report.id" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
-            <label [for]="report.id" class="report-card-content">
+        <div class="report-list">
+          <div class="report-item" *ngFor="let report of financialReports">
+            <input type="checkbox" [id]="report.id" name="financialReport" [value]="report.id" (change)="onReportSelectionChange(report.id, $event)" [checked]="isReportSelected(report.id)">
+            <label [for]="report.id" class="report-card" [class.selected]="isReportSelected(report.id)">
+              <div class="checkbox-indicator">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="isReportSelected(report.id)">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+              </div>
               <div class="report-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
