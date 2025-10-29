@@ -192,6 +192,7 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Reset all state for fresh analysis
     this.isAnalyzing = true;
     this.errorMessage = '';
     this.analysisResult = null;
@@ -199,6 +200,18 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
     this.feedbackType = null;
     this.correctionText = '';
     this.corrections = [];
+    this.showCreateAssetModal = false;
+    this.isCreatingAsset = false;
+    this.selectedLocation = null;
+    this.showLocationDropdown = false;
+    this.assetForm = {
+      name: '',
+      model: '',
+      description: '',
+      manufacturer: '',
+      serialNumber: '',
+      location: ''
+    };
 
     try {
       // Convert files to data URLs
@@ -290,24 +303,6 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
 
   updateCorrection(index: number, field: 'field' | 'value', value: string) {
     this.corrections[index][field] = value;
-  }
-
-  getConfidenceClass(confidence: number): string {
-    if (confidence >= 80) return 'confidence-high';
-    if (confidence >= 60) return 'confidence-medium';
-    return 'confidence-low';
-  }
-
-  getConfidenceLevel(confidence: number): string {
-    if (confidence >= 80) return 'high';
-    if (confidence >= 60) return 'medium';
-    return 'low';
-  }
-
-  getConfidenceLabel(confidence: number): string {
-    if (confidence >= 80) return 'High';
-    if (confidence >= 60) return 'Medium';
-    return 'Low';
   }
 
   getConditionClass(condition: string): string {

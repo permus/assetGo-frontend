@@ -159,9 +159,6 @@
                 </div>
                 <div class="type-info">
                   <h4>{{ analysisResult.assetType }}</h4>
-                  <span class="confidence-badge confidence-{{ getConfidenceLevel(analysisResult.confidence) }}">
-                    {{ analysisResult.confidence }}% Confidence
-                  </span>
                 </div>
               </div>
             </div>
@@ -696,147 +693,138 @@
         <p class="modal-subtitle">Complete the asset details based on AI recognition</p>
 
         <form class="asset-form">
-          <div class="form-container">
-            <div class="form-column">
-              <div class="form-row">
-                <div class="form-group" [class.error]="hasFieldError('name')">
-                  <label>Asset Name <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    [(ngModel)]="assetForm.name"
-                    name="name"
-                    placeholder="Enter asset name"
-                    [class.error-input]="hasFieldError('name')">
-                  <div class="field-error" *ngIf="hasFieldError('name')">
-                    {{ getFieldError('name') }}
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group" [class.error]="hasFieldError('model')">
-                  <label>Model</label>
-                  <input
-                    type="text"
-                    [(ngModel)]="assetForm.model"
-                    name="model"
-                    placeholder="Enter model"
-                    [class.error-input]="hasFieldError('model')">
-                  <div class="field-error" *ngIf="hasFieldError('model')">
-                    {{ getFieldError('model') }}
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-row full-width">
-                <div class="form-group" [class.error]="hasFieldError('description')">
-                  <label>Description</label>
-                  <textarea
-                    [(ngModel)]="assetForm.description"
-                    name="description"
-                    placeholder="Enter description"
-                    [class.error-input]="hasFieldError('description')"></textarea>
-                  <div class="field-error" *ngIf="hasFieldError('description')">
-                    {{ getFieldError('description') }}
-                  </div>
-                </div>
+          <!-- Row 1: Asset Name + Manufacturer -->
+          <div class="form-grid-row">
+            <div class="form-group" [class.error]="hasFieldError('name')">
+              <label>Asset Name <span class="required">*</span></label>
+              <input
+                type="text"
+                [(ngModel)]="assetForm.name"
+                name="name"
+                placeholder="Enter asset name"
+                [class.error-input]="hasFieldError('name')">
+              <div class="field-error" *ngIf="hasFieldError('name')">
+                {{ getFieldError('name') }}
               </div>
             </div>
 
-            <div class="form-column">
-              <div class="form-row">
-                <div class="form-group" [class.error]="hasFieldError('manufacturer')">
-                  <label>Manufacturer</label>
-                  <input
-                    type="text"
-                    [(ngModel)]="assetForm.manufacturer"
-                    name="manufacturer"
-                    placeholder="Enter manufacturer"
-                    [class.error-input]="hasFieldError('manufacturer')">
-                  <div class="field-error" *ngIf="hasFieldError('manufacturer')">
-                    {{ getFieldError('manufacturer') }}
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group" [class.error]="hasFieldError('serialNumber')">
-                  <label>Serial Number</label>
-                  <input
-                    type="text"
-                    [(ngModel)]="assetForm.serialNumber"
-                    name="serialNumber"
-                    placeholder="Enter serial number"
-                    [class.error-input]="hasFieldError('serialNumber')">
-                  <div class="field-error" *ngIf="hasFieldError('serialNumber')">
-                    {{ getFieldError('serialNumber') }}
-                  </div>
-                </div>
+            <div class="form-group" [class.error]="hasFieldError('manufacturer')">
+              <label>Manufacturer</label>
+              <input
+                type="text"
+                [(ngModel)]="assetForm.manufacturer"
+                name="manufacturer"
+                placeholder="Enter manufacturer"
+                [class.error-input]="hasFieldError('manufacturer')">
+              <div class="field-error" *ngIf="hasFieldError('manufacturer')">
+                {{ getFieldError('manufacturer') }}
               </div>
             </div>
           </div>
 
-          <div class="form-row full-width">
-            <div class="form-group" [class.error]="hasFieldError('location')">
-              <label>Asset Location <span class="required">*</span></label>
+          <!-- Row 2: Model + Serial Number -->
+          <div class="form-grid-row">
+            <div class="form-group" [class.error]="hasFieldError('model')">
+              <label>Model</label>
+              <input
+                type="text"
+                [(ngModel)]="assetForm.model"
+                name="model"
+                placeholder="Enter model"
+                [class.error-input]="hasFieldError('model')">
+              <div class="field-error" *ngIf="hasFieldError('model')">
+                {{ getFieldError('model') }}
+              </div>
+            </div>
 
-              <div class="relative generic-dropdown" (click)="$event.stopPropagation()">
-                <button
-                  type="button"
-                  (click)="toggleLocationDropdown()"
-                  class="dropdown-button"
-                  [class.error]="hasFieldError('location')"
-                  [class.active]="showLocationDropdown"
-                  [disabled]="loadingLocations">
-                  <div class="dropdown-content">
-                    <span *ngIf="!selectedLocation" class="placeholder">
-                      {{ loadingLocations ? 'Loading locations...' : 'Select a location' }}
-                    </span>
+            <div class="form-group" [class.error]="hasFieldError('serialNumber')">
+              <label>Serial Number</label>
+              <input
+                type="text"
+                [(ngModel)]="assetForm.serialNumber"
+                name="serialNumber"
+                placeholder="Enter serial number"
+                [class.error-input]="hasFieldError('serialNumber')">
+              <div class="field-error" *ngIf="hasFieldError('serialNumber')">
+                {{ getFieldError('serialNumber') }}
+              </div>
+            </div>
+          </div>
 
-                    <div *ngIf="selectedLocation" class="selected-item">
-                      <div class="item-icon">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                      </div>
-                      <span class="selected-text">{{ selectedLocation.name }}</span>
+          <!-- Row 3: Description (Full Width) -->
+          <div class="form-group full-width" [class.error]="hasFieldError('description')">
+            <label>Description</label>
+            <textarea
+              [(ngModel)]="assetForm.description"
+              name="description"
+              placeholder="Enter description"
+              [class.error-input]="hasFieldError('description')"
+              rows="3"></textarea>
+            <div class="field-error" *ngIf="hasFieldError('description')">
+              {{ getFieldError('description') }}
+            </div>
+          </div>
+
+          <!-- Row 4: Location (Full Width) -->
+          <div class="form-group full-width" [class.error]="hasFieldError('location')">
+            <label>Asset Location <span class="required">*</span></label>
+
+            <div class="relative generic-dropdown" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                (click)="toggleLocationDropdown()"
+                class="dropdown-button"
+                [class.error]="hasFieldError('location')"
+                [class.active]="showLocationDropdown"
+                [disabled]="loadingLocations">
+                <div class="dropdown-content">
+                  <span *ngIf="!selectedLocation" class="placeholder">
+                    {{ loadingLocations ? 'Loading locations...' : 'Select a location' }}
+                  </span>
+
+                  <div *ngIf="selectedLocation" class="selected-item">
+                    <div class="item-icon">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
                     </div>
+                    <span class="selected-text">{{ selectedLocation.name }}</span>
+                  </div>
 
-                    <svg class="dropdown-arrow" [class.rotated]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
+                  <svg class="dropdown-arrow" [class.rotated]="showLocationDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+
+              <div *ngIf="showLocationDropdown" class="dropdown-menu">
+                <div class="dropdown-header">Select location</div>
+
+                <button
+                  *ngFor="let location of locations"
+                  type="button"
+                  (click)="selectLocation(location)"
+                  class="dropdown-item"
+                  [class.selected]="selectedLocation?.id === location.id">
+                  <div class="item-content">
+                    <div class="item-icon">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                    </div>
+                    <div class="item-details">
+                      <div class="item-name">{{ location.name }}</div>
+                      <div class="item-description">{{ getLocationDescription(location) }}</div>
+                    </div>
                   </div>
                 </button>
-
-                <div *ngIf="showLocationDropdown" class="dropdown-menu">
-                  <div class="dropdown-header">Select location</div>
-
-                  <button
-                    *ngFor="let location of locations"
-                    type="button"
-                    (click)="selectLocation(location)"
-                    class="dropdown-item"
-                    [class.selected]="selectedLocation?.id === location.id">
-                    <div class="item-content">
-                      <div class="item-icon">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                      </div>
-                      <div class="item-details">
-                        <div class="item-name">{{ location.name }}</div>
-                        <div class="item-description">{{ getLocationDescription(location) }}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
               </div>
+            </div>
 
-              <div class="field-error" *ngIf="hasFieldError('location')">
-                {{ getFieldError('location') }}
-              </div>
+            <div class="field-error" *ngIf="hasFieldError('location')">
+              {{ getFieldError('location') }}
             </div>
           </div>
         </form>

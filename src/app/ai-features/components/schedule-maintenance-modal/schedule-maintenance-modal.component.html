@@ -1,0 +1,99 @@
+<!-- Modal Backdrop -->
+<div *ngIf="isOpen"
+     class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4"
+     [@backdropAnimation]
+     (click)="closeModalHandler()">
+  <!-- Modal Container -->
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full"
+       [@modalAnimation]
+       (click)="$event.stopPropagation()">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-900">Schedule Maintenance</h2>
+      </div>
+      <button
+        (click)="closeModalHandler()"
+        class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="p-6">
+      <!-- Info Message -->
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Schedule Maintenance</h3>
+        <p class="text-gray-600 text-sm">
+          This feature will create a maintenance schedule for 
+          <strong *ngIf="prediction">{{ prediction.assetName }}</strong>
+        </p>
+      </div>
+
+      <!-- Prediction Context -->
+      <div *ngIf="prediction" class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+        <div class="flex items-start justify-between mb-2">
+          <h4 class="text-sm font-semibold text-gray-900">AI Prediction Details</h4>
+          <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                [ngClass]="{
+                  'bg-red-100 text-red-700': prediction.riskLevel === 'high',
+                  'bg-yellow-100 text-yellow-700': prediction.riskLevel === 'medium',
+                  'bg-green-100 text-green-700': prediction.riskLevel === 'low'
+                }">
+            {{ prediction.riskLevel.toUpperCase() }} RISK
+          </span>
+        </div>
+        <div class="text-sm text-gray-700 space-y-1">
+          <p><strong>Asset:</strong> {{ prediction.assetName }}</p>
+          <p><strong>Confidence:</strong> {{ prediction.confidence }}%</p>
+          <p><strong>Recommended Action:</strong> {{ prediction.recommendedAction }}</p>
+          <p><strong>Potential Savings:</strong> ${{ prediction.savings.toFixed(2) }}</p>
+        </div>
+      </div>
+
+      <!-- Coming Soon Note -->
+      <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="flex items-start space-x-3">
+          <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <div class="text-sm text-blue-800">
+            <p class="font-semibold mb-1">Full scheduling integration coming soon</p>
+            <p class="text-blue-700">This will allow you to create recurring maintenance schedules based on AI predictions.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+        <button
+          (click)="closeModalHandler()"
+          class="px-6 py-2 text-gray-600 border border-gray-200 rounded-lg hover:border-gray-300 hover:text-gray-800 font-medium transition-colors">
+          Close
+        </button>
+        <a
+          href="/work-orders"
+          class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all">
+          View Work Orders
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -6,11 +6,14 @@ import {
   Summary
 } from '../../shared/predictive-maintenance.interface';
 import { PredictiveMaintenanceService } from '../../shared/predictive-maintenance.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { CreateWorkOrderModalComponent } from '../create-work-order-modal/create-work-order-modal.component';
+import { ScheduleMaintenanceModalComponent } from '../schedule-maintenance-modal/schedule-maintenance-modal.component';
 
 @Component({
   selector: 'app-predictive-maintenance',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CreateWorkOrderModalComponent, ScheduleMaintenanceModalComponent],
   template: `
     <div class="predictive-maintenance">
       <!-- Header -->
@@ -48,7 +51,12 @@ import { PredictiveMaintenanceService } from '../../shared/predictive-maintenanc
             <svg *ngIf="isGenerating" class="btn-icon animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 12a9 9 0 11-6.219-8.56"></path>
             </svg>
-            {{ isGenerating ? 'Generating...' : 'Generate Predictions' }}
+            {{ isGenerating 
+              ? (jobProgress > 0 
+                ? 'Generating... ' + jobProgress + '%' 
+                : 'Generating...') 
+              : 'Generate Predictions' 
+            }}
           </button>
 
           <button 
@@ -160,8 +168,12 @@ import { PredictiveMaintenanceService } from '../../shared/predictive-maintenanc
               </div>
             </div>
             <div class="prediction-actions">
-              <button class="btn btn-sm btn-secondary">Schedule Maintenance</button>
-              <button class="btn btn-sm btn-primary">Create Work Order</button>
+              <button class="btn btn-sm btn-secondary" (click)="onScheduleMaintenance(prediction)">
+                Schedule Maintenance
+              </button>
+              <button class="btn btn-sm btn-primary" (click)="onCreateWorkOrder(prediction)">
+                Create Work Order
+              </button>
             </div>
           </div>
         </div>
@@ -196,6 +208,42 @@ import { PredictiveMaintenanceService } from '../../shared/predictive-maintenanc
         <h3 class="loading-title">Loading Predictions</h3>
         <p class="loading-description">Fetching your predictive maintenance data...</p>
       </div>
+
+      <!-- Error State -->
+      <div class="error-state" *ngIf="errorMessage && !isLoading">
+        <div class="error-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <h3 class="error-title">Something Went Wrong</h3>
+        <p class="error-description">{{ errorMessage }}</p>
+        <button class="btn btn-primary" (click)="onRefresh()">
+          <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+            <path d="M3 21v-5h5"></path>
+          </svg>
+          Try Again
+        </button>
+      </div>
+
+      <!-- Modals -->
+      <app-create-work-order-modal
+        [isOpen]="showCreateWorkOrderModal"
+        [prediction]="selectedPrediction"
+        (closeModal)="closeCreateWorkOrderModal()"
+        (workOrderCreated)="onWorkOrderCreated($event)">
+      </app-create-work-order-modal>
+
+      <app-schedule-maintenance-modal
+        [isOpen]="showScheduleMaintenanceModal"
+        [prediction]="selectedPrediction"
+        (closeModal)="closeScheduleMaintenanceModal()">
+      </app-schedule-maintenance-modal>
     </div>
   `,
   styleUrls: ['./predictive-maintenance.component.scss']
@@ -210,14 +258,24 @@ export class PredictiveMaintenanceComponent implements OnInit, OnDestroy {
   isGenerating = false;
   errorMessage = '';
   lastUpdated: string | null = null;
+  showCreateWorkOrderModal = false;
+  showScheduleMaintenanceModal = false;
+  selectedPrediction: Prediction | null = null;
+  generationJobId: string | null = null;
+  pollingInterval: any = null;
+  jobProgress = 0;
 
-  constructor(private pmService: PredictiveMaintenanceService) {}
+  constructor(
+    private pmService: PredictiveMaintenanceService,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit() {
     this.loadData();
   }
 
   ngOnDestroy() {
+    this.stopPolling();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -258,31 +316,93 @@ export class PredictiveMaintenanceComponent implements OnInit, OnDestroy {
   onGenerate() {
     this.isGenerating = true;
     this.errorMessage = '';
+    this.jobProgress = 0;
 
     this.pmService.generatePredictions({ forceRefresh: true })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          if (response.success && response.data) {
-            this.predictions = response.data.predictions;
-            this.summary = response.data.summary;
-            this.lastUpdated = response.data.summary.lastUpdated;
-          } else {
-            this.errorMessage = response.message || 'Failed to generate predictions';
+          if (response.success && response.data.job_id) {
+            this.generationJobId = response.data.job_id;
+            this.startPollingJobStatus();
           }
-          this.isGenerating = false;
         },
         error: (error) => {
-          console.error('Error generating predictions:', error);
-          this.errorMessage = 'Failed to generate predictions. Please try again.';
+          console.error('Error starting generation:', error);
+          this.errorMessage = 'Failed to start predictions generation.';
           this.isGenerating = false;
+          this.toastService.error('Failed to start predictions generation.');
         }
       });
   }
 
+  startPollingJobStatus() {
+    this.pollingInterval = setInterval(() => {
+      if (this.generationJobId) {
+        this.pmService.getJobStatus(this.generationJobId)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              if (response.data.status === 'completed') {
+                this.stopPolling();
+                this.isGenerating = false;
+                this.jobProgress = 100;
+                this.loadData();
+                this.toastService.success('Predictions generated successfully!');
+              } else if (response.data.status === 'failed') {
+                this.stopPolling();
+                this.isGenerating = false;
+                this.errorMessage = response.data.error || 'Generation failed';
+                this.toastService.error(this.errorMessage);
+              } else if (response.data.status === 'processing') {
+                this.jobProgress = response.data.progress || 0;
+              }
+            },
+            error: () => {
+              this.stopPolling();
+              this.isGenerating = false;
+            }
+          });
+      }
+    }, 3000); // Poll every 3 seconds
+  }
+
+  stopPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+      this.generationJobId = null;
+    }
+  }
+
+  onScheduleMaintenance(prediction: Prediction) {
+    this.selectedPrediction = prediction;
+    this.showScheduleMaintenanceModal = true;
+  }
+
+  onCreateWorkOrder(prediction: Prediction) {
+    this.selectedPrediction = prediction;
+    this.showCreateWorkOrderModal = true;
+  }
+
+  closeCreateWorkOrderModal() {
+    this.showCreateWorkOrderModal = false;
+    this.selectedPrediction = null;
+  }
+
+  closeScheduleMaintenanceModal() {
+    this.showScheduleMaintenanceModal = false;
+    this.selectedPrediction = null;
+  }
+
+  onWorkOrderCreated(workOrder: any) {
+    this.toastService.success('Work order created successfully!');
+    this.closeCreateWorkOrderModal();
+  }
+
   onExport() {
     if (this.predictions.length === 0) {
-      alert('No predictions to export. Please generate predictions first.');
+      this.toastService.warning('No predictions to export. Please generate predictions first.');
       return;
     }
 
@@ -292,10 +412,12 @@ export class PredictiveMaintenanceComponent implements OnInit, OnDestroy {
         next: (blob) => {
           const filename = `predictive_maintenance_${new Date().toISOString().split('T')[0]}.csv`;
           this.pmService.downloadCsv(blob, filename);
+          this.toastService.success('Report exported successfully!');
         },
         error: (error) => {
           console.error('Error exporting data:', error);
           this.errorMessage = 'Failed to export data. Please try again.';
+          this.toastService.error(this.errorMessage);
         }
       });
   }
