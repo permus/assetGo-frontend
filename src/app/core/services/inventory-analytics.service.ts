@@ -174,6 +174,7 @@ export interface InventoryPart {
   barcode?: string;
   status?: string;
   abc_class?: string;
+  is_archived?: boolean;
   company_id: number;
   user_id: number;
   created_at: string;
@@ -702,7 +703,7 @@ export class InventoryAnalyticsService {
     status?: string,
     page: number = 1,
     perPage: number = 15,
-    includeArchived: boolean = false
+    isArchived?: boolean
   ): Observable<PartsCatalogResponse> {
     console.log('Calling parts API:', `${this.apiUrl}/inventory/parts`);
     let params = new HttpParams()
@@ -717,8 +718,9 @@ export class InventoryAnalyticsService {
       params = params.set('status', status);
     }
 
-    if (includeArchived) {
-      params = params.set('include_archived', 'true');
+    // Add is_archived parameter when filtering for archived items only
+    if (isArchived !== undefined) {
+      params = params.set('is_archived', isArchived.toString());
     }
 
     console.log('Parts API params:', params.toString());

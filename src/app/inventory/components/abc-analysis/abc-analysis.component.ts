@@ -133,18 +133,70 @@ export class AbcAnalysisComponent implements OnInit {
   }
 
   exportCSV(): void {
-    this.analyticsService.downloadAbcCsv({
-      cost_basis: this.costBasis,
-      ...(typeof this.thrA === 'number' ? { thr_a: this.thrA } : {}),
-      ...(typeof this.thrB === 'number' ? { thr_b: this.thrB } : {}),
-    }).subscribe((blob: any) => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `abc-analysis-${new Date().toISOString().slice(0,19)}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    });
+    // Check if there are any filters applied
+    const hasFilters = this.searchTerm.trim() || this.selectedClass !== 'all';
+    
+    if (hasFilters) {
+      // Export only the filtered items (frontend filtering)
+      this.exportFilteredCSV();
+    } else {
+      // Export all items from backend
+      this.analyticsService.downloadAbcCsv({
+        cost_basis: this.costBasis,
+        ...(typeof this.thrA === 'number' ? { thr_a: this.thrA } : {}),
+        ...(typeof this.thrB === 'number' ? { thr_b: this.thrB } : {}),
+      }).subscribe((blob: any) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `abc-analysis-${new Date().toISOString().slice(0,19)}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+  }
+
+  private exportFilteredCSV(): void {
+    const filteredData = this.filteredItems;
+    
+    if (filteredData.length === 0) {
+      alert('No data to export. Please adjust your filters.');
+      return;
+    }
+
+    // Create CSV content
+    const headers = ['Part Number', 'Part Name', 'Total Value', 'Value %', 'Cumulative %', 'ABC Class'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredData.map(item => [
+        item.part_id,
+        `"${item.name.replace(/"/g, '""')}"`, // Escape quotes in names
+        item.value,
+        this.calculateValuePercentage(item.value).toFixed(2),
+        (item.cumulative_ratio * 100).toFixed(2),
+        item.class
+      ].join(','))
+    ].join('\n');
+
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    // Generate filename with filter info
+    let filename = 'abc-analysis-filtered';
+    if (this.searchTerm.trim()) {
+      filename += `-search-${this.searchTerm.trim()}`;
+    }
+    if (this.selectedClass !== 'all') {
+      filename += `-class-${this.selectedClass}`;
+    }
+    filename += `-${new Date().toISOString().slice(0,19)}.csv`;
+    
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   getAbcClassColor(abcClass: string): string {
@@ -163,5 +215,26 @@ export class AbcAnalysisComponent implements OnInit {
   calculateValuePercentage(itemValue: number): number {
     const totalValue = this.inventoryItems.reduce((sum, item) => sum + item.value, 0);
     return totalValue > 0 ? (itemValue / totalValue) * 100 : 0;
+  }
+
+  getExportButtonText(): string {
+    const hasFilters = this.searchTerm.trim() || this.selectedClass !== 'all';
+    return hasFilters ? 'Export Filtered CSV' : 'Export CSV';
+  }
+
+  getExportButtonTitle(): string {
+    const hasFilters = this.searchTerm.trim() || this.selectedClass !== 'all';
+    if (hasFilters) {
+      let filterInfo = 'Exporting filtered data: ';
+      if (this.searchTerm.trim()) {
+        filterInfo += `Search: "${this.searchTerm.trim()}"`;
+      }
+      if (this.selectedClass !== 'all') {
+        if (this.searchTerm.trim()) filterInfo += ', ';
+        filterInfo += `Class: ${this.selectedClass}`;
+      }
+      return filterInfo;
+    }
+    return 'Export all ABC analysis data';
   }
 }

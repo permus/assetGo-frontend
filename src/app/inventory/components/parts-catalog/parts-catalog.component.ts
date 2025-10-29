@@ -6,14 +6,18 @@ import { AddPartModalComponent } from '../add-part-modal/add-part-modal.componen
 import {
   DeleteConfirmationModalComponent
 } from '../../../assets/components/delete-confirmation-modal/delete-confirmation-modal.component';
+import { ArchiveConfirmationModalComponent } from './archive-confirmation-modal/archive-confirmation-modal.component';
+import { RestoreConfirmationModalComponent } from './restore-confirmation-modal/restore-confirmation-modal.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PreferencesService } from '../../../core/services/preferences.service';
 import { ModuleAccessService } from '../../../core/services/module-access.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-parts-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, AddPartModalComponent, DeleteConfirmationModalComponent],
+  imports: [CommonModule, FormsModule, AddPartModalComponent, DeleteConfirmationModalComponent, ArchiveConfirmationModalComponent, RestoreConfirmationModalComponent],
   templateUrl: './parts-catalog.component.html',
   styleUrls: ['./parts-catalog.component.scss']
 })
@@ -27,8 +31,10 @@ export class PartsCatalogComponent implements OnInit {
   isDropdownOpen = false;
   showDeleteConfirmationModal = false;
   showArchiveModal = false;
+  showRestoreModal = false;
   archiveWarningData: any = null;
   includeArchived = false;
+  hasOpenPOs = false; // Track if selected part has open POs
   // Search and filter properties
   searchTerm = '';
   selectedStatus = '';
@@ -54,7 +60,9 @@ export class PartsCatalogComponent implements OnInit {
   constructor(
     private analyticsService: InventoryAnalyticsService, 
     private currencyService: CurrencyService,
-    private moduleAccessService: ModuleAccessService
+    private moduleAccessService: ModuleAccessService,
+    private toastService: ToastService,
+    private authService: AuthService
   ) { }
 
   getCurrencySymbol(): string {
@@ -78,7 +86,7 @@ export class PartsCatalogComponent implements OnInit {
       this.selectedStatus || undefined,
       this.currentPage,
       this.perPage,
-      this.includeArchived
+      this.includeArchived ? true : undefined
     ).subscribe({
       next: (response) => {
         if (response.success) {
@@ -273,58 +281,84 @@ export class PartsCatalogComponent implements OnInit {
 
   openArchiveModal(part: InventoryPart): void {
     this.selectedPart = part;
-    this.archiveWarningData = null;
+    this.hasOpenPOs = false; // Reset, will be updated by API response if needed
     this.showArchiveModal = true;
   }
 
   closeArchiveModal(): void {
     this.showArchiveModal = false;
     this.selectedPart = null;
-    this.archiveWarningData = null;
   }
 
-  onArchivePart(force: boolean = false): void {
+  onArchivePart(data: { reason: string; force: boolean }): void {
     if (!this.selectedPart) return;
 
     this.partLoading = true;
-    this.analyticsService.archivePart(this.selectedPart.id, force).subscribe({
+    this.analyticsService.archivePart(this.selectedPart.id, data.force).subscribe({
       next: (response) => {
         if (response.success) {
           this.closeArchiveModal();
           this.loadPartsCatalog();
           this.loadPartsOverview();
+          this.toastService.success('Part archived successfully.');
         }
         this.partLoading = false;
       },
       error: (err) => {
         console.error('Error archiving part:', err);
         if (err.status === 422 && err.error?.requires_force) {
-          // Show warning with affected POs
-          this.archiveWarningData = err.error;
+          // Part has open POs - set flag to show force archive option
+          this.hasOpenPOs = true;
+          // Don't close modal, let user see the force archive option
+          this.toastService.warning('Part is linked to open Purchase Orders. Check "Force archive" option to proceed.');
         } else {
-          console.error('Archive error:', err.error?.message || 'Failed to archive part');
-          this.partLoading = false;
+          this.toastService.error(err.error?.message || 'Failed to archive part. Please try again.');
         }
         this.partLoading = false;
       }
     });
   }
 
-  onRestorePart(part: InventoryPart): void {
+  openRestoreModal(part: InventoryPart): void {
+    this.selectedPart = part;
+    this.showRestoreModal = true;
+  }
+
+  closeRestoreModal(): void {
+    this.showRestoreModal = false;
+    this.selectedPart = null;
+  }
+
+  onRestorePart(reason: string): void {
+    if (!this.selectedPart) return;
+
     this.partLoading = true;
-    this.analyticsService.restorePart(part.id).subscribe({
+    this.analyticsService.restorePart(this.selectedPart.id).subscribe({
       next: (response) => {
         if (response.success) {
+          this.closeRestoreModal();
           this.loadPartsCatalog();
           this.loadPartsOverview();
+          this.toastService.success('Part restored successfully.');
         }
         this.partLoading = false;
       },
       error: (err) => {
         console.error('Error restoring part:', err);
+        this.toastService.error(err.error?.message || 'Failed to restore part. Please try again.');
         this.partLoading = false;
       }
     });
+  }
+
+  // Helper methods for role-based access
+  canArchiveOrRestore(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.user_type === 'manager' || user?.user_type === 'admin';
+  }
+
+  isArchived(part: InventoryPart): boolean {
+    return part.is_archived === true;
   }
 
 }

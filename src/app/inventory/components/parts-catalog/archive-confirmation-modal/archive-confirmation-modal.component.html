@@ -1,0 +1,118 @@
+<!-- Archive Confirmation Modal -->
+<div *ngIf="isOpen"
+     class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4"
+     [@backdropAnimation]>
+  <!-- Modal Container -->
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full"
+       [@modalAnimation]>
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H19a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-900">
+          {{ partName ? 'Archive ' + partName : 'Archive Part' }}
+        </h2>
+      </div>
+      <button
+        (click)="onCancel()"
+        [disabled]="loading"
+        class="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="p-6">
+      <!-- Warning for Open POs -->
+      <div *ngIf="hasOpenPOs" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div class="flex items-start space-x-3">
+          <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <div>
+            <h4 class="text-sm font-semibold text-red-800">Warning: Part is linked to open Purchase Orders</h4>
+            <p class="text-sm text-red-700 mt-1">
+              This part is currently linked to open purchase orders. Archiving it may affect ongoing procurement processes.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Archive Reason Input -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Archive Reason (Optional)</label>
+        <textarea
+          [(ngModel)]="archiveReason"
+          rows="3"
+          placeholder="Enter reason for archiving this part..."
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none placeholder-gray-400"></textarea>
+        <p class="text-xs text-gray-500 mt-1">This will be recorded in the audit trail</p>
+      </div>
+
+      <!-- Force Archive Option (only if has open POs and user has permission) -->
+      <div *ngIf="hasOpenPOs && canForceArchive" class="mb-6">
+        <label class="flex items-center space-x-3">
+          <input
+            type="checkbox"
+            [(ngModel)]="forceArchive"
+            class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2">
+          <span class="text-sm font-medium text-gray-700">
+            Force archive despite open Purchase Orders
+          </span>
+        </label>
+        <p class="text-xs text-red-600 mt-1 ml-7">
+          ⚠️ Warning: This will archive the part even though it's linked to active Purchase Orders. This action cannot be easily undone.
+        </p>
+      </div>
+
+      <!-- Warning Icon -->
+      <div class="flex justify-center mb-4">
+        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H19a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Confirmation Message -->
+      <div class="text-center mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+          Are you sure you want to archive this part?
+        </h3>
+        <p class="text-gray-600">
+          It will no longer appear in purchase orders and will be hidden from the main parts list.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-end space-x-3">
+        <button
+          (click)="onCancel()"
+          [disabled]="loading"
+          class="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors disabled:opacity-50">
+          Cancel
+        </button>
+
+        <button
+          (click)="onConfirm()"
+          [disabled]="loading"
+          class="px-6 py-2 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+          <span *ngIf="!loading">Archive Part</span>
+          <span *ngIf="loading" class="flex items-center space-x-2">
+            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Archiving...</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

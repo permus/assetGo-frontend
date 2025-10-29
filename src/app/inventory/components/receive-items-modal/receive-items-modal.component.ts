@@ -19,6 +19,7 @@ export class ReceiveItemsModalComponent implements OnInit {
   receiveForm: FormGroup;
   loading = false;
   error: string | null = null;
+  errors: any = {}; // Store field-specific errors
   locations: any[] = [];
 
   constructor(
@@ -83,6 +84,11 @@ export class ReceiveItemsModalComponent implements OnInit {
     if (this.receiveForm.valid && this.purchaseOrder?.id) {
       this.loading = true;
       this.error = null;
+      this.errors = {}; // Reset field errors
+      
+      // Clear backend errors from form controls
+      this.receiveForm.get('items')?.setErrors(null);
+      this.receiveForm.get('location_id')?.setErrors(null);
 
       const formData = this.receiveForm.value;
       const receiveData: ReceivePurchaseOrderRequest = {
@@ -101,8 +107,31 @@ export class ReceiveItemsModalComponent implements OnInit {
           this.closeModal.emit();
         },
         error: (err) => {
-          this.error = 'Error receiving items: ' + err.message;
           this.loading = false;
+          
+          // Parse backend error response
+          if (err.error) {
+            // Get the error message
+            this.error = err.error.message || 'An error occurred while receiving items';
+            
+            // Parse field-specific errors
+            if (err.error.errors && typeof err.error.errors === 'object') {
+              this.errors = err.error.errors;
+              
+              // Set form-level errors for specific fields
+              if (err.error.errors.items) {
+                this.receiveForm.get('items')?.setErrors({ backend: true });
+              }
+              if (err.error.errors.location_id) {
+                this.receiveForm.get('location_id')?.setErrors({ backend: true });
+              }
+            } else {
+              this.errors = {};
+            }
+          } else {
+            this.error = err.message || 'An error occurred while receiving items';
+            this.errors = {};
+          }
         }
       });
     }
@@ -134,6 +163,17 @@ export class ReceiveItemsModalComponent implements OnInit {
       if (field.errors['max']) {
         return `Maximum value is ${field.errors['max'].max}`;
       }
+      if (field.errors['backend']) {
+        return 'This field has an error';
+      }
+    }
+    return '';
+  }
+
+  // Get backend validation errors for a specific field
+  getBackendError(fieldName: string): string {
+    if (this.errors[fieldName] && Array.isArray(this.errors[fieldName])) {
+      return this.errors[fieldName][0]; // Return first error message
     }
     return '';
   }

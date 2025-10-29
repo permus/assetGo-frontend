@@ -406,6 +406,24 @@
             }
           }
 
+          &.archive {
+            background-color: #f59e0b;
+            color: white;
+
+            &:hover {
+              background-color: #d97706;
+            }
+          }
+
+          &.restore {
+            background-color: #10b981;
+            color: white;
+
+            &:hover {
+              background-color: #059669;
+            }
+          }
+
           svg {
             color: currentColor;
           }
@@ -679,6 +697,24 @@
 
                   &:hover {
                     background-color: #fee2e2;
+                  }
+                }
+
+                &.archive {
+                  background-color: #fef3c7;
+                  color: #f59e0b;
+
+                  &:hover {
+                    background-color: #fde68a;
+                  }
+                }
+
+                &.restore {
+                  background-color: #d1fae5;
+                  color: #10b981;
+
+                  &:hover {
+                    background-color: #a7f3d0;
                   }
                 }
               }
