@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GlobalDropdownComponent, DropdownOption } from '../../shared/components/global-dropdown/global-dropdown.component';
+import { DropdownOption } from '../../shared/components/global-dropdown/global-dropdown.component';
 import { ReportsExportPanelComponent } from '../components/reports-export-panel.component';
 import { PieChartComponent } from '../components/charts/pie-chart.component';
 import { BarChartComponent } from '../components/charts/bar-chart.component';
@@ -17,7 +17,6 @@ import { ReportCategory, ReportConfig, DateRange, ReportPeriod, AssetSummaryResp
     CommonModule, 
     FormsModule, 
     ReportsExportPanelComponent, 
-    GlobalDropdownComponent,
     PieChartComponent,
     BarChartComponent
   ],

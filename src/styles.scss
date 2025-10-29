@@ -2,7 +2,7 @@
 @use 'flatpickr/dist/flatpickr.css';
 @use "@ng-select/ng-select/themes/default.theme.css";
 
-@import "tailwindcss";
+@use "tailwindcss";
 
 /* Google Maps styling */
 #location-map,
