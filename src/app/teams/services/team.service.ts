@@ -42,6 +42,7 @@ export interface TeamMember {
   email_verified_at?: string;
   created_at: string;
   updated_at: string;
+  active?: boolean; // Team member active/inactive status
   showMenu?: boolean; // For UI dropdown menu state
   // Location scoping info (optional fields provided by backend)
   locations?: { id: number; name: string }[];
@@ -174,6 +175,7 @@ export class TeamService {
       role_id?: number;
       role_name?: string;
       status?: 'active' | 'inactive';
+      active?: boolean;
       type?: string;
       sort_by?: 'name' | 'email' | 'created_at';
       sort_dir?: 'asc' | 'desc';
@@ -192,6 +194,7 @@ export class TeamService {
     if (opts?.role_id !== undefined) params.set('role_id', String(opts.role_id));
     if (opts?.role_name) params.set('role_name', opts.role_name);
     if (opts?.status) params.set('status', opts.status);
+    if (opts?.active !== undefined) params.set('active', String(opts.active));
     if (opts?.type) params.set('type', opts.type);
     if (opts?.sort_by) params.set('sort_by', opts.sort_by);
     if (opts?.sort_dir) params.set('sort_dir', opts.sort_dir);
@@ -220,6 +223,11 @@ export class TeamService {
   // Update a team member
   updateTeamMember(id: number, teamMemberData: UpdateTeamMemberRequest): Observable<TeamMemberResponse> {
     return this.http.put<TeamMemberResponse>(`${this.apiUrl}/${id}`, teamMemberData, this.getAuthHeaders());
+  }
+
+  // Toggle team member active/inactive status
+  toggleTeamMemberStatus(id: number): Observable<TeamMemberResponse> {
+    return this.http.post<TeamMemberResponse>(`${this.apiUrl}/${id}/toggle-status`, {}, this.getAuthHeaders());
   }
 
   // Delete a team member

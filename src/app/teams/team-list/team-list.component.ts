@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TeamService, TeamMember, TeamMemberStatistics, TeamMembersPaginatedResponse, Pagination, TeamAnalyticsResponse } from '../services/team.service';
@@ -24,7 +24,7 @@ export class TeamListComponent implements OnInit {
   successMessage = '';
   statistics: TeamMemberStatistics | null = null;
   analytics: TeamAnalyticsResponse['data'] | null = null;
-  currentPerPage = 15;
+  currentPerPage = 10;
 
   // Search and filtering
   searchTerm = '';
@@ -52,7 +52,7 @@ export class TeamListComponent implements OnInit {
     { label: 'Name', value: 'name' },
     { label: 'Created Date', value: 'created_at' },
     { label: 'Email', value: 'email' },
-    { label: 'Role', value: 'role' }
+    { label: 'Role', value: 'role_name' }
   ];
 
   roleOptions = [
@@ -72,7 +72,8 @@ export class TeamListComponent implements OnInit {
 
   constructor(
     private teamService: TeamService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   @HostListener('document:click', ['$event'])
@@ -86,7 +87,7 @@ export class TeamListComponent implements OnInit {
       return;
     }
 
-    // Close all dropdowns if clicking outside
+    // Close all team member menu dropdowns
     this.teamMembers = this.teamMembers.map(tm => ({
       ...tm,
       showMenu: false
@@ -95,7 +96,14 @@ export class TeamListComponent implements OnInit {
       ...tm,
       showMenu: false
     }));
+
+    // Close all filter dropdowns
+    this.showSortDropdown = false;
+    this.showRoleDropdown = false;
+    this.showStatusDropdown = false;
   }
+
+  // Removed scroll prevention listener as it might interfere with dropdown functionality
 
   ngOnInit(): void {
     this.loadTeamMembers();
@@ -106,10 +114,18 @@ export class TeamListComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
+    // Convert status filter to active parameter
+    let activeParam: boolean | undefined;
+    if (this.selectedStatus?.value === 'active') {
+      activeParam = true;
+    } else if (this.selectedStatus?.value === 'inactive') {
+      activeParam = false;
+    }
+
     this.teamService.getTeamMembers(page, perPage, {
       search: this.searchTerm || undefined,
       role_name: this.selectedRole?.value || undefined,
-      status: this.selectedStatus?.value || undefined,
+      active: activeParam,
       sort_by: this.selectedSort?.value || undefined,
       sort_dir: this.selectedSortDir
     }).subscribe({
@@ -341,6 +357,7 @@ export class TeamListComponent implements OnInit {
   }
 
   toggleTeamMemberMenu(teamMemberId: number): void {
+    // Close all other dropdowns first and toggle the specific one
     this.teamMembers = this.teamMembers.map(tm => ({
       ...tm,
       showMenu: tm.id === teamMemberId ? !tm.showMenu : false
@@ -360,5 +377,111 @@ export class TeamListComponent implements OnInit {
     // Update the per_page parameter and reload from page 1
     this.currentPerPage = perPage;
     this.loadTeamMembers(1, perPage);
+  }
+
+  // Toggle team member active/inactive status
+  toggleTeamMemberStatus(teamMember: TeamMember): void {
+    const memberName = `${teamMember.first_name} ${teamMember.last_name}`;
+    const currentStatus = teamMember.active ? 'active' : 'inactive';
+    const newStatus = teamMember.active ? 'inactive' : 'active';
+
+    this.teamService.toggleTeamMemberStatus(teamMember.id).subscribe({
+      next: (response: any) => {
+        // Update the team member in both arrays
+        const updatedTeamMember = { ...teamMember, active: !teamMember.active };
+
+        const teamIndex = this.teamMembers.findIndex(tm => tm.id === teamMember.id);
+        if (teamIndex !== -1) {
+          this.teamMembers[teamIndex] = updatedTeamMember;
+        }
+
+        const filteredIndex = this.filteredTeamMembers.findIndex(tm => tm.id === teamMember.id);
+        if (filteredIndex !== -1) {
+          this.filteredTeamMembers[filteredIndex] = updatedTeamMember;
+        }
+
+        this.toastService.success(`Team member ${memberName} status changed to ${newStatus}`);
+
+        // Refresh statistics to update active/inactive counts (without scrolling)
+        setTimeout(() => {
+          this.loadStatistics();
+        }, 100);
+      },
+      error: (error: any) => {
+        this.toastService.error(`Failed to update ${memberName}'s status`);
+      }
+    });
+  }
+
+  // New click handlers with proper event prevention
+  onEditClick(event: Event, teamMember: TeamMember): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.closeAllDropdowns();
+    this.editTeamMember(teamMember);
+  }
+
+  onToggleStatusClick(event: Event, teamMember: TeamMember): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.closeAllDropdowns();
+    this.toggleTeamMemberStatus(teamMember);
+  }
+
+  onDeleteClick(event: Event, teamMember: TeamMember): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.closeAllDropdowns();
+    this.deleteTeamMember(teamMember);
+  }
+
+  onToggleMenuClick(event: Event, teamMemberId: number): void {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    
+    console.log('Toggle menu clicked for team member:', teamMemberId);
+    
+    // Store current scroll position
+    const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Calculate scrollbar width to prevent layout shift
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    
+    // Store original styles
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+    
+    // Prevent scroll while preserving scrollbar space
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${currentScrollTop}px`;
+    document.body.style.width = '100%';
+    
+    this.toggleTeamMemberMenu(teamMemberId);
+    
+    // Re-enable scroll after DOM update
+    setTimeout(() => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, currentScrollTop);
+    }, 50);
+    
+    console.log('After toggle, showMenu states:', this.teamMembers.map(tm => ({ id: tm.id, showMenu: tm.showMenu })));
+  }
+
+  private closeAllDropdowns(): void {
+    this.teamMembers = this.teamMembers.map(tm => ({
+      ...tm,
+      showMenu: false
+    }));
+    this.filteredTeamMembers = this.filteredTeamMembers.map(tm => ({
+      ...tm,
+      showMenu: false
+    }));
   }
 }

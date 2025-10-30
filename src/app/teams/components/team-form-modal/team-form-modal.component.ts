@@ -152,26 +152,51 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
 
   loadTeamMember(): void {
     if (this.teamMember) {
-      // Get role_id from role_id, role.id or roles[0].id
-      const roleId = (this.teamMember as any).role_id
-        || (this.teamMember as any).role?.id
-        || (Array.isArray((this.teamMember as any).roles) ? (this.teamMember as any).roles[0]?.id : undefined);
-      const hourlyRate = this.teamMember.hourly_rate;
+      // Get role name from various possible structures
+      let roleName: string | undefined;
       
-      // Convert role_id to number if it's a string
-      const roleIdNumber = roleId ? Number(roleId) : '';
+      // Check for direct role_id property
+      if ((this.teamMember as any).role_id) {
+        roleName = (this.teamMember as any).role?.name;
+      }
+      // Check for single role object
+      else if ((this.teamMember as any).role?.name) {
+        roleName = (this.teamMember as any).role.name;
+      }
+      // Check for roles array (most common case)
+      else if (Array.isArray((this.teamMember as any).roles) && (this.teamMember as any).roles.length > 0) {
+        const firstRole = (this.teamMember as any).roles[0];
+        roleName = firstRole.name;
+      }
+      
+      // Find matching role by name in available roles
+      let roleId: number | undefined;
+      if (roleName) {
+        const matchingRole = this.availableRoles.find(r => r.name === roleName);
+        roleId = matchingRole?.id;
+        
+        // Debug logging
+        console.log('Team Member Role Matching:', {
+          teamMemberRoleName: roleName,
+          availableRoles: this.availableRoles.map(r => ({ id: r.id, name: r.name })),
+          matchingRole: matchingRole ? { id: matchingRole.id, name: matchingRole.name } : null,
+          selectedRoleId: roleId
+        });
+      }
+      
+      const hourlyRate = this.teamMember.hourly_rate;
       
       this.teamMemberForm.patchValue({
         first_name: this.teamMember.first_name,
         last_name: this.teamMember.last_name,
         email: this.teamMember.email,
-        role_id: roleIdNumber,
+        role_id: roleId || '',
         hourly_rate: (hourlyRate !== undefined && hourlyRate !== null) ? Number(hourlyRate) : null,
         expand_descendants: true,
       });
 
       // If role allows scoping, ensure tree is available
-      const role = this.availableRoles.find(r => r.id === Number(roleIdNumber));
+      const role = this.availableRoles.find(r => r.id === roleId);
       if (role && role.has_location_access) {
         this.ensureTreeLoaded();
         // Pre-select assigned locations if any and not full access
