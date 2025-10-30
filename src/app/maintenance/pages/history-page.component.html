@@ -79,9 +79,9 @@
       <button class="pill" [class.active]="filter==='all'" (click)="filter='all'; apply()">All</button>
       <button class="pill" [class.active]="filter==='preventive'" (click)="filter='preventive'; apply()">Preventive
       </button>
-      <button class="pill" [class.active]="filter==='corrective'" (click)="filter='corrective'; apply()">Corrective
+      <button class="pill" [class.active]="filter==='predictive'" (click)="filter='predictive'; apply()">Predictive
       </button>
-      <button class="pill" [class.active]="filter==='emergency'" (click)="filter='emergency'; apply()">Emergency
+      <button class="pill" [class.active]="filter==='condition_based'" (click)="filter='condition_based'; apply()">Condition Based
       </button>
     </div>
   </div>
@@ -110,7 +110,7 @@
             <div class="font-medium text-gray-900">Plan #{{ h.maintenance_plan_id }}</div>
             <div class="text-xs text-gray-500">Completed • {{ h.due_date }}</div>
           </div>
-          <div class="text-sm text-gray-700">Priority: {{ h.priority_id || '-' }}</div>
+          <div class="text-sm text-gray-700">Priority: {{ h.priority_name || h.priority_id || '-' }}</div>
         </div>
       </div>
     </div>

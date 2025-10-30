@@ -16,7 +16,7 @@ export class HistoryPageComponent implements OnInit {
   all: any[] = [];
   filtered: any[] = [];
   search = '';
-  filter: 'all' | 'preventive' | 'corrective' | 'emergency' = 'all';
+  filter: 'all' | 'preventive' | 'predictive' | 'condition_based' = 'all';
 
   constructor(private api: MaintenanceService) {}
 
@@ -41,7 +41,7 @@ export class HistoryPageComponent implements OnInit {
 
   apply() {
     const base = this.search ? this.all.filter(h => String(h.maintenance_plan_id).includes(this.search)) : this.all;
-    this.filtered = this.filter === 'all' ? base : base.filter(h => (h.type || 'preventive') === this.filter);
+    this.filtered = this.filter === 'all' ? base : base.filter(h => (h.plan_type || 'preventive') === this.filter);
   }
 }
 

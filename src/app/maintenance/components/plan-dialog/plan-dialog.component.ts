@@ -90,6 +90,7 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
   showAssetStatusDropdown = false;
   selectedAssetCategory: { id: number; name: string } | null = null;
   selectedAssetStatus: { id: number; name: string } | null = null;
+  showBulkActions = false;
   // Checklist - add new item form state
   newChecklistItem: MaintenancePlanChecklist = {
     title: '',
@@ -105,15 +106,34 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
 
   go(i: number) {
     this.step.set(i);
+    // Load assets when navigating to Assets tab (step 1)
     if (i === 1) this.ensureAssetsLoaded();
   }
   onTabClick(i: number) {
+    // In edit mode, allow access to all tabs
+    if (this.editMode) {
+      this.go(i);
+      return;
+    }
+    
+    // In create mode, maintain the original validation logic
     // Allow backward navigation always
     if (i <= this.step()) { this.go(i); return; }
     // Only allow forward one step if current step is valid
     if (i === this.step() + 1 && this.canGoNext()) {
       this.go(i);
     }
+  }
+
+  // Helper method to check if a tab is accessible
+  isTabAccessible(tabIndex: number): boolean {
+    // In edit mode, all tabs are accessible
+    if (this.editMode) {
+      return true;
+    }
+    
+    // In create mode, allow backward navigation and forward if current step is valid
+    return tabIndex <= this.step() || (tabIndex === this.step() + 1 && this.canGoNext());
   }
   next() {
     if (this.step() < 3) {
@@ -382,19 +402,53 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     if (this.assetCategoryOptions.length === 0) {
       this.assetsApi.getAssetCategories().subscribe({
         next: (res) => {
-          const data = (res?.data as any[]) || res || [];
-          this.assetCategoryOptions = Array.isArray(data) ? data : [];
+          // Handle different response formats
+          let data: any[] = [];
+          if (res?.data?.categories) {
+            data = res.data.categories;
+          } else if (res?.success && res?.data) {
+            data = res.data;
+          } else if (Array.isArray(res?.data)) {
+            data = res.data;
+          } else if (Array.isArray(res)) {
+            data = res;
+          }
+          
+          this.assetCategoryOptions = data.map((cat: any) => ({
+            id: cat.id,
+            name: cat.name || cat.category_name || 'Unknown Category'
+          }));
         },
-        error: () => { this.assetCategoryOptions = []; }
+        error: (error) => { 
+          console.error('Failed to load asset categories:', error);
+          this.assetCategoryOptions = []; 
+        }
       });
     }
     if (this.assetStatusOptions.length === 0) {
       this.assetsApi.getAssetStatuses().subscribe({
         next: (res) => {
-          const data = (res?.data as any[]) || res || [];
-          this.assetStatusOptions = Array.isArray(data) ? data : [];
+          // Handle different response formats
+          let data: any[] = [];
+          if (res?.data?.statuses) {
+            data = res.data.statuses;
+          } else if (res?.success && res?.data) {
+            data = res.data;
+          } else if (Array.isArray(res?.data)) {
+            data = res.data;
+          } else if (Array.isArray(res)) {
+            data = res;
+          }
+          
+          this.assetStatusOptions = data.map((status: any) => ({
+            id: status.id,
+            name: status.name || status.status_name || 'Unknown Status'
+          }));
         },
-        error: () => { this.assetStatusOptions = []; }
+        error: (error) => { 
+          console.error('Failed to load asset statuses:', error);
+          this.assetStatusOptions = []; 
+        }
       });
     }
     this.loadAssets();
@@ -412,15 +466,38 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     };
     this.assetsApi.getAssets(params).subscribe({
       next: (res) => {
-        const list = res?.data?.assets || res?.data?.data || res?.data || res?.items || [];
-        const total = res?.data?.total ?? res?.total ?? (Array.isArray(list) ? list.length : 0);
-        this.assets.set(Array.isArray(list) ? list : []);
-        this.assetsTotal.set(Number(total) || 0);
-        if (this.model.asset_ids?.length) {
-          this.selectedAssetIds.set(new Set(this.model.asset_ids as any));
+        console.log('Assets API Response:', res); // Debug log
+        
+        // Handle response similar to asset-list component
+        if (res?.success) {
+          const list = res?.data?.assets || res?.data || [];
+          this.assets.set(Array.isArray(list) ? list : []);
+          
+          // Use pagination data from response like asset-list component
+          if (res.data.pagination) {
+            this.assetsTotal.set(res.data.pagination.total || 0);
+            console.log('Using pagination data:', res.data.pagination);
+          } else {
+            // Fallback to other total sources
+            const total = res?.data?.total ?? res?.data?.meta?.total ?? res?.meta?.total ?? res?.total ?? (Array.isArray(list) ? list.length : 0);
+            this.assetsTotal.set(Number(total) || 0);
+            console.log('Using fallback total:', total);
+          }
+          
+          console.log('Total assets:', this.assetsTotal(), 'Current page:', this.assetsPage(), 'Per page:', this.assetsPerPage);
+          
+          if (this.model.asset_ids?.length) {
+            this.selectedAssetIds.set(new Set(this.model.asset_ids as any));
+            this.showBulkActions = this.selectedAssetIds().size > 0;
+          }
+        } else {
+          this.assetsError = res?.message || 'Failed to load assets';
+          this.assets.set([]);
+          this.assetsTotal.set(0);
         }
       },
       error: (err) => {
+        console.error('Assets API Error:', err); // Debug log
         this.assetsError = err?.error?.message || 'Failed to load assets';
         this.assets.set([]);
         this.assetsTotal.set(0);
@@ -431,11 +508,25 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
 
   totalAssetPages(): number {
     const t = this.assetsTotal();
-    return t > 0 ? Math.ceil(t / this.assetsPerPage) : 1;
+    const totalPages = t > 0 ? Math.ceil(t / this.assetsPerPage) : 1;
+    console.log('Calculating total pages. Total assets:', t, 'Per page:', this.assetsPerPage, 'Total pages:', totalPages);
+    return totalPages;
   }
 
-  nextAssetsPage() { if (this.assetsPage() < this.totalAssetPages()) { this.assetsPage.set(this.assetsPage()+1); this.loadAssets(); } }
-  prevAssetsPage() { if (this.assetsPage() > 1) { this.assetsPage.set(this.assetsPage()-1); this.loadAssets(); } }
+  nextAssetsPage() { 
+    console.log('Next page clicked. Current page:', this.assetsPage(), 'Total pages:', this.totalAssetPages());
+    if (this.assetsPage() < this.totalAssetPages()) { 
+      this.assetsPage.set(this.assetsPage()+1); 
+      this.loadAssets(); 
+    }
+  }
+  prevAssetsPage() { 
+    console.log('Prev page clicked. Current page:', this.assetsPage(), 'Total pages:', this.totalAssetPages());
+    if (this.assetsPage() > 1) { 
+      this.assetsPage.set(this.assetsPage()-1); 
+      this.loadAssets(); 
+    }
+  }
 
   onAssetsSearchChange(v: string): void {
     if (this.assetsSearchTimeout) {
@@ -480,16 +571,19 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     if (set.has(id)) set.delete(id); else set.add(id);
     this.selectedAssetIds.set(set);
     this.model.asset_ids = Array.from(set) as any;
+    this.showBulkActions = set.size > 0;
   }
   selectAllOnPage() {
     const set = new Set(this.selectedAssetIds());
     for (const a of this.assets()) { if (a?.id != null) set.add(Number(a.id)); }
     this.selectedAssetIds.set(set);
     this.model.asset_ids = Array.from(set) as any;
+    this.showBulkActions = set.size > 0;
   }
   clearAllSelection() {
     this.selectedAssetIds.set(new Set());
     this.model.asset_ids = [] as any;
+    this.showBulkActions = false;
   }
   // Add checklist item from the form
   addItemFromForm() {
@@ -515,6 +609,9 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     this.showFrequencyUnitDropdown = false;
     this.openItemTypeDropdownIndex = null;
     this.showPriorityDropdown = false;
+    this.showAssetCategoryDropdown = false;
+    this.showAssetStatusDropdown = false;
+    this.showNewItemTypeDropdown = false;
   }
 
   canSubmit() {
@@ -622,6 +719,7 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
       this.items.set([]);
       this.assetIdsCsv.set('');
       this.selectedAssetIds.set(new Set());
+      this.showBulkActions = false;
     }
 
     this.error = null;
