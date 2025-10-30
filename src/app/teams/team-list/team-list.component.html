@@ -464,10 +464,16 @@
                 class="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-green-700 border border-green-200">Full access</span>
                 <ng-container *ngIf="!teamMember.has_full_location_access && teamMember.locations?.length">
                   <div class="flex flex-wrap gap-1">
-              <span *ngFor="let loc of teamMember.locations"
-                    class="inline-flex items-center px-2 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200">
-                {{ loc.name }}
-              </span>
+                    <!-- Show first 2 locations -->
+                    <span *ngFor="let loc of teamMember.locations | slice:0:2"
+                          class="inline-flex items-center px-2 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200">
+                      {{ loc.name }}
+                    </span>
+                    <!-- Show "more" indicator if there are more than 2 locations -->
+                    <span *ngIf="teamMember.locations.length > 2"
+                          class="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200">
+                      {{ teamMember.locations.length - 2 }} more+
+                    </span>
                   </div>
                 </ng-container>
               </div>

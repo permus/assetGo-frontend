@@ -19,9 +19,6 @@ export class LoginComponent implements OnDestroy {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
-  emailVerificationMessage = '';
-  showResendVerification = false;
-  userId: number | null = null;
   isLocked = false;
   lockoutTime: number = 0;
   lockoutCountdown: number = 0;
@@ -60,8 +57,6 @@ export class LoginComponent implements OnDestroy {
     if (this.loginForm.valid && !this.isLoading) {
       this.isLoading = true;
       this.errorMessage = '';
-      this.emailVerificationMessage = '';
-      this.showResendVerification = false;
 
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
@@ -69,13 +64,6 @@ export class LoginComponent implements OnDestroy {
             this.router.navigate(['/dashboard']);
           } else {
             this.errorMessage = response.message || 'Login failed';
-
-            // Check if it's an email verification issue
-            if (response.email_verified === false) {
-              this.emailVerificationMessage = response.message;
-              this.showResendVerification = true;
-              this.userId = response.user_id || null;
-            }
           }
           this.isLoading = false;
         },
@@ -93,23 +81,13 @@ export class LoginComponent implements OnDestroy {
               this.startLockoutTimer();
             }
           }
-          // Handle 403 - Email verification
-          else if (error.status === 403 && errorResponse?.email_verified === false) {
-            this.emailVerificationMessage = errorResponse.message;
-            this.showResendVerification = true;
-            this.userId = errorResponse.user_id || null;
-            this.errorMessage = '';
+          // Handle 403 - Forbidden
+          else if (error.status === 403) {
+            this.errorMessage = errorResponse?.message || 'Access forbidden';
           }
           // Other errors
           else {
             this.errorMessage = errorResponse?.message || 'An error occurred during login';
-
-            // Check if it's an email verification issue (fallback)
-            if (errorResponse?.email_verified === false) {
-              this.emailVerificationMessage = errorResponse.message;
-              this.showResendVerification = true;
-              this.userId = errorResponse.user_id || null;
-            }
           }
 
           this.isLoading = false;
@@ -118,31 +96,6 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
-  resendVerification() {
-    if (!this.loginForm.get('email')?.value) {
-      this.errorMessage = 'Please enter your email address';
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.authService.resendVerification({ email: this.loginForm.get('email')?.value }).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.emailVerificationMessage = response.message;
-          this.showResendVerification = false;
-        } else {
-          this.errorMessage = response.message || 'Failed to resend verification email';
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'Failed to resend verification email';
-        this.isLoading = false;
-      }
-    });
-  }
 
   startLockoutTimer() {
     // Clear any existing interval

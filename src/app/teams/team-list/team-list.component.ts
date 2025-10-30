@@ -7,6 +7,7 @@ import { TeamFormModalComponent } from '../components/team-form-modal/team-form-
 import { AssignWorkOrderModalComponent } from '../components/assign-work-order-modal/assign-work-order-modal.component';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { ToastService } from '../../core/services/toast.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-team-list',
@@ -25,6 +26,7 @@ export class TeamListComponent implements OnInit {
   statistics: TeamMemberStatistics | null = null;
   analytics: TeamAnalyticsResponse['data'] | null = null;
   currentPerPage = 10;
+  currentUserId: number | null = null;
 
   // Search and filtering
   searchTerm = '';
@@ -73,7 +75,8 @@ export class TeamListComponent implements OnInit {
   constructor(
     private teamService: TeamService,
     private toastService: ToastService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   @HostListener('document:click', ['$event'])
@@ -106,6 +109,11 @@ export class TeamListComponent implements OnInit {
   // Removed scroll prevention listener as it might interfere with dropdown functionality
 
   ngOnInit(): void {
+    // Get current user ID
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUserId = user?.id || null;
+    });
+    
     this.loadTeamMembers();
     this.loadStatistics();
   }
@@ -132,7 +140,8 @@ export class TeamListComponent implements OnInit {
       next: (response: TeamMembersPaginatedResponse) => {
         this.teamMembers = response.data.teams;
         this.pagination = response.data.pagination;
-        this.filteredTeamMembers = [...this.teamMembers];
+        // Filter out current user from the list
+        this.filteredTeamMembers = this.teamMembers.filter(member => member.id !== this.currentUserId);
         this.loading = false;
       },
       error: (error: any) => {
@@ -263,10 +272,13 @@ export class TeamListComponent implements OnInit {
   }
 
   filterTeamMembers(): void {
+    // First filter out current user from all team members
+    const membersExcludingCurrentUser = this.teamMembers.filter(member => member.id !== this.currentUserId);
+    
     if (!this.searchTerm.trim()) {
-      this.filteredTeamMembers = [...this.teamMembers];
+      this.filteredTeamMembers = [...membersExcludingCurrentUser];
     } else {
-      this.filteredTeamMembers = this.teamMembers.filter(teamMember =>
+      this.filteredTeamMembers = membersExcludingCurrentUser.filter(teamMember =>
         `${teamMember.first_name} ${teamMember.last_name}`.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         teamMember.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         (teamMember.role?.name && teamMember.role.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
