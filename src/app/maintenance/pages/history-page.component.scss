@@ -31,6 +31,6 @@
 /* Pills and search layout */
 .search-row { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; }
 .pill-group { display:flex; gap:.5rem; }
-.pill { padding:.5rem .9rem; border:1px solid #d1d5db; border-radius:.5rem; background:#fff; color:#111827; font-size:.875rem; }
+.pill {white-space: nowrap; padding:.5rem .9rem; border:1px solid #d1d5db; border-radius:.5rem; background:#fff; color:#111827; font-size:.875rem; }
 .pill.active { background:#2563eb; color:#fff; border-color:#2563eb; }
 
