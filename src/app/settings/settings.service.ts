@@ -60,6 +60,8 @@ export class SettingsService {
   private base = environment.apiUrl;
   // Stream broadcasting module enablement state
   private modulesEnabled$ = new BehaviorSubject<Record<string, boolean>>({});
+  private modulesLoaded = false;
+  private modulesLoading = false;
 
   // Company
   getCompany() {
@@ -83,7 +85,11 @@ export class SettingsService {
   listModules() {
     return this.http
       .get<ApiResponse<{ modules: ModuleItem[] }>>(`${this.base}/settings/modules`)
-      .pipe(tap(res => this.pushModulesEnabled(res?.data?.modules || [])));
+      .pipe(tap(res => {
+        this.pushModulesEnabled(res?.data?.modules || []);
+        this.modulesLoaded = true;
+        this.modulesLoading = false;
+      }));
   }
   enableModule(moduleId: number) {
     return this.http
@@ -106,10 +112,32 @@ export class SettingsService {
 
   // ----- Modules enabled stream helpers -----
   getModulesEnabled$(): Observable<Record<string, boolean>> {
+    // Auto-load modules on first access if not already loaded
+    if (!this.modulesLoaded && !this.modulesLoading) {
+      const currentValue = this.modulesEnabled$.value;
+      // Only load if BehaviorSubject is empty (no cached data)
+      if (Object.keys(currentValue).length === 0) {
+        this.modulesLoading = true;
+        this.listModules().subscribe({
+          next: () => {
+            this.modulesLoaded = true;
+            this.modulesLoading = false;
+          },
+          error: () => {
+            this.modulesLoading = false;
+            // Keep modulesLoaded as false so it can retry on next access
+          }
+        });
+      } else {
+        // Data already exists in BehaviorSubject, mark as loaded
+        this.modulesLoaded = true;
+      }
+    }
     return this.modulesEnabled$.asObservable();
   }
 
   refreshModulesEnabled() {
+    this.modulesLoaded = false;
     return this.listModules();
   }
 

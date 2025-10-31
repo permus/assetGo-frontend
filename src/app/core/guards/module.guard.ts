@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { SettingsService, ModuleItem } from '../../settings/settings.service';
+import { SettingsService } from '../../settings/settings.service';
 import { AuthService } from '../services/auth.service';
-import { map, catchError, of } from 'rxjs';
+import { map, catchError, of, take } from 'rxjs';
 
 // Functional guard factory: usage canActivate: [moduleGuard('assets')]
 export const moduleGuard = (moduleKey: string): CanActivateFn => {
@@ -17,12 +17,10 @@ export const moduleGuard = (moduleKey: string): CanActivateFn => {
       return of(false);
     }
     
-    return settings.listModules().pipe(
-      map(res => {
-        const enabled: Record<string, boolean> = {};
-        const modules = (res?.data?.modules ?? []) as ModuleItem[];
-        modules.forEach(m => (enabled[m.key] = !!m.is_enabled));
-        
+    // Use cached modules data instead of calling API
+    return settings.getModulesEnabled$().pipe(
+      take(1), // Take only the first emission
+      map(enabled => {
         // Check both module enablement and user permissions
         const isModuleEnabled = !!enabled[moduleKey];
         const hasModuleAccess = authService.hasModuleAccess(moduleKey);

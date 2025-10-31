@@ -4,6 +4,8 @@ import { ImportProgressPopupComponent } from './shared/components/import-progres
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { CurrencyService } from './core/services/currency.service';
 import { PreferencesService } from './core/services/preferences.service';
+import { SettingsService } from './settings/settings.service';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +19,9 @@ export class AppComponent implements OnInit {
 
   constructor(
     private currencyService: CurrencyService,
-    private preferencesService: PreferencesService
+    private preferencesService: PreferencesService,
+    private settingsService: SettingsService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -35,5 +39,14 @@ export class AppComponent implements OnInit {
         // Use defaults if sync fails
       }
     });
+
+    // Load modules once on page reload if user is authenticated
+    if (this.authService.isAuthenticated()) {
+      this.settingsService.listModules().subscribe({
+        error: () => {
+          // Silently fail - modules will be loaded on first access via getModulesEnabled$()
+        }
+      });
+    }
   }
 }
