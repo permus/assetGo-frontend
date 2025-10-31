@@ -139,12 +139,14 @@ export class CreateWorkOrderModalComponent implements OnInit {
   loadDropdownData(): void {
     this.assetService.getAssets({ per_page: 1000 }).subscribe({
       next: (response) => {
-        this.assets = response.data.map((asset: any) => ({
+        // Handle both paginated and non-paginated response formats
+        const assetsList = response.data?.assets || response.data || [];
+        this.assets = Array.isArray(assetsList) ? assetsList.map((asset: any) => ({
           id: asset.id,
           name: asset.name,
           asset_id: asset.asset_id,
           location: asset.location
-        }));
+        })) : [];
         
         if (this.prediction?.assetId) {
           this.selectedAsset = this.assets.find(a => a.id.toString() === this.prediction?.assetId) || null;

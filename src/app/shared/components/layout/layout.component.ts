@@ -85,4 +85,19 @@ export class LayoutComponent implements OnInit, OnDestroy {
       this.showUserDropdown = false;
     }
   }
+
+  isOwner(): boolean {
+    if (!this.currentUser) {
+      return false;
+    }
+    // Check if user is admin (by user_type)
+    if (this.currentUser.user_type?.toLowerCase() === 'admin') {
+      return true;
+    }
+    // Check if the current user's ID matches the company's owner_id
+    if (this.currentUser.company) {
+      return this.currentUser.company.owner_id === this.currentUser.id;
+    }
+    return false;
+  }
 }

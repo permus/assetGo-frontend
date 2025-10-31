@@ -15,6 +15,7 @@ export interface DashboardData {
 
 export interface PartsOverviewData {
   total_parts: number;
+  active_parts: number;
   low_stock_count: number;
   total_value: number;
 }

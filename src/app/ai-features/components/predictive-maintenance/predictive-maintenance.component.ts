@@ -376,8 +376,8 @@ export class PredictiveMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   onScheduleMaintenance(prediction: Prediction) {
-    this.selectedPrediction = prediction;
-    this.showScheduleMaintenanceModal = true;
+    // Route to Create Work Order modal for now (scheduling functionality coming soon)
+    this.onCreateWorkOrder(prediction);
   }
 
   onCreateWorkOrder(prediction: Prediction) {

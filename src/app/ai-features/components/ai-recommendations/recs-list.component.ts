@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Recommendation } from '../../shared/ai-recommendations.interface';
+import { RecCardComponent } from './rec-card.component';
 
 @Component({
   selector: 'app-recs-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, RecCardComponent],
   template: `
     <div class="recs-list">
       <!-- List Header -->

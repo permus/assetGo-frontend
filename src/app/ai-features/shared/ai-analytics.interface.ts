@@ -42,6 +42,7 @@ export interface AnalyticsSnapshot extends AnalyticsData {
   id: string;           // run id
   companyId: string;
   createdAt: string;    // ISO
+  avgAssetAge?: number; // Average asset age in years
 }
 
 export interface ScheduleSettings {

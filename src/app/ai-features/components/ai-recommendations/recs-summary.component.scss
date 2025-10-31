@@ -3,8 +3,13 @@
 
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem;
+    
+    // 3-column layout: 3 cards at top, remaining cards at bottom
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
 
     .summary-card {
       background: white;
@@ -16,6 +21,9 @@
       gap: 1rem;
       transition: all 0.2s ease;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
 
       &:hover {
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -62,6 +70,7 @@
       .card-content {
         flex: 1;
         min-width: 0;
+        overflow: hidden;
 
         .card-label {
           display: block;
@@ -77,6 +86,11 @@
           font-weight: 700;
           color: #1f2937;
           line-height: 1.2;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }

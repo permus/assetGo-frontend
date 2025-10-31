@@ -69,8 +69,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 8rem;
-      height: 8rem;
+      width: 5.5rem;
+      height: 5.5rem;
       border-radius: 50%;
       position: relative;
       flex-shrink: 0;
@@ -101,13 +101,13 @@
       }
 
       .score-value {
-        font-size: 3rem;
+        font-size: 1.75rem;
         font-weight: 800;
         line-height: 1;
       }
 
       .score-percent {
-        font-size: 1.5rem;
+        font-size: 0.875rem;
         font-weight: 600;
         margin-left: 0.25rem;
       }
@@ -125,15 +125,31 @@
         gap: 0.25rem;
 
         .detail-label {
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           color: #6b7280;
           font-weight: 500;
         }
 
         .detail-value {
-          font-size: 1rem;
+          font-size: 0.75rem;
           font-weight: 600;
           color: #1f2937;
+
+          &.status-excellent {
+            color: #166534;
+          }
+
+          &.status-good {
+            color: #1e40af;
+          }
+
+          &.status-fair {
+            color: #d97706;
+          }
+
+          &.status-poor {
+            color: #dc2626;
+          }
         }
       }
     }
@@ -202,15 +218,15 @@
       gap: 1.5rem;
 
       .score-circle {
-        width: 6rem;
-        height: 6rem;
+        width: 4.5rem;
+        height: 4.5rem;
 
         .score-value {
-          font-size: 2.25rem;
+          font-size: 1.5rem;
         }
 
         .score-percent {
-          font-size: 1.125rem;
+          font-size: 0.75rem;
         }
       }
 

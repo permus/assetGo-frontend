@@ -27,6 +27,7 @@ export interface NLQState {
   isProcessing: boolean;
   assetContext: AssetContext | null;
   needsApiKey: boolean;
+  hasContext: boolean;
 }
 
 export interface ChatRequest {

@@ -34,7 +34,7 @@ export class AIRecommendationsService {
     if (filters.search) params = params.set('search', filters.search);
     if (filters.minConfidence !== undefined) params = params.set('minConfidence', filters.minConfidence.toString());
 
-    return this.http.get<RecResponse>(`${this.apiUrl}/`, { params });
+    return this.http.get<RecResponse>(`${this.apiUrl}`, { params });
   }
 
   /**

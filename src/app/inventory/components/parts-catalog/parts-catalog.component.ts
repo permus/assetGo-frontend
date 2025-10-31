@@ -124,7 +124,8 @@ export class PartsCatalogComponent implements OnInit {
     this.analyticsService.getPartsOverview().subscribe({
       next: (response) => {
         if (response.success) {
-          this.summaryData.totalParts = response.data.total_parts;
+          // Use active_parts to match the list endpoint behavior (excludes archived by default)
+          this.summaryData.totalParts = response.data.active_parts || response.data.total_parts;
           this.summaryData.lowStockItems = response.data.low_stock_count;
           this.summaryData.totalValue = response.data.total_value;
         } else {

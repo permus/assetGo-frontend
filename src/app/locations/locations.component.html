@@ -271,7 +271,7 @@
           </div>
 
           <!-- Action Icons -->
-          <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-100">
+          <div class="flex items-center justify-center gap-2 pt-4 border-t border-gray-100">
             <!-- QR Code -->
             <button
               (click)="openQRCodeModal(location)"
@@ -321,7 +321,7 @@
             <div class="col-span-3">Location</div>
             <div class="col-span-2">Type</div>
             <div class="col-span-2">Parent</div>
-            <div class="col-span-1">Level</div>
+            <div *ngIf="false" class="col-span-1">Level</div>
             <div class="col-span-1">Assets</div>
             <div class="col-span-1">Children</div>
             <div class="col-span-2">Actions</div>
@@ -362,7 +362,7 @@
               </div>
 
               <!-- Level -->
-              <div class="col-span-1">
+              <div *ngIf="false" class="col-span-1">
               <span
                 [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-' + getHierarchyLevelColor(location.hierarchy_level) + '-100 text-' + getHierarchyLevelColor(location.hierarchy_level) + '-800'">
                 {{ getHierarchyLevelBadge(location.hierarchy_level) }}

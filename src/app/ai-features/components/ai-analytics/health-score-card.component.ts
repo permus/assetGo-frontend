@@ -17,26 +17,26 @@ import { AIAnalyticsService } from '../../shared/ai-analytics.service';
 
       <div class="score-display">
         <div class="score-circle" [ngClass]="getHealthScoreColorClass(healthScore)">
-          <div class="score-value">{{ healthScore }}</div>
+          <div class="score-value">{{ formatHealthScore(healthScore) }}</div>
           <div class="score-percent">%</div>
         </div>
         
         <div class="score-details">
           <div class="detail-item">
             <span class="detail-label">Asset Age</span>
-            <span class="detail-value">{{ avgAssetAge }} years</span>
+            <span class="detail-value">{{ formatAssetAge(avgAssetAge) }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-label">Maintenance Status</span>
-            <span class="detail-value">{{ maintenanceStatus }}</span>
+            <span class="detail-value" [ngClass]="getStatusColorClass(maintenanceStatus)">{{ maintenanceStatus }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-label">Performance</span>
-            <span class="detail-value">{{ performanceStatus }}</span>
+            <span class="detail-value" [ngClass]="getStatusColorClass(performanceStatus)">{{ performanceStatus }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-label">Condition</span>
-            <span class="detail-value">{{ conditionStatus }}</span>
+            <span class="detail-value" [ngClass]="getStatusColorClass(conditionStatus)">{{ conditionStatus }}</span>
           </div>
         </div>
       </div>
@@ -85,5 +85,26 @@ export class HealthScoreCardComponent {
 
   getHealthScoreColorClass(score: number): string {
     return this.analyticsService.getHealthScoreColorClass(score);
+  }
+
+  formatHealthScore(score: number): string {
+    // Round to 1 decimal place for better readability
+    return Math.round(score * 10) / 10 + '';
+  }
+
+  formatAssetAge(age: number): string {
+    if (!age || age === 0) return 'N/A';
+    // Round to 1 decimal place
+    const rounded = Math.round(age * 10) / 10;
+    return `${rounded} years`;
+  }
+
+  getStatusColorClass(status: string): string {
+    const normalized = status.toLowerCase();
+    if (normalized === 'excellent' || normalized === 'optimal') return 'status-excellent';
+    if (normalized === 'good') return 'status-good';
+    if (normalized === 'fair') return 'status-fair';
+    if (normalized === 'poor' || normalized === 'critical') return 'status-poor';
+    return '';
   }
 }

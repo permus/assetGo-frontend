@@ -57,6 +57,26 @@
   min-height: calc(100vh - 73px); // Subtract header height
 }
 
+// Hide New badges/labels in navigation (only badges, not module names)
+aside nav {
+  // Hide badge elements with specific badge classes
+  .badge,
+  span.badge,
+  .new-badge,
+  [class*="new-badge"],
+  [class*="badge-new"],
+  // Hide small badge elements that appear after the navigation text span
+  // Target spans that come after the main nav span but are badges
+  li > a > span.badge,
+  li > a > span[class*="badge"]:not([ngClass]),
+  // Hide spans with badge-like styling (small, rounded pills) that aren't the nav text
+  li > a > span[class*="rounded-full"]:not([ngClass*="hidden"]),
+  li > a > span[class*="pill"]:not([ngClass*="hidden"]) {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .sidebar {

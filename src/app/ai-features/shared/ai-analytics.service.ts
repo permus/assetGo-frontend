@@ -8,7 +8,10 @@ import {
   ScheduleResponse, 
   AnalyticsSnapshot,
   ScheduleSettings,
-  AnalyticsFilters
+  AnalyticsFilters,
+  RiskAsset,
+  PerformanceInsight,
+  CostOptimization
 } from './ai-analytics.interface';
 
 @Injectable({
@@ -23,7 +26,7 @@ export class AIAnalyticsService {
    * Get latest analytics and history
    */
   getAnalytics(): Observable<AnalyticsResponse> {
-    return this.http.get<AnalyticsResponse>(`${this.apiUrl}/`);
+    return this.http.get<AnalyticsResponse>(`${this.apiUrl}`);
   }
 
   /**
@@ -147,14 +150,14 @@ export class AIAnalyticsService {
   /**
    * Filter analytics data
    */
-  filterAnalyticsData(data: any, filters: AnalyticsFilters): any {
+  filterAnalyticsData(data: AnalyticsSnapshot | null, filters: AnalyticsFilters): AnalyticsSnapshot | null {
     if (!data) return data;
 
-    let filteredData = { ...data };
+    const filteredData: AnalyticsSnapshot = { ...data };
 
     // Filter risk assets
-    if (data.riskAssets) {
-      filteredData.riskAssets = data.riskAssets.filter((asset: any) => {
+    if (data.riskAssets && Array.isArray(data.riskAssets)) {
+      filteredData.riskAssets = data.riskAssets.filter((asset: RiskAsset) => {
         if (filters.riskLevel && asset.riskLevel !== filters.riskLevel) return false;
         if (filters.minConfidence && asset.confidence < filters.minConfidence) return false;
         if (filters.search && !asset.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
@@ -163,8 +166,8 @@ export class AIAnalyticsService {
     }
 
     // Filter performance insights
-    if (data.performanceInsights) {
-      filteredData.performanceInsights = data.performanceInsights.filter((insight: any) => {
+    if (data.performanceInsights && Array.isArray(data.performanceInsights)) {
+      filteredData.performanceInsights = data.performanceInsights.filter((insight: PerformanceInsight) => {
         if (filters.impact && insight.impact !== filters.impact) return false;
         if (filters.minConfidence && insight.confidence < filters.minConfidence) return false;
         if (filters.category && insight.category !== filters.category) return false;
@@ -174,8 +177,8 @@ export class AIAnalyticsService {
     }
 
     // Filter cost optimizations
-    if (data.costOptimizations) {
-      filteredData.costOptimizations = data.costOptimizations.filter((optimization: any) => {
+    if (data.costOptimizations && Array.isArray(data.costOptimizations)) {
+      filteredData.costOptimizations = data.costOptimizations.filter((optimization: CostOptimization) => {
         if (filters.minConfidence && optimization.confidence < filters.minConfidence) return false;
         if (filters.category && optimization.category !== filters.category) return false;
         if (filters.search && !optimization.title.toLowerCase().includes(filters.search.toLowerCase())) return false;

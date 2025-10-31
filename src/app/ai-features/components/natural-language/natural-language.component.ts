@@ -8,6 +8,7 @@ import {
   ChatRequest 
 } from '../../shared/natural-language.interface';
 import { NaturalLanguageService } from '../../shared/natural-language.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { NLQHeaderComponent } from './nlq-header.component';
 import { NLQContextStripComponent } from './nlq-context-strip.component';
 import { NLQChatComponent } from './nlq-chat.component';
@@ -40,6 +41,7 @@ import { NLQCapabilitiesComponent } from './nlq-capabilities.component';
             [messages]="state.messages"
             [isProcessing]="state.isProcessing"
             [needsApiKey]="state.needsApiKey"
+            [hasContext]="state.hasContext"
             (messageSent)="onMessageSent($event)">
           </app-nlq-chat>
         </div>
@@ -53,25 +55,35 @@ import { NLQCapabilitiesComponent } from './nlq-capabilities.component';
         </div>
       </div>
 
-      <!-- Error State -->
-      <div *ngIf="errorMessage" class="error-state">
-        <div class="error-content">
-          <svg class="error-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-          </svg>
-          <h3 class="error-title">Something went wrong</h3>
-          <p class="error-description">{{ errorMessage }}</p>
-          <button class="retry-button" (click)="retry()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-              <path d="M21 3v5h-5"></path>
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-              <path d="M3 21v-5h5"></path>
+      <!-- Error Banner -->
+      <div *ngIf="errorMessage" class="error-banner">
+        <div class="error-banner-content">
+          <div class="error-banner-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
-            Try Again
-          </button>
+          </div>
+          <div class="error-banner-text">
+            <span class="error-banner-message">{{ errorMessage }}</span>
+          </div>
+          <div class="error-banner-actions">
+            <button class="error-banner-retry" (click)="retry()" title="Retry">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                <path d="M21 3v5h-5"></path>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                <path d="M3 21v-5h5"></path>
+              </svg>
+            </button>
+            <button class="error-banner-dismiss" (click)="dismissError()" title="Dismiss">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -86,17 +98,28 @@ export class NaturalLanguageComponent implements OnInit, OnDestroy {
     messages: [],
     isProcessing: false,
     assetContext: null,
-    needsApiKey: false
+    needsApiKey: false,
+    hasContext: false
   };
 
   errorMessage: string | null = null;
+  companyName: string = 'Your Company';
   private destroy$ = new Subject<void>();
 
-  constructor(private nlService: NaturalLanguageService) {}
+  constructor(
+    private nlService: NaturalLanguageService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
+    this.loadCompanyName();
     this.loadContext();
     this.checkApiKey();
+  }
+
+  loadCompanyName() {
+    const currentUser = this.authService.getCurrentUser();
+    this.companyName = currentUser?.company?.name || 'Your Company';
   }
 
   ngOnDestroy() {
@@ -111,13 +134,16 @@ export class NaturalLanguageComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success && response.data) {
             this.state.assetContext = response.data;
+            this.state.hasContext = true;
           } else {
             this.errorMessage = response.error || 'Failed to load context';
+            this.state.hasContext = false;
           }
         },
         error: (error) => {
           console.error('Error loading context:', error);
           this.errorMessage = 'Failed to load context. Please try again.';
+          this.state.hasContext = false;
         }
       });
   }
@@ -137,7 +163,7 @@ export class NaturalLanguageComponent implements OnInit, OnDestroy {
   }
 
   onMessageSent(message: string) {
-    if (!message.trim() || this.state.isProcessing || this.state.needsApiKey) {
+    if (!message.trim() || this.state.isProcessing || this.state.needsApiKey || !this.state.hasContext) {
       return;
     }
 
@@ -160,7 +186,7 @@ export class NaturalLanguageComponent implements OnInit, OnDestroy {
       })),
       assetContext: this.state.assetContext!,
       companyContext: {
-        name: 'Your Company' // This could be dynamic
+        name: this.companyName
       }
     };
 
@@ -199,5 +225,9 @@ export class NaturalLanguageComponent implements OnInit, OnDestroy {
     this.errorMessage = null;
     this.loadContext();
     this.checkApiKey();
+  }
+
+  dismissError() {
+    this.errorMessage = null;
   }
 }

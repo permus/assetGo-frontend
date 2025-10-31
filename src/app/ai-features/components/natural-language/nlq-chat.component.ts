@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit, OnDestroy, SecurityContext } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject, takeUntil } from 'rxjs';
 import { ChatMessage } from '../../shared/natural-language.interface';
 import { NaturalLanguageService } from '../../shared/natural-language.service';
@@ -79,14 +80,14 @@ import { NaturalLanguageService } from '../../shared/natural-language.service';
             #messageInput
             [(ngModel)]="currentMessage"
             (keydown)="onKeyDown($event)"
-            [disabled]="isProcessing || needsApiKey"
+            [disabled]="isProcessing || needsApiKey || !hasContext"
             placeholder="Ask me anything about your assets..."
             class="message-input"
             rows="1">
           </textarea>
           <button
             (click)="sendMessage()"
-            [disabled]="!currentMessage.trim() || isProcessing || needsApiKey"
+            [disabled]="!currentMessage.trim() || isProcessing || needsApiKey || !hasContext"
             class="send-button">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -106,6 +107,7 @@ export class NLQChatComponent implements OnInit, OnDestroy {
   @Input() messages: ChatMessage[] = [];
   @Input() isProcessing: boolean = false;
   @Input() needsApiKey: boolean = false;
+  @Input() hasContext: boolean = false;
   @Output() messageSent = new EventEmitter<string>();
 
   @ViewChild('messageInput') messageInput!: ElementRef<HTMLTextAreaElement>;
@@ -114,7 +116,10 @@ export class NLQChatComponent implements OnInit, OnDestroy {
   currentMessage: string = '';
   private destroy$ = new Subject<void>();
 
-  constructor(private nlService: NaturalLanguageService) {}
+  constructor(
+    private nlService: NaturalLanguageService,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit() {
     // Auto-focus input on component init
@@ -138,7 +143,7 @@ export class NLQChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessage() {
-    if (!this.currentMessage.trim() || this.isProcessing || this.needsApiKey) {
+    if (!this.currentMessage.trim() || this.isProcessing || this.needsApiKey || !this.hasContext) {
       return;
     }
 
@@ -156,8 +161,10 @@ export class NLQChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatMessage(content: string): string {
-    return this.nlService.formatMarkdown(content);
+  formatMessage(content: string): SafeHtml {
+    const formatted = this.nlService.formatMarkdown(content);
+    const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, formatted);
+    return this.sanitizer.bypassSecurityTrustHtml(sanitized || '');
   }
 
   formatTime(timestamp: string): string {

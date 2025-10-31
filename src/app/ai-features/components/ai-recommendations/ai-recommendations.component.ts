@@ -12,6 +12,7 @@ import { RecsHeaderComponent } from './recs-header.component';
 import { RecsSummaryComponent } from './recs-summary.component';
 import { RecsFiltersComponent } from './recs-filters.component';
 import { RecsListComponent } from './recs-list.component';
+import { CreateWorkOrderModalComponent } from '../create-work-order-modal/create-work-order-modal.component';
 
 @Component({
   selector: 'app-ai-recommendations',
@@ -21,7 +22,8 @@ import { RecsListComponent } from './recs-list.component';
     RecsHeaderComponent,
     RecsSummaryComponent,
     RecsFiltersComponent,
-    RecsListComponent
+    RecsListComponent,
+    CreateWorkOrderModalComponent
   ],
   template: `
     <div class="ai-recommendations-page">
@@ -59,6 +61,14 @@ import { RecsListComponent } from './recs-list.component';
         (pageChange)="onPageChange($event)"
         (pageSizeChange)="onPageSizeChange($event)">
       </app-recs-list>
+
+      <!-- Work Order Modal for Action Plan -->
+      <app-create-work-order-modal
+        [isOpen]="showWorkOrderModal"
+        [prediction]="selectedRecommendationForWorkOrder"
+        (closeModal)="showWorkOrderModal = false"
+        (workOrderCreated)="onWorkOrderCreated()">
+      </app-create-work-order-modal>
     </div>
   `,
   styleUrls: ['./ai-recommendations.component.scss']
@@ -81,6 +91,10 @@ export class AIRecommendationsComponent implements OnInit, OnDestroy {
   currentPage = 1;
   pageSize = 10;
 
+  // Work Order Modal state
+  showWorkOrderModal = false;
+  selectedRecommendationForWorkOrder: any = null;
+
   constructor(private recService: AIRecommendationsService) {}
 
   ngOnInit() {
@@ -101,8 +115,23 @@ export class AIRecommendationsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response: RecResponse) => {
           if (response.success && response.data) {
-            this.recommendations = response.data.recommendations;
-            this.summary = response.data.summary;
+            // Handle nested data structure from ResourceCollection (backward compatibility)
+            const recommendationsData: any = response.data.recommendations;
+            this.recommendations = Array.isArray(recommendationsData) 
+              ? recommendationsData 
+              : (recommendationsData?.data || []);
+            
+            // Convert summary string values to numbers if needed
+            const summary = response.data.summary;
+            if (summary) {
+              this.summary = {
+                ...summary,
+                totalSavings: typeof summary.totalSavings === 'string' ? parseFloat(summary.totalSavings) : summary.totalSavings,
+                totalCost: typeof summary.totalCost === 'string' ? parseFloat(summary.totalCost) : summary.totalCost,
+                roi: typeof summary.roi === 'string' ? parseFloat(summary.roi) : summary.roi,
+              };
+            }
+            
             this.pagination = response.data.pagination;
           } else {
             this.errorMessage = response.error || 'Failed to load recommendations';
@@ -130,10 +159,15 @@ export class AIRecommendationsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.recommendations = response.data.recommendations;
+            // Handle nested data structure from ResourceCollection (backward compatibility)
+            const recommendationsData: any = response.data.recommendations;
+            this.recommendations = Array.isArray(recommendationsData) 
+              ? recommendationsData 
+              : (recommendationsData?.data || []);
             this.summary = response.data.summary;
             this.currentPage = 1; // Reset to first page
-            this.loadData(); // Reload to get pagination
+            // Reload to get pagination data since generate doesn't return it
+            this.loadData();
           } else {
             this.errorMessage = response.error || 'Failed to generate recommendations';
           }
@@ -149,10 +183,11 @@ export class AIRecommendationsComponent implements OnInit, OnDestroy {
 
   onExport() {
     if (this.recommendations.length === 0) {
-      alert('No recommendations to export. Please generate recommendations first.');
+      this.errorMessage = 'No recommendations to export. Please generate recommendations first.';
       return;
     }
 
+    this.errorMessage = null;
     this.recService.exportRecommendations(this.filters)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -191,18 +226,32 @@ export class AIRecommendationsComponent implements OnInit, OnDestroy {
             // Reload summary
             this.loadSummary();
           } else {
-            console.error('Failed to toggle implementation:', response.error);
+            this.errorMessage = response.error || 'Failed to update recommendation. Please try again.';
           }
         },
         error: (error) => {
           console.error('Error toggling implementation:', error);
+          this.errorMessage = 'Failed to update recommendation. Please try again.';
         }
       });
   }
 
   onCreateActionPlan(recommendation: Recommendation) {
-    // TODO: Implement action plan creation
-    alert(`Create Action Plan for: ${recommendation.title}`);
+    // Convert recommendation to prediction-like format for work order modal
+    this.selectedRecommendationForWorkOrder = {
+      assetId: null, // Recommendations don't have specific asset
+      assetName: 'General Recommendation',
+      riskLevel: recommendation.priority === 'high' ? 'high' : recommendation.priority === 'medium' ? 'medium' : 'low',
+      recommendedAction: recommendation.title + ': ' + recommendation.description,
+      confidence: recommendation.confidence
+    };
+    this.showWorkOrderModal = true;
+  }
+
+  onWorkOrderCreated() {
+    this.showWorkOrderModal = false;
+    this.selectedRecommendationForWorkOrder = null;
+    // Optionally refresh recommendations or show success message
   }
 
   onPageChange(page: number) {
