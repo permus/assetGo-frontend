@@ -5,13 +5,15 @@ import {AuthService, User} from '../../../core/services/auth.service';
 import {Router} from '@angular/router';
 import { SettingsService, ModuleItem } from '../../../settings/settings.service';
 import { ModuleAccessService } from '../../../core/services/module-access.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationDropdownComponent } from '../notification-dropdown/notification-dropdown.component';
 import {HostListener} from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule],
+  imports: [CommonModule, RouterOutlet, RouterModule, NotificationDropdownComponent],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss'
 })
@@ -26,7 +28,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private settings: SettingsService,
-    private moduleAccessService: ModuleAccessService
+    private moduleAccessService: ModuleAccessService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -35,6 +38,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(user => {
       this.currentUser = user;
+      // Connect to Pusher when user is available
+      if (user) {
+        this.notificationService.connectPusher();
+      }
     });
     
     // Use module access service to determine visible modules
@@ -46,6 +53,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.notificationService.disconnectPusher();
     this.destroy$.next();
     this.destroy$.complete();
   }
