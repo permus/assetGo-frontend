@@ -348,6 +348,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
     return this.assetList.filter(asset => asset.selected).length;
   }
 
+  get assetNameForRestore(): string {
+    if (this.selectedAssetForRestore) {
+      return this.selectedAssetForRestore.name || '';
+    }
+    if (this.selectedCount === 1) {
+      const selectedAsset = this.assetList.find(asset => asset.selected);
+      return selectedAsset?.name || '';
+    }
+    return '';
+  }
+
   toggleSelectAllAssets() {
     const allSelected = this.selectedCount === this.assetList.length;
     this.assetList.forEach(asset => asset.selected = !allSelected);
@@ -419,8 +430,20 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   clearSelection() {
-    this.assetList.forEach(asset => asset.selected = false);
+    // Clear all selected assets
+    this.assetList.forEach(asset => {
+      asset.selected = false;
+      asset.showMenu = false; // Close any open asset menus
+    });
     this.selectAllAssets = false;
+    
+    // Clear restore-related state
+    this.selectedAssetForRestore = null;
+    
+    // Close any open modals
+    this.showRestoreConfirmationModal = false;
+    this.showArchiveConfirmationModal = false;
+    this.showDeleteConfirmationModal = false;
   }
 
   showArchiveModal() {
@@ -455,8 +478,35 @@ export class AssetListComponent implements OnInit, OnDestroy {
     if (selectedAssets.length > 1) {
       // Bulk restore
       this.restoreBulkAssets(restoreReason);
+    } else if (selectedAssets.length === 1) {
+      // Single asset restore from checkbox selection
+      const assetToRestore = selectedAssets[0];
+      const payload: any = {};
+      if (restoreReason && restoreReason.trim()) {
+        payload.restore_reason = restoreReason.trim();
+      }
+
+      this.assetService.restoreAsset(assetToRestore.id, payload)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.loadAssets();
+              this.loadAssetStatistics();
+              console.log('Asset restored successfully');
+            } else {
+              this.error = response.message || 'Failed to restore asset';
+            }
+            this.closeRestoreModal();
+            this.clearSelection();
+          },
+          error: (error) => {
+            this.error = error.error?.message || 'An error occurred while restoring the asset';
+            this.closeRestoreModal();
+          }
+        });
     } else if (this.selectedAssetForRestore) {
-      // Single asset restore
+      // Single asset restore from dropdown menu
       const payload: any = {};
       if (restoreReason && restoreReason.trim()) {
         payload.restore_reason = restoreReason.trim();
@@ -715,7 +765,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Open bulk restore modal
+    // Clear selectedAssetForRestore to ensure we use checkbox selection
+    // This ensures restoreSelectedAsset() will use the checkbox-selected assets
+    this.selectedAssetForRestore = null;
+
+    // Open restore modal
     this.showRestoreConfirmationModal = true;
   }
 
