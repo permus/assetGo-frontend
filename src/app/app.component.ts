@@ -25,23 +25,28 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Initialize currency from server on app load
-    this.currencyService.refreshFromServer().subscribe();
-    
-    // Load user preferences and apply to app
-    this.preferencesService.syncFromBackend().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.preferencesService.updatePreferences(response.data);
-        }
-      },
-      error: () => {
-        // Use defaults if sync fails
-      }
-    });
-
-    // Load modules once on page reload if user is authenticated
+    // Only make API calls if user is authenticated (not on landing page)
     if (this.authService.isAuthenticated()) {
+      // Initialize currency from server on app load
+      this.currencyService.refreshFromServer().subscribe({
+        error: () => {
+          // Silently fail - use defaults
+        }
+      });
+      
+      // Load user preferences and apply to app
+      this.preferencesService.syncFromBackend().subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.preferencesService.updatePreferences(response.data);
+          }
+        },
+        error: () => {
+          // Use defaults if sync fails
+        }
+      });
+
+      // Load modules once on page reload if user is authenticated
       this.settingsService.listModules().subscribe({
         error: () => {
           // Silently fail - modules will be loaded on first access via getModulesEnabled$()

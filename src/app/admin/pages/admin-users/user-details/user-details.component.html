@@ -1,0 +1,235 @@
+<div class="p-6">
+  <!-- Header with Back Button -->
+  <div class="mb-6 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <button
+        (click)="goBack()"
+        class="px-4 py-2 text-gray-600 hover:text-gray-800 flex items-center gap-2 cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Users
+      </button>
+      <h1 class="text-2xl font-bold text-gray-900">User Details</h1>
+    </div>
+    <button
+      *ngIf="user"
+      (click)="toggleUserStatus()"
+      [class]="user.active ? 'px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 cursor-pointer' : 'px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 cursor-pointer'">
+      {{ user.active ? 'Suspend User' : 'Activate User' }}
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+    Loading user details...
+  </div>
+
+  <!-- User Details -->
+  <div *ngIf="!loading && user" class="space-y-6">
+    <!-- User Information Card -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900">User Information</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Name</label>
+            <p class="text-gray-900 font-medium">{{ user.first_name }} {{ user.last_name }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Email</label>
+            <p class="text-gray-900">{{ user.email }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">User Type</label>
+            <p class="text-gray-900">
+              <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                {{ user.user_type }}
+              </span>
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Status</label>
+            <p class="text-gray-900">
+              <span [class]="user.active ? 'px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800'">
+                {{ user.active ? 'Active' : 'Inactive' }}
+              </span>
+            </p>
+          </div>
+          <div *ngIf="user.avatar">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Avatar</label>
+            <img [src]="user.avatar" alt="User Avatar" class="w-16 h-16 rounded-full object-cover">
+          </div>
+          <div *ngIf="user.hourly_rate">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Hourly Rate</label>
+            <p class="text-gray-900">${{ user.hourly_rate }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Created Date</label>
+            <p class="text-gray-900">{{ formatDate(user.created_at) }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Last Updated</label>
+            <p class="text-gray-900">{{ formatDate(user.updated_at) }}</p>
+          </div>
+          <div *ngIf="user.created_by">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Created By</label>
+            <p class="text-gray-900">User ID: {{ user.created_by }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Company Information Card -->
+    <div *ngIf="user.company" class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900">Company Information</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Company Name</label>
+            <p class="text-gray-900">{{ user.company.name }}</p>
+          </div>
+          <div *ngIf="user.company.phone">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Phone</label>
+            <p class="text-gray-900">{{ user.company.phone }}</p>
+          </div>
+          <div *ngIf="user.company.email">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Email</label>
+            <p class="text-gray-900">{{ user.company.email }}</p>
+          </div>
+          <div *ngIf="user.company.address">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Address</label>
+            <p class="text-gray-900">{{ user.company.address }}</p>
+          </div>
+          <div *ngIf="user.company.business_type">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Business Type</label>
+            <p class="text-gray-900">{{ user.company.business_type }}</p>
+          </div>
+          <div *ngIf="user.company.industry">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Industry</label>
+            <p class="text-gray-900">{{ user.company.industry }}</p>
+          </div>
+          <div *ngIf="user.company.currency">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Currency</label>
+            <p class="text-gray-900">{{ user.company.currency }}</p>
+          </div>
+          <div *ngIf="user.company.subscription_status">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Subscription Status</label>
+            <p class="text-gray-900">
+              <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                {{ user.company.subscription_status }}
+              </span>
+            </p>
+          </div>
+          <div *ngIf="user.company.slug">
+            <label class="block text-sm font-medium text-gray-500 mb-1">Slug</label>
+            <p class="text-gray-900">{{ user.company.slug }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roles Information Card -->
+    <div *ngIf="user.roles && user.roles.length > 0" class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900">Roles</h2>
+      </div>
+      <div class="p-6">
+        <div class="flex flex-wrap gap-2">
+          <span *ngFor="let role of user.roles" class="px-3 py-1 text-sm font-medium rounded-full bg-purple-100 text-purple-800">
+            {{ role.name }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teams Created by User Card -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900">Teams Created by User</h2>
+      </div>
+      <div class="p-6">
+        <!-- Teams Loading State -->
+        <div *ngIf="teamsLoading" class="text-center py-8 text-gray-500">
+          Loading teams...
+        </div>
+
+        <!-- Teams Table -->
+        <div *ngIf="!teamsLoading && teams.length > 0" class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let team of teams">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ team.first_name }} {{ team.last_name }}</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">{{ team.email }}</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ getRoleName(team) }}</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span [class]="team.active ? 'px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800'">
+                    {{ team.active ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">{{ formatDate(team.created_at) }}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!teamsLoading && teams.length === 0" class="text-center py-8 text-gray-500">
+          No teams created by this user.
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!teamsLoading && teamsTotal > 0" class="mt-4 flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            Showing {{ ((teamsCurrentPage - 1) * teamsPerPage) + 1 }} to {{ Math.min(teamsCurrentPage * teamsPerPage, teamsTotal) }} of {{ teamsTotal }} teams
+          </div>
+          <div class="flex gap-2">
+            <button
+              (click)="onTeamsPageChange(teamsCurrentPage - 1)"
+              [disabled]="teamsCurrentPage === 1"
+              class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer">
+              Previous
+            </button>
+            <button
+              (click)="onTeamsPageChange(teamsCurrentPage + 1)"
+              [disabled]="teamsCurrentPage === teamsLastPage"
+              class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suspend/Activate Confirmation Modal -->
+  <app-suspend-activate-confirmation-modal
+    [isOpen]="showConfirmModal"
+    [isActive]="user?.active ?? true"
+    [userName]="user ? (user.first_name + ' ' + user.last_name) : ''"
+    [isLoading]="confirmModalLoading"
+    (closeModal)="onCloseConfirmModal()"
+    (confirmAction)="onConfirmStatusChange($event)">
+  </app-suspend-activate-confirmation-modal>
+</div>
