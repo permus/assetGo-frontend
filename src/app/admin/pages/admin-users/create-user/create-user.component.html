@@ -1,0 +1,232 @@
+<div class="p-6">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Create New User</h1>
+    <p class="text-sm text-gray-600 mt-1">Create a new user and company account</p>
+  </div>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Basic Information Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            First Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="first_name"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-300]="userForm.get('first_name')?.invalid && userForm.get('first_name')?.touched"
+          />
+          <div *ngIf="getFieldError('first_name')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('first_name') }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Last Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="last_name"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-300]="userForm.get('last_name')?.invalid && userForm.get('last_name')?.touched"
+          />
+          <div *ngIf="getFieldError('last_name')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('last_name') }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Email Address <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="email"
+            formControlName="email"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-300]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+          />
+          <div *ngIf="getFieldError('email')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('email') }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Password <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="password"
+            formControlName="password"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-300]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+          />
+          <div *ngIf="getFieldError('password')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('password') }}
+          </div>
+          <div class="text-xs text-gray-500 mt-1">
+            Must be at least 8 characters with uppercase, lowercase, and a number
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Confirm Password <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="password"
+            formControlName="password_confirmation"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-300]="getPasswordConfirmationError()"
+          />
+          <div *ngIf="getPasswordConfirmationError()" class="text-red-600 text-sm mt-1">
+            {{ getPasswordConfirmationError() }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Company Information Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Company Information</h2>
+      
+      <!-- Company Logo -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+        <button
+          type="button"
+          (click)="triggerLogoUpload()"
+          class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer flex items-center gap-2">
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          Upload Logo
+        </button>
+        <input
+          type="file"
+          id="logo"
+          accept="image/jpeg,image/png,image/webp"
+          (change)="onLogoSelected($event)"
+          class="hidden"
+        />
+        <div class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB. Recommended: 200x200px</div>
+        
+        <div *ngIf="logoPreview" class="mt-4 relative inline-block">
+          <img [src]="logoPreview" alt="Logo preview" class="w-32 h-32 object-contain border border-gray-300 rounded-lg">
+          <button
+            type="button"
+            (click)="removeLogo()"
+            class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Company Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="company_name"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-300]="userForm.get('company_name')?.invalid && userForm.get('company_name')?.touched"
+          />
+          <div *ngIf="getFieldError('company_name')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('company_name') }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+          <input
+            type="text"
+            formControlName="industry"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div *ngIf="getFieldError('industry')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('industry') }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Business Type</label>
+          <input
+            type="text"
+            formControlName="business_type"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div *ngIf="getFieldError('business_type')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('business_type') }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+          <input
+            type="email"
+            formControlName="company_email"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div *ngIf="getFieldError('company_email')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('company_email') }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+          <input
+            type="text"
+            formControlName="company_phone"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div *ngIf="getFieldError('company_phone')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('company_phone') }}
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Company Address</label>
+          <textarea
+            formControlName="company_address"
+            rows="3"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+          <div *ngIf="getFieldError('company_address')" class="text-red-600 text-sm mt-1">
+            {{ getFieldError('company_address') }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <p class="text-red-600 text-sm">{{ errorMessage }}</p>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex justify-end gap-4">
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        [disabled]="loading"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+        <span *ngIf="!loading">Create User</span>
+        <span *ngIf="loading">Creating...</span>
+      </button>
+    </div>
+  </form>
+</div>
+

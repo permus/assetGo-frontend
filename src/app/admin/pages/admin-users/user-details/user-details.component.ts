@@ -4,11 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AdminUsersService, User, TeamMember } from '../../../services/admin-users.service';
 import { SuspendActivateConfirmationModalComponent } from '../../../components/suspend-activate-confirmation-modal/suspend-activate-confirmation-modal.component';
 import { ToastService } from '../../../../core/services/toast.service';
+import { ChangePasswordModalComponent } from '../../../components/change-password-modal/change-password-modal.component';
 
 @Component({
   selector: 'app-user-details',
   standalone: true,
-  imports: [CommonModule, SuspendActivateConfirmationModalComponent],
+  imports: [CommonModule, SuspendActivateConfirmationModalComponent, ChangePasswordModalComponent],
   templateUrl: './user-details.component.html',
   styleUrl: './user-details.component.scss'
 })
@@ -16,7 +17,7 @@ export class UserDetailsComponent implements OnInit {
   user: User | null = null;
   loading = false;
   userId: number | null = null;
-  
+
   // Teams pagination
   teams: TeamMember[] = [];
   teamsLoading = false;
@@ -24,10 +25,14 @@ export class UserDetailsComponent implements OnInit {
   teamsPerPage = 15;
   teamsTotal = 0;
   teamsLastPage = 1;
-  
+
   // Confirmation modal
   showConfirmModal = false;
   confirmModalLoading = false;
+
+  // Change password modal
+  showChangePasswordModal = false;
+  changePasswordLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -70,7 +75,7 @@ export class UserDetailsComponent implements OnInit {
 
     this.teamsLoading = true;
     this.teamsCurrentPage = page;
-    
+
     this.adminUsersService.getCreatedTeams(this.userId, {
       page: this.teamsCurrentPage,
       per_page: this.teamsPerPage,
@@ -144,6 +149,18 @@ export class UserDetailsComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/admin/users']);
+  }
+
+  changePassword(): void {
+    this.showChangePasswordModal = true;
+  }
+
+  onPasswordChanged(): void {
+    this.showChangePasswordModal = false;
+  }
+
+  onCloseChangePasswordModal(): void {
+    this.showChangePasswordModal = false;
   }
 
   Math = Math;

@@ -14,6 +14,8 @@ export interface Company {
   industry?: string;
   currency?: string;
   subscription_status?: string;
+  logo?: string;
+  logo_url?: string;
 }
 
 export interface Role {
@@ -44,6 +46,7 @@ export interface User {
   active: boolean;
   preferences?: any;
   created_by?: number;
+  created_by_name?: string;
   company_id?: number;
   company?: Company;
   roles?: Role[];
@@ -89,6 +92,26 @@ export interface CreatedTeamsResponse {
   };
 }
 
+export interface CreateUserRequest {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+  company_name: string;
+  industry?: string;
+  business_type?: string;
+  company_email?: string;
+  company_phone?: string;
+  company_address?: string;
+  logo?: File;
+}
+
+export interface ChangePasswordRequest {
+  password: string;
+  password_confirmation: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -117,6 +140,22 @@ export class AdminUsersService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': `Bearer ${adminToken.trim()}`,
+    };
+    
+    return { headers };
+  }
+
+  private getAuthHeadersForFileUpload(): { headers: { [header: string]: string } } {
+    const adminToken = localStorage.getItem('admin_token');
+    
+    if (!adminToken) {
+      throw new Error('Admin token not found. Please login through /admin/login');
+    }
+    
+    const headers: { [header: string]: string } = {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${adminToken.trim()}`,
+      // Don't set Content-Type for FormData, let browser set it with boundary
     };
     
     return { headers };
@@ -179,6 +218,33 @@ export class AdminUsersService {
       ...this.getAuthHeaders(),
       params: httpParams
     });
+  }
+
+  createUser(data: CreateUserRequest): Observable<UserResponse> {
+    const formData = new FormData();
+    formData.append('first_name', data.first_name);
+    formData.append('last_name', data.last_name);
+    formData.append('email', data.email);
+    formData.append('password', data.password);
+    formData.append('password_confirmation', data.password_confirmation);
+    formData.append('company_name', data.company_name);
+    
+    if (data.industry) formData.append('industry', data.industry);
+    if (data.business_type) formData.append('business_type', data.business_type);
+    if (data.company_email) formData.append('company_email', data.company_email);
+    if (data.company_phone) formData.append('company_phone', data.company_phone);
+    if (data.company_address) formData.append('company_address', data.company_address);
+    if (data.logo) formData.append('logo', data.logo);
+
+    return this.http.post<UserResponse>(`${this.apiUrl}/admin/users`, formData, this.getAuthHeadersForFileUpload());
+  }
+
+  changePassword(userId: number, data: ChangePasswordRequest): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.apiUrl}/admin/users/${userId}/change-password`,
+      data,
+      this.getAuthHeaders()
+    );
   }
 }
 
