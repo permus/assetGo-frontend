@@ -35,6 +35,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   serial_number: string = '';
   model: string = '';
   manufacturer: string = '';
+  capacity: string = '';
+  capacity_unit: string = '';
   purchase_date: string = '';
   purchase_price: number | null = null;
   depreciation: number | null = null;
@@ -87,6 +89,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Address property
   address: string = '';
+
+  // Capacity unit options
+  capacityUnitOptions: string[] = ['Unit', 'GB', 'TB', 'Liters', 'kg', 'BTU', 'kW', 'HP', 'Tons', 'Seats', 'Units'];
 
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length) {
@@ -199,6 +204,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         serial_number: this.serial_number,
         model: this.model,
         manufacturer: this.manufacturer,
+        capacity: this.capacity || null,
+        capacity_unit: this.capacity_unit || null,
         purchase_date: this.purchase_date ? this.convertDateToBackendFormat(this.purchase_date) : null,
         purchase_price: this.purchase_price,
         depreciation: this.depreciation,

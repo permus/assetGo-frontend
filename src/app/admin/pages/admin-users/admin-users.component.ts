@@ -6,12 +6,13 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AdminUsersService, User } from '../../services/admin-users.service';
 import { SuspendActivateConfirmationModalComponent } from '../../components/suspend-activate-confirmation-modal/suspend-activate-confirmation-modal.component';
+import { ChangePasswordModalComponent } from '../../components/change-password-modal/change-password-modal.component';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, SuspendActivateConfirmationModalComponent],
+  imports: [CommonModule, FormsModule, SuspendActivateConfirmationModalComponent, ChangePasswordModalComponent],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.scss'
 })
@@ -31,13 +32,18 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
     { value: 'user', label: 'User' },
     { value: 'admin', label: 'Admin' },
     { value: 'manager', label: 'Manager' },
-    { value: 'team', label: 'Team' }
+    { value: 'team', label: 'Team' },
+    { value: 'owner', label: 'Owner' }
   ];
 
   // Confirmation modal
   showConfirmModal = false;
   selectedUser: User | null = null;
   confirmModalLoading = false;
+
+  // Change password modal
+  showChangePasswordModal = false;
+  changePasswordLoading = false;
 
   // View mode: 'list' or 'grid'
   viewMode: 'list' | 'grid' = 'list';
@@ -153,6 +159,25 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   toggleViewMode(): void {
     this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
+  }
+
+  createUser(): void {
+    this.router.navigate(['/admin/users/create']);
+  }
+
+  changePassword(user: User): void {
+    this.selectedUser = user;
+    this.showChangePasswordModal = true;
+  }
+
+  onPasswordChanged(): void {
+    this.showChangePasswordModal = false;
+    this.selectedUser = null;
+  }
+
+  onCloseChangePasswordModal(): void {
+    this.showChangePasswordModal = false;
+    this.selectedUser = null;
   }
 
   Math = Math;

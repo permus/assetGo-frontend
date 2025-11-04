@@ -76,6 +76,9 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     { value: 4, label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service', sort_order: 4 }
   ];
 
+  // Capacity unit options
+  capacityUnitOptions: string[] = ['Unit', 'GB', 'TB', 'Liters', 'kg', 'BTU', 'kW', 'HP', 'Tons', 'Seats', 'Units'];
+
   // Image handling
   previewImage: string | null = null;
   selectedFile: File | null = null;
@@ -122,6 +125,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       dimensions: [''],
       weight: [''],
       capacity: [''],
+      capacity_unit: [''],
       status: [null],
       type: [null, Validators.required],
       category_id: [null, Validators.required],
@@ -256,6 +260,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         dimensions: this.asset.dimensions || '',
         weight: this.asset.weight || '',
         capacity: this.asset.capacity || '',
+        capacity_unit: this.asset.capacity_unit || '',
         purchase_date: purchaseDate,
         purchase_price: this.asset.purchase_price || null,
         depreciation: this.asset.depreciation || null,
