@@ -129,20 +129,7 @@
         <!-- Right Column -->
         <div class="space-y-6">
           <!-- Transfer Approvals -->
-          <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div class="flex items-center space-x-2 mb-4">
-              <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-              <h3 class="text-lg font-semibold text-gray-900">Transfer Approvals</h3>
-            </div>
-            <ng-container *ngIf="(data?.transfer_approvals ?? 0) > 0; else noApprovals">
-              <p class="text-gray-700"><span class="font-semibold">{{ data?.transfer_approvals }}</span> pending transfer approval(s)</p>
-            </ng-container>
-            <ng-template #noApprovals>
-              <p class="text-gray-600">No pending transfer approvals</p>
-            </ng-template>
-          </div>
+          <app-pending-transfer-approvals></app-pending-transfer-approvals>
 
           <!-- AI Insights -->
           <div *ngIf="showAiInsights" class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">

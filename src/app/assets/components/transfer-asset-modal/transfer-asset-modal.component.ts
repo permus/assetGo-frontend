@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AssetService } from '../../services/asset.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 import flatpickr from 'flatpickr';
 
 export interface TransferAssetData {
@@ -94,7 +96,11 @@ export class TransferAssetModalComponent implements OnInit, AfterViewInit, OnDes
     'Other'
   ];
 
-  constructor(private assetService: AssetService) {}
+  constructor(
+    private assetService: AssetService,
+    private authService: AuthService,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     console.log('TransferAssetModalComponent initialized');
@@ -290,6 +296,17 @@ export class TransferAssetModalComponent implements OnInit, AfterViewInit, OnDes
     this.assetService.transferAsset(this.asset.id, this.transferData).subscribe({
       next: (response) => {
         this.loading = false;
+        
+        // Check if transfer requires approval
+        const currentUser = this.authService.getCurrentUser();
+        const requiresApproval = currentUser?.user_type === 'user';
+        
+        if (requiresApproval && response.data?.status === 'pending') {
+          this.toastService.success('Transfer request submitted successfully. Awaiting approval from manager or admin.');
+        } else {
+          this.toastService.success('Asset transfer completed successfully.');
+        }
+        
         this.transferComplete.emit(response);
         this.resetForm();
         this.closeModal.emit();
@@ -297,6 +314,7 @@ export class TransferAssetModalComponent implements OnInit, AfterViewInit, OnDes
       error: (error) => {
         this.loading = false;
         this.error = error.error?.message || 'Transfer failed. Please try again.';
+        this.toastService.error(this.error);
         console.error('Transfer error:', error);
       }
     });
