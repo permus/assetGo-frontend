@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { NotificationService, Notification } from '../../../core/services/notification.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-notification-dropdown',
@@ -13,7 +14,8 @@ import { NotificationService, Notification } from '../../../core/services/notifi
 })
 export class NotificationDropdownComponent implements OnInit, OnDestroy {
   showDropdown = false;
-  notifications: Notification[] = [];
+  notifications: any[] = [];
+  groupedNotifications: { label: string; notifications: Notification[] }[] = [];
   unreadCount = 0;
   isLoading = false;
   currentPage = 1;
@@ -23,7 +25,8 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
 
   constructor(
     private notificationService: NotificationService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -44,6 +47,8 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
       if (this.notifications.length > 50) {
         this.notifications = this.notifications.slice(0, 50);
       }
+      // Update grouped notifications
+      this.updateGroupedNotifications();
     });
 
     // Load initial notifications when dropdown is opened
@@ -76,14 +81,25 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
           } else {
             this.notifications = [...this.notifications, ...response.data.notifications];
           }
-          this.currentPage = response.data.pagination.current_page;
-          this.lastPage = response.data.pagination.last_page;
+          this.currentPage = response?.data?.pagination?.current_page ?? 1;
+          this.lastPage = response?.data?.pagination?.last_page ?? 1;
           this.hasMore = this.currentPage < this.lastPage;
+          
+          // Update grouped notifications after loading
+          this.updateGroupedNotifications();
+        } else {
+          // Handle API error response (success: false)
+          const errorMessage = (response as any).error || 'Failed to load notifications. Please try again.';
+          this.toastService.error(errorMessage);
+          this.notifications = [];
+          this.groupedNotifications = [];
         }
         this.isLoading = false;
       },
-      error: () => {
+      error: (error) => {
         this.isLoading = false;
+        const errorMessage = error?.error?.error || 'Failed to load notifications. Please try again.';
+        this.toastService.error(errorMessage);
       }
     });
   }
@@ -92,6 +108,10 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
     if (this.hasMore && !this.isLoading) {
       this.loadNotifications(this.currentPage + 1);
     }
+  }
+
+  private updateGroupedNotifications(): void {
+    this.groupedNotifications = this.groupNotificationsByDate();
   }
 
   markAsRead(notification: Notification, event: Event): void {
@@ -104,7 +124,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
         notification.readAt = new Date().toISOString();
       },
       error: () => {
-        // Handle error silently or show toast
+        this.toastService.error('Failed to mark notification as read. Please try again.');
       }
     });
   }
@@ -118,7 +138,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
         });
       },
       error: () => {
-        // Handle error silently or show toast
+        this.toastService.error('Failed to mark all notifications as read. Please try again.');
       }
     });
   }
@@ -130,7 +150,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
         this.notifications = this.notifications.filter(n => n.id !== notification.id);
       },
       error: () => {
-        // Handle error silently or show toast
+        this.toastService.error('Failed to delete notification. Please try again.');
       }
     });
   }
@@ -142,14 +162,34 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
     }
 
     // Navigate based on notification type and data
-    if (notification.data) {
-      if (notification.type === 'asset' && notification.data.assetId) {
-        this.router.navigate(['/assets', notification.data.assetId]);
-      } else if (notification.type === 'work_order' && notification.data.workOrderId) {
-        this.router.navigate(['/work-orders', notification.data.workOrderId]);
-      } else if (notification.type === 'location' && notification.data.locationId) {
-        this.router.navigate(['/locations', notification.data.locationId]);
+    if (notification.type === 'asset' && notification.data?.assetId) {
+      this.router.navigate(['/assets/preview', notification.data.assetId]);
+    } else if (notification.type === 'work_order' && notification.data?.workOrderId) {
+      this.router.navigate(['/work-orders', notification.data.workOrderId]);
+    } else if (notification.type === 'location' && notification.data?.locationId) {
+      this.router.navigate(['/locations', notification.data.locationId]);
+    } else if (notification.type === 'team') {
+      // Navigate to teams list (no individual team member detail page exists)
+      this.router.navigate(['/teams']);
+    } else if (notification.type === 'maintenance') {
+      // Navigate to maintenance plan or schedule based on data
+      if (notification.data?.planId) {
+        this.router.navigate(['/maintenance/plans', notification.data.planId]);
+      } else if (notification.data?.scheduleId) {
+        this.router.navigate(['/maintenance/scheduled', notification.data.scheduleId]);
+      } else {
+        // Fallback to maintenance main page
+        this.router.navigate(['/maintenance']);
       }
+    } else if (notification.type === 'inventory') {
+      // Navigate to parts catalog (no individual part detail page exists)
+      this.router.navigate(['/inventory/parts-catalog']);
+    } else if (notification.type === 'report') {
+      // Navigate to reports page
+      this.router.navigate(['/reports']);
+    } else if (notification.type === 'settings') {
+      // Navigate to settings page
+      this.router.navigate(['/settings']);
     }
 
     this.showDropdown = false;
@@ -200,7 +240,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
 
     this.notifications.forEach(notification => {
       const notifDate = new Date(notification.createdAt);
-      
+
       if (notifDate >= today) {
         groups[0].notifications.push(notification);
       } else if (notifDate >= yesterday) {

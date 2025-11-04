@@ -1,9 +1,12 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { NgIf, NgClass } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { CurrencyService } from '../../core/services/currency.service';
+import { PreferencesService } from '../../core/services/preferences.service';
+import { SettingsService } from '../../settings/settings.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +18,7 @@ import { AuthService } from '../../core/services/auth.service';
   ],
   styleUrl: './login.component.scss'
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
@@ -25,6 +28,10 @@ export class LoginComponent implements OnDestroy {
   lockoutInterval: any;
   showPassword = false;
   sessionMessage = '';
+
+  private currencyService = inject(CurrencyService);
+  private preferencesService = inject(PreferencesService);
+  private settingsService = inject(SettingsService);
 
   constructor(
     private fb: FormBuilder,
@@ -49,6 +56,13 @@ export class LoginComponent implements OnDestroy {
     }
   }
 
+  ngOnInit(): void {
+    // Redirect to dashboard if already logged in (fallback check)
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
   toggleMode() {
     this.router.navigate(['/register']);
   }
@@ -69,6 +83,13 @@ export class LoginComponent implements OnDestroy {
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
           if (response.success) {
+            // Initialize app services after successful login
+            this.authService.initializeAppServices(
+              this.currencyService,
+              this.preferencesService,
+              this.settingsService
+            );
+            
             this.router.navigate(['/dashboard']);
           } else {
             this.errorMessage = response.message || 'Login failed';

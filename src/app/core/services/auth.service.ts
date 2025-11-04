@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -86,6 +86,8 @@ export class AuthService {
   private permissionsSubject = new BehaviorSubject<Record<string, any>>({});
   public permissions$ = this.permissionsSubject.asObservable();
 
+  private servicesInitialized = false;
+
   constructor(private http: HttpClient) {
     this.loadUserFromStorage();
   }
@@ -123,6 +125,9 @@ export class AuthService {
               this.permissionsSubject.next(response.data.permissions);
               localStorage.setItem('permissions', JSON.stringify(response.data.permissions));
             }
+            
+            // Note: App services will be initialized from login component
+            // to avoid circular dependency issues
           }
         })
       );
@@ -210,6 +215,8 @@ export class AuthService {
     this.currentUserSubject.next(null);
     this.moduleAccessSubject.next({});
     this.permissionsSubject.next({});
+    // Reset services initialization flag so they can be initialized again on next login
+    this.servicesInitialized = false;
   }
 
   private loadUserFromStorage(): void {
@@ -245,5 +252,54 @@ export class AuthService {
   public updateCurrentUser(user: User): void {
     this.currentUserSubject.next(user);
     localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  /**
+   * Initialize app services after login (currency, preferences, modules)
+   * This is called automatically after successful login
+   * Services are injected from the component that calls this
+   */
+  public initializeAppServices(
+    currencyService?: any,
+    preferencesService?: any,
+    settingsService?: any
+  ): void {
+    // Prevent multiple initializations
+    if (this.servicesInitialized) {
+      return;
+    }
+    this.servicesInitialized = true;
+
+    // Initialize currency from server
+    if (currencyService) {
+      currencyService.refreshFromServer().subscribe({
+        error: () => {
+          // Silently fail - use defaults
+        }
+      });
+    }
+
+    // Load user preferences and apply to app
+    if (preferencesService) {
+      preferencesService.syncFromBackend().subscribe({
+        next: (response: any) => {
+          if (response.success && response.data) {
+            preferencesService.updatePreferences(response.data);
+          }
+        },
+        error: () => {
+          // Use defaults if sync fails
+        }
+      });
+    }
+
+    // Load modules
+    if (settingsService) {
+      settingsService.listModules().subscribe({
+        error: () => {
+          // Silently fail - modules will be loaded on first access via getModulesEnabled$()
+        }
+      });
+    }
   }
 }

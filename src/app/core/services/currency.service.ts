@@ -9,6 +9,7 @@ export type CurrencyCode = 'USD' | 'AED' | string;
 export class CurrencyService {
   private readonly settings = inject(SettingsService);
   private readonly currency$ = new BehaviorSubject<CurrencyCode>('USD');
+  private refreshing = false;
   
   private readonly currencySymbols: Record<string, string> = {
     'USD': '$',
@@ -17,9 +18,20 @@ export class CurrencyService {
 
   // Load from server and broadcast
   refreshFromServer(): Observable<CurrencyCode> {
+    // Prevent multiple simultaneous requests
+    if (this.refreshing) {
+      return this.currency$.asObservable().pipe(
+        map(code => code)
+      );
+    }
+
+    this.refreshing = true;
     return this.settings.getCompany().pipe(
       map(res => ((res?.data?.company?.currency || 'USD') as CurrencyCode)),
-      tap(code => this.currency$.next(code))
+      tap(code => {
+        this.currency$.next(code);
+        this.refreshing = false;
+      })
     );
   }
 

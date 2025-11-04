@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
@@ -83,6 +83,14 @@ export class SettingsService {
 
   // Modules
   listModules() {
+    // Prevent multiple simultaneous requests
+    if (this.modulesLoading) {
+      return this.modulesEnabled$.asObservable().pipe(
+        map(() => ({ success: true, data: { modules: [] } } as ApiResponse<{ modules: ModuleItem[] }>))
+      );
+    }
+
+    this.modulesLoading = true;
     return this.http
       .get<ApiResponse<{ modules: ModuleItem[] }>>(`${this.base}/settings/modules`)
       .pipe(tap(res => {

@@ -32,15 +32,28 @@ export class LayoutComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService
   ) {}
 
+  private userInitialized = false;
+
   ngOnInit(): void {
     // Subscribe to current user changes
     this.authService.currentUser$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(user => {
       this.currentUser = user;
-      // Connect to Pusher when user is available
-      if (user) {
+      // Connect to Pusher when user is available and load initial unread count
+      // Only initialize once to prevent multiple connections
+      if (user && !this.userInitialized) {
+        this.userInitialized = true;
+        // Load initial unread count once when user is authenticated
+        this.notificationService.getUnreadCount().pipe(
+          takeUntil(this.destroy$)
+        ).subscribe();
+        // Then connect to Pusher for real-time updates
         this.notificationService.connectPusher();
+      } else if (!user) {
+        // Reset flag when user logs out
+        this.userInitialized = false;
+        this.notificationService.disconnectPusher();
       }
     });
     

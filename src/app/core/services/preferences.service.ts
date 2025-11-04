@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
@@ -130,11 +131,26 @@ export class PreferencesService {
     this.updatePreferences(updated);
   }
 
+  private syncing = false;
+
   /**
    * Sync preferences from backend
    */
   syncFromBackend(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/settings/preferences`);
+    // Prevent multiple simultaneous requests
+    if (this.syncing) {
+      return new Observable(observer => {
+        observer.next({ success: true, data: this.preferencesSubject.value });
+        observer.complete();
+      });
+    }
+
+    this.syncing = true;
+    return this.http.get(`${this.apiUrl}/settings/preferences`).pipe(
+      tap(() => {
+        this.syncing = false;
+      })
+    );
   }
 
   /**

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
+import { map, catchError, tap, take } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
 
@@ -60,10 +60,13 @@ export class NotificationService {
   private pusher: any = null;
   private channel: any = null;
   private isConnected = false;
+  private isLoadingUnreadCount = false;
+  private loadUnreadCountTimeout: any = null;
+  private unreadCountRequestInFlight = false;
 
   constructor() {
-    // Load initial unread count when service is created
-    this.loadUnreadCount();
+    // Don't load unread count in constructor - wait for user to be authenticated
+    // This prevents requests before auth is ready
   }
 
   /**
@@ -102,26 +105,63 @@ export class NotificationService {
    * Get unread count
    */
   getUnreadCount(): Observable<number> {
+    // Prevent concurrent requests
+    if (this.unreadCountRequestInFlight) {
+      return this.unreadCountSubject.asObservable().pipe(
+        take(1),
+        map(count => count)
+      );
+    }
+
+    this.unreadCountRequestInFlight = true;
     return this.http.get<UnreadCountResponse>(`${this.apiUrl}/unread-count`).pipe(
       map(response => {
         const count = response.data?.count || 0;
         this.unreadCountSubject.next(count);
+        this.unreadCountRequestInFlight = false;
         return count;
       }),
       catchError(error => {
         console.error('Failed to get unread count', error);
-        return [0];
+        this.unreadCountRequestInFlight = false;
+        // Return Observable that emits 0
+        return of(0);
       })
     );
   }
 
   /**
-   * Load unread count (internal method)
+   * Load unread count (internal method) with debouncing to prevent request floods
    */
   private loadUnreadCount(): void {
-    if (this.authService.isAuthenticated()) {
-      this.getUnreadCount().subscribe();
+    if (!this.authService.isAuthenticated() || this.isLoadingUnreadCount) {
+      return;
     }
+
+    // Clear any pending timeout
+    if (this.loadUnreadCountTimeout) {
+      clearTimeout(this.loadUnreadCountTimeout);
+    }
+
+    // Debounce: wait 500ms before making the request
+    // This prevents multiple rapid calls from flooding the server
+    this.loadUnreadCountTimeout = setTimeout(() => {
+      // Double-check we're still authenticated and not already loading
+      if (!this.authService.isAuthenticated() || this.isLoadingUnreadCount) {
+        this.isLoadingUnreadCount = false;
+        return;
+      }
+      
+      this.isLoadingUnreadCount = true;
+      this.getUnreadCount().subscribe({
+        next: () => {
+          this.isLoadingUnreadCount = false;
+        },
+        error: () => {
+          this.isLoadingUnreadCount = false;
+        }
+      });
+    }, 500); // Increased debounce from 300ms to 500ms
   }
 
   /**
@@ -193,8 +233,14 @@ export class NotificationService {
    * Note: Requires pusher-js package. Install with: npm install pusher-js
    */
   connectPusher(): void {
+    // Prevent multiple connection attempts
     if (this.isConnected || !this.authService.isAuthenticated()) {
       return;
+    }
+    
+    // Additional check: if Pusher instance exists but not connected, disconnect first
+    if (this.pusher && !this.isConnected) {
+      this.disconnectPusher();
     }
 
     const currentUser = this.authService.getCurrentUser();
@@ -216,14 +262,40 @@ export class NotificationService {
               Authorization: `Bearer ${this.authService.getToken()}`,
             },
           },
+          enabledTransports: ['ws', 'wss'],
+        });
+
+        // Handle Pusher connection events
+        this.pusher.connection.bind('connected', () => {
+          console.log('Pusher: Connected');
+        });
+
+        this.pusher.connection.bind('error', (error: any) => {
+          console.error('Pusher: Connection error', error);
         });
 
         // Subscribe to private user channel
         const channelName = `private-user.${currentUser.id}`;
         this.channel = this.pusher.subscribe(channelName);
 
+        // Handle subscription events for debugging
+        this.channel.bind('pusher:subscription_succeeded', () => {
+          console.log('Pusher: Successfully subscribed to', channelName);
+        });
+
+        this.channel.bind('pusher:subscription_error', (error: any) => {
+          console.error('Pusher: Subscription error', error);
+        });
+
         // Listen for new notifications
         this.channel.bind('notification.created', (data: any) => {
+          console.log('Pusher: Received notification.created', data);
+          
+          // Only process if this notification is for the current user
+          if (data.userId && data.userId.toString() !== currentUser.id.toString()) {
+            return;
+          }
+          
           const notification: Notification = {
             id: data.id.toString(),
             companyId: data.companyId?.toString() || '',
@@ -239,6 +311,8 @@ export class NotificationService {
             timeAgo: 'just now',
           };
           this.newNotificationSubject.next(notification);
+          // Reload unread count from server to get accurate count
+          // Don't increment locally to avoid race conditions with multiple notifications
           this.loadUnreadCount();
         });
 
@@ -263,12 +337,38 @@ export class NotificationService {
                 Authorization: `Bearer ${this.authService.getToken()}`,
               },
             },
+            enabledTransports: ['ws', 'wss'],
+          });
+
+          // Handle Pusher connection events
+          this.pusher.connection.bind('connected', () => {
+            console.log('Pusher: Connected');
+          });
+
+          this.pusher.connection.bind('error', (error: any) => {
+            console.error('Pusher: Connection error', error);
           });
 
           const channelName = `private-user.${currentUser.id}`;
           this.channel = this.pusher.subscribe(channelName);
 
+          // Handle subscription events for debugging
+          this.channel.bind('pusher:subscription_succeeded', () => {
+            console.log('Pusher: Successfully subscribed to', channelName);
+          });
+
+          this.channel.bind('pusher:subscription_error', (error: any) => {
+            console.error('Pusher: Subscription error', error);
+          });
+
           this.channel.bind('notification.created', (data: any) => {
+            console.log('Pusher: Received notification.created', data);
+            
+            // Only process if this notification is for the current user
+            if (data.userId && data.userId.toString() !== currentUser.id.toString()) {
+              return;
+            }
+            
             const notification: Notification = {
               id: data.id.toString(),
               companyId: data.companyId?.toString() || '',
@@ -284,6 +384,8 @@ export class NotificationService {
               timeAgo: 'just now',
             };
             this.newNotificationSubject.next(notification);
+            // Reload unread count from server to get accurate count
+            // Don't increment locally to avoid race conditions with multiple notifications
             this.loadUnreadCount();
           });
 
@@ -321,6 +423,13 @@ export class NotificationService {
     }
     this.isConnected = false;
     this.stopFallbackPolling();
+    
+    // Clear any pending loadUnreadCount timeout
+    if (this.loadUnreadCountTimeout) {
+      clearTimeout(this.loadUnreadCountTimeout);
+      this.loadUnreadCountTimeout = null;
+    }
+    this.isLoadingUnreadCount = false;
   }
 
   private pollingInterval: any = null;
@@ -332,10 +441,12 @@ export class NotificationService {
     if (this.pollingInterval) {
       return;
     }
-    // Poll every 30 seconds as fallback
+    // Poll every 60 seconds as fallback (increased from 30 to reduce load)
     this.pollingInterval = setInterval(() => {
-      this.loadUnreadCount();
-    }, 30000);
+      if (this.authService.isAuthenticated()) {
+        this.loadUnreadCount();
+      }
+    }, 60000);
   }
 
   private stopFallbackPolling(): void {
