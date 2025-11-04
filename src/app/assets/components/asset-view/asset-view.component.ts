@@ -22,6 +22,7 @@ import * as QRCode from 'qrcode';
 import {Chart, ChartConfiguration, ChartData, ChartOptions} from 'chart.js';
 import {registerables} from 'chart.js';
 import {CurrencyService} from '../../../core/services/currency.service';
+import {ToastService} from '../../../core/services/toast.service';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -150,7 +151,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     private pdfExportService: PdfExportService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private currencyService: CurrencyService
+    private currencyService: CurrencyService,
+    private toastService: ToastService
   ) {
     this.maintenanceForm = this.fb.group({
       schedule_type: ['', Validators.required],
@@ -1050,7 +1052,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   navigateToRelatedAsset(assetId: number | string) {
-    this.router.navigate(['/assets', assetId]);
+    this.router.navigate(['/assets/preview', assetId]);
   }
 
   // Activity timeline methods
@@ -1766,10 +1768,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     const assetId = this.asset?.asset_id || this.asset?.id;
     if (assetId) {
       navigator.clipboard.writeText(assetId.toString()).then(() => {
-        console.log('Asset ID copied to clipboard');
-        // You could show a toast notification here
+        this.toastService.success('Copied to clipboard');
       }).catch(err => {
         console.error('Failed to copy asset ID:', err);
+        this.toastService.error('Failed to copy asset ID');
       });
     }
   }
@@ -1777,10 +1779,10 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   copySerialNumber() {
     if (this.asset?.serial_number) {
       navigator.clipboard.writeText(this.asset.serial_number).then(() => {
-        console.log('Serial number copied to clipboard');
-        // You could show a toast notification here
+        this.toastService.success('Copied to clipboard');
       }).catch(err => {
         console.error('Failed to copy serial number:', err);
+        this.toastService.error('Failed to copy serial number');
       });
     }
   }
