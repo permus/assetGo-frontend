@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/reports/components/charts/pie-chart.component.ts", "pie-chart.component.ts"],
-  "sourcesContent": ["\n    .chart-container {\n      position: relative;\n      width: 100%;\n      max-height: 350px;\n      min-height: 250px;\n    }\n    canvas {\n      max-height: 100% !important;\n    }\n  ", ".chart-container {\n  position: relative;\n  width: 100%;\n  max-height: 350px;\n  min-height: 250px;\n}\n\ncanvas {\n  max-height: 100% !important;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL0Q6L2xhcmFnb24tMjAyNS93d3cvYXNzZXRHby1iYWNrZW5kL2Fzc2V0R28tZnJvbnRlbmQvc3JjL2FwcC9yZXBvcnRzL2NvbXBvbmVudHMvY2hhcnRzL3BpZS1jaGFydC5jb21wb25lbnQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0k7RUFDRTtFQUNBO0VBQ0E7RUFDQTs7O0FBRUY7RUFDRSIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgIC5jaGFydC1jb250YWluZXIge1xuICAgICAgcG9zaXRpb246IHJlbGF0aXZlO1xuICAgICAgd2lkdGg6IDEwMCU7XG4gICAgICBtYXgtaGVpZ2h0OiAzNTBweDtcbiAgICAgIG1pbi1oZWlnaHQ6IDI1MHB4O1xuICAgIH1cbiAgICBjYW52YXMge1xuICAgICAgbWF4LWhlaWdodDogMTAwJSAhaW1wb3J0YW50O1xuICAgIH1cbiAgIl19 */"],
-  "mappings": ";AACI,CAAA;AACE,YAAA;AACA,SAAA;AACA,cAAA;AACA,cAAA;ACAN;ADEI;AACE,cAAA;ACCN;",
-  "names": []
-}

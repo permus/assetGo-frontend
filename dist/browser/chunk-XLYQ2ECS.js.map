@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/maintenance/pages/gantt-page.component.ts"],
-  "sourcesContent": ["import { Component } from '@angular/core';\r\n\r\n@Component({\r\n  selector: 'app-gantt-page',\r\n  standalone: true,\r\n  template: `<div class=\"rounded-xl border p-8 text-center text-gray-500\">PPM Gantt coming soon.</div>`\r\n})\r\nexport class GanttPageComponent {}\r\n\r\n\r\n"],
-  "mappings": ";;;;;;;;;;;;AAOM,IAAO,qBAAP,MAAO,oBAAkB;;qCAAlB,qBAAkB;EAAA;yEAAlB,qBAAkB,WAAA,CAAA,CAAA,gBAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,GAAA,cAAA,UAAA,OAAA,eAAA,eAAA,CAAA,GAAA,UAAA,SAAA,4BAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAFlB,MAAA,yBAAA,GAAA,OAAA,CAAA;AAA6D,MAAA,iBAAA,GAAA,wBAAA;AAAsB,MAAA,uBAAA;;;;;sEAEnF,oBAAkB,CAAA;UAL9B;WAAU;MACT,UAAU;MACV,YAAY;MACZ,UAAU;KACX;;;;6EACY,oBAAkB,EAAA,WAAA,sBAAA,UAAA,qDAAA,YAAA,EAAA,CAAA;AAAA,GAAA;",
-  "names": []
-}

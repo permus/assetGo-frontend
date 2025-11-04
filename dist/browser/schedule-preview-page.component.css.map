@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/maintenance/pages/schedule-preview-page/schedule-preview-page.component.scss", "src/app/maintenance/pages/schedule-preview-page/schedule-preview-page.component.scss"],
-  "sourcesContent": [".btn.btn-secondary { background: white; color: #374151; border: 1px solid #d1d5db; padding: .5rem 1rem; border-radius: .5rem; }\r\n.btn.btn-secondary:hover { background: #f9fafb; }\r\n\r\n", ".btn.btn-secondary {\n  background: white;\n  color: #374151;\n  border: 1px solid #d1d5db;\n  padding: 0.5rem 1rem;\n  border-radius: 0.5rem;\n}\n\n.btn.btn-secondary:hover {\n  background: #f9fafb;\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL0Q6L2xhcmFnb24tMjAyNS93d3cvYXNzZXRHby1iYWNrZW5kL2Fzc2V0R28tZnJvbnRlbmQvc3JjL2FwcC9tYWludGVuYW5jZS9wYWdlcy9zY2hlZHVsZS1wcmV2aWV3LXBhZ2Uvc2NoZWR1bGUtcHJldmlldy1wYWdlLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQXFCO0VBQW1CO0VBQWdCO0VBQTJCO0VBQXFCOzs7QUFDeEc7RUFBMkIiLCJzb3VyY2VzQ29udGVudCI6WyIuYnRuLmJ0bi1zZWNvbmRhcnkgeyBiYWNrZ3JvdW5kOiB3aGl0ZTsgY29sb3I6ICMzNzQxNTE7IGJvcmRlcjogMXB4IHNvbGlkICNkMWQ1ZGI7IHBhZGRpbmc6IC41cmVtIDFyZW07IGJvcmRlci1yYWRpdXM6IC41cmVtOyB9XHJcbi5idG4uYnRuLXNlY29uZGFyeTpob3ZlciB7IGJhY2tncm91bmQ6ICNmOWZhZmI7IH1cclxuXHJcbiJdfQ== */"],
-  "mappings": ";AAAA,CAAA,GAAA,CAAA;AAAqB,cAAA;AAAmB,SAAA;AAAgB,UAAA,IAAA,MAAA;AAA2B,WAAA,OAAA;AAAqB,iBAAA;ACMxG;ADLA,CADA,GACA,CADA,aACA;AAA2B,cAAA;ACS3B;",
-  "names": []
-}
