@@ -19,11 +19,13 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   resetPasswordForm: FormGroup;
   isLoading = false;
   errorMessage = '';
+  infoMessage = '';
   showSuccessMessage = false;
   countdown = 10;
   countdownInterval: any;
   token = '';
   email = '';
+  hasValidLink = false;
 
   constructor(
     private fb: FormBuilder,
@@ -32,7 +34,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     private authService: AuthService
   ) {
     this.resetPasswordForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)]],
       password_confirmation: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }
@@ -41,8 +43,11 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     this.token = this.route.snapshot.queryParams['token'] || '';
     this.email = this.route.snapshot.queryParams['email'] || '';
 
-    if (!this.token || !this.email) {
-      this.errorMessage = 'Invalid reset link';
+    if (this.token && this.email) {
+      this.hasValidLink = true;
+    } else {
+      // User came from forgot-password page - show helpful message instead of error
+      this.infoMessage = 'Please check your email for the password reset link. Click the link in the email to reset your password.';
     }
   }
 
@@ -54,6 +59,14 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    // Mark all fields as touched to show validation errors
+    if (this.resetPasswordForm.invalid) {
+      Object.keys(this.resetPasswordForm.controls).forEach(key => {
+        this.resetPasswordForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
+
     if (this.resetPasswordForm.valid && !this.isLoading && this.token && this.email) {
       this.isLoading = true;
       this.errorMessage = '';
@@ -103,5 +116,30 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
   goToLogin() {
     this.router.navigate(['/login']);
+  }
+
+  getPasswordErrorMessage(): string {
+    const passwordControl = this.resetPasswordForm.get('password');
+    if (passwordControl?.hasError('required') && passwordControl?.touched) {
+      return 'Password is required';
+    }
+    if (passwordControl?.hasError('minlength') && passwordControl?.touched) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (passwordControl?.hasError('pattern') && passwordControl?.touched) {
+      return 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+    }
+    return '';
+  }
+
+  getConfirmPasswordErrorMessage(): string {
+    const confirmPasswordControl = this.resetPasswordForm.get('password_confirmation');
+    if (confirmPasswordControl?.hasError('required') && confirmPasswordControl?.touched) {
+      return 'Password confirmation is required';
+    }
+    if (this.resetPasswordForm.errors?.['passwordMismatch'] && confirmPasswordControl?.touched) {
+      return 'Passwords do not match';
+    }
+    return '';
   }
 }

@@ -50,7 +50,7 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
       hourly_rate: [null, [Validators.min(0)]],
       location_ids: [[] as number[]],
       expand_descendants: [true],
-      password: ['', [Validators.minLength(8), Validators.maxLength(72)]],
+      password: ['', [Validators.minLength(8), Validators.maxLength(72), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)]],
       password_confirmation: [''],
     }, { validators: TeamFormModalComponent.passwordMatchValidator });
     this.loadAvailableRoles();
@@ -288,6 +288,9 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
       }
       if (field?.errors?.['min']) {
         return `${this.getFieldLabel(fieldName)} must be at least ${field.errors['min'].min}.`;
+      }
+      if (field?.errors?.['pattern'] && fieldName === 'password') {
+        return 'Password must contain at least one uppercase letter, one lowercase letter, and one number.';
       }
       if (field?.errors?.['passwordMismatch']) {
         return 'Password confirmation does not match.';

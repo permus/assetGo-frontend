@@ -947,4 +947,28 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.clearSelection();
     this.loadAssets();
   }
+
+  /**
+   * Format currency value with K/M abbreviations
+   * Examples: 10000 -> $10k, 1000000 -> $1M, 10000000 -> $10M
+   */
+  formatCurrencyValue(value: number): string {
+    if (!value && value !== 0) return '$0';
+    
+    const absValue = Math.abs(value);
+    const sign = value < 0 ? '-' : '';
+    
+    if (absValue >= 1000000) {
+      // Format in millions
+      const millions = absValue / 1000000;
+      return `${sign}$${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)}M`;
+    } else if (absValue >= 1000) {
+      // Format in thousands
+      const thousands = absValue / 1000;
+      return `${sign}$${thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)}k`;
+    } else {
+      // Format as regular currency
+      return `${sign}$${absValue.toFixed(2)}`;
+    }
+  }
 }

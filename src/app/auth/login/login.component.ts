@@ -33,7 +33,7 @@ export class LoginComponent implements OnDestroy {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)]]
     });
 
     // Check for session expired message
@@ -54,6 +54,14 @@ export class LoginComponent implements OnDestroy {
   }
 
   onSubmit() {
+    // Mark all fields as touched to show validation errors
+    if (this.loginForm.invalid) {
+      Object.keys(this.loginForm.controls).forEach(key => {
+        this.loginForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
+
     if (this.loginForm.valid && !this.isLoading) {
       this.isLoading = true;
       this.errorMessage = '';
@@ -124,7 +132,32 @@ export class LoginComponent implements OnDestroy {
   }
 
   goToForgotPassword() {
-    this.router.navigate(['/auth/forgot-password']);
+    this.router.navigate(['/forgot-password']);
+  }
+
+  getEmailErrorMessage(): string {
+    const emailControl = this.loginForm.get('email');
+    if (emailControl?.hasError('required') && emailControl?.touched) {
+      return 'Email is required';
+    }
+    if (emailControl?.hasError('email') && emailControl?.touched) {
+      return 'Please provide a valid email address';
+    }
+    return '';
+  }
+
+  getPasswordErrorMessage(): string {
+    const passwordControl = this.loginForm.get('password');
+    if (passwordControl?.hasError('required') && passwordControl?.touched) {
+      return 'Password is required';
+    }
+    if (passwordControl?.hasError('minlength') && passwordControl?.touched) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (passwordControl?.hasError('pattern') && passwordControl?.touched) {
+      return 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+    }
+    return '';
   }
 
   ngOnDestroy() {

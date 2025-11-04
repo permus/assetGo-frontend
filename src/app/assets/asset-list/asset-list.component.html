@@ -122,7 +122,7 @@
           </svg>
         </span>
       </div>
-      <div class="text-3xl font-bold text-gray-900">{{ summary.totalValue | currency }}</div>
+      <div class="text-3xl font-bold text-gray-900">{{ formatCurrencyValue(summary.totalValue) }}</div>
       <span class="text-sm text-purple-600 font-medium mt-1">Asset portfolio value</span>
     </div>
     <!-- Asset Health -->
@@ -520,29 +520,65 @@
             {{ asset.name || 'Unnamed Asset' }}
           </div>
 
-          <!-- Asset Category Type -->
-          <div class="text-sm text-gray-700 mb-1" *ngIf="asset.category?.name">
-            <span class="font-medium text-gray-600">Category:</span> {{ asset.category.name }}
+          <!-- Asset ID and Type -->
+          <div class="text-sm text-gray-600 mb-3">
+            <span class="font-medium">{{ asset.asset_id || 'AST-' + asset.id }}</span>
+            <span *ngIf="asset.asset_type?.name || asset.type"> • {{ asset.asset_type?.name || asset.type }}</span>
           </div>
 
-          <!-- Asset Type -->
-          <div class="text-sm text-gray-700 mb-1" *ngIf="asset.type || asset.asset_type?.name">
-            <span class="font-medium text-gray-600">Type:</span> {{ asset.asset_type?.name || asset.type || 'General' }}
-          </div>
-
-          <!-- Location with Parents -->
-          <div class="text-sm text-gray-700 mb-2"
-               *ngIf="asset.location_hierarchy && asset.location_hierarchy.length > 0">
-            <span class="font-medium text-gray-600">Location:</span>
-            <div class="text-xs text-gray-500 mt-1">
-              <span *ngFor="let loc of asset.location_hierarchy; let last = last">
-                {{ loc.name }}<span *ngIf="!last"> → </span>
+          <!-- Location -->
+          <div class="mb-3">
+            <div class="flex items-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+              <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span class="text-sm text-gray-700">
+                <span *ngIf="asset.location_hierarchy && asset.location_hierarchy.length > 0">
+                  <span *ngFor="let loc of asset.location_hierarchy; let last = last">
+                    {{ loc.name }}<span *ngIf="!last"> → </span>
+                  </span>
+                </span>
+                <span *ngIf="!asset.location_hierarchy || asset.location_hierarchy.length === 0">No location</span>
               </span>
             </div>
           </div>
 
+          <!-- Value -->
+          <div class="flex items-center text-sm text-gray-700 mb-2" *ngIf="asset.purchase_price || asset.value">
+            <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+            <span class="font-medium">Value {{ (asset.purchase_price || asset.value) | currency }}</span>
+          </div>
+
+          <!-- Purchase Date -->
+          <div class="flex items-center text-sm text-gray-700 mb-3" *ngIf="asset.purchase_date">
+            <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span>Purchase Date {{ asset.purchase_date | date:'MMM d, y' }}</span>
+          </div>
+
+          <!-- Health Score -->
+          <div class="mb-3">
+            <div class="text-sm font-medium text-gray-700 mb-1">Health Score</div>
+            <div class="flex items-center space-x-2">
+              <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all"
+                     [class.bg-green-500]="(asset.health_score || 0) >= 80"
+                     [class.bg-yellow-500]="(asset.health_score || 0) >= 60 && (asset.health_score || 0) < 80"
+                     [class.bg-orange-500]="(asset.health_score || 0) >= 40 && (asset.health_score || 0) < 60"
+                     [class.bg-red-500]="(asset.health_score || 0) < 40"
+                     [style.width.%]="asset.health_score || 0">
+                </div>
+              </div>
+              <span class="text-sm font-medium text-gray-900">{{ asset.health_score || 0 }}%</span>
+            </div>
+          </div>
+
           <!-- Description -->
-          <div class="text-sm text-gray-700 mb-2" *ngIf="asset.description">
+          <div class="text-sm text-gray-700 mb-2 line-clamp-2" *ngIf="asset.description">
             <span class="font-medium text-gray-600">Description:</span> {{ asset.description }}
           </div>
 
@@ -630,14 +666,19 @@
 
           <!-- Location -->
           <div class="col-span-2">
-            <div class="text-sm text-gray-600" *ngIf="asset.location_hierarchy && asset.location_hierarchy.length > 0">
-              <div *ngFor="let loc of asset.location_hierarchy; let last = last">
-                {{ loc.name }}<span *ngIf="!last"> → </span>
-              </div>
-            </div>
-            <div class="text-sm text-gray-400"
-                 *ngIf="!asset.location_hierarchy || asset.location_hierarchy.length === 0">
-              No location
+            <div class="flex items-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+              <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span class="text-sm text-gray-700">
+                <span *ngIf="asset.location_hierarchy && asset.location_hierarchy.length > 0">
+                  <span *ngFor="let loc of asset.location_hierarchy; let last = last">
+                    {{ loc.name }}<span *ngIf="!last"> → </span>
+                  </span>
+                </span>
+                <span *ngIf="!asset.location_hierarchy || asset.location_hierarchy.length === 0">No location</span>
+              </span>
             </div>
           </div>
 

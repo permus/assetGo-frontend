@@ -20,9 +20,6 @@ export class ForgotPasswordComponent implements OnDestroy {
   forgotPasswordForm: FormGroup;
   isLoading = false;
   errorMessage = '';
-  showSuccessMessage = false;
-  countdown = 10;
-  countdownInterval: any;
 
   constructor(
     private fb: FormBuilder,
@@ -38,13 +35,12 @@ export class ForgotPasswordComponent implements OnDestroy {
     if (this.forgotPasswordForm.valid && !this.isLoading) {
       this.isLoading = true;
       this.errorMessage = '';
-      this.showSuccessMessage = false;
 
       this.authService.forgotPassword(this.forgotPasswordForm.value).subscribe({
         next: (response) => {
           if (response.success) {
-            this.showSuccessMessage = true;
-            this.startCountdown();
+            // Redirect to reset-password page after successful email send
+            this.router.navigate(['/reset-password']);
           } else {
             this.errorMessage = response.message || 'Failed to send reset link';
           }
@@ -58,21 +54,8 @@ export class ForgotPasswordComponent implements OnDestroy {
     }
   }
 
-  startCountdown() {
-    this.countdown = 10;
-    this.countdownInterval = setInterval(() => {
-      this.countdown--;
-      if (this.countdown <= 0) {
-        clearInterval(this.countdownInterval);
-        this.router.navigate(['/login']);
-      }
-    }, 1000);
-  }
-
   ngOnDestroy() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-    }
+    // Cleanup if needed
   }
 
   goBack() {
