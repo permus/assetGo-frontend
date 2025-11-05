@@ -212,6 +212,11 @@ export class AuthService {
     localStorage.removeItem('user');
     localStorage.removeItem('module_access');
     localStorage.removeItem('permissions');
+    // Clear cached API data
+    localStorage.removeItem('cached_company');
+    localStorage.removeItem('cached_preferences');
+    localStorage.removeItem('cached_modules');
+    localStorage.removeItem('cached_feature_flags');
     this.currentUserSubject.next(null);
     this.moduleAccessSubject.next({});
     this.permissionsSubject.next({});

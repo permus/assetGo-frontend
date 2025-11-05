@@ -17,15 +17,41 @@ export class FeatureFlagsService {
   constructor(private http: HttpClient) {}
 
   fetchMe(): Observable<FeatureFlagsMe> {
+    // Check cache first
+    const cached = localStorage.getItem('cached_feature_flags');
+    if (cached) {
+      try {
+        const cachedData = JSON.parse(cached);
+        const flags = cachedData.data;
+        this.me$.next(flags);
+        return new Observable<FeatureFlagsMe>(observer => {
+          observer.next(flags);
+          observer.complete();
+        });
+      } catch (error) {
+        console.error('Failed to parse cached feature flags:', error);
+        localStorage.removeItem('cached_feature_flags');
+      }
+    }
+
+    // No cache, fetch from server and cache it
     return this.http.get<{ success: boolean; data: FeatureFlagsMe }>(this.apiUrl)
       .pipe(
         map(res => res.data),
-        tap(flags => this.me$.next(flags))
+        tap(flags => {
+          this.me$.next(flags);
+          // Cache the response
+          localStorage.setItem('cached_feature_flags', JSON.stringify({ success: true, data: flags }));
+        })
       );
   }
 
   getMe$(): Observable<FeatureFlagsMe> {
     return this.me$.asObservable();
+  }
+
+  clearCache(): void {
+    localStorage.removeItem('cached_feature_flags');
   }
 }
 

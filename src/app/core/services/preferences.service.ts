@@ -145,10 +145,30 @@ export class PreferencesService {
       });
     }
 
+    // Check cache first
+    const cached = localStorage.getItem('cached_preferences');
+    if (cached) {
+      try {
+        const cachedData = JSON.parse(cached);
+        return new Observable(observer => {
+          observer.next(cachedData);
+          observer.complete();
+        });
+      } catch (error) {
+        console.error('Failed to parse cached preferences:', error);
+        localStorage.removeItem('cached_preferences');
+      }
+    }
+
+    // No cache, fetch from server and cache it
     this.syncing = true;
     return this.http.get(`${this.apiUrl}/settings/preferences`).pipe(
-      tap(() => {
+      tap((response: any) => {
         this.syncing = false;
+        // Cache the response
+        if (response.success && response.data) {
+          localStorage.setItem('cached_preferences', JSON.stringify(response));
+        }
       })
     );
   }

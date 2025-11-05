@@ -25,6 +25,24 @@ export class CurrencyService {
       );
     }
 
+    // Check cache first
+    const cached = localStorage.getItem('cached_company');
+    if (cached) {
+      try {
+        const cachedData = JSON.parse(cached);
+        const code = (cachedData?.data?.company?.currency || 'USD') as CurrencyCode;
+        this.currency$.next(code);
+        return new Observable<CurrencyCode>(observer => {
+          observer.next(code);
+          observer.complete();
+        });
+      } catch (error) {
+        console.error('Failed to parse cached company data in currency service:', error);
+        localStorage.removeItem('cached_company');
+      }
+    }
+
+    // No cache, fetch from server (which will now cache automatically)
     this.refreshing = true;
     return this.settings.getCompany().pipe(
       map(res => ((res?.data?.company?.currency || 'USD') as CurrencyCode)),

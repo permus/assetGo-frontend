@@ -65,7 +65,29 @@ export class SettingsService {
 
   // Company
   getCompany() {
-    return this.http.get<ApiResponse<{ company: Company }>>(`${this.base}/company`);
+    // Check cache first
+    const cached = localStorage.getItem('cached_company');
+    if (cached) {
+      try {
+        const cachedData = JSON.parse(cached);
+        return new Observable<ApiResponse<{ company: Company }>>(observer => {
+          observer.next(cachedData);
+          observer.complete();
+        });
+      } catch (error) {
+        console.error('Failed to parse cached company data:', error);
+        localStorage.removeItem('cached_company');
+      }
+    }
+
+    // No cache, fetch from server and cache it
+    return this.http.get<ApiResponse<{ company: Company }>>(`${this.base}/company`).pipe(
+      tap(response => {
+        if (response.success && response.data) {
+          localStorage.setItem('cached_company', JSON.stringify(response));
+        }
+      })
+    );
   }
   updateCompany(payload: Partial<Company>) {
     return this.http.put<ApiResponse<{ company: Company }>>(`${this.base}/company`, payload);
@@ -90,6 +112,24 @@ export class SettingsService {
       );
     }
 
+    // Check cache first
+    const cached = localStorage.getItem('cached_modules');
+    if (cached) {
+      try {
+        const cachedData = JSON.parse(cached);
+        this.pushModulesEnabled(cachedData?.data?.modules || []);
+        this.modulesLoaded = true;
+        return new Observable<ApiResponse<{ modules: ModuleItem[] }>>(observer => {
+          observer.next(cachedData);
+          observer.complete();
+        });
+      } catch (error) {
+        console.error('Failed to parse cached modules:', error);
+        localStorage.removeItem('cached_modules');
+      }
+    }
+
+    // No cache, fetch from server and cache it
     this.modulesLoading = true;
     return this.http
       .get<ApiResponse<{ modules: ModuleItem[] }>>(`${this.base}/settings/modules`)
@@ -97,6 +137,10 @@ export class SettingsService {
         this.pushModulesEnabled(res?.data?.modules || []);
         this.modulesLoaded = true;
         this.modulesLoading = false;
+        // Cache the response
+        if (res.success && res.data) {
+          localStorage.setItem('cached_modules', JSON.stringify(res));
+        }
       }));
   }
   enableModule(moduleId: number) {
