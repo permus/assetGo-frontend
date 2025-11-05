@@ -30,30 +30,33 @@ export class LayoutComponent implements OnInit, OnDestroy {
     private settings: SettingsService,
     private moduleAccessService: ModuleAccessService,
     private notificationService: NotificationService
-  ) {}
-
-  private userInitialized = false;
+  ) {
+    console.log('[LayoutComponent] Constructor called');
+  }
 
   ngOnInit(): void {
+    console.log('[LayoutComponent] ngOnInit called');
+    
     // Subscribe to current user changes
     this.authService.currentUser$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(user => {
       this.currentUser = user;
       // Connect to Pusher when user is available and load initial unread count
-      // Only initialize once to prevent multiple connections
-      if (user && !this.userInitialized) {
-        this.userInitialized = true;
+      // The NotificationService handles its own initialization state to prevent duplicates
+      if (user) {
+        console.log('[LayoutComponent] User authenticated, initializing notifications');
         // Load initial unread count once when user is authenticated
         this.notificationService.getUnreadCount().pipe(
           takeUntil(this.destroy$)
         ).subscribe();
         // Then connect to Pusher for real-time updates
+        // Service will prevent duplicate connections via static flags
         this.notificationService.connectPusher();
       } else if (!user) {
-        // Reset flag when user logs out
-        this.userInitialized = false;
-        this.notificationService.disconnectPusher();
+        // User logged out - reset everything
+        console.log('[LayoutComponent] User logged out, disconnecting notifications');
+        this.notificationService.disconnectPusher(true); // Pass true to reset initialization flags
       }
     });
     
@@ -66,7 +69,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.notificationService.disconnectPusher();
+    console.log('[LayoutComponent] ngOnDestroy called');
+    // Don't reset initialization flags on component destroy (page refresh)
+    // Only disconnect without resetting, allowing reconnection on component recreation
+    this.notificationService.disconnectPusher(false);
     this.destroy$.next();
     this.destroy$.complete();
   }

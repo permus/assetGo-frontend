@@ -63,6 +63,10 @@ export class NotificationService {
   private isLoadingUnreadCount = false;
   private loadUnreadCountTimeout: any = null;
   private unreadCountRequestInFlight = false;
+  
+  // Static flag to prevent multiple initializations across component recreations
+  private static serviceInitialized = false;
+  private static isConnecting = false;
 
   constructor() {
     // Don't load unread count in constructor - wait for user to be authenticated
@@ -105,24 +109,33 @@ export class NotificationService {
    * Get unread count
    */
   getUnreadCount(): Observable<number> {
-    // Prevent concurrent requests
+    // Prevent concurrent requests - return current value if request is in flight
     if (this.unreadCountRequestInFlight) {
+      console.log('[NotificationService] Unread count request already in flight, returning cached value');
       return this.unreadCountSubject.asObservable().pipe(
         take(1),
         map(count => count)
       );
     }
 
+    // Don't make request if not authenticated
+    if (!this.authService.isAuthenticated()) {
+      console.log('[NotificationService] Not authenticated, skipping unread count request');
+      return of(0);
+    }
+
     this.unreadCountRequestInFlight = true;
+    console.log('[NotificationService] Fetching unread count from server');
     return this.http.get<UnreadCountResponse>(`${this.apiUrl}/unread-count`).pipe(
       map(response => {
         const count = response.data?.count || 0;
         this.unreadCountSubject.next(count);
         this.unreadCountRequestInFlight = false;
+        console.log('[NotificationService] Unread count loaded:', count);
         return count;
       }),
       catchError(error => {
-        console.error('Failed to get unread count', error);
+        console.error('[NotificationService] Failed to get unread count', error);
         this.unreadCountRequestInFlight = false;
         // Return Observable that emits 0
         return of(0);
@@ -134,7 +147,8 @@ export class NotificationService {
    * Load unread count (internal method) with debouncing to prevent request floods
    */
   private loadUnreadCount(): void {
-    if (!this.authService.isAuthenticated() || this.isLoadingUnreadCount) {
+    if (!this.authService.isAuthenticated() || this.isLoadingUnreadCount || this.unreadCountRequestInFlight) {
+      console.log('[NotificationService] Skipping loadUnreadCount - already loading or request in flight');
       return;
     }
 
@@ -143,11 +157,11 @@ export class NotificationService {
       clearTimeout(this.loadUnreadCountTimeout);
     }
 
-    // Debounce: wait 500ms before making the request
+    // Debounce: wait 1000ms before making the request
     // This prevents multiple rapid calls from flooding the server
     this.loadUnreadCountTimeout = setTimeout(() => {
       // Double-check we're still authenticated and not already loading
-      if (!this.authService.isAuthenticated() || this.isLoadingUnreadCount) {
+      if (!this.authService.isAuthenticated() || this.isLoadingUnreadCount || this.unreadCountRequestInFlight) {
         this.isLoadingUnreadCount = false;
         return;
       }
@@ -161,7 +175,7 @@ export class NotificationService {
           this.isLoadingUnreadCount = false;
         }
       });
-    }, 500); // Increased debounce from 300ms to 500ms
+    }, 1000); // Increased debounce from 500ms to 1000ms for better flood prevention
   }
 
   /**
@@ -233,20 +247,33 @@ export class NotificationService {
    * Note: Requires pusher-js package. Install with: npm install pusher-js
    */
   connectPusher(): void {
+    // Prevent multiple connection attempts using static flag
+    if (NotificationService.serviceInitialized || NotificationService.isConnecting) {
+      console.log('[NotificationService] Pusher already initialized or connecting, skipping');
+      return;
+    }
+    
     // Prevent multiple connection attempts
     if (this.isConnected || !this.authService.isAuthenticated()) {
+      console.log('[NotificationService] Already connected or not authenticated, skipping');
       return;
     }
     
     // Additional check: if Pusher instance exists but not connected, disconnect first
     if (this.pusher && !this.isConnected) {
+      console.log('[NotificationService] Cleaning up existing Pusher instance');
       this.disconnectPusher();
     }
 
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) {
+      console.log('[NotificationService] No current user, skipping Pusher connection');
       return;
     }
+
+    // Mark as connecting to prevent concurrent connection attempts
+    NotificationService.isConnecting = true;
+    console.log('[NotificationService] Starting Pusher connection for user:', currentUser.id);
 
     try {
       // Dynamically import Pusher (requires pusher-js package)
@@ -267,11 +294,15 @@ export class NotificationService {
 
         // Handle Pusher connection events
         this.pusher.connection.bind('connected', () => {
-          console.log('Pusher: Connected');
+          console.log('[NotificationService] Pusher: Connected successfully');
+          this.isConnected = true;
+          NotificationService.serviceInitialized = true;
+          NotificationService.isConnecting = false;
         });
 
         this.pusher.connection.bind('error', (error: any) => {
-          console.error('Pusher: Connection error', error);
+          console.error('[NotificationService] Pusher: Connection error', error);
+          NotificationService.isConnecting = false;
         });
 
         // Subscribe to private user channel
@@ -280,11 +311,12 @@ export class NotificationService {
 
         // Handle subscription events for debugging
         this.channel.bind('pusher:subscription_succeeded', () => {
-          console.log('Pusher: Successfully subscribed to', channelName);
+          console.log('[NotificationService] Pusher: Successfully subscribed to', channelName);
         });
 
         this.channel.bind('pusher:subscription_error', (error: any) => {
-          console.error('Pusher: Subscription error', error);
+          console.error('[NotificationService] Pusher: Subscription error', error);
+          NotificationService.isConnecting = false;
         });
 
         // Listen for new notifications
@@ -323,7 +355,12 @@ export class NotificationService {
           }
         });
 
-        this.isConnected = true;
+        // Mark as connected if not already set by connection event
+        if (!this.isConnected) {
+          this.isConnected = true;
+          NotificationService.serviceInitialized = true;
+          NotificationService.isConnecting = false;
+        }
       } else {
         // Try dynamic import as fallback
         import('pusher-js').then((PusherModule) => {
@@ -342,11 +379,15 @@ export class NotificationService {
 
           // Handle Pusher connection events
           this.pusher.connection.bind('connected', () => {
-            console.log('Pusher: Connected');
+            console.log('[NotificationService] Pusher: Connected successfully (dynamic import)');
+            this.isConnected = true;
+            NotificationService.serviceInitialized = true;
+            NotificationService.isConnecting = false;
           });
 
           this.pusher.connection.bind('error', (error: any) => {
-            console.error('Pusher: Connection error', error);
+            console.error('[NotificationService] Pusher: Connection error (dynamic import)', error);
+            NotificationService.isConnecting = false;
           });
 
           const channelName = `private-user.${currentUser.id}`;
@@ -354,11 +395,12 @@ export class NotificationService {
 
           // Handle subscription events for debugging
           this.channel.bind('pusher:subscription_succeeded', () => {
-            console.log('Pusher: Successfully subscribed to', channelName);
+            console.log('[NotificationService] Pusher: Successfully subscribed to', channelName);
           });
 
           this.channel.bind('pusher:subscription_error', (error: any) => {
-            console.error('Pusher: Subscription error', error);
+            console.error('[NotificationService] Pusher: Subscription error (dynamic import)', error);
+            NotificationService.isConnecting = false;
           });
 
           this.channel.bind('notification.created', (data: any) => {
@@ -395,15 +437,24 @@ export class NotificationService {
             }
           });
 
-          this.isConnected = true;
+          // Mark as connected if not already set by connection event
+          if (!this.isConnected) {
+            this.isConnected = true;
+            NotificationService.serviceInitialized = true;
+            NotificationService.isConnecting = false;
+          }
         }).catch(error => {
-          console.warn('Pusher not available, using fallback polling', error);
+          console.warn('[NotificationService] Pusher not available, using fallback polling', error);
+          NotificationService.isConnecting = false;
+          NotificationService.serviceInitialized = true; // Mark as initialized even if Pusher fails
           // Fallback: Load unread count periodically if Pusher fails
           this.startFallbackPolling();
         });
       }
     } catch (error) {
-      console.warn('Failed to connect Pusher, using fallback polling', error);
+      console.warn('[NotificationService] Failed to connect Pusher, using fallback polling', error);
+      NotificationService.isConnecting = false;
+      NotificationService.serviceInitialized = true; // Mark as initialized even if Pusher fails
       // Fallback: Load unread count periodically if Pusher fails
       this.startFallbackPolling();
     }
@@ -411,8 +462,11 @@ export class NotificationService {
 
   /**
    * Disconnect Pusher connection
+   * @param resetInitialization - If true, resets static flags to allow reconnection (e.g., on logout)
    */
-  disconnectPusher(): void {
+  disconnectPusher(resetInitialization: boolean = false): void {
+    console.log('[NotificationService] Disconnecting Pusher', { resetInitialization });
+    
     if (this.channel) {
       this.channel.unbind_all();
       this.channel = null;
@@ -430,6 +484,15 @@ export class NotificationService {
       this.loadUnreadCountTimeout = null;
     }
     this.isLoadingUnreadCount = false;
+    this.unreadCountRequestInFlight = false;
+    
+    // Only reset static flags on explicit logout, not on component recreation
+    if (resetInitialization) {
+      console.log('[NotificationService] Resetting initialization flags for logout');
+      NotificationService.serviceInitialized = false;
+      NotificationService.isConnecting = false;
+      this.unreadCountSubject.next(0);
+    }
   }
 
   private pollingInterval: any = null;
