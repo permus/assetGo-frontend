@@ -506,7 +506,7 @@
 
     .dropdown-menu {
       position: absolute;
-      z-index: 50;
+      z-index: 1050; // Higher z-index for dropdowns inside modals
       width: 100%;
       margin-top: 0.25rem;
       background-color: white;

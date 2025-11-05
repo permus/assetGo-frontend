@@ -59,6 +59,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
   loading = false;
   errorMessage = '';
   autocomplete: any;
+  addressType: 'gps' | 'manual' = 'gps'; // Address input type
 
   // Google Maps properties
   showMap = false;
@@ -76,6 +77,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
       name: ['', [Validators.required, Validators.minLength(2)]],
       location_code: ['', [Validators.required]],
       description: [''],
+      address_type: ['gps'], // Default to GPS Address with Map
       address: [''],
       location_type_id: [null, Validators.required]
     });
@@ -86,7 +88,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
   }
 
   ngAfterViewInit() {
-    if (this.isOpen) {
+    if (this.isOpen && this.editForm.get('address_type')?.value === 'gps') {
       this.initializeAutocomplete();
     }
   }
@@ -96,11 +98,13 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
       this.populateForm();
     }
 
-    // Reinitialize autocomplete when modal opens
+    // Reinitialize autocomplete when modal opens (only for GPS mode)
     if (changes['isOpen'] && this.isOpen && !changes['isOpen'].firstChange) {
-      setTimeout(() => {
-        this.initializeAutocomplete();
-      }, 200);
+      if (this.editForm.get('address_type')?.value === 'gps') {
+        setTimeout(() => {
+          this.initializeAutocomplete();
+        }, 200);
+      }
     }
   }
 
@@ -157,25 +161,38 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
 
      populateForm() {
      if (this.location) {
+       const addressType = this.location.address_type || 'gps';
+       this.addressType = addressType as 'gps' | 'manual';
+       
        this.editForm.patchValue({
          name: this.location.name,
          location_code: this.location.location_code || '',
          description: this.location.description || '',
+         address_type: addressType,
          address: this.location.address || '',
          location_type_id: this.location.location_type_id
        });
        this.selectedTypeId = this.location?.location_type_id || null;
 
-               // Show map if location has coordinates
-        if (this.location && this.location.latitude !== undefined && this.location.longitude !== undefined) {
-          this.showMap = true;
-          const lat = this.location.latitude;
-          const lng = this.location.longitude;
-          setTimeout(() => this.showMapOnCoords(lat, lng), 100);
-        } else if (this.location && this.location.address) {
-          // Geocode the address to show on map
-          this.geocodeAddress();
-        }
+       // Show map if GPS mode and location has coordinates
+       if (addressType === 'gps') {
+         if (this.location && this.location.latitude !== undefined && this.location.longitude !== undefined) {
+           this.showMap = true;
+           const lat = this.location.latitude;
+           const lng = this.location.longitude;
+           setTimeout(() => this.showMapOnCoords(lat, lng), 100);
+         } else if (this.location && this.location.address) {
+           // Geocode the address to show on map
+           this.geocodeAddress();
+         }
+         
+         // Initialize autocomplete for GPS mode
+         if (this.isOpen) {
+           setTimeout(() => {
+             this.initializeAutocomplete();
+           }, 200);
+         }
+       }
      }
    }
 
@@ -269,21 +286,54 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
   }
 
   public resetForm() {
-    this.editForm.reset();
+    this.editForm.reset({
+      name: '',
+      location_code: '',
+      description: '',
+      address_type: 'gps', // Reset to default
+      address: '',
+      location_type_id: null
+    });
     this.selectedTypeId = null;
     this.errorMessage = '';
+    this.addressType = 'gps';
+    this.cleanupMap();
+  }
+
+  onAddressTypeChange() {
+    const addressType = this.editForm.get('address_type')?.value;
+    this.addressType = addressType;
+    
+    // Clear address when switching types
+    this.editForm.patchValue({ address: '' });
+    
+    // Clean up map and autocomplete when switching to manual
+    if (addressType === 'manual') {
+      this.cleanupMap();
+      if (this.autocomplete) {
+        this.autocomplete = null;
+      }
+    } else if (addressType === 'gps') {
+      // Reinitialize autocomplete when switching back to GPS
+      setTimeout(() => {
+        this.initializeAutocomplete();
+      }, 100);
+    }
   }
 
   // Map methods
   onAddressChanged() {
-    const address = this.editForm.get('address')?.value;
-    if (address && address.trim().length > 0) {
-      this.geocodeAddress();
-    } else {
-      this.showMap = false;
-      if (this.map) {
-        this.map = undefined;
-        this.marker = undefined;
+    const addressType = this.editForm.get('address_type')?.value;
+    if (addressType === 'gps') {
+      const address = this.editForm.get('address')?.value;
+      if (address && address.trim().length > 0) {
+        this.geocodeAddress();
+      } else {
+        this.showMap = false;
+        if (this.map) {
+          this.map = undefined;
+          this.marker = undefined;
+        }
       }
     }
   }

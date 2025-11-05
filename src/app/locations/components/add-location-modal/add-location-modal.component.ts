@@ -60,6 +60,7 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
   errorMessage = '';
   showAllTypes = false;
   autocomplete: any;
+  addressType: 'gps' | 'manual' = 'gps'; // Address input type
 
   // Google Maps properties
   showMap = false;
@@ -77,6 +78,7 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
       name: ['', [Validators.required, Validators.minLength(2)]],
       location_code: ['', [Validators.required]],
       description: [''],
+      address_type: ['gps'], // Default to GPS Address with Map
       address: [''],
       location_type_id: [null, Validators.required]
     });
@@ -84,21 +86,27 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
 
   ngOnInit() {
     this.loadLocationTypes();
+    // Initialize address type
+    this.addressType = this.locationForm.get('address_type')?.value || 'gps';
   }
 
   ngAfterViewInit() {
-    // Initialize autocomplete when view is ready
-    this.initializeAutocomplete();
+    // Initialize autocomplete when view is ready (only for GPS mode)
+    if (this.locationForm.get('address_type')?.value === 'gps') {
+      this.initializeAutocomplete();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Reinitialize autocomplete when modal opens
+    // Reinitialize autocomplete when modal opens (only for GPS mode)
     if (changes['isOpen'] && this.isOpen && !changes['isOpen'].firstChange) {
       // Reset form and state when modal opens
       this.resetForm();
-      setTimeout(() => {
-        this.initializeAutocomplete();
-      }, 200);
+      if (this.locationForm.get('address_type')?.value === 'gps') {
+        setTimeout(() => {
+          this.initializeAutocomplete();
+        }, 200);
+      }
     }
   }
 
@@ -247,11 +255,19 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
   }
 
   resetForm() {
-    this.locationForm.reset();
+    this.locationForm.reset({
+      name: '',
+      location_code: '',
+      description: '',
+      address_type: 'gps', // Reset to default
+      address: '',
+      location_type_id: null
+    });
     this.selectedTypeId = null;
     this.errorMessage = '';
     this.showAllTypes = false;
     this.isLoading = false;
+    this.addressType = 'gps';
     
     // Clean up map when resetting form
     this.cleanupMap();
@@ -264,14 +280,17 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
 
   // Map methods
   onAddressChanged() {
-    const address = this.locationForm.get('address')?.value;
-    if (address && address.trim().length > 0) {
-      this.geocodeAddress();
-    } else {
-      this.showMap = false;
-      if (this.map) {
-        this.map = undefined;
-        this.marker = undefined;
+    const addressType = this.locationForm.get('address_type')?.value;
+    if (addressType === 'gps') {
+      const address = this.locationForm.get('address')?.value;
+      if (address && address.trim().length > 0) {
+        this.geocodeAddress();
+      } else {
+        this.showMap = false;
+        if (this.map) {
+          this.map = undefined;
+          this.marker = undefined;
+        }
       }
     }
   }

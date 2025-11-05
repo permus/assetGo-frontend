@@ -171,7 +171,7 @@ import { ScheduleMaintenanceModalComponent } from '../schedule-maintenance-modal
 
       <!-- Insight Details Modal -->
       <div *ngIf="showInsightDetailsModal && selectedInsight"
-           class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="background-color: #0000008f"
+           class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style="background-color: #0000008f; z-index: 1000;"
            (click)="closeInsightDetailsModal()">
         <div class="bg-white rounded-lg shadow-xl max-w-lg w-full"
              (click)="$event.stopPropagation()">
@@ -253,7 +253,7 @@ import { ScheduleMaintenanceModalComponent } from '../schedule-maintenance-modal
 
       <!-- Optimization Details Modal -->
       <div *ngIf="showOptimizationDetailsModal && selectedOptimization"
-           class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="background-color: #0000008f"
+           class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style="background-color: #0000008f; z-index: 1000;"
            (click)="closeOptimizationDetailsModal()">
         <div class="bg-white rounded-lg shadow-xl max-w-lg w-full"
              (click)="$event.stopPropagation()">

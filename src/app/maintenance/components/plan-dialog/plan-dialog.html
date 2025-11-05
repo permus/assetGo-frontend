@@ -1,4 +1,4 @@
-<div *ngIf="isOpen" class="fixed inset-0 z-50 modal-overlay" (click)="onBackdrop($event)">
+<div *ngIf="isOpen" class="fixed inset-0 modal-overlay" style="z-index: 1000;" (click)="onBackdrop($event)">
   <div class="absolute inset-0 bg-black/30"></div>
   <div class="absolute inset-0 flex items-start justify-center overflow-auto py-8 px-4">
     <div class="modal bg-white rounded-2xl shadow-xl w-full max-w-5xl" (click)="$event.stopPropagation()">

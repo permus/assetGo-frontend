@@ -4,6 +4,74 @@
 
 @use "tailwindcss";
 
+/* Global Z-Index Hierarchy
+ * This ensures consistent layering across the entire application
+ * 
+ * Hierarchy:
+ * - Base content: 1-10
+ * - Sticky elements: 20-30
+ * - Regular dropdowns: 50-60
+ * - Header: 100
+ * - Header dropdowns: 150
+ * - Modals overlay: 1000
+ * - Modal content: 1001
+ * - Dropdowns inside modals: 1050
+ * - Tooltips: 9999
+ */
+
+:root {
+  --z-base: 1;
+  --z-sticky: 20;
+  --z-dropdown: 50;
+  --z-dropdown-high: 60;
+  --z-header: 100;
+  --z-header-dropdown: 150;
+  --z-modal-overlay: 1000;
+  --z-modal-content: 1001;
+  --z-modal-dropdown: 1050;
+  --z-tooltip: 9999;
+}
+
+/* Global z-index rules for consistent layering */
+/* Modal overlays should always be above header but below tooltips */
+.modal-overlay,
+[class*="modal-overlay"],
+/* Target elements with fixed inset-0 and dark background (common modal pattern) */
+.fixed.inset-0.bg-black,
+.fixed.inset-0.bg-opacity-50,
+/* Target elements with inline style z-index 1000 (our modal pattern) */
+[style*="z-index: 1000"] {
+  z-index: var(--z-modal-overlay, 1000) !important;
+}
+
+/* Dropdowns in regular content */
+.dropdown-menu,
+[class*="dropdown-menu"] {
+  z-index: var(--z-dropdown, 50) !important;
+}
+
+/* Dropdowns inside modals need higher z-index */
+/* When a modal overlay is present, all dropdowns should use higher z-index */
+.modal-overlay .dropdown-menu,
+.modal .dropdown-menu,
+[class*="modal"] .dropdown-menu,
+.fixed.inset-0 .dropdown-menu,
+.fixed.inset-0 ~ * .dropdown-menu {
+  z-index: var(--z-modal-dropdown, 1050) !important;
+}
+
+/* Specific class for dropdowns inside modals */
+.dropdown-menu.modal-dropdown {
+  z-index: var(--z-modal-dropdown, 1050) !important;
+}
+
+/* Ensure header dropdowns are above content but below modals */
+header .dropdown-menu,
+header [class*="dropdown"],
+.user-dropdown {
+  z-index: var(--z-header-dropdown, 150) !important;
+}
+
 /* Google Maps styling */
 #location-map,
 #edit-location-map {

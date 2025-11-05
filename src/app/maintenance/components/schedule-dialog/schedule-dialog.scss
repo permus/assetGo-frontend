@@ -60,7 +60,7 @@
   .dropdown-arrow.rotated { transform: rotate(180deg); }
 
   .dropdown-menu {
-    position: absolute; z-index: 2000; width: 100%; margin-top: .25rem; background: #fff;
+    position: absolute; z-index: 1050; width: 100%; margin-top: .25rem; background: #fff;
     border: 1px solid #e5e7eb; border-radius: .5rem;
     box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
     max-height: 15rem; overflow: auto;
@@ -76,7 +76,7 @@
 
 /* Ensure ng-select dropdown overlays within modal */
 ::ng-deep .cdk-overlay-container, ::ng-deep .ng-dropdown-panel {
-  z-index: 2100 !important;
+  z-index: 1050 !important;
 }
 
 

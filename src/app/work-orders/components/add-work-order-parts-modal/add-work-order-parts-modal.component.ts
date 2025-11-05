@@ -44,16 +44,17 @@ export class AddWorkOrderPartsModalComponent implements OnChanges {
     const existing = this.cart.find((c) => c.part.id === part.id);
     if (existing) {
       existing.qty += 1;
-      this.toastService.success('Part quantity updated');
       return;
     }
     this.cart.push({ part, qty: 1, unit_cost: part.unit_cost || undefined });
-    this.toastService.success('Part added to cart');
   }
 
   removeFromCart(partId: number): void {
     this.cart = this.cart.filter((c) => c.part.id !== partId);
-    this.toastService.success('Part removed from cart');
+  }
+
+  isPartInCart(partId: number): boolean {
+    return this.cart.some((c) => c.part.id === partId);
   }
 
   async save(): Promise<void> {

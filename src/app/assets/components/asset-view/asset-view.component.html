@@ -1352,7 +1352,8 @@
   <!-- Maintenance Schedule Modals -->
   <!-- Add Maintenance Modal -->
   <div *ngIf="showAddMaintenanceModal"
-       class="fixed inset-0 bg-[#00000085] bg-opacity-50 flex items-center justify-center z-50 p-4">
+       class="fixed inset-0 bg-[#00000085] bg-opacity-50 flex items-center justify-center p-4"
+       style="z-index: 1000;">
     <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-lg">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900">Add Maintenance Schedule</h3>
@@ -1448,7 +1449,8 @@
 
   <!-- Edit Maintenance Modal -->
   <div *ngIf="showEditMaintenanceModal"
-       class="fixed inset-0 bg-[#00000085] bg-opacity-50 flex items-center justify-center z-50 p-4">
+       class="fixed inset-0 bg-[#00000085] bg-opacity-50 flex items-center justify-center p-4"
+       style="z-index: 1000;">
     <div class="bg-white rounded-lg max-w-md w-full p-6">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900">Edit Maintenance Schedule</h3>
@@ -1554,7 +1556,8 @@
   </div>
 
   <!-- Full Activity History Modal -->
-  <div *ngIf="showActivityHistoryModal" class="fixed inset-0 bg-[#00000085] flex items-center justify-center z-50 p-4">
+  <div *ngIf="showActivityHistoryModal" class="fixed inset-0 bg-[#00000085] flex items-center justify-center p-4"
+       style="z-index: 1000;">
     <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
       <!-- Modal Header -->
       <div class="flex items-center justify-between p-6 border-b border-gray-200">

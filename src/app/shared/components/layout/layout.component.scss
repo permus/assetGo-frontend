@@ -10,7 +10,7 @@
   border-bottom: 1px solid #e5e7eb;
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: var(--z-header, 100);
 }
 
 // Sidebar styles
@@ -48,7 +48,7 @@
   border-radius: 0.75rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
-  z-index: 50;
+  z-index: var(--z-header-dropdown, 150);
 }
 
 // Main content area

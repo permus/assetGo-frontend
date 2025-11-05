@@ -20,6 +20,7 @@ export interface Location {
   name: string;
   location_code?: string;
   slug?: string;
+  address_type?: string; // 'gps' or 'manual'
   address?: string;
   description?: string;
   location_type_id: number;
@@ -41,6 +42,7 @@ export interface Location {
   assets_count?: number; // From Laravel's withCount('assets')
   asset_summary?: {
     asset_count: number;
+    health_score: number;
     total_value: number;
   };
 }
@@ -69,6 +71,11 @@ export interface LocationResponse {
   success: boolean;
   data: {
     location: Location;
+    asset_summary?: {
+      asset_count: number;
+      health_score: number;
+      total_value: number;
+    };
     ancestors?: Location[];
     children_count?: number;
     descendants_count?: number;
@@ -177,6 +184,28 @@ export class LocationService {
     return this.http.get(`${this.apiUrl}/${id}/qr`, {
       params,
       responseType: 'blob',
+      ...this.getAuthHeaders()
+    });
+  }
+
+  // Get location activities
+  getLocationActivities(locationId: number, params?: { page?: number; per_page?: number; action?: string }): Observable<any> {
+    let httpParams = new HttpParams();
+    
+    if (params) {
+      if (params.page) {
+        httpParams = httpParams.set('page', params.page.toString());
+      }
+      if (params.per_page) {
+        httpParams = httpParams.set('per_page', params.per_page.toString());
+      }
+      if (params.action) {
+        httpParams = httpParams.set('action', params.action);
+      }
+    }
+    
+    return this.http.get(`${this.apiUrl}/${locationId}/activities`, {
+      params: httpParams,
       ...this.getAuthHeaders()
     });
   }

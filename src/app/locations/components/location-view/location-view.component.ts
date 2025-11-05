@@ -33,6 +33,13 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   assets: any[] = [];
   assetsLoading = false;
 
+  // Activities data
+  activities: any[] = [];
+  activitiesLoading = false;
+
+  // Hierarchy expand/collapse state
+  expandedNodes = new Set<number>();
+
   // Modal state
   showAddSubLocationModal = false;
   showEditLocationModal = false;
@@ -48,29 +55,6 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     totalValue: 0
   };
 
-  mockActivities = [
-    {
-      type: 'maintenance',
-      title: 'Maintenance Scheduled',
-      description: 'Routine maintenance scheduled for next week',
-      time: 'about 2 hours ago',
-      icon: 'maintenance'
-    },
-    {
-      type: 'utilization',
-      title: 'High Utilization',
-      description: 'Location utilization increased by 15%',
-      time: 'about 6 hours ago',
-      icon: 'chart'
-    },
-    {
-      type: 'safety',
-      title: 'Safety Inspection',
-      description: 'Monthly safety inspection completed',
-      time: '1 day ago',
-      icon: 'shield'
-    }
-  ];
   isEditingSubLocation = false;
 
   constructor(
@@ -107,10 +91,15 @@ export class LocationViewComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success) {
             this.location = response.data.location;
+            // Update location asset_summary from response if available
+            if (response.data.asset_summary) {
+              this.location.asset_summary = response.data.asset_summary;
+            }
             this.ancestors = response.data.ancestors || [];
             this.updateMockStats();
             this.loadSubLocations();
             this.loadAssets();
+            this.loadActivities();
           } else {
             this.error = response.message || 'Failed to load location';
           }
@@ -207,7 +196,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     if (this.location) {
       this.mockStats = {
         totalAssets: this.location.asset_summary?.asset_count || 0,
-        healthScore: 100,
+        healthScore: this.location.asset_summary?.health_score ?? 100,
         subLocations: this.subLocations.length,
         totalValue: this.location.asset_summary?.total_value || 0
       };
@@ -243,6 +232,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   onAssetsAssigned(count: number) {
     // Refresh assets list to show newly assigned assets
     this.loadAssets();
+    this.loadActivities(); // Refresh activities
     // Show success message (you can add a toast notification service if available)
     console.log(`${count} asset(s) assigned successfully`);
   }
@@ -266,6 +256,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   onSubLocationCreated(subLocation: Location) {
     // Reload sublocations to get the updated list
     this.loadSubLocations();
+    this.loadActivities(); // Refresh activities
     this.showAddSubLocationModal = false;
   }
 
@@ -283,6 +274,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
 
     this.location = updatedLocation;
     this.updateMockStats();
+    this.loadActivities(); // Refresh activities
     this.showEditLocationModal = false;
   }
 
@@ -382,22 +374,89 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  getActivityIcon(type: string): string {
-    const icons: { [key: string]: string } = {
-      maintenance: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
-      chart: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
-      shield: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'
-    };
-    return icons[type] || icons['maintenance'];
+  loadActivities() {
+    if (!this.location) return;
+
+    this.activitiesLoading = true;
+    this.locationService.getLocationActivities(this.location.id, { per_page: 10 })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.activities = response.data.activities || [];
+          }
+          this.activitiesLoading = false;
+        },
+        error: (error) => {
+          console.error('Failed to load activities:', error);
+          this.activitiesLoading = false;
+        }
+      });
   }
 
-  getActivityColor(type: string): string {
-    const colors: { [key: string]: string } = {
-      maintenance: 'orange',
-      chart: 'purple',
-      shield: 'blue'
+  getActivityIcon(action: string): string {
+    const icons: { [key: string]: string } = {
+      location_created: 'M12 4v16m8-8H4',
+      sub_location_created: 'M12 4v16m8-8H4',
+      location_updated: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+      location_deleted: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
+      sub_location_deleted: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
+      asset_assigned: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      asset_removed: 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
     };
-    return colors[type] || 'gray';
+    return icons[action] || 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z';
+  }
+
+  getActivityColor(action: string): string {
+    const colors: { [key: string]: string } = {
+      location_created: 'green',
+      sub_location_created: 'green',
+      location_updated: 'blue',
+      location_deleted: 'red',
+      sub_location_deleted: 'red',
+      asset_assigned: 'orange',
+      asset_removed: 'orange'
+    };
+    return colors[action] || 'gray';
+  }
+
+  getActivityTitle(action: string, comment: string): string {
+    // Use comment as title, or fallback to action-based title
+    if (comment) {
+      return comment;
+    }
+    const titles: { [key: string]: string } = {
+      location_created: 'Location Created',
+      sub_location_created: 'Sub-Location Added',
+      location_updated: 'Location Updated',
+      location_deleted: 'Location Deleted',
+      sub_location_deleted: 'Sub-Location Removed',
+      asset_assigned: 'Asset Assigned',
+      asset_removed: 'Asset Removed'
+    };
+    return titles[action] || 'Activity';
+  }
+
+  formatTimeAgo(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) {
+      return 'just now';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `about ${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < 2592000) {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `${days} day${days !== 1 ? 's' : ''} ago`;
+    } else {
+      const months = Math.floor(diffInSeconds / 2592000);
+      return `${months} month${months !== 1 ? 's' : ''} ago`;
+    }
   }
 
   viewSubLocation(subLocation: Location) {
@@ -423,6 +482,19 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   deleteSubLocation(subLocation: Location) {
     // TODO: Implement delete sublocation functionality
     console.log('Delete sublocation:', subLocation);
+  }
+
+  // Hierarchy expand/collapse methods
+  toggleNode(nodeId: number) {
+    if (this.expandedNodes.has(nodeId)) {
+      this.expandedNodes.delete(nodeId);
+    } else {
+      this.expandedNodes.add(nodeId);
+    }
+  }
+
+  isNodeExpanded(nodeId: number): boolean {
+    return this.expandedNodes.has(nodeId);
   }
 
 }

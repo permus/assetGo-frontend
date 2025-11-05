@@ -1,6 +1,6 @@
-<div class="work-order-card h-[230px]" [class.list-view]="isListView">
+<div class="work-order-card h-[230px]" [class.list-view]="isListView" (click)="viewDetails()" style="cursor: pointer;">
   <!-- Bulk Selection Checkbox -->
-  <div class="bulk-selection-checkbox" *ngIf="showBulkSelection">
+  <div class="bulk-selection-checkbox" *ngIf="showBulkSelection" (click)="$event.stopPropagation()">
     <input
       type="checkbox"
       [checked]="isSelected"
@@ -20,10 +20,8 @@
         </div>
         <h3 class="title truncate max-w-[250px]" [title]="workOrder.title">{{ workOrder.title }}</h3>
       </div>
-      <div class="header-actions">
-
-
-        <div class="relative" (click)="$event.stopPropagation()">
+      <div class="header-actions" (click)="$event.stopPropagation()">
+        <div class="relative">
           <button
             (click)="toggleMenu()"
             class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">

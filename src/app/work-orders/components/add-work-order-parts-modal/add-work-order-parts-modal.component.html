@@ -16,7 +16,22 @@
             <div class="sub">UoM: {{ $any(p).uom || '-' }} • On hand: {{ $any(p).on_hand || '-' }}</div>
           </div>
           <div class="right">
-            <button class="btn" (click)="addToCart(p)">Add</button>
+            <button 
+              *ngIf="!isPartInCart(p.id)"
+              class="btn" 
+              (click)="addToCart(p)">
+              Add
+            </button>
+            <button 
+              *ngIf="isPartInCart(p.id)"
+              class="btn" 
+              disabled
+              style="background-color: #10b981; color: white; cursor: not-allowed; opacity: 0.8;">
+              <svg style="width: 16px; height: 16px; display: inline-block; margin-right: 4px; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Added
+            </button>
           </div>
         </div>
       </div>
