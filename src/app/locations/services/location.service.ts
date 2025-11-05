@@ -18,6 +18,7 @@ export interface LocationType {
 export interface Location {
   id: number;
   name: string;
+  location_code?: string;
   slug?: string;
   address?: string;
   description?: string;
@@ -37,6 +38,7 @@ export interface Location {
   parent?: Location;
   children?: Location[];
   creator?: any;
+  assets_count?: number; // From Laravel's withCount('assets')
   asset_summary?: {
     asset_count: number;
     total_value: number;
@@ -111,8 +113,12 @@ export class LocationService {
     search?: string;
     type_id?: number;
     parent_id?: number;
+    hierarchy_level?: string;
+    asset_count?: string;
     per_page?: number;
     page?: number;
+    sort_by?: string;
+    sort_direction?: string;
   } = {}): Observable<LocationsResponse> {
     let httpParams = new HttpParams();
     

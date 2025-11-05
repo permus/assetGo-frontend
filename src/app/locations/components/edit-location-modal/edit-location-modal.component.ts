@@ -74,6 +74,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
   ) {
     this.editForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
+      location_code: ['', [Validators.required]],
       description: [''],
       address: [''],
       location_type_id: [null, Validators.required]
@@ -158,6 +159,7 @@ export class EditLocationModalComponent implements OnInit, OnChanges, AfterViewI
      if (this.location) {
        this.editForm.patchValue({
          name: this.location.name,
+         location_code: this.location.location_code || '',
          description: this.location.description || '',
          address: this.location.address || '',
          location_type_id: this.location.location_type_id

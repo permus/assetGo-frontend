@@ -4,7 +4,7 @@
          [class.w-64]="sidebarOpen" [class.w-16]="!sidebarOpen">
     <!-- Logo -->
     <div [ngClass]="!sidebarOpen ? 'px-2 py-6' : 'flex items-center space-x-2 p-6'">
-      <img [src]="'images/logo-short.png'" alt="AssetGo Logo"
+      <img [src]="'images/logo-short.png'" alt="AssetGo Logo" 
            [class.h-10]="sidebarOpen"
            [class.w-auto]="sidebarOpen"
            [class.size-10]="!sidebarOpen"
@@ -136,7 +136,7 @@
       <router-outlet></router-outlet>
     </main>
   </div>
-
+  
   <!-- Toast Notifications -->
   <app-toast></app-toast>
 </div>

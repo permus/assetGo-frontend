@@ -75,6 +75,7 @@ export class AddLocationModalComponent implements OnInit, AfterViewInit, OnChang
   ) {
     this.locationForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
+      location_code: ['', [Validators.required]],
       description: [''],
       address: [''],
       location_type_id: [null, Validators.required]

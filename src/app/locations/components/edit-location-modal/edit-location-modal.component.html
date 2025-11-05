@@ -54,6 +54,30 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
               [class.border-red-300]="editForm.get('name')?.invalid && editForm.get('name')?.touched"
               required>
+            <p *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched" class="mt-1 text-sm text-red-600">
+              Location name is required and must be at least 2 characters
+            </p>
+          </div>
+
+          <!-- Location Code -->
+          <div class="mb-4">
+            <label for="location_code" class="block text-sm font-medium text-gray-700 mb-2">
+              Location Code <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="location_code"
+              type="text"
+              formControlName="location_code"
+              placeholder="Enter location code (e.g., BL-001)"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+              [class.border-red-300]="editForm.get('location_code')?.invalid && editForm.get('location_code')?.touched"
+              required>
+            <p *ngIf="editForm.get('location_code')?.invalid && editForm.get('location_code')?.touched" class="mt-1 text-sm text-red-600">
+              Location code is required
+            </p>
+            <p *ngIf="errorMessage && errorMessage.includes('location code')" class="mt-1 text-sm text-red-600">
+              {{ errorMessage }}
+            </p>
           </div>
 
           <!-- Description -->

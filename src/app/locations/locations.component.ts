@@ -35,6 +35,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
   loading = false;
   hierarchyLoading = false;
   showFilters = false;
+  showSortDropdown = false;
   currentView: 'grid' | 'tree' | 'analytics' | 'mgmt' = 'grid';
   currentListView: 'grid' | 'list' = 'grid';
   expandedNodes: Set<number> = new Set();
@@ -63,11 +64,15 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   // Filters
   sortOptions = [
-    {value: 'created', label: 'Created'},
     {value: 'name', label: 'Name'},
-    {value: 'type', label: 'Type'},
-    {value: 'updated', label: 'Updated'}
+    {value: 'created', label: 'Created'},
+    {value: 'assets', label: 'Assets'},
+    {value: 'level', label: 'Level'}
   ];
+  
+  // Sort state
+  currentSortBy: string = 'created';
+  currentSortDirection: 'asc' | 'desc' = 'desc';
 
   hierarchyLevels = [
     {value: '', label: 'All Levels'},
@@ -93,11 +98,15 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.filtersForm = this.fb.group({
       type_id: [''],
       parent_id: [''],
-      hierarchy_level: ['0'],
+      hierarchy_level: [''], // Empty string means all levels
       asset_count: [''],
       sort_by: ['created'],
       sort_direction: ['desc']
     });
+    
+    // Initialize sort state
+    this.currentSortBy = 'created';
+    this.currentSortDirection = 'desc';
   }
 
   ngOnInit() {
@@ -145,11 +154,10 @@ export class LocationsComponent implements OnInit, OnDestroy {
     const searchValue = this.searchForm.get('search')?.value;
     const filters = this.filtersForm.value;
 
-    // Always include default parameters
+    // Base parameters
     const params: any = {
       page: page,
       per_page: this.pagination.per_page,
-      hierarchy_level: filters.hierarchy_level || '0',
       sort_by: filters.sort_by || 'created',
       sort_direction: filters.sort_direction || 'desc'
     };
@@ -159,7 +167,10 @@ export class LocationsComponent implements OnInit, OnDestroy {
       params.search = searchValue;
     }
 
-    // Only add optional filter parameters if they have actual values
+    // Only add filter parameters if they have actual values
+    if (filters.hierarchy_level && filters.hierarchy_level !== '' && filters.hierarchy_level !== null) {
+      params.hierarchy_level = filters.hierarchy_level;
+    }
     if (filters.type_id && filters.type_id !== '') {
       params.type_id = filters.type_id;
     }
@@ -177,6 +188,11 @@ export class LocationsComponent implements OnInit, OnDestroy {
           if (response.success) {
             this.locations = response.data.locations;
             this.pagination = response.data.pagination;
+            
+            // Sync sort state from form
+            const filters = this.filtersForm.value;
+            this.currentSortBy = filters.sort_by || 'created';
+            this.currentSortDirection = filters.sort_direction || 'desc';
           }
           this.loading = false;
         },
@@ -236,12 +252,48 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.filtersForm.reset({
       type_id: '',
       parent_id: '',
-      hierarchy_level: '0',
+      hierarchy_level: '', // Empty string means all levels
       asset_count: '',
       sort_by: 'created',
       sort_direction: 'desc'
     });
+    this.currentSortBy = 'created';
+    this.currentSortDirection = 'desc';
     this.loadLocations(1);
+  }
+  
+  // Sort methods
+  onSortChange(sortBy: string) {
+    // If clicking the same sort option, toggle direction
+    if (this.currentSortBy === sortBy) {
+      this.currentSortDirection = this.currentSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // New sort option, default to descending for most fields
+      this.currentSortDirection = sortBy === 'name' ? 'asc' : 'desc';
+      this.currentSortBy = sortBy;
+    }
+    
+    // Update form
+    this.filtersForm.patchValue({
+      sort_by: this.currentSortBy,
+      sort_direction: this.currentSortDirection
+    });
+    
+    // Reload locations
+    this.loadLocations(1);
+  }
+  
+  toggleSortDirection() {
+    this.currentSortDirection = this.currentSortDirection === 'asc' ? 'desc' : 'asc';
+    this.filtersForm.patchValue({
+      sort_direction: this.currentSortDirection
+    });
+    this.loadLocations(this.pagination.current_page);
+  }
+  
+  getSortLabel(value: string): string {
+    const option = this.sortOptions.find(opt => opt.value === value);
+    return option ? option.label : 'Created';
   }
 
   // Pagination
@@ -440,6 +492,11 @@ export class LocationsComponent implements OnInit, OnDestroy {
     // Close dropdown if click is outside button, dropdown, select elements, and options
     if (!filterButton && !filterDropdown && !selectElement && !optionElement && this.showFilters) {
       this.showFilters = false;
+    }
+    
+    // Close sort dropdown if clicking outside
+    if (!target.closest('[data-sort-dropdown]') && this.showSortDropdown) {
+      this.showSortDropdown = false;
     }
   }
 

@@ -160,11 +160,57 @@
 
   <!-- Content Area -->
   <div class="px-6 py-6">
-    <!-- View Toggle (Only for Grid View) -->
+    <!-- View Toggle and Sort (Only for Grid View) -->
     <div *ngIf="currentView === 'grid'" class="flex items-center justify-between mb-6">
-      <div class="text-sm text-gray-600">
-        Showing {{ locations.length }} locations
+      <div class="flex items-center space-x-4">
+        <div class="text-sm text-gray-600">
+          Showing {{ locations.length }} locations
+        </div>
+        
+        <!-- Sort Control -->
+        <div class="flex items-center space-x-3 border-l border-gray-200 pl-4">
+          <span class="text-sm font-medium text-gray-700">Sort by:</span>
+          <div class="relative" data-sort-dropdown>
+            <button
+              (click)="showSortDropdown = !showSortDropdown"
+              class="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+              <span>{{ getSortLabel(currentSortBy) }}</span>
+              <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showSortDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            
+            <!-- Sort Dropdown -->
+            <div *ngIf="showSortDropdown"
+                 class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              <button
+                *ngFor="let option of sortOptions"
+                (click)="onSortChange(option.value); showSortDropdown = false"
+                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                [class.bg-blue-50]="currentSortBy === option.value">
+                <span>{{ option.label }}</span>
+                <svg *ngIf="currentSortBy === option.value" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Sort Direction Toggle -->
+          <button
+            (click)="toggleSortDirection()"
+            class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+            [title]="currentSortDirection === 'asc' ? 'Ascending' : 'Descending'">
+            <svg *ngIf="currentSortDirection === 'asc'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+            <svg *ngIf="currentSortDirection === 'desc'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </div>
       </div>
+      
       <div class="flex items-center space-x-2">
         <button
           (click)="currentListView = 'grid'"
@@ -315,6 +361,51 @@
 
       <!-- List View -->
       <div *ngIf="!loading && currentListView === 'list'" class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <!-- Sort Control -->
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="text-sm font-medium text-gray-700">Sort by:</span>
+            <div class="relative" data-sort-dropdown>
+              <button
+                (click)="showSortDropdown = !showSortDropdown"
+                class="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                <span>{{ getSortLabel(currentSortBy) }}</span>
+                <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showSortDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              
+              <!-- Sort Dropdown -->
+              <div *ngIf="showSortDropdown"
+                   class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <button
+                  *ngFor="let option of sortOptions"
+                  (click)="onSortChange(option.value); showSortDropdown = false"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                  [class.bg-blue-50]="currentSortBy === option.value">
+                  <span>{{ option.label }}</span>
+                  <svg *ngIf="currentSortBy === option.value" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Sort Direction Toggle -->
+            <button
+              (click)="toggleSortDirection()"
+              class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+              [title]="currentSortDirection === 'asc' ? 'Ascending' : 'Descending'">
+              <svg *ngIf="currentSortDirection === 'asc'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+              </svg>
+              <svg *ngIf="currentSortDirection === 'desc'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
         <!-- Table Header -->
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div class="grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
