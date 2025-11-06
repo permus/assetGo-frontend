@@ -11,13 +11,27 @@ export class MaintenanceStore {
   totalPlans = computed(() => this.plans().length);
   activePlans = computed(() => this.plans().filter(p => p.is_active).length);
   scheduledItems = computed(() => this.plans().reduce((sum, p) => sum + (p.scheduled_count || 0), 0));
-  criticalPlans = computed(() => this.plans().filter(p => p.priority_id === 1).length);
+  criticalPlans = computed(() => {
+    // Use meta value if available (from API)
+    if (this.meta()?.critical_plans_count !== undefined) {
+      return this.meta().critical_plans_count;
+    }
+    // Fallback: filter by priority slug or name
+    return this.plans().filter(p => 
+      p.priority?.name?.toLowerCase() === 'critical' || 
+      (p.priority as any)?.slug === 'critical'
+    ).length;
+  });
 
   constructor(private api: MaintenanceService) {}
 
   fetchPlans(keyword?: string, per_page?: number) {
     this.loading.set(true);
-    this.api.listPlans({ include: 'meta', per_page: per_page ? per_page : 20 ,keyword}).subscribe({
+    const params: any = { include: 'meta', per_page: per_page ? per_page : 20 };
+    if (keyword) {
+      params.name = keyword;
+    }
+    this.api.listPlans(params).subscribe({
       next: (res) => {
         const list = Array.isArray(res?.data?.plans) ? res.data.plans : [];
         this.plans.set(list);

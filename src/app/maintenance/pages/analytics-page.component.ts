@@ -16,42 +16,103 @@ export class AnalyticsPageComponent implements OnInit {
   // simple series placeholders
   trendLabels: string[] = [];
   trendData: number[] = [];
-  typeBreakdown: { name: string; value: number }[] = [];
+  typeBreakdown: { name: string; value: number; normalizedValue: number }[] = [];
   monthlyCostsLabels: string[] = [];
   monthlyCostsData: number[] = [];
+  monthlyCostsActual: number[] = []; // Store actual cost values for tooltips
+  stats: {
+    totalMaintenance: number;
+    preventiveCount: number;
+    preventiveRatio: number;
+    avgCost: number;
+    avgDuration: number;
+  } = {
+    totalMaintenance: 0,
+    preventiveCount: 0,
+    preventiveRatio: 0,
+    avgCost: 0,
+    avgDuration: 0,
+  };
 
   constructor(private api: MaintenanceService) {}
 
   ngOnInit(): void {
     this.fetch();
+    this.fetchStats();
   }
 
   fetch() {
     this.loading = true;
-    // Approximate analytics using schedules; swap to real endpoint later
     this.api.listSchedules({ per_page: 500 }).subscribe({
       next: (res) => {
         const items: any[] = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.schedules) ? res.data.schedules : []);
         // trend by month count (due_date month)
         const mapCounts: Record<string, number> = {};
         const mapCosts: Record<string, number> = {};
+        
         for (const s of items) {
           const d = s.due_date ? new Date(s.due_date) : null;
           const key = d && !isNaN(d.getTime()) ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}` : 'unknown';
           mapCounts[key] = (mapCounts[key] || 0) + 1;
-          // cost placeholder 0
-          mapCosts[key] = (mapCosts[key] || 0) + (s.cost || 0);
+          
+          // Calculate cost from assets' purchase_price
+          let scheduleCost = 0;
+          if (s.assets && Array.isArray(s.assets)) {
+            scheduleCost = s.assets.reduce((sum: number, asset: any) => {
+              return sum + (parseFloat(asset.purchase_price) || 0);
+            }, 0);
+          }
+          mapCosts[key] = (mapCosts[key] || 0) + scheduleCost;
         }
+        
         this.trendLabels = Object.keys(mapCounts).sort();
         this.trendData = this.trendLabels.map(k => mapCounts[k]);
 
         this.monthlyCostsLabels = Object.keys(mapCosts).sort();
-        this.monthlyCostsData = this.monthlyCostsLabels.map(k => mapCosts[k]);
+        // Store actual cost values for tooltips
+        this.monthlyCostsActual = this.monthlyCostsLabels.map(k => mapCosts[k] || 0);
+        // Normalize costs for chart display (max height = 100%)
+        const maxCost = Math.max(...this.monthlyCostsActual, 1);
+        this.monthlyCostsData = this.monthlyCostsActual.map(cost => {
+          return maxCost > 0 ? (cost / maxCost) * 100 : 0;
+        });
 
-        // type breakdown placeholder
-        const breakdown: Record<string, number> = { preventive: 0, corrective: 0, emergency: 0 };
-        for (const s of items) breakdown['preventive']++;
-        this.typeBreakdown = Object.entries(breakdown).map(([name, value]) => ({ name, value }));
+        // Type breakdown based on plan_type
+        const breakdown: Record<string, number> = {};
+        for (const s of items) {
+          // Try to get plan_type from schedule, plan object, or fallback to 'preventive'
+          const planType = s.plan_type || s.plan?.plan_type || 'preventive';
+          breakdown[planType] = (breakdown[planType] || 0) + 1;
+        }
+        
+        // Format type names for display
+        const typeDisplayNames: Record<string, string> = {
+          'preventive': 'Preventive',
+          'predictive': 'Predictive',
+          'condition_based': 'Condition Based',
+          'corrective': 'Corrective',
+          'emergency': 'Emergency',
+        };
+        
+        const typeBreakdownEntries = Object.entries(breakdown)
+          .filter(([_, value]) => value > 0) // Only show types with data
+          .map(([name, value]) => ({ 
+            name: typeDisplayNames[name] || name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' '), 
+            value 
+          }))
+          .sort((a, b) => b.value - a.value); // Sort by value descending
+        
+        // Normalize type breakdown values for chart (max height = 100%)
+        if (typeBreakdownEntries.length > 0) {
+          const maxTypeValue = Math.max(...typeBreakdownEntries.map(t => t.value), 1);
+          this.typeBreakdown = typeBreakdownEntries.map(t => ({
+            ...t,
+            normalizedValue: maxTypeValue > 0 ? (t.value / maxTypeValue) * 100 : 0
+          }));
+        } else {
+          // If no data, show empty array
+          this.typeBreakdown = [];
+        }
 
         this.loading = false;
       },
@@ -59,10 +120,39 @@ export class AnalyticsPageComponent implements OnInit {
     });
   }
 
+  fetchStats() {
+    this.api.getAnalyticsStats().subscribe({
+      next: (res) => {
+        if (res?.success && res?.data) {
+          this.stats = {
+            totalMaintenance: res.data.totalMaintenance || 0,
+            preventiveCount: res.data.preventiveCount || 0,
+            preventiveRatio: res.data.preventiveRatio || 0,
+            avgCost: res.data.avgCost || 0,
+            avgDuration: res.data.avgDuration || 0,
+          };
+        }
+      },
+      error: () => {
+        // Keep default values if stats fetch fails
+      }
+    });
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+  }
+
+  formatDuration(value: number): string {
+    return `${value.toFixed(1)}h`;
+  }
+
+  formatPercentage(value: number): string {
+    return `${value.toFixed(1)}%`;
+  }
+
   get totalCount(): number {
-    let sum = 0;
-    for (const n of this.trendData) sum += Number(n) || 0;
-    return sum;
+    return this.stats.totalMaintenance;
   }
 }
 

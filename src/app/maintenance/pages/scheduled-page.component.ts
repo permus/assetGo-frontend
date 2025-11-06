@@ -6,8 +6,7 @@ import { ScheduleDialogComponent } from '../components/schedule-dialog/schedule-
 import { MaintenanceDeleteConfirmationModalComponent } from '../components/delete-confirmation-modal';
 import { ScheduleMaintenance } from '../models';
 import { MetaWorkOrdersService } from '../../core/services/meta-work-orders.service';
-import { AssetService } from '../../assets/services/asset.service';
-import { forkJoin, of } from 'rxjs';
+import { MetaItem } from '../../core/types/work-order.types';
 import {Router, RouterLink} from '@angular/router';
 
 @Component({
@@ -57,7 +56,7 @@ export class ScheduledPageComponent implements OnInit {
   // Multi-select state
   selectedSchedules: ScheduleMaintenance[] = [];
 
-  constructor(private api: MaintenanceService, private meta: MetaWorkOrdersService, private assetsApi: AssetService, private router: Router) {}
+  constructor(private api: MaintenanceService, private meta: MetaWorkOrdersService, private router: Router) {}
 
   ngOnInit() {
     this.fetchSchedules();
@@ -80,61 +79,52 @@ export class ScheduledPageComponent implements OnInit {
   }
 
   private loadLookupsAndEnrich() {
-    // Collect unique IDs
-    const planIds = Array.from(new Set(this.all.map(s => s.maintenance_plan_id).filter((v): v is number => !!v))) as number[];
-    const assetIdsSet = new Set<number>();
-    this.all.forEach(s => (s.asset_ids || []).forEach(id => { if (id != null) assetIdsSet.add(Number(id)); }));
-    const assetIds = Array.from(assetIdsSet);
-
-    // Fetch priorities (names) once
-    const priorities$ = Object.keys(this.priorityIdToName).length > 0
-      ? of(null)
-      : this.meta.getPriorities();
-
-    // Fetch any missing plans and assets
-    const missingPlanIds = planIds.filter(id => this.planIdToName[id] == null);
-    const missingAssetIds = assetIds.filter(id => this.assetIdToName[id] == null);
-
-    const planRequests = missingPlanIds.map(id => this.api.getPlan(id));
-    const assetRequests = missingAssetIds.map(id => this.assetsApi.getAsset(id));
-
-    forkJoin({
-      priorities: priorities$,
-      plans: planRequests.length ? forkJoin(planRequests) : of([]),
-      assets: assetRequests.length ? forkJoin(assetRequests) : of([]),
-    }).subscribe({
-      next: (bundle: any) => {
-        // Priorities map
-        if (bundle?.priorities && Array.isArray(bundle.priorities)) {
-          for (const p of bundle.priorities) {
-            if (p?.id != null) this.priorityIdToName[p.id] = p.name || p.slug || String(p.id);
+    // Use plan_name and assets directly from the response
+    for (const s of this.all) {
+      // Use plan_name from response if available
+      if (s.maintenance_plan_id && s.plan_name) {
+        this.planIdToName[s.maintenance_plan_id] = s.plan_name;
+      }
+      
+      // Use assets array from response if available
+      if (s.assets && Array.isArray(s.assets)) {
+        for (const asset of s.assets) {
+          if (asset?.id != null) {
+            this.assetIdToName[asset.id] = asset.name || `Asset #${asset.id}`;
           }
         }
-        // Plans map
-        const plansArr: any[] = Array.isArray(bundle?.plans) ? bundle.plans : [];
-        for (const res of plansArr) {
-          const plan = res?.data?.plan || res?.data || res;
-          if (plan?.id != null) this.planIdToName[plan.id] = plan.name || `Plan #${plan.id}`;
-        }
-        // Assets map
-        const assetsArr: any[] = Array.isArray(bundle?.assets) ? bundle.assets : [];
-        for (const res of assetsArr) {
-          const a = res?.data?.asset || res?.data || res;
-          if (a?.id != null) this.assetIdToName[a.id] = a.name || a.asset_name || `Asset #${a.id}`;
-        }
-
-        // Enrich and apply
-        this.computeMetrics();
-        this.applyFilter();
-        this.loading = false;
-      },
-      error: () => {
-        // Even if lookups fail, show basic list
-        this.computeMetrics();
-        this.applyFilter();
-        this.loading = false;
       }
-    });
+    }
+
+    // Fetch priorities (names) once - this is the only API call needed now
+    if (Object.keys(this.priorityIdToName).length > 0) {
+      // Priorities already loaded, skip fetching
+      this.computeMetrics();
+      this.applyFilter();
+      this.loading = false;
+    } else {
+      this.meta.getPriorities().subscribe({
+        next: (priorities: MetaItem[]) => {
+          // Priorities map
+          if (priorities && Array.isArray(priorities)) {
+            for (const p of priorities) {
+              if (p?.id != null) this.priorityIdToName[p.id] = p.name || p.slug || String(p.id);
+            }
+          }
+
+          // Enrich and apply
+          this.computeMetrics();
+          this.applyFilter();
+          this.loading = false;
+        },
+        error: () => {
+          // Even if lookups fail, show basic list
+          this.computeMetrics();
+          this.applyFilter();
+          this.loading = false;
+        }
+      });
+    }
   }
 
   computeMetrics() {

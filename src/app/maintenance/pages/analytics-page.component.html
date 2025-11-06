@@ -14,7 +14,7 @@
           </svg>
         </div>
       </div>
-      <div class="value">{{ totalCount }}</div>
+      <div class="value">{{ stats.totalMaintenance }}</div>
       <div class="hint">0 upcoming</div>
     </div>
     <div class="metric-card success">
@@ -26,7 +26,7 @@
           </svg>
         </div>
       </div>
-      <div class="value text-green-600">0.0%</div>
+      <div class="value text-green-600">{{ formatPercentage(stats.preventiveRatio) }}</div>
       <div class="hint">Target: 80%</div>
     </div>
     <div class="metric-card warning">
@@ -38,7 +38,7 @@
           </svg>
         </div>
       </div>
-      <div class="value">$0</div>
+      <div class="value">{{ formatCurrency(stats.avgCost) }}</div>
       <div class="hint">Per maintenance activity</div>
     </div>
     <div class="metric-card danger">
@@ -50,7 +50,7 @@
           </svg>
         </div>
       </div>
-      <div class="value">0.0h</div>
+      <div class="value">{{ formatDuration(stats.avgDuration) }}</div>
       <div class="hint">Per maintenance activity</div>
     </div>
   </div>
@@ -72,9 +72,12 @@
 
     <div class="panel">
       <div class="panel-title">Maintenance Types</div>
-      <div class="flex items-end h-48 space-x-3">
+      <div *ngIf="typeBreakdown.length === 0" class="flex items-center justify-center h-48 text-gray-400 text-sm">
+        No maintenance types data available
+      </div>
+      <div *ngIf="typeBreakdown.length > 0" class="flex items-end h-48 space-x-3">
         <div *ngFor="let t of typeBreakdown" class="w-12">
-          <div class="bar bg-purple-500" [style.height.%]="(t.value || 0) * 10" [attr.title]="t.name + ': ' + t.value"></div>
+          <div class="bar bg-purple-500" [style.height.%]="t.normalizedValue || 0" [attr.title]="t.name + ': ' + t.value"></div>
           <div class="text-xs text-center mt-1">{{ t.name }}</div>
         </div>
       </div>
@@ -86,7 +89,7 @@
     <div class="grid grid-cols-12 gap-1 text-xs text-gray-400">
       <div class="col-span-12 flex items-end h-48 space-x-2">
         <ng-container *ngFor="let v of monthlyCostsData; let i = index">
-          <div class="bar bg-emerald-500" [style.height.%]="(v || 0)" [attr.title]="monthlyCostsLabels[i] + ': $' + v"></div>
+          <div class="bar bg-emerald-500" [style.height.%]="(v || 0)" [attr.title]="monthlyCostsLabels[i] + ': ' + formatCurrency(monthlyCostsActual[i] || 0)"></div>
         </ng-container>
       </div>
       <div class="col-span-12 flex justify-between mt-2">

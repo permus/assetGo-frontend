@@ -4,6 +4,11 @@ export type FrequencyUnit = 'days' | 'weeks' | 'months' | 'years';
 export type ChecklistType = 'checkbox' | 'measurements' | 'text_input' | 'photo_capture' | 'pass_fail';
 export type ScheduleStatus = 'scheduled' | 'in_progress' | 'completed';
 
+export interface Priority {
+  id: number;
+  name: string;
+}
+
 export interface MaintenancePlanChecklist {
   id?: number;
   maintenance_plan_id?: number;
@@ -21,7 +26,7 @@ export interface MaintenancePlan {
   company_id?: number;
   name: string;
   priority_id?: number | null;
-  priority?: any | null;
+  priority?: Priority | null;
   assets?: any[];
   sort?: number;
   descriptions?: string | null;
@@ -44,11 +49,14 @@ export interface MaintenancePlan {
 export interface ScheduleMaintenance {
   id?: number;
   maintenance_plan_id: number;
+  plan_name?: string | null;
   asset_ids?: number[] | null;
+  assets?: Array<{ id: number; name: string }> | null;
   start_date?: string | null;
   due_date?: string | null;
   status?: ScheduleStatus;
   priority_id?: number | null;
+  priority?: Priority | null;
 }
 
 export interface Paginated<T> {

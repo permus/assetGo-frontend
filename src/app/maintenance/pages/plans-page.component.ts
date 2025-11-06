@@ -238,7 +238,10 @@ onShowChange(event: any) {
     this.showDeleteConfirmationModal = true;
   }
 
-  togglePlanMenu(planId: number) {
+  togglePlanMenu(planId: number, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
     this.planMenus[planId] = !this.planMenus[planId];
   }
 
