@@ -16,7 +16,7 @@
 
         </div>
       </div>
-      <div class="value">{{ all.length }}</div>
+      <div class="value">{{ stats.totalActivities }}</div>
       <div class="hint"><a class="link" href="javascript:void(0)">Items completed</a></div>
     </div>
     <div class="metric-card success">
@@ -31,8 +31,8 @@
 
         </div>
       </div>
-      <div class="value">{{ all.length }}</div>
-      <div class="hint text-green-600">0% of total</div>
+      <div class="value">{{ stats.preventive }}</div>
+      <div class="hint text-green-600">{{ stats.preventivePercentage }}% of total</div>
     </div>
     <div class="metric-card warning">
       <div class="metric-header">
@@ -45,7 +45,7 @@
           </svg>
         </div>
       </div>
-      <div class="value">$0</div>
+      <div class="value">{{ formatCurrency(stats.totalCost) }}</div>
       <div class="hint text-orange-600">Year to date</div>
     </div>
     <div class="metric-card danger">
@@ -61,7 +61,7 @@
           </svg>
         </div>
       </div>
-      <div class="value">0.0h</div>
+      <div class="value">{{ formatDuration(stats.avgDuration) }}</div>
       <div class="hint text-red-600">Per activity</div>
     </div>
   </div>
@@ -107,10 +107,10 @@
       <div class="px-6 py-4" *ngFor="let h of filtered">
         <div class="flex items-center justify-between">
           <div>
-            <div class="font-medium text-gray-900">Plan #{{ h.maintenance_plan_id }}</div>
-            <div class="text-xs text-gray-500">Completed • {{ h.due_date }}</div>
+            <div class="font-medium text-gray-900">Plan #{{ h.maintenance_plan_id }} {{h.plan_name}}</div>
+            <div class="text-xs text-gray-500">Completed • {{h.updated_at | date:'medium'}}</div>
           </div>
-          <div class="text-sm text-gray-700">Priority: {{ h.priority_name || h.priority_id || '-' }}</div>
+          <div class="text-sm text-gray-700">Priority: {{ h.priority.name || h.priority_id || '-' }}</div>
         </div>
       </div>
     </div>

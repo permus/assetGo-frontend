@@ -65,6 +65,14 @@ export class MaintenanceService {
   deleteSchedule(id: number): Observable<any> {
     return this.http.delete<any>(`${this.base}/schedules/${id}`);
   }
+
+  getHistoryStats(): Observable<any> {
+    return this.http.get<any>(`${this.base}/stats/history`);
+  }
+
+  getAnalyticsStats(): Observable<any> {
+    return this.http.get<any>(`${this.base}/stats/analytics`);
+  }
 }
 
 

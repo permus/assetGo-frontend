@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MaintenanceService } from '../maintenance.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-history-page',
@@ -17,16 +18,29 @@ export class HistoryPageComponent implements OnInit {
   filtered: any[] = [];
   search = '';
   filter: 'all' | 'preventive' | 'predictive' | 'condition_based' = 'all';
+  stats: {
+    totalActivities: number;
+    preventive: number;
+    preventivePercentage: number;
+    totalCost: number;
+    avgDuration: number;
+  } = {
+    totalActivities: 0,
+    preventive: 0,
+    preventivePercentage: 0,
+    totalCost: 0,
+    avgDuration: 0,
+  };
 
   constructor(private api: MaintenanceService) {}
 
   ngOnInit(): void {
     this.fetch();
+    this.fetchStats();
   }
 
   fetch() {
     this.loading = true;
-    // placeholder until backend endpoint exists; integrate when available
     this.api.listSchedules({ status: 'completed', per_page: 100 }).subscribe({
       next: (res) => {
         const items = Array.isArray(res?.data) ? res.data : (Array.isArray(res?.data?.schedules) ? res.data.schedules : []);
@@ -37,6 +51,33 @@ export class HistoryPageComponent implements OnInit {
       },
       error: () => { this.loading = false; this.error = 'Failed to load history'; }
     });
+  }
+
+  fetchStats() {
+    this.api.getHistoryStats().subscribe({
+      next: (res) => {
+        if (res?.success && res?.data) {
+          this.stats = {
+            totalActivities: res.data.totalActivities || 0,
+            preventive: res.data.preventive || 0,
+            preventivePercentage: res.data.preventivePercentage || 0,
+            totalCost: res.data.totalCost || 0,
+            avgDuration: res.data.avgDuration || 0,
+          };
+        }
+      },
+      error: () => {
+        // Keep default values if stats fetch fails
+      }
+    });
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+  }
+
+  formatDuration(value: number): string {
+    return `${value.toFixed(1)}h`;
   }
 
   apply() {

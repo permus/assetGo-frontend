@@ -265,7 +265,7 @@
 
           <!-- Priority -->
           <div class="text-sm text-gray-700 mb-1" *ngIf="plan.priority_id">
-            <span class="font-medium text-gray-600">Priority:</span> {{ plan.priority_id }}
+            <span class="font-medium text-gray-600">Priority:</span> {{ plan.priority?.name || '-' }}
           </div>
 
           <!-- Status -->
@@ -294,8 +294,48 @@
     </div>
   </div>
 
+  <!-- Selection Bar (when nothing is selected) - List View -->
+  <div class="w-full bg-white rounded-xl border border-gray-200 px-6 py-3 mb-4 flex items-center"
+       *ngIf="viewType === 'list' && selectedCount === 0 && !store.loading() && store.totalPlans() > 0">
+    <button type="button" (click)="toggleSelectAllPlans()"
+            class="focus:outline-none inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-blue-400 mr-3 transition-colors">
+      <span class="w-3 h-3 rounded-full block bg-white transition-colors"></span>
+    </button>
+    <span class="font-semibold text-gray-900">Select all {{ store.plans().length }} plans</span>
+  </div>
+
+  <!-- Action Bar (Selection) - List View -->
+  <div class="w-full bg-white rounded-xl border border-gray-200 px-6 py-3 mb-4 flex items-center justify-between"
+       *ngIf="viewType === 'list' && selectedCount > 0 && !store.loading()">
+    <div class="flex items-center space-x-4">
+      <button type="button" (click)="toggleSelectAllPlans()"
+              class="focus:outline-none inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-blue-400 mr-3 transition-colors"
+              [class.bg-blue-100]="selectedCount === store.plans().length">
+        <span class="w-3 h-3 rounded-full block transition-colors"
+              [class.bg-blue-400]="selectedCount === store.plans().length"
+              [class.bg-white]="selectedCount !== store.plans().length"></span>
+      </button>
+      <span class="font-bold text-gray-900">{{ selectedCount }} plan{{ selectedCount > 1 ? 's' : '' }} selected</span>
+      <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm flex items-center font-medium">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"></path></svg>
+        Selection Mode Active - Click items to select
+      </span>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button
+        (click)="openDeleteModalForSelected()"
+        [disabled]="selectedCount === 0"
+        class="bg-red-50 text-red-600 font-semibold px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+        Delete Selected
+      </button>
+    </div>
+  </div>
+
   <!-- List View -->
-  <div *ngIf="viewType === 'list' && !store.loading() && store.totalPlans() > 0" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+  <div *ngIf="viewType === 'list' && !store.loading() && store.totalPlans() > 0" class="bg-white rounded-lg shadow-sm border border-gray-200">
     <!-- Table Header -->
     <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
       <div class="flex items-center justify-between">
@@ -305,21 +345,21 @@
     </div>
 
     <!-- Table Content -->
-    <div class="divide-y divide-gray-200">
-      <div *ngFor="let plan of store.plans()" class="px-6 py-4 hover:bg-gray-50 transition-colors">
+    <div class="divide-y divide-gray-200 overflow-visible">
+      <div *ngFor="let plan of store.plans()" class="px-6 py-4 hover:bg-gray-50 transition-colors relative overflow-visible">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <input type="checkbox" class="plan-list-checkbox" [checked]="isPlanSelected(plan)" (change)="togglePlanSelection(plan)" />
             <div>
               <div class="font-medium text-gray-900">{{ plan.name }}</div>
-              <div class="text-sm text-gray-500">{{ plan.plan_type }} • Priority: {{ plan.priority_id || '-' }} • {{ plan.is_active ? 'Active' : 'Inactive' }}</div>
+              <div class="text-sm text-gray-500">{{ plan.plan_type }} • Priority: {{ plan.priority?.name || '-' }} • {{ plan.is_active ? 'Active' : 'Inactive' }}</div>
             </div>
           </div>
           <div class="flex items-center space-x-2">
             <span class="text-sm text-gray-500">Scheduled: {{ plan.scheduled_count || 0 }}</span>
-            <div class="relative">
+            <div class="relative overflow-visible">
               <button
-                (click)="togglePlanMenu(plan.id!)"
+                (click)="togglePlanMenu(plan.id!, $event)"
                 class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <circle cx="12" cy="6" r="1.5" />
@@ -329,7 +369,7 @@
               </button>
 
               <!-- Dropdown Menu -->
-              <div *ngIf="isPlanMenuOpen(plan.id!)" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50" (click)="$event.stopPropagation()">
+              <div *ngIf="isPlanMenuOpen(plan.id!)" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-[100]" (click)="$event.stopPropagation()">
                 <button
                   (click)="viewPlan(plan)"
                   class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors">
