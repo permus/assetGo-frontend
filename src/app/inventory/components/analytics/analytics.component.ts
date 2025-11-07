@@ -4,11 +4,12 @@ import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem, TurnoverData
 import { CurrencyService } from '../../../core/services/currency.service';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import { Subject, takeUntil } from 'rxjs';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NumberFormatPipe],
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.scss']
 })

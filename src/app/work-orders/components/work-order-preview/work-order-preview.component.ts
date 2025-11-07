@@ -54,10 +54,14 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
 
   openAssignmentsModal(): void {
     this.showAssignmentsModal = true;
+    // Prevent body scrolling when modal is open
+    document.body.style.overflow = 'hidden';
   }
 
   closeAssignmentsModal(): void {
     this.showAssignmentsModal = false;
+    // Restore body scrolling when modal is closed
+    document.body.style.overflow = '';
   }
 
   // Edit modal controls
@@ -194,6 +198,10 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Restore body scrolling if modal was open
+    if (this.showAssignmentsModal) {
+      document.body.style.overflow = '';
+    }
     this.subscription.unsubscribe();
     this.stopCountdown();
   }
@@ -430,5 +438,9 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
     const seconds = diffSec % 60;
     const pad = (n: number) => n.toString().padStart(2, '0');
     this.displayedElapsed = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
   }
 }

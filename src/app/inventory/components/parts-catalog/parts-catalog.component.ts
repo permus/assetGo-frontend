@@ -14,11 +14,12 @@ import { PreferencesService } from '../../../core/services/preferences.service';
 import { ModuleAccessService } from '../../../core/services/module-access.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 @Component({
   selector: 'app-parts-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, AddPartModalComponent, DeleteConfirmationModalComponent, ArchiveConfirmationModalComponent, RestoreConfirmationModalComponent, PartsBulkImportModalComponent],
+  imports: [CommonModule, FormsModule, AddPartModalComponent, DeleteConfirmationModalComponent, ArchiveConfirmationModalComponent, RestoreConfirmationModalComponent, PartsBulkImportModalComponent, NumberFormatPipe],
   templateUrl: './parts-catalog.component.html',
   styleUrls: ['./parts-catalog.component.scss']
 })

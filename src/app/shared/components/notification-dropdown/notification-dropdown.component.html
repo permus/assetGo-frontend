@@ -17,7 +17,7 @@
 
   <!-- Dropdown Panel -->
   <div *ngIf="showDropdown"
-       class="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-lg border border-gray-200 z-50 max-h-[600px] flex flex-col">
+       class="absolute mt-2 w-96 bg-white rounded-xl shadow-lg border border-gray-200 z-50 max-h-[600px] flex flex-col" [class.right-0]="!isRtl()" [class.left-0]="isRtl()">
     <!-- Header -->
     <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
       <h3 class="text-lg font-semibold text-gray-900">Notifications</h3>

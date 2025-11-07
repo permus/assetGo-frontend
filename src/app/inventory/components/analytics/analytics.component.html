@@ -138,15 +138,15 @@
             </div>
             <div class="metric-item">
               <span class="metric-label">Total Parts:</span>
-              <span class="metric-value">{{ dashboardData.total_parts.toLocaleString() }}</span>
+              <span class="metric-value">{{ dashboardData.total_parts | numberFormat:0 }}</span>
             </div>
             <div class="metric-item">
               <span class="metric-label">Low Stock:</span>
-              <span class="metric-value warning">{{ dashboardData.low_stock_count.toLocaleString() }}</span>
+              <span class="metric-value warning">{{ dashboardData.low_stock_count | numberFormat:0 }}</span>
             </div>
             <div class="metric-item">
               <span class="metric-label">Out of Stock:</span>
-              <span class="metric-value danger">{{ dashboardData.out_of_stock_count.toLocaleString() }}</span>
+              <span class="metric-value danger">{{ dashboardData.out_of_stock_count | numberFormat:0 }}</span>
             </div>
           </div>
         </div>
@@ -164,15 +164,15 @@
             </div>
             <div class="metric-item">
               <span class="metric-label">Total Parts:</span>
-              <span class="metric-value">{{ overviewData.total_parts.toLocaleString() }}</span>
+              <span class="metric-value">{{ overviewData.total_parts | numberFormat:0 }}</span>
             </div>
             <div class="metric-item">
               <span class="metric-label">Low Stock:</span>
-              <span class="metric-value warning">{{ overviewData.low_stock_count.toLocaleString() }}</span>
+              <span class="metric-value warning">{{ overviewData.low_stock_count | numberFormat:0 }}</span>
             </div>
             <div class="metric-item">
               <span class="metric-label">Out of Stock:</span>
-              <span class="metric-value danger">{{ overviewData.out_of_stock_count.toLocaleString() }}</span>
+              <span class="metric-value danger">{{ overviewData.out_of_stock_count | numberFormat:0 }}</span>
             </div>
           </div>
         </div>
@@ -186,15 +186,15 @@
           <div class="card-metrics">
             <div class="metric-item">
               <span class="metric-label">Class A Items:</span>
-              <span class="metric-value">{{ abcSummary.classA.count }} ({{ abcSummary.classA.percentage.toFixed(1) }}%)</span>
+              <span class="metric-value">{{ abcSummary.classA.count }} ({{ abcSummary.classA.percentage | numberFormat:1 }}%)</span>
             </div>
             <div class="metric-item">
               <span class="metric-label">Class B Items:</span>
-              <span class="metric-value">{{ abcSummary.classB.count }} ({{ abcSummary.classB.percentage.toFixed(1) }}%)</span>
+              <span class="metric-value">{{ abcSummary.classB.count }} ({{ abcSummary.classB.percentage | numberFormat:1 }}%)</span>
             </div>
             <div class="metric-item">
               <span class="metric-label">Class C Items:</span>
-              <span class="metric-value">{{ abcSummary.classC.count }} ({{ abcSummary.classC.percentage.toFixed(1) }}%)</span>
+              <span class="metric-value">{{ abcSummary.classC.count }} ({{ abcSummary.classC.percentage | numberFormat:1 }}%)</span>
             </div>
             <div class="metric-item">
               <span class="metric-label">Total Items:</span>
@@ -223,7 +223,7 @@
                 <td>{{ item.part_id }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ formatCurrency(item.value) }}</td>
-                <td>{{ (item.cumulative_ratio * 100).toFixed(2) }}%</td>
+                <td>{{ (item.cumulative_ratio * 100) | numberFormat:2 }}%</td>
                 <td>
                   <span class="abc-badge" [class]="getAbcClassColor(item.class)">
                     {{ item.class }}

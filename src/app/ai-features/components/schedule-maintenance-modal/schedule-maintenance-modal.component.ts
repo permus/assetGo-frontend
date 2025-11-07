@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Prediction } from '../../shared/predictive-maintenance.interface';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 @Component({
   selector: 'app-schedule-maintenance-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NumberFormatPipe],
   templateUrl: './schedule-maintenance-modal.component.html',
   styleUrls: ['./schedule-maintenance-modal.component.scss'],
   animations: [

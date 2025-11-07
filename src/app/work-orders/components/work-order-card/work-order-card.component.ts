@@ -177,4 +177,8 @@ export class WorkOrderCardComponent {
     this.deleteRequested.emit(this.workOrder);
     this.showMenu = false;
   }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
 }

@@ -84,7 +84,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
           this.currentPage = response?.data?.pagination?.current_page ?? 1;
           this.lastPage = response?.data?.pagination?.last_page ?? 1;
           this.hasMore = this.currentPage < this.lastPage;
-          
+
           // Update grouped notifications after loading
           this.updateGroupedNotifications();
         } else {
@@ -261,5 +261,9 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
     if (!target.closest('.notification-dropdown-container')) {
       this.showDropdown = false;
     }
+  }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
   }
 }

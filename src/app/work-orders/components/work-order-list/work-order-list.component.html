@@ -96,7 +96,7 @@
               [disabled]="getSelectedCount() === 0"
               (click)="openDeleteModalForSelected()"
               title="Delete Selected">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4" [class.mr-1]="!isRtl()" [class.ml-1]="isRtl()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/>
                 <path d="M8 8l8 8M8 16l8-8" stroke-width="2"/>
               </svg>
@@ -156,7 +156,7 @@
           </div>
           <div class="empty-actions">
             <button class="btn btn-primary" (click)="createWorkOrder()">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" [class.mr-2]="!isRtl()" [class.ml-2]="isRtl()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
               </svg>
               Create Work Order
@@ -262,7 +262,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
-                <span>{{ workOrder.due_date ? (workOrder.due_date | date:'MMM d, y') : 'Not set' }}</span>
+                <span>{{ workOrder.due_date ? (workOrder.due_date | dateFormat) : 'Not set' }}</span>
               </div>
             </div>
 
@@ -272,7 +272,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <span>{{ workOrder.created_at | date:'MMM d, y' }}</span>
+                <span>{{ workOrder.created_at | dateFormat }}</span>
               </div>
             </div>
 

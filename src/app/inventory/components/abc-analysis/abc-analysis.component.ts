@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InventoryAnalyticsService, AbcAnalysisItem } from '../../../core/services/inventory-analytics.service';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
+import { FormatService } from '../../../core/services/format.service';
 
 @Component({
   selector: 'app-abc-analysis',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NumberFormatPipe],
   templateUrl: './abc-analysis.component.html',
   styleUrls: ['./abc-analysis.component.scss']
 })
 export class AbcAnalysisComponent implements OnInit {
+  private formatService = inject(FormatService);
   searchTerm = '';
   selectedClass = 'all';
   // Optional configuration
@@ -101,7 +104,7 @@ export class AbcAnalysisComponent implements OnInit {
   }
 
   // Filtered items based on search and class selection
-  get filteredItems() {
+  get filteredItems(): AbcAnalysisItem[] {
     let items = this.inventoryItems;
     
     if (this.searchTerm) {
@@ -157,7 +160,7 @@ export class AbcAnalysisComponent implements OnInit {
   }
 
   private exportFilteredCSV(): void {
-    const filteredData = this.filteredItems;
+    const filteredData: AbcAnalysisItem[] = this.filteredItems;
     
     if (filteredData.length === 0) {
       alert('No data to export. Please adjust your filters.');
@@ -168,12 +171,12 @@ export class AbcAnalysisComponent implements OnInit {
     const headers = ['Part Number', 'Part Name', 'Total Value', 'Value %', 'Cumulative %', 'ABC Class'];
     const csvContent = [
       headers.join(','),
-      ...filteredData.map(item => [
+      ...filteredData.map((item: AbcAnalysisItem) => [
         item.part_id,
         `"${item.name.replace(/"/g, '""')}"`, // Escape quotes in names
         item.value,
-        this.calculateValuePercentage(item.value).toFixed(2),
-        (item.cumulative_ratio * 100).toFixed(2),
+        this.formatService.formatNumber(this.calculateValuePercentage(item.value), 2),
+        this.formatService.formatNumber(item.cumulative_ratio * 100, 2),
         item.class
       ].join(','))
     ].join('\n');

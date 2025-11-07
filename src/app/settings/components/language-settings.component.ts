@@ -35,13 +35,22 @@ import { PreferencesService } from '../../core/services/preferences.service';
             <div class="font-medium">Right-to-Left Layout</div>
             <p class="text-sm text-gray-500">Enable RTL layout for Arabic and other RTL languages</p>
           </div>
-          <button type="button" role="switch" [attr.aria-checked]="rtl()" (click)="setRtl(!rtl())"
-                  class="relative inline-flex h-6 w-11 items-center rounded-full"
+<!--          <button type="button" role="switch" [attr.aria-checked]="rtl()" (click)="setRtl(!rtl())"
+                  class="relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300"
                   [class.bg-blue-600]="rtl()" [class.bg-gray-300]="!rtl()">
             <span
               class="inline-block h-5 w-5 transform rounded-full bg-white transition-all duration-300 cursor-pointer"
               [class.translate-x-[-2px]]="rtl()" [class.translate-x-[2px]]="!rtl()"></span>
+          </button>-->
+
+          <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out !p-1"
+                  [class.bg-blue-600]="rtl()" [class.bg-gray-300]="!rtl()"
+                  (click)="setRtl(!rtl())">
+            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                  [class.translate-x--5]="rtl()" [class.translate-x-0.5]="!rtl()"></span>
           </button>
+
+
         </div>
       </div>
       <div class="mt-4 text-sm text-gray-500">
@@ -51,26 +60,70 @@ import { PreferencesService } from '../../core/services/preferences.service';
   `
 })
 export class LanguageSettingsComponent implements OnInit {
-  language = signal(localStorage.getItem('app.language') || 'en');
-  rtl = signal(localStorage.getItem('app.rtl') === 'true');
+  language = signal('en');
+  rtl = signal(false);
   private toast = inject(ToastService);
   private prefsService = inject(PreferencesService);
 
-  ngOnInit() { this.apply(); }
+  ngOnInit() {
+    // Load preferences from backend
+    const prefs = this.prefsService.getPreferences();
+    const lang = prefs?.language || localStorage.getItem('app.language') || 'en';
+    const rtlValue = prefs?.rtl !== undefined ? prefs.rtl : (localStorage.getItem('app.rtl') === 'true');
+    
+    this.language.set(lang);
+    
+    // Initialize RTL based on language if not explicitly set
+    if (prefs?.rtl === undefined && localStorage.getItem('app.rtl') === null) {
+      // If RTL was never set, auto-set based on language
+      const shouldBeRtl = lang === 'ar';
+      this.rtl.set(shouldBeRtl);
+    } else {
+      this.rtl.set(rtlValue);
+    }
+    
+    this.apply();
+  }
 
   setLanguage(lang: string) {
     this.language.set(lang);
-    localStorage.setItem('app.language', lang);
-    this.apply();
-    this.toast.success(`Language changed to ${lang === 'en' ? 'English' : 'Arabic'}`);
+    
+    // Automatically set RTL based on language
+    const shouldBeRtl = lang === 'ar';
+    this.rtl.set(shouldBeRtl);
+    
+    // Save to backend
+    this.prefsService.setAndSave('language', lang).subscribe({
+      next: () => {
+        this.prefsService.setAndSave('rtl', shouldBeRtl).subscribe({
+          next: () => {
+            this.apply();
+            this.toast.success(`Language changed to ${lang === 'en' ? 'English' : 'Arabic'}`);
+          },
+          error: () => {
+            this.toast.error('Failed to save RTL preference');
+          }
+        });
+      },
+      error: () => {
+        this.toast.error('Failed to save language preference');
+      }
+    });
   }
 
   setRtl(v: boolean) {
     this.rtl.set(v);
-    localStorage.setItem('app.rtl', String(v));
-    this.prefsService.set('rtl', v);
-    this.apply();
-    this.toast.success(`RTL layout ${v ? 'enabled' : 'disabled'}`);
+    
+    // Save to backend
+    this.prefsService.setAndSave('rtl', v).subscribe({
+      next: () => {
+        this.apply();
+        this.toast.success(`RTL layout ${v ? 'enabled' : 'disabled'}`);
+      },
+      error: () => {
+        this.toast.error('Failed to save RTL preference');
+      }
+    });
   }
 
   private apply() {

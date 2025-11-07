@@ -10,6 +10,8 @@ import { TeamService } from '../../../teams/services/team.service';
 import { MetaWorkOrdersService } from '../../../core/services/meta-work-orders.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { MetaItem } from '../../../core/types/work-order.types';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
+import { FormatService } from '../../../core/services/format.service';
 
 interface User {
   id: number;
@@ -41,7 +43,7 @@ interface Team {
 @Component({
   selector: 'app-create-work-order-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NumberFormatPipe],
   templateUrl: './create-work-order-modal.component.html',
   styleUrls: ['./create-work-order-modal.component.scss'],
   animations: [
@@ -104,7 +106,8 @@ export class CreateWorkOrderModalComponent implements OnInit {
     private locationService: LocationService,
     private teamService: TeamService,
     private metaWorkOrdersService: MetaWorkOrdersService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private formatService: FormatService
   ) {}
 
   ngOnInit(): void {
@@ -247,7 +250,7 @@ export class CreateWorkOrderModalComponent implements OnInit {
     return `Risk Level: ${this.prediction.riskLevel.toUpperCase()}
 Confidence: ${this.prediction.confidence}%
 Predicted Failure Date: ${new Date(this.prediction.predictedFailureDate).toLocaleDateString()}
-Estimated Savings: $${this.prediction.savings.toFixed(2)}
+Estimated Savings: $${this.formatService.formatNumber(this.prediction.savings, 2)}
 
 Factors:
 ${this.prediction.factors?.join('\n- ') || 'None identified'}

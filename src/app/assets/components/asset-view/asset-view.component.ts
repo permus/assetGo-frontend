@@ -23,6 +23,10 @@ import {Chart, ChartConfiguration, ChartData, ChartOptions} from 'chart.js';
 import {registerables} from 'chart.js';
 import {CurrencyService} from '../../../core/services/currency.service';
 import {ToastService} from '../../../core/services/toast.service';
+import {FormatService} from '../../../core/services/format.service';
+import { DateFormatPipe } from '../../../core/pipes/date-format.pipe';
+import { TimeFormatPipe } from '../../../core/pipes/time-format.pipe';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -30,7 +34,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-asset-view',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, TransferAssetModalComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, TransferAssetModalComponent, DateFormatPipe, TimeFormatPipe, NumberFormatPipe],
   templateUrl: './asset-view.component.html',
   styleUrl: './asset-view.component.scss'
 })
@@ -152,7 +156,8 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private currencyService: CurrencyService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private formatService: FormatService
   ) {
     this.maintenanceForm = this.fb.group({
       schedule_type: ['', Validators.required],
@@ -169,6 +174,13 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    // Subscribe to currency changes for instant updates
+    this.currencyService.get$().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      // Currency changed - trigger change detection
+      this.cdr.markForCheck();
+    });
     this.route.params
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
@@ -906,7 +918,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
                   label: (context) => {
                     const label = context.dataset.label || '';
                     const value = context.parsed.y;
-                    return `${label}: ${this.getCurrencySymbol()}${value !== null ? value.toLocaleString() : '0'}`;
+                    return `${label}: ${this.getCurrencySymbol()}${value !== null ? this.formatService.formatNumber(value, 0) : '0'}`;
                   }
                 }
               }
@@ -925,7 +937,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
                 },
                 beginAtZero: true,
                 ticks: {
-                  callback: (value) => `${this.getCurrencySymbol()}${Number(value).toLocaleString()}`
+                  callback: (value) => `${this.getCurrencySymbol()}${this.formatService.formatNumber(Number(value), 0)}`
                 }
               }
             },
@@ -1510,10 +1522,7 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   formatCurrency(amount: number): string {
-    return amount.toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    });
+    return this.formatService.formatNumber(amount, 2);
   }
 
   getCurrencySymbol(): string {
@@ -2217,9 +2226,9 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (typeof value === 'number') {
       // Format currency for price fields
       if (value.toString().includes('.')) {
-        return `${this.getCurrencySymbol()}${value.toFixed(2)}`;
+        return `${this.getCurrencySymbol()}${this.formatService.formatNumber(value, 2)}`;
       }
-      return value.toString();
+      return this.formatService.formatNumber(value, 0);
     }
     if (typeof value === 'string') {
       // Check if it's a date
@@ -2276,5 +2285,9 @@ export class AssetViewComponent implements OnInit, OnDestroy, AfterViewInit {
         alert('Failed to copy URL to clipboard');
       });
     }
+  }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
   }
 }

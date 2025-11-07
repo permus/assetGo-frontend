@@ -138,12 +138,12 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Size:</span>
-                <span class="font-medium text-gray-900">{{ uploadedFile?.size ? (uploadedFile!.size / 1024 / 1024).toFixed(2) : '0' }} MB</span>
+                <span class="font-medium text-gray-900">{{ uploadedFile?.size ? ((uploadedFile!.size / 1024 / 1024) | numberFormat:2) : '0' }} MB</span>
               </div>
               <!-- File Info will be populated after upload -->
               <div *ngIf="uploadedFile?.lastModified" class="flex justify-between">
                 <span class="text-gray-600">Modified:</span>
-                <span class="font-medium text-gray-900">{{ uploadedFile?.lastModified | date:'medium' }}</span>
+                <span class="font-medium text-gray-900">{{ uploadedFile?.lastModified | dateFormat }} {{ uploadedFile?.lastModified | timeFormat }}</span>
               </div>
             </div>
 

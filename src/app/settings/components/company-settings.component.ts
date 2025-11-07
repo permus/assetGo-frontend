@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsService, Company } from '../settings.service';
 import { ToastService } from '../../core/services/toast.service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'company-settings',
@@ -33,14 +34,23 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
             <div class="text-sm font-medium mb-2">Company Logo</div>
             <div class="flex items-center gap-4">
               <div class="relative">
-                <img *ngIf="form.get('logo_url')?.value" [src]="form.get('logo_url')?.value || ''"
-                     class="h-12 w-12 object-cover rounded-lg border border-gray-200" alt="Company logo">
+                <img *ngIf="logoUrl"
+                     [src]="logoUrl"
+                     class="h-24 w-24 object-cover rounded-lg border border-gray-200"
+                     alt="Company logo"
+                     (error)="onImageError($event)">
+                <div *ngIf="!logoUrl"
+                     class="h-24 w-24 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6.75a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6.75v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                </div>
                 <div *ngIf="saving() && logoFile" class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                 </div>
               </div>
               <div class="space-y-1">
-                <button type="button" 
+                <button type="button"
                         class="px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 inline-flex items-center gap-2 disabled:opacity-50"
                         [disabled]="saving()"
                         (click)="fileInput.click()">
@@ -180,6 +190,7 @@ export class CompanySettingsComponent implements OnInit {
   private api = inject(SettingsService);
   private fb = inject(FormBuilder);
   private toast = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     industry: [''],
@@ -192,9 +203,39 @@ export class CompanySettingsComponent implements OnInit {
   saving = signal(false);
   logoFile: File | null = null;
 
-  ngOnInit() {
+  // Getter for logo URL to make template more reactive
+  get logoUrl(): string {
+    const url = this.form.get('logo_url')?.value || '';
+    return this.ensureAbsoluteUrl(url);
+  }
+
+  // Helper method to ensure logo URL is absolute
+  private ensureAbsoluteUrl(url: string): string {
+    if (!url) return '';
+    // If already absolute URL (starts with http:// or https://), return as is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // If relative path (starts with /storage/), convert to absolute URL
+    if (url.startsWith('/storage/') || url.startsWith('/')) {
+      // Extract base URL from apiUrl (remove /api)
+      const baseUrl = environment.apiUrl.replace('/api', '');
+      return baseUrl + url;
+    }
+    return url;
+  }
+
+  // Helper method to load company data from API and populate form
+  private loadCompanyData(clearCache: boolean = false) {
+    // Clear cache if requested (e.g., after upload/update)
+    if (clearCache) {
+      localStorage.removeItem('cached_company');
+    }
+    
     this.api.getCompany().subscribe(res => {
       const c = res.data?.company || {} as Partial<Company>;
+      // Extract logo_url from company object (it's added by the backend as a dynamic attribute)
+      const logoUrl = this.ensureAbsoluteUrl((c as any).logo_url || '');
       this.form.patchValue({
         name: c.name || '',
         industry: c.industry || '',
@@ -202,9 +243,18 @@ export class CompanySettingsComponent implements OnInit {
         email: c.email || '',
         phone: c.phone || '',
         address: c.address || '',
-        logo_url: c.logo_url || ''
+        logo_url: logoUrl
       });
+      // Mark logo_url control as dirty and update validity to trigger change detection
+      this.form.get('logo_url')?.markAsDirty();
+      this.form.get('logo_url')?.updateValueAndValidity({ emitEvent: true });
+      // Force change detection after loading company data
+      this.cdr.detectChanges();
     });
+  }
+
+  ngOnInit() {
+    this.loadCompanyData();
   }
 
   // Frontend Rules helpers
@@ -235,9 +285,9 @@ export class CompanySettingsComponent implements OnInit {
     } catch {}
     return controlName === 'name';
   }
-  onLogoChange(e: Event) { 
+  onLogoChange(e: Event) {
     this.logoFile = (e.target as HTMLInputElement).files?.[0] || null;
-    
+
     // Show preview immediately
     if (this.logoFile) {
       const reader = new FileReader();
@@ -248,16 +298,38 @@ export class CompanySettingsComponent implements OnInit {
     }
   }
 
+  onImageError(event: Event) {
+    // If image fails to load, clear the logo_url to show placeholder
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    // Don't clear the form value, just hide the broken image
+  }
+
   save() {
     this.saving.set(true);
-    
+
     // Handle logo upload first if there's a new file
     if (this.logoFile) {
       this.api.uploadCompanyLogo(this.logoFile).subscribe({
         next: (r) => {
-          // Update form with the server response
-          this.form.patchValue({ logo_url: r.data?.logo_url || this.form.get('logo_url')?.value });
+          // Get logo URL from upload response immediately for instant preview
+          const company = (r.data as any)?.company;
+          const immediateLogoUrl = company?.logo_url || (r.data as any)?.logo_url || '';
+          if (immediateLogoUrl) {
+            const logoUrl = this.ensureAbsoluteUrl(immediateLogoUrl);
+            this.form.patchValue({ logo_url: logoUrl });
+            this.form.get('logo_url')?.markAsDirty();
+            this.form.get('logo_url')?.updateValueAndValidity({ emitEvent: true });
+            this.cdr.detectChanges();
+          }
+          
           this.toast.success('Logo uploaded successfully!');
+          
+          // Clear cache and refresh company data from API to get updated logo_url
+          // Use setTimeout to ensure backend has processed the upload
+          setTimeout(() => {
+            this.loadCompanyData(true);
+          }, 100);
           
           // Then update other company data
           this.updateCompanyData();
@@ -277,12 +349,16 @@ export class CompanySettingsComponent implements OnInit {
     const payload: Partial<Company> = this.form.value as any;
     // Remove logo_url from payload as it's handled separately
     delete payload.logo_url;
-    
+
     this.api.updateCompany(payload).subscribe({
-      next: () => {
+      next: (response) => {
         this.saving.set(false);
         // Reset logoFile after successful upload
         this.logoFile = null;
+        
+        // Clear cache and refresh company data from API to get updated logo_url and all fields
+        this.loadCompanyData(true);
+        
         this.toast.success('Company settings saved successfully!');
       },
       error: (error) => {

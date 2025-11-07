@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { UserPreferences } from './preferences.service';
 
 export interface User {
   id: number;
@@ -275,25 +276,38 @@ export class AuthService {
     }
     this.servicesInitialized = true;
 
-    // Initialize currency from server
-    if (currencyService) {
-      currencyService.refreshFromServer().subscribe({
-        error: () => {
-          // Silently fail - use defaults
-        }
-      });
-    }
-
-    // Load user preferences and apply to app
+    // Initialize preferences from backend (this will apply language, RTL, dark mode, and currency)
     if (preferencesService) {
-      preferencesService.syncFromBackend().subscribe({
-        next: (response: any) => {
-          if (response.success && response.data) {
-            preferencesService.updatePreferences(response.data);
+      preferencesService.initialize().subscribe({
+        next: (prefs: UserPreferences) => {
+          console.log('[AuthService] Preferences loaded and applied', prefs);
+          
+          // After preferences are loaded, refresh currency service
+          // CurrencyService will use preferences if available
+          if (currencyService) {
+            currencyService.refreshFromServer().subscribe({
+              error: () => {
+                // Silently fail - use defaults
+              }
+            });
           }
         },
         error: () => {
-          // Use defaults if sync fails
+          // Fallback: try to load currency from company
+          if (currencyService) {
+            currencyService.refreshFromServer().subscribe({
+              error: () => {
+                // Silently fail - use defaults
+              }
+            });
+          }
+        }
+      });
+    } else if (currencyService) {
+      // If no preferences service, just load currency
+      currencyService.refreshFromServer().subscribe({
+        error: () => {
+          // Silently fail - use defaults
         }
       });
     }

@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InventoryAnalyticsService, DashboardData, AbcAnalysisItem, TurnoverData, StockAgingData } from '../../../core/services/inventory-analytics.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { FormatService } from '../../../core/services/format.service';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 @Component({
   selector: 'app-dashboard-overview',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NumberFormatPipe],
   templateUrl: './dashboard-overview.component.html',
   styleUrls: ['./dashboard-overview.component.scss']
 })
 export class DashboardOverviewComponent implements OnInit {
+  private formatService = inject(FormatService);
   dashboardData: DashboardData = {
     total_value: 0,
     total_parts: 0,
@@ -161,6 +164,6 @@ export class DashboardOverviewComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    return `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `$${this.formatService.formatNumber(amount, 2)}`;
   }
 }

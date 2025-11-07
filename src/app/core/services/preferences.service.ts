@@ -8,6 +8,7 @@ export interface UserPreferences {
   // Localization
   language?: string;
   rtl?: boolean;
+  currency?: string;
   date_format?: string;
   time_format?: string;
   number_format?: string;
@@ -54,13 +55,47 @@ export class PreferencesService {
   public preferences$: Observable<UserPreferences> = this.preferencesSubject.asObservable();
 
   constructor() {
-    this.loadPreferences();
+    // Don't auto-load on construction - wait for explicit initialization
   }
 
   /**
-   * Load preferences from localStorage and apply to app
+   * Initialize preferences - fetch from backend and apply
    */
-  private loadPreferences(): void {
+  initialize(): Observable<UserPreferences> {
+    return new Observable<UserPreferences>(observer => {
+      this.syncFromBackend().subscribe({
+        next: (response: any) => {
+          if (response?.success && response?.data) {
+            const prefs = response.data as UserPreferences;
+            // Merge with defaults
+            const merged = { ...this.preferencesSubject.value, ...prefs };
+            this.preferencesSubject.next(merged);
+            this.applyPreferences(merged);
+            // Also update localStorage as backup
+            localStorage.setItem('app.preferences', JSON.stringify(merged));
+            observer.next(merged);
+            observer.complete();
+          } else {
+            // Fallback to localStorage if backend fails
+            this.loadFromLocalStorage();
+            observer.next(this.preferencesSubject.value);
+            observer.complete();
+          }
+        },
+        error: (err) => {
+          // Fallback to localStorage if backend fails
+          this.loadFromLocalStorage();
+          observer.next(this.preferencesSubject.value);
+          observer.complete();
+        }
+      });
+    });
+  }
+
+  /**
+   * Load preferences from localStorage (fallback)
+   */
+  private loadFromLocalStorage(): void {
     const stored = localStorage.getItem('app.preferences');
     if (stored) {
       try {
@@ -81,7 +116,7 @@ export class PreferencesService {
   }
 
   /**
-   * Update preferences
+   * Update preferences (local only - use saveToBackend to persist)
    */
   updatePreferences(prefs: Partial<UserPreferences>): void {
     const updated = { ...this.preferencesSubject.value, ...prefs };
@@ -94,11 +129,25 @@ export class PreferencesService {
    * Apply preferences to the application
    */
   private applyPreferences(prefs: UserPreferences): void {
-    // Apply dark mode
-    if (prefs.dark_mode) {
+    // Apply language
+    if (prefs.language) {
+      document.documentElement.setAttribute('lang', prefs.language);
+    }
+
+    // Apply RTL
+    if (prefs.rtl) {
+      document.documentElement.setAttribute('dir', 'rtl');
+    } else {
+      document.documentElement.setAttribute('dir', 'ltr');
+    }
+
+    // Apply dark mode - ensure it's applied correctly
+    if (prefs.dark_mode === true) {
       document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
     }
 
     // Apply compact view
@@ -108,12 +157,7 @@ export class PreferencesService {
       document.documentElement.classList.remove('compact-mode');
     }
 
-    // Apply RTL
-    if (prefs.rtl) {
-      document.documentElement.setAttribute('dir', 'rtl');
-    } else {
-      document.documentElement.setAttribute('dir', 'ltr');
-    }
+    // Note: CurrencyService will subscribe to preferences$ observable to get currency updates
   }
 
   /**
@@ -124,11 +168,38 @@ export class PreferencesService {
   }
 
   /**
-   * Set specific preference value
+   * Set specific preference value (local only - use saveToBackend to persist)
    */
   set<K extends keyof UserPreferences>(key: K, value: UserPreferences[K]): void {
     const updated = { ...this.preferencesSubject.value, [key]: value };
-    this.updatePreferences(updated);
+    this.preferencesSubject.next(updated);
+    localStorage.setItem('app.preferences', JSON.stringify(updated));
+    this.applyPreferences(updated);
+  }
+
+  /**
+   * Set and save to backend
+   */
+  setAndSave<K extends keyof UserPreferences>(key: K, value: UserPreferences[K]): Observable<any> {
+    const updated = { ...this.preferencesSubject.value, [key]: value };
+    // Update immediately (local) - this triggers preferences$ observable
+    this.preferencesSubject.next(updated);
+    localStorage.setItem('app.preferences', JSON.stringify(updated));
+    this.applyPreferences(updated);
+    
+    // Then save to backend
+    return this.saveToBackend(updated).pipe(
+      tap((response: any) => {
+        // Update cache after successful save
+        if (response?.success && response?.data) {
+          localStorage.setItem('cached_preferences', JSON.stringify(response));
+          // Merge backend response with current preferences
+          const merged = { ...updated, ...response.data };
+          this.preferencesSubject.next(merged);
+          this.applyPreferences(merged);
+        }
+      })
+    );
   }
 
   private syncing = false;
@@ -150,6 +221,22 @@ export class PreferencesService {
     if (cached) {
       try {
         const cachedData = JSON.parse(cached);
+        // Return cached data but still fetch fresh data in background
+        this.syncing = true;
+        this.http.get(`${this.apiUrl}/settings/preferences`).pipe(
+          tap((response: any) => {
+            this.syncing = false;
+            if (response.success && response.data) {
+              localStorage.setItem('cached_preferences', JSON.stringify(response));
+              const prefs = response.data as UserPreferences;
+              const merged = { ...this.preferencesSubject.value, ...prefs };
+              this.preferencesSubject.next(merged);
+              this.applyPreferences(merged);
+            }
+          })
+        ).subscribe({
+          error: () => { this.syncing = false; }
+        });
         return new Observable(observer => {
           observer.next(cachedData);
           observer.complete();

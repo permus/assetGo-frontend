@@ -192,7 +192,7 @@
         <div class="technician-card" *ngFor="let tech of technicianData">
           <div class="tech-header">
             <h4 class="tech-name">{{ tech.name }}</h4>
-            <div class="tech-score">{{ tech.score.toFixed(2) }}</div>
+            <div class="tech-score">{{ tech.score | numberFormat:2 }}</div>
           </div>
           <div class="tech-metrics">
             <div class="tech-metric">

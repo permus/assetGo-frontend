@@ -5,11 +5,14 @@ import {Router, RouterLink} from '@angular/router';
 import { AssetService } from '../../services/asset.service';
 import { ImportProgressService } from '../../../shared/services/import-progress.service';
 import { timer, interval, Subject, takeUntil } from 'rxjs';
+import { DateFormatPipe } from '../../../core/pipes/date-format.pipe';
+import { TimeFormatPipe } from '../../../core/pipes/time-format.pipe';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 @Component({
   selector: 'app-smart-import',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, DateFormatPipe, TimeFormatPipe, NumberFormatPipe],
   templateUrl: './smart-import.component.html',
   styleUrls: ['./smart-import.component.scss']
 })

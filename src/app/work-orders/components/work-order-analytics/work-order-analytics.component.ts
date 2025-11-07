@@ -1,17 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkOrderService, WorkOrderAnalytics, WorkOrderStatistics } from '../../services/work-order.service';
 import { Subject, takeUntil } from 'rxjs';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
+import { FormatService } from '../../../core/services/format.service';
 
 @Component({
   selector: 'app-work-order-analytics',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NumberFormatPipe],
   templateUrl: './work-order-analytics.component.html',
   styleUrls: ['./work-order-analytics.component.scss']
 })
 export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private formatService = inject(FormatService);
 
   // Loading and error states
   loading = false;
@@ -185,17 +188,17 @@ export class WorkOrderAnalyticsComponent implements OnInit, OnDestroy {
     if (days < 0) {
       const absDays = Math.abs(days);
       if (absDays === 1) return '1 day ahead';
-      return `${absDays.toFixed(1)} days ahead`;
+      return `${this.formatService.formatNumber(absDays, 1)} days ahead`;
     }
     
     // Handle positive values (completed after schedule)
     if (days === 1) return '1 day';
-    return `${days.toFixed(1)} days`;
+    return `${this.formatService.formatNumber(days, 1)} days`;
   }
 
   formatPercentage(value: number): string {
     if (!value || isNaN(value)) return '0.0%';
-    return `${value.toFixed(1)}%`;
+    return `${this.formatService.formatNumber(value, 1)}%`;
   }
 
   getStatusPercentage(value: number, total: number): number {

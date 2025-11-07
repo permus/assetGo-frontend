@@ -1,8 +1,12 @@
 /* Light theme utility tokens for this page */
 .card { background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; padding:1rem; }
+.dark .card { background:#1f2937; border-color:#374151; }
 .label { font-size:.75rem; color:#6b7280; }
+.dark .label { color:#9ca3af; }
 .sublabel { font-size:.7rem; color:#9ca3af; }
+.dark .sublabel { color:#6b7280; }
 .value { font-size:1.5rem; font-weight:700; color:#111827; }
+.dark .value { color:#f3f4f6; }
 
 /* Standard input pattern styles (matches plan-dialog) */
 .form-row { width: 100%; }
@@ -19,18 +23,29 @@
 }
 .metric-card .metric-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; }
 .metric-card .title { font-weight:600; color:#111827; }
+.dark .metric-card .title { color:#f3f4f6; }
 .metric-card .badge { background:#e5f0ff; color:#2563eb; border-radius:10px; padding:.35rem .5rem; font-size:.75rem; }
+.dark .metric-card .badge { background:#1e3a8a; color:#93c5fd; }
 .metric-card.info { background:#f2f8ff; border-color:#dbeafe; }
+.dark .metric-card.info { background:#1e3a8a20; border-color:#1e40af; }
 .metric-card.success { background:#f2fffa; border-color:#d1fae5; }
+.dark .metric-card.success { background:#064e3b20; border-color:#065f46; }
 .metric-card.warning { background:#fff8ed; border-color:#fde68a; }
+.dark .metric-card.warning { background:#78350f20; border-color:#92400e; }
 .metric-card.danger { background:#fff5f5; border-color:#fecaca; }
+.dark .metric-card.danger { background:#7f1d1d20; border-color:#991b1b; }
 .metric-card .value { font-size:1.75rem; font-weight:700; color:#0f172a; }
+.dark .metric-card .value { color:#f3f4f6; }
 .metric-card .hint { margin-top:.5rem; font-size:.875rem; color:#6b7280; }
+.dark .metric-card .hint { color:#9ca3af; }
 .metric-card .link { color:#2563eb; text-decoration:none; }
+.dark .metric-card .link { color:#60a5fa; }
 
 /* Pills and search layout */
 .search-row { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; }
 .pill-group { display:flex; gap:.5rem; }
 .pill {white-space: nowrap; padding:.5rem .9rem; border:1px solid #d1d5db; border-radius:.5rem; background:#fff; color:#111827; font-size:.875rem; }
+.dark .pill { background:#1f2937; border-color:#374151; color:#f3f4f6; }
 .pill.active { background:#2563eb; color:#fff; border-color:#2563eb; }
+.dark .pill.active { background:#2563eb; color:#fff; border-color:#2563eb; }
 

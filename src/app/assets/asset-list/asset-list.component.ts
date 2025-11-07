@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CurrencyPipe, NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,18 +13,26 @@ import { RouterModule } from '@angular/router';
 import { PaginationComponent, PaginationData } from '../../shared/components/pagination/pagination.component';
 import { GlobalDropdownComponent, DropdownOption } from '../../shared/components/global-dropdown/global-dropdown.component';
 import { PreferencesService } from '../../core/services/preferences.service';
+import { CurrencyService } from '../../core/services/currency.service';
+import { FormatService } from '../../core/services/format.service';
+import { DateFormatPipe } from '../../core/pipes/date-format.pipe';
+import { TimeFormatPipe } from '../../core/pipes/time-format.pipe';
+import { NumberFormatPipe } from '../../core/pipes/number-format.pipe';
 import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-asset-list',
   standalone: true,
-  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, RouterModule, PaginationComponent, GlobalDropdownComponent],
+  imports: [CurrencyPipe, NgIf, NgFor, FormsModule, ArchiveConfirmationModalComponent, DeleteConfirmationModalComponent, RestoreConfirmationModalComponent, RouterModule, PaginationComponent, GlobalDropdownComponent, DateFormatPipe, TimeFormatPipe, NumberFormatPipe],
   templateUrl: './asset-list.component.html',
   styleUrls: ['./asset-list.component.scss']
 })
 export class AssetListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private prefsService = inject(PreferencesService);
+  private currencyService = inject(CurrencyService);
+  private formatService = inject(FormatService);
+  currentCurrency = signal('USD'); // Track current currency for reactive updates
 
   constructor(
     private router: Router,
@@ -141,11 +149,19 @@ export class AssetListComponent implements OnInit, OnDestroy {
   selectAllAssets = false;
 
   ngOnInit() {
+    // Subscribe to currency changes for instant updates
+    this.currencyService.get$().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(currency => {
+      this.currentCurrency.set(currency);
+      // Signal update will trigger change detection automatically
+    });
+
     // Apply items per page from user preferences
     const itemsPerPage = this.prefsService.get('items_per_page') || 20;
     this.currentFilters.per_page = itemsPerPage;
     this.pagination.per_page = itemsPerPage;
-    
+
     this.loadAssetStatistics();
     this.loadAssets();
     this.loadCategories();
@@ -436,10 +452,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
       asset.showMenu = false; // Close any open asset menus
     });
     this.selectAllAssets = false;
-    
+
     // Clear restore-related state
     this.selectedAssetForRestore = null;
-    
+
     // Close any open modals
     this.showRestoreConfirmationModal = false;
     this.showArchiveConfirmationModal = false;
@@ -950,25 +966,34 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   /**
    * Format currency value with K/M abbreviations
-   * Examples: 10000 -> $10k, 1000000 -> $1M, 10000000 -> $10M
+   * Examples: 10000 -> $10k (or د.إ10k), 1000000 -> $1M (or د.إ1M)
    */
   formatCurrencyValue(value: number): string {
-    if (!value && value !== 0) return '$0';
-    
+    if (!value && value !== 0) {
+      return `${this.currencyService.getSymbol()}0`;
+    }
+
     const absValue = Math.abs(value);
     const sign = value < 0 ? '-' : '';
-    
+    const symbol = this.currencyService.getSymbol();
+
     if (absValue >= 1000000) {
       // Format in millions
       const millions = absValue / 1000000;
-      return `${sign}$${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)}M`;
+      const decimals = millions % 1 === 0 ? 0 : 1;
+      return `${sign}${symbol}${this.formatService.formatNumber(millions, decimals)}M`;
     } else if (absValue >= 1000) {
       // Format in thousands
       const thousands = absValue / 1000;
-      return `${sign}$${thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)}k`;
+      const decimals = thousands % 1 === 0 ? 0 : 1;
+      return `${sign}${symbol}${this.formatService.formatNumber(thousands, decimals)}k`;
     } else {
       // Format as regular currency
-      return `${sign}$${absValue.toFixed(2)}`;
+      return `${sign}${symbol}${this.formatService.formatNumber(absValue, 2)}`;
     }
+  }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
   }
 }

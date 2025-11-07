@@ -1,22 +1,54 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { SettingsService } from '../../settings/settings.service';
+import { PreferencesService } from './preferences.service';
+import { FormatService } from './format.service';
 
 export type CurrencyCode = 'USD' | 'AED' | string;
 
 @Injectable({ providedIn: 'root' })
-export class CurrencyService {
+export class CurrencyService implements OnDestroy {
   private readonly settings = inject(SettingsService);
+  private readonly prefsService = inject(PreferencesService);
+  private readonly formatService = inject(FormatService);
   private readonly currency$ = new BehaviorSubject<CurrencyCode>('USD');
   private refreshing = false;
+  private prefsSubscription?: Subscription;
   
   private readonly currencySymbols: Record<string, string> = {
     'USD': '$',
     'AED': 'د.إ',
   };
 
-  // Load from server and broadcast
+  constructor() {
+    // Subscribe to preferences changes to automatically update currency
+    this.prefsSubscription = this.prefsService.preferences$.subscribe(prefs => {
+      // Update currency whenever preferences change and currency is present
+      if (prefs?.currency) {
+        const newCurrency = prefs.currency.toUpperCase();
+        const currentCurrency = this.currency$.getValue();
+        if (currentCurrency !== newCurrency) {
+          this.currency$.next(newCurrency);
+        }
+      }
+    });
+    
+    // Also initialize from current preferences
+    const currentPrefs = this.prefsService.getPreferences();
+    if (currentPrefs?.currency) {
+      const initCurrency = currentPrefs.currency.toUpperCase();
+      this.currency$.next(initCurrency);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.prefsSubscription) {
+      this.prefsSubscription.unsubscribe();
+    }
+  }
+
+  // Load from user preferences and broadcast
   refreshFromServer(): Observable<CurrencyCode> {
     // Prevent multiple simultaneous requests
     if (this.refreshing) {
@@ -25,7 +57,18 @@ export class CurrencyService {
       );
     }
 
-    // Check cache first
+    // First, try to get from user preferences
+    const userPrefs = this.prefsService.getPreferences();
+    if (userPrefs?.currency) {
+      const code = userPrefs.currency as CurrencyCode;
+      this.currency$.next(code);
+      return new Observable<CurrencyCode>(observer => {
+        observer.next(code);
+        observer.complete();
+      });
+    }
+
+    // Fallback to company currency (for backward compatibility)
     const cached = localStorage.getItem('cached_company');
     if (cached) {
       try {
@@ -53,6 +96,13 @@ export class CurrencyService {
     );
   }
 
+  /**
+   * Update currency and notify all subscribers
+   */
+  setCurrency(code: CurrencyCode): void {
+    this.currency$.next(code);
+  }
+
   get$(): Observable<CurrencyCode> {
     return this.currency$.asObservable();
   }
@@ -69,8 +119,8 @@ export class CurrencyService {
   // Helper to format amounts consistently
   format(amount: number | string | null | undefined): string {
     const num = Number(amount ?? 0);
-    if (!isFinite(num)) return `${this.getSymbol()}0.00`;
-    return `${this.getSymbol()}${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (!isFinite(num)) return `${this.getSymbol()}${this.formatService.formatNumber(0, 2)}`;
+    return `${this.getSymbol()}${this.formatService.formatNumber(num, 2)}`;
   }
 }
 

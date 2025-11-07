@@ -127,4 +127,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
     }
     return false;
   }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
 }

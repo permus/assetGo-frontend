@@ -70,4 +70,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
       this.showUserDropdown = false;
     }
   }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
 }

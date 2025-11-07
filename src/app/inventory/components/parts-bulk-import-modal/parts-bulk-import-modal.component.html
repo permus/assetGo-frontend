@@ -92,7 +92,7 @@
               </div>
               <div class="file-details">
                 <p class="file-name">{{ selectedFile.name }}</p>
-                <p class="file-size">{{ (selectedFile.size / 1024).toFixed(2) }} KB</p>
+                <p class="file-size">{{ (selectedFile.size / 1024) | numberFormat:2 }} KB</p>
               </div>
               <button
                 type="button"

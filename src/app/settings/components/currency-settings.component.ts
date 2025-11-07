@@ -1,8 +1,10 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsService } from '../settings.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { ToastService } from '../../core/services/toast.service';
+import { PreferencesService } from '../../core/services/preferences.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'currency-settings',
@@ -11,7 +13,7 @@ import { ToastService } from '../../core/services/toast.service';
   template: `
     <div class="border border-gray-200 shadow bg-white mb-4 p-5 rounded-2xl">
       <h2 class="text-2xl font-medium mb-3">Currency Settings</h2>
-      <div class="text-sm text-gray-500 mb-1">Company Currency</div>
+      <div class="text-sm text-gray-500 mb-1">User Currency Preference</div>
       <p class="text-gray-500 text-sm mb-3">All financial amounts will be displayed in the selected currency.</p>
       <div class="flex gap-2 flex-wrap">
         <button
@@ -35,30 +37,60 @@ import { ToastService } from '../../core/services/toast.service';
     </div>
   `
 })
-export class CurrencySettingsComponent implements OnInit {
+export class CurrencySettingsComponent implements OnInit, OnDestroy {
   @Input() disabled = false;
   saving = signal(false);
   currentCurrency = signal('');
   private api = inject(SettingsService);
   private currency = inject(CurrencyService);
   private toast = inject(ToastService);
+  private prefsService = inject(PreferencesService);
+  private currencySubscription?: Subscription;
 
   ngOnInit() {
-    this.api.getCompany().subscribe(res => {
-      const c = (res.data?.company?.currency ?? '').toString().toUpperCase();
-      this.currentCurrency.set(c);
-      this.currency.refreshFromServer().subscribe();
+    // Subscribe to currency changes from CurrencyService
+    this.currencySubscription = this.currency.get$().subscribe(code => {
+      if (code) {
+        this.currentCurrency.set(code.toUpperCase());
+      }
     });
+
+    // Load currency from user preferences first
+    const prefs = this.prefsService.getPreferences();
+    if (prefs?.currency) {
+      const c = prefs.currency.toUpperCase();
+      this.currentCurrency.set(c);
+      this.currency.setCurrency(c);
+    } else {
+      // Fallback to company currency
+      this.api.getCompany().subscribe(res => {
+        const c = (res.data?.company?.currency ?? 'USD').toString().toUpperCase();
+        this.currentCurrency.set(c);
+        this.currency.refreshFromServer().subscribe();
+      });
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.currencySubscription) {
+      this.currencySubscription.unsubscribe();
+    }
   }
 
   quickSet(code: string) {
-    if (this.disabled) return;
-    if (this.currentCurrency() === code) return;
+    if (this.disabled || this.saving()) return;
+    const codeUpper = code.toUpperCase();
+    if (this.currentCurrency() === codeUpper) return;
+    
     this.saving.set(true);
-    this.api.updateCurrency(code).subscribe({
-      next: () => { 
-        this.currentCurrency.set(code); 
-        this.currency.refreshFromServer().subscribe(); 
+    
+    // Save to user preferences - this will trigger CurrencyService subscription
+    this.prefsService.setAndSave('currency', codeUpper).subscribe({
+      next: () => {
+        // CurrencyService will automatically update via subscription to preferences$
+        // But we also explicitly update it to ensure immediate propagation
+        this.currency.setCurrency(codeUpper);
+        this.currentCurrency.set(codeUpper);
         this.saving.set(false);
         this.toast.success('Currency updated successfully!');
       },

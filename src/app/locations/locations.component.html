@@ -99,7 +99,9 @@
 
         <!-- Filters Dropdown -->
         <div *ngIf="showFilters"
-             class="filter-dropdown absolute text-start top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 py-4 z-50">
+             class="filter-dropdown absolute text-start top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 py-4 z-50"
+             [class.right-0]="!isRtl()"
+             [class.left-0]="isRtl()">
           <form [formGroup]="filtersForm" (ngSubmit)="applyFilters()" class="p-4">
             <div class="space-y-4">
               <!-- Location Type -->
@@ -182,11 +184,15 @@
             
             <!-- Sort Dropdown -->
             <div *ngIf="showSortDropdown"
-                 class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                 class="absolute top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                 [class.left-0]="!isRtl()"
+                 [class.right-0]="isRtl()">
               <button
                 *ngFor="let option of sortOptions"
                 (click)="onSortChange(option.value); showSortDropdown = false"
-                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                class="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                [class.text-left]="!isRtl()"
+                [class.text-right]="isRtl()"
                 [class.bg-blue-50]="currentSortBy === option.value">
                 <span>{{ option.label }}</span>
                 <svg *ngIf="currentSortBy === option.value" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -377,11 +383,15 @@
               
               <!-- Sort Dropdown -->
               <div *ngIf="showSortDropdown"
-                   class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                   class="absolute top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                   [class.left-0]="!isRtl()"
+                   [class.right-0]="isRtl()">
                 <button
                   *ngFor="let option of sortOptions"
                   (click)="onSortChange(option.value); showSortDropdown = false"
-                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                  class="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                  [class.text-left]="!isRtl()"
+                  [class.text-right]="isRtl()"
                   [class.bg-blue-50]="currentSortBy === option.value">
                   <span>{{ option.label }}</span>
                   <svg *ngIf="currentSortBy === option.value" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

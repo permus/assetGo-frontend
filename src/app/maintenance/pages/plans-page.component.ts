@@ -268,6 +268,10 @@ onShowChange(event: any) {
     }
     this.showDeleteConfirmationModal = true;
   }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
 }
 
 

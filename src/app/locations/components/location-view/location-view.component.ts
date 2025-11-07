@@ -497,4 +497,7 @@ export class LocationViewComponent implements OnInit, OnDestroy {
     return this.expandedNodes.has(nodeId);
   }
 
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
 }

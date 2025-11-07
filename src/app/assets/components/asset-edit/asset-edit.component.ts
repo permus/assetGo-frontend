@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -7,11 +7,13 @@ import { Subject, takeUntil } from 'rxjs';
 import { AssetService } from '../../services/asset.service';
 import { Location as angularLocation } from '@angular/common';
 import flatpickr from 'flatpickr';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 @Component({
   selector: 'app-asset-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, NumberFormatPipe],
   templateUrl: './asset-edit.component.html',
   styleUrl: './asset-edit.component.scss'
 })
@@ -98,6 +100,10 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   possibleParents: any[] = [];
 
+  private currencyService = inject(CurrencyService);
+  currentCurrency = signal('USD');
+  currencySymbol = signal('$');
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -134,6 +140,14 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    // Subscribe to currency changes for instant updates
+    this.currencyService.get$().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(currency => {
+      this.currentCurrency.set(currency);
+      this.currencySymbol.set(this.currencyService.getSymbol());
+    });
+
     this.route.params
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {

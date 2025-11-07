@@ -442,4 +442,8 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     };
     return descriptionMap[priority.slug] || 'Work order priority level';
   }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
 }

@@ -46,26 +46,28 @@ export class AppComponent implements OnInit, OnDestroy {
       AppComponent.appInitialized = true;
       console.log('[AppComponent] Initializing services for the first time');
       
-      // Initialize currency from server
-      this.currencyService.refreshFromServer().subscribe({
-        next: () => console.log('[AppComponent] Currency loaded'),
-        error: (err) => {
-          console.warn('[AppComponent] Currency load failed:', err);
-          // Silently fail - use defaults
-        }
-      });
-      
-      // Load user preferences and apply to app
-      this.preferencesService.syncFromBackend().subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            this.preferencesService.updatePreferences(response.data);
-            console.log('[AppComponent] Preferences loaded');
-          }
+      // Initialize preferences from backend (this will apply language, RTL, dark mode, and currency)
+      this.preferencesService.initialize().subscribe({
+        next: (prefs) => {
+          console.log('[AppComponent] Preferences loaded and applied', prefs);
+          
+          // After preferences are loaded, refresh currency service
+          // CurrencyService will use preferences if available
+          this.currencyService.refreshFromServer().subscribe({
+            next: () => console.log('[AppComponent] Currency loaded'),
+            error: (err) => {
+              console.warn('[AppComponent] Currency load failed:', err);
+              // Silently fail - use defaults
+            }
+          });
         },
         error: (err) => {
           console.warn('[AppComponent] Preferences load failed:', err);
-          // Use defaults if sync fails
+          // Fallback: try to load currency from company
+          this.currencyService.refreshFromServer().subscribe({
+            next: () => console.log('[AppComponent] Currency loaded (fallback)'),
+            error: () => console.warn('[AppComponent] Currency load failed (fallback)')
+          });
         }
       });
 

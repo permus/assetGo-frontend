@@ -440,4 +440,8 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
     this.loadWorkOrders(1, this.currentFilters);
   }
 
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
+
 }

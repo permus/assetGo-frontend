@@ -62,7 +62,7 @@
           </div>
           <div class="metric-row">
             <span class="metric-label">Value %:</span>
-            <span class="metric-value">{{ abcData.classA.percentage.toFixed(1) }}%</span>
+            <span class="metric-value">{{ abcData.classA.percentage | numberFormat:1 }}%</span>
           </div>
         </div>
         <div class="progress-bar">
@@ -87,7 +87,7 @@
           </div>
           <div class="metric-row">
             <span class="metric-label">Value %:</span>
-            <span class="metric-value">{{ abcData.classB.percentage.toFixed(1) }}%</span>
+            <span class="metric-value">{{ abcData.classB.percentage | numberFormat:1 }}%</span>
           </div>
         </div>
         <div class="progress-bar">
@@ -112,7 +112,7 @@
           </div>
           <div class="metric-row">
             <span class="metric-label">Value %:</span>
-            <span class="metric-value">{{ abcData.classC.percentage.toFixed(1) }}%</span>
+            <span class="metric-value">{{ abcData.classC.percentage | numberFormat:1 }}%</span>
           </div>
         </div>
         <div class="progress-bar">
@@ -173,8 +173,8 @@
               <td class="part-number">{{ item.part_id }}</td>
               <td class="part-name">{{ item.name }}</td>
               <td class="total-value">{{ item.value | currency }}</td>
-                             <td class="value-percentage">{{ calculateValuePercentage(item.value).toFixed(2) }}%</td>
-              <td class="cumulative-percentage">{{ (item.cumulative_ratio * 100).toFixed(2) }}%</td>
+                             <td class="value-percentage">{{ calculateValuePercentage(item.value) | numberFormat:2 }}%</td>
+              <td class="cumulative-percentage">{{ (item.cumulative_ratio * 100) | numberFormat:2 }}%</td>
               <td class="abc-class">
                 <span class="abc-badge" [class]="getAbcClassColor(item.class)">
                   {{ item.class }}

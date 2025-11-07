@@ -43,7 +43,7 @@
             </svg>
           </div>
         </div>
-        <div class="card-value">{{ getCurrencySymbol() }}{{ dashboardData.total_value.toLocaleString() }}</div>
+        <div class="card-value">{{ getCurrencySymbol() }}{{ dashboardData.total_value | numberFormat:0 }}</div>
         <div class="card-trend positive">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
@@ -118,7 +118,7 @@
           </div>
           <div class="stat-item">
             <span class="stat-label">Percentage:</span>
-            <span class="stat-value">{{ abcSummary.classA.percentage.toFixed(1) }}%</span>
+            <span class="stat-value">{{ abcSummary.classA.percentage | numberFormat:1 }}%</span>
           </div>
         </div>
         <div class="progress-bar">
@@ -139,7 +139,7 @@
           </div>
           <div class="stat-item">
             <span class="stat-label">Percentage:</span>
-            <span class="stat-value">{{ abcSummary.classB.percentage.toFixed(1) }}%</span>
+            <span class="stat-value">{{ abcSummary.classB.percentage | numberFormat:1 }}%</span>
           </div>
         </div>
         <div class="progress-bar">
@@ -160,7 +160,7 @@
           </div>
           <div class="stat-item">
             <span class="stat-label">Percentage:</span>
-            <span class="stat-value">{{ abcSummary.classC.percentage.toFixed(1) }}%</span>
+            <span class="stat-value">{{ abcSummary.classC.percentage | numberFormat:1 }}%</span>
           </div>
         </div>
         <div class="progress-bar">

@@ -291,6 +291,10 @@ export class ScheduledPageComponent implements OnInit {
         return name || 'Scheduled';
     }
   }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
 }
 
 

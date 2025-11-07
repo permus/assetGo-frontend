@@ -46,7 +46,7 @@
           </svg>
         </div>
         <div class="card-content">
-          <div class="card-value">{{ getCurrencySymbol() }}{{ summaryData.totalValue.toLocaleString() }}</div>
+          <div class="card-value">{{ getCurrencySymbol() }}{{ summaryData.totalValue | numberFormat:0 }}</div>
           <div class="card-label">Total Inventory Value</div>
         </div>
       </div>

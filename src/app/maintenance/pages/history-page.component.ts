@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MaintenanceService } from '../maintenance.service';
 import { DatePipe } from '@angular/common';
+import { CurrencyService } from '../../core/services/currency.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-history-page',
@@ -11,7 +13,7 @@ import { DatePipe } from '@angular/common';
   templateUrl: 'history-page.component.html',
   styleUrls: ['history-page.component.scss']
 })
-export class HistoryPageComponent implements OnInit {
+export class HistoryPageComponent implements OnInit, OnDestroy {
   loading = false;
   error: string | null = null;
   all: any[] = [];
@@ -32,11 +34,29 @@ export class HistoryPageComponent implements OnInit {
     avgDuration: 0,
   };
 
+  private destroy$ = new Subject<void>();
+  private currencyService = inject(CurrencyService);
+  private cdr = inject(ChangeDetectorRef);
+  currentCurrency = 'USD';
+
   constructor(private api: MaintenanceService) {}
 
   ngOnInit(): void {
+    // Subscribe to currency changes for instant updates
+    this.currencyService.get$().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(currency => {
+      this.currentCurrency = currency;
+      this.cdr.markForCheck();
+    });
+
     this.fetch();
     this.fetchStats();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   fetch() {
@@ -73,7 +93,7 @@ export class HistoryPageComponent implements OnInit {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+    return this.currencyService.format(value);
   }
 
   formatDuration(value: number): string {

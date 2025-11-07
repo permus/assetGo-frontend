@@ -446,6 +446,10 @@ export class LocationsComponent implements OnInit, OnDestroy {
     }
   }
 
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
+
   getLocationTypeColor(typeName: string): string {
     const colorMap: { [key: string]: string } = {
       'Community': 'gray',

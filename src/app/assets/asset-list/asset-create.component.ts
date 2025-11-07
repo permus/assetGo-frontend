@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HostListener, AfterViewInit, ViewChild, ElementRef, OnDestroy, ViewChildren, QueryList } from '@angular/core';
+import { HostListener, AfterViewInit, ViewChild, ElementRef, OnDestroy, ViewChildren, QueryList, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AssetService } from '../services/asset.service';
@@ -10,13 +10,16 @@ import flatpickr from 'flatpickr';
 import { AIImageUploadService } from '../../ai-features/shared/ai-image-upload.service';
 import { RecognitionResult } from '../../ai-features/shared/ai-recognition-result.interface';
 import { ToastService } from '../../core/services/toast.service';
+import { CurrencyService } from '../../core/services/currency.service';
+import { NumberFormatPipe } from '../../core/pipes/number-format.pipe';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-asset-create',
   templateUrl: './asset-create.component.html',
   styleUrls: ['./asset-create.component.scss'],
   standalone: true,
-  imports: [FormsModule, NgIf, NgForOf]
+  imports: [FormsModule, NgIf, NgForOf, NumberFormatPipe]
 })
 export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('dateInput') dateInputs!: QueryList<ElementRef>;
@@ -299,6 +302,11 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     { value: 4, label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service', sort_order: 4 }
   ];
 
+  private destroy$ = new Subject<void>();
+  private currencyService = inject(CurrencyService);
+  currentCurrency = signal('USD');
+  currencySymbol = signal('$');
+
   constructor(
     private assetService: AssetService,
     private router: Router,
@@ -311,6 +319,14 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Subscribe to currency changes for instant updates
+    this.currencyService.get$().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(currency => {
+      this.currentCurrency.set(currency);
+      this.currencySymbol.set(this.currencyService.getSymbol());
+    });
+
     // Check if we're duplicating an asset
     this.route.queryParams.subscribe((params: any) => {
       if (params['duplicate'] && params['sourceId']) {
@@ -410,6 +426,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     // Cleanup Flatpickr instances
     this.flatpickrInstances.forEach(instance => {
       if (instance) {

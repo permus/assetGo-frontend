@@ -30,7 +30,7 @@ import { PreferencesService } from '../../core/services/preferences.service';
         </h2>
         <div>
           <div class="text-sm font-medium mb-2">Date Format</div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               class="p-6 rounded-2xl border border-gray-200 text-center hover:border-blue-400 transition-all duration-300 cursor-pointer"
               [class.bg-blue-600]="form().date_format==='MM/DD/YYYY'"
@@ -75,6 +75,21 @@ import { PreferencesService } from '../../core/services/preferences.service';
               </span>
               <div class="text-sm font-medium">YYYY-MM-DD</div>
               <div class="text-xs opacity-80 mt-2">2024-12-25</div>
+            </button>
+            <button
+              class="p-6 rounded-2xl border border-gray-200 text-center hover:border-blue-400 transition-all duration-300 cursor-pointer"
+              [class.bg-blue-600]="form().date_format==='MMM DD, YYYY'" [class.text-white]="form().date_format==='MMM DD, YYYY'"
+              (click)="set('date_format','MMM DD, YYYY')">
+              <span class="flex items-center justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="size-5 text-gray-400"
+                     [class.text-white]="form().date_format==='MMM DD, YYYY'">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/>
+                </svg>
+              </span>
+              <div class="text-sm font-medium">MMM DD, YYYY</div>
+              <div class="text-xs opacity-80 mt-2">Dec 05, 2025</div>
             </button>
           </div>
           <div class="text-xs text-gray-500 mt-2">Preview: {{ previewDate() }}</div>
@@ -192,8 +207,11 @@ export class DateTimeSettingsComponent implements OnInit {
     const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
     const dd = String(now.getUTCDate()).padStart(2, '0');
     const yyyy = now.getUTCFullYear();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
     if (fmt === 'DD/MM/YYYY') return `${dd}/${mm}/${yyyy}`;
     if (fmt === 'YYYY-MM-DD') return `${yyyy}-${mm}-${dd}`;
+    if (fmt === 'MMM DD, YYYY') return `${monthNames[now.getUTCMonth()]} ${dd}, ${yyyy}`;
     return `${mm}/${dd}/${yyyy}`;
   }
   previewTime() {

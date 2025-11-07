@@ -146,11 +146,18 @@
 
             <!-- Dropdown Menu -->
             <div *ngIf="showAddAssetDropdown"
-                 class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                 class="absolute mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                 [class.right-0]="!isRtl()"
+                 [class.left-0]="isRtl()">
               <button
                 (click)="addAsset()"
-                class="w-full flex items-center space-x-3 px-4 py-2 text-left text-gray-700 hover:bg-blue-50 transition-colors">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition-colors"
+                [class.text-left]="!isRtl()"
+                [class.text-right]="isRtl()">
+                <svg class="w-5 h-5 text-blue-600" 
+                     [class.mr-3]="!isRtl()" 
+                     [class.ml-3]="isRtl()" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
@@ -161,8 +168,13 @@
               </button>
               <button
                 (click)="openAssignAssetsModal()"
-                class="w-full flex items-center space-x-3 px-4 py-2 text-left text-gray-700 hover:bg-blue-50 transition-colors">
-                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition-colors"
+                [class.text-left]="!isRtl()"
+                [class.text-right]="isRtl()">
+                <svg class="w-5 h-5 text-purple-600" 
+                     [class.mr-3]="!isRtl()" 
+                     [class.ml-3]="isRtl()" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
                 </svg>

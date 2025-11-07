@@ -12,11 +12,12 @@ import {
 } from '../../../core/services/inventory-analytics.service';
 import {CurrencyService} from '../../../core/services/currency.service';
 import {ToastService} from '../../../core/services/toast.service';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 @Component({
   selector: 'app-stock-levels',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NumberFormatPipe],
   templateUrl: './stock-levels.component.html',
   styleUrls: ['./stock-levels.component.scss']
 })

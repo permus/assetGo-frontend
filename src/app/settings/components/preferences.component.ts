@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { SettingsService, Preferences } from '../settings.service';
 import { ToastService } from '../../core/services/toast.service';
 import { PreferencesService } from '../../core/services/preferences.service';
@@ -6,6 +7,7 @@ import { PreferencesService } from '../../core/services/preferences.service';
 @Component({
   selector: 'preferences-settings',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="space-y-6 ">
       <div class="border bg-white border-gray-200 p-5 rounded-2xl shadow">
@@ -37,12 +39,11 @@ import { PreferencesService } from '../../core/services/preferences.service';
               <div class="font-medium text-sm">Email Notifications</div>
               <div class="text-xs text-gray-500">Receive notifications via email</div>
             </div>
-            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full"
+            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out !p-1"
                     [class.bg-blue-600]="form().email_notifications" [class.bg-gray-300]="!form().email_notifications"
                     (click)="toggle('email_notifications')">
-              <span class="inline-block h-5 w-5 transform rounded-full bg-white transition"
-                    [class.translate-x-5]="form().email_notifications"
-                    [class.translate-x-1]="!form().email_notifications"></span>
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                    [style.transform]="getSwitchTransform(form().email_notifications)"></span>
             </button>
           </div>
           <!-- Push Notifications - Hidden (not implemented yet) -->
@@ -66,12 +67,11 @@ import { PreferencesService } from '../../core/services/preferences.service';
               <div class="font-medium text-sm">Maintenance Alerts</div>
               <div class="text-xs text-gray-500">Get notified about upcoming maintenance</div>
             </div>
-            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full"
+            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out !p-1"
                     [class.bg-blue-600]="form().maintenance_alerts" [class.bg-gray-300]="!form().maintenance_alerts"
                     (click)="toggle('maintenance_alerts')">
-              <span class="inline-block h-5 w-5 transform rounded-full bg-white transition"
-                    [class.translate-x-5]="form().maintenance_alerts"
-                    [class.translate-x-1]="!form().maintenance_alerts"></span>
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                    [style.transform]="getSwitchTransform(form().maintenance_alerts)"></span>
             </button>
           </div>
           <div class="flex items-center justify-between">
@@ -79,12 +79,11 @@ import { PreferencesService } from '../../core/services/preferences.service';
               <div class="font-medium text-sm">Work Order Updates</div>
               <div class="text-xs text-gray-500">Notifications for work order changes</div>
             </div>
-            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full"
+            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out !p-1"
                     [class.bg-blue-600]="form().work_order_updates" [class.bg-gray-300]="!form().work_order_updates"
                     (click)="toggle('work_order_updates')">
-              <span class="inline-block h-5 w-5 transform rounded-full bg-white transition"
-                    [class.translate-x-5]="form().work_order_updates"
-                    [class.translate-x-1]="!form().work_order_updates"></span>
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                    [style.transform]="getSwitchTransform(form().work_order_updates)"></span>
             </button>
           </div>
         </div>
@@ -124,11 +123,11 @@ import { PreferencesService } from '../../core/services/preferences.service';
               <div class="font-medium text-sm">Auto Refresh</div>
               <div class="text-xs text-gray-500">Automatically refresh data every 30 seconds</div>
             </div>
-            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full"
+            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out !p-1"
                     [class.bg-blue-600]="form().auto_refresh" [class.bg-gray-300]="!form().auto_refresh"
                     (click)="toggle('auto_refresh')">
-              <span class="inline-block h-5 w-5 transform rounded-full bg-white transition"
-                    [class.translate-x-5]="form().auto_refresh" [class.translate-x-1]="!form().auto_refresh"></span>
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                    [style.transform]="getSwitchTransform(form().auto_refresh)"></span>
             </button>
           </div>
           <div class="flex items-center justify-between">
@@ -136,11 +135,11 @@ import { PreferencesService } from '../../core/services/preferences.service';
               <div class="font-medium text-sm">Compact View</div>
               <div class="text-xs text-gray-500">Use more compact spacing throughout the app</div>
             </div>
-            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full"
+            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out !p-1"
                     [class.bg-blue-600]="form().compact_view" [class.bg-gray-300]="!form().compact_view"
                     (click)="toggle('compact_view')">
-              <span class="inline-block h-5 w-5 transform rounded-full bg-white transition"
-                    [class.translate-x-5]="form().compact_view" [class.translate-x-1]="!form().compact_view"></span>
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                    [style.transform]="getSwitchTransform(form().compact_view)"></span>
             </button>
           </div>
           <div class="flex items-center justify-between">
@@ -148,11 +147,11 @@ import { PreferencesService } from '../../core/services/preferences.service';
               <div class="font-medium text-sm">Show Avatars</div>
               <div class="text-xs text-gray-500">Display user avatars in lists and tables</div>
             </div>
-            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full"
+            <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out !p-1"
                     [class.bg-blue-600]="form().show_avatars" [class.bg-gray-300]="!form().show_avatars"
                     (click)="toggle('show_avatars')">
-              <span class="inline-block h-5 w-5 transform rounded-full bg-white transition"
-                    [class.translate-x-5]="form().show_avatars" [class.translate-x-1]="!form().show_avatars"></span>
+              <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                    [style.transform]="getSwitchTransform(form().show_avatars)"></span>
             </button>
           </div>
         </div>
@@ -173,11 +172,11 @@ import { PreferencesService } from '../../core/services/preferences.service';
             <div class="font-medium text-sm">Dark Mode</div>
             <div class="text-xs text-gray-500">Use dark theme (coming soon)</div>
           </div>
-          <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full"
+          <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out !p-1"
                   [class.bg-blue-600]="form().dark_mode" [class.bg-gray-300]="!form().dark_mode"
                   (click)="toggle('dark_mode')">
-            <span class="inline-block h-5 w-5 transform rounded-full bg-white transition"
-                  [class.translate-x-5]="form().dark_mode" [class.translate-x-1]="!form().dark_mode"></span>
+            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm"
+                  [style.transform]="getSwitchTransform(form().dark_mode)"></span>
           </button>
         </div>
       </div>
@@ -218,18 +217,52 @@ export class PreferencesComponent implements OnInit {
   form = signal<Preferences>({});
   saving = signal(false);
 
-  ngOnInit() { this.api.getPreferences().subscribe(res => this.form.set(res.data || {})); }
-  patch<K extends keyof Preferences>(k: K, v: Preferences[K]) { this.form.set({ ...this.form(), [k]: v }); }
-  toggle<K extends keyof Preferences>(k: K) { this.form.set({ ...this.form(), [k]: !this.form()[k] as any }); }
+  ngOnInit() {
+    this.api.getPreferences().subscribe(res => this.form.set(res.data || {}));
+  }
+
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
+
+  getSwitchTransform(value: boolean | undefined): string {
+    const isOn = value === true;
+    if (this.isRtl()) {
+      // In RTL: ON uses translateX(0) (no translation), OFF uses translate(-20px, 0px)
+      return isOn ? 'translateX(0)' : 'translate(-20px, 0px)';
+    } else {
+      // In LTR: ON uses translateX(20px), OFF uses translateX(2px)
+      return isOn ? 'translateX(20px)' : 'translateX(2px)';
+    }
+  }
+
+  patch<K extends keyof Preferences>(k: K, v: Preferences[K]) { 
+    this.form.set({ ...this.form(), [k]: v });
+    // Apply immediately for dark mode and currency
+    const keyStr = String(k);
+    if (keyStr === 'dark_mode' || keyStr === 'currency') {
+      this.prefsService.set(k, v);
+    }
+  }
+  
+  toggle<K extends keyof Preferences>(k: K) { 
+    const newValue = !this.form()[k] as any;
+    this.form.set({ ...this.form(), [k]: newValue });
+    // Apply immediately for dark mode
+    if (k === 'dark_mode') {
+      this.prefsService.set('dark_mode', newValue);
+    }
+  }
 
   save() {
     this.saving.set(true);
-    this.api.updatePreferences(this.form()).subscribe({
-      next: () => { 
-        this.saving.set(false); 
-        localStorage.setItem('app.preferences', JSON.stringify(this.form()));
+    const prefs = this.form();
+    // Save to backend
+    this.prefsService.saveToBackend(prefs).subscribe({
+      next: () => {
+        this.saving.set(false);
         // Update global preferences service to apply changes
-        this.prefsService.updatePreferences(this.form());
+        this.prefsService.updatePreferences(prefs);
         this.toast.success('Preferences saved successfully!');
       },
       error: (error) => {

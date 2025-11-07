@@ -19,6 +19,9 @@ import { AddWorkOrderPartsModalComponent } from './components/add-work-order-par
 import { ViewCostsModalComponent } from './components/view-costs-modal/view-costs-modal.component';
 import {PaginationComponent} from "../shared/components/pagination/pagination.component";
 import {ClickOutsideDirective} from '../shared/directives/click-outside/click-outside.directive';
+import { DateFormatPipe } from '../core/pipes/date-format.pipe';
+import { TimeFormatPipe } from '../core/pipes/time-format.pipe';
+import { NumberFormatPipe } from '../core/pipes/number-format.pipe';
 
 @NgModule({
   declarations: [
@@ -41,7 +44,10 @@ import {ClickOutsideDirective} from '../shared/directives/click-outside/click-ou
     WorkOrderAnalyticsComponent,
     DeleteConfirmationModalComponent,
     PaginationComponent,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    DateFormatPipe,
+    TimeFormatPipe,
+    NumberFormatPipe
   ]
 })
 export class WorkOrdersModule { }

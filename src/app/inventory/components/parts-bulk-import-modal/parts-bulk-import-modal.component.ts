@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { InventoryAnalyticsService } from '../../../core/services/inventory-analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 
 interface ImportResponse {
   success: boolean;
@@ -25,7 +26,7 @@ interface ImportResponse {
 @Component({
   selector: 'app-parts-bulk-import-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NumberFormatPipe],
   templateUrl: './parts-bulk-import-modal.component.html',
   styleUrls: ['./parts-bulk-import-modal.component.scss']
 })

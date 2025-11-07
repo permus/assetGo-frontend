@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [NgFor, NgIf, NgClass, AsyncPipe],
   template: `
-    <div class="fixed top-4 right-4 z-50 space-y-2 w-96">
+    <div class="fixed top-4 right-4 z-[200] space-y-2 w-96">
       <div *ngFor="let toast of toasts$ | async"
            class="transform transition-all duration-300 ease-in-out rounded-lg shadow-lg p-4 flex items-start gap-3"
            [ngClass]="{
@@ -53,7 +53,7 @@ import { Observable } from 'rxjs';
 
         <!-- Close Button -->
         <button (click)="toastService.remove(toast.id)"
-                class="flex-shrink-0 rounded-md p-1 hover:bg-black hover:bg-opacity-5 transition-colors"
+                class="flex-shrink-0 rounded-md p-1 hover:bg-[#00000085] hover:bg-opacity-5 transition-colors"
                 [ngClass]="{
                   'text-green-600': toast.type === 'success',
                   'text-red-600': toast.type === 'error',
