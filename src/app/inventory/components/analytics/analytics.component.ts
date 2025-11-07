@@ -49,6 +49,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   private trendChart?: Chart;
   private agingChart?: Chart;
   private abcChart?: Chart;
+  private categoryTurnoverChart?: Chart;
 
   // ABC Analysis summary
   abcSummary = {
@@ -140,6 +141,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           next: (response) => {
             if (response.success) {
               this.categoryTurnover = response.data.categories || [];
+              setTimeout(() => this.renderCategoryTurnoverChart(), 0);
             }
             resolve();
           },
@@ -328,7 +330,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.activeTab = tab;
     if (tab === 'turnover') {
       this.loadTurnover(this.selectedPeriod);
-      this.loadTurnoverByCategory(this.selectedPeriod);
+      this.loadTurnoverByCategory(this.selectedPeriod).then(() => setTimeout(() => this.renderCategoryTurnoverChart(true as any), 0));
       this.loadMonthlyTrend(this.selectedPeriod).then(() => setTimeout(() => this.renderTrendChart(true as any), 0));
       this.loadKpis(this.selectedPeriod);
     }
@@ -348,8 +350,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       const val = map[target.value] || target.value;
       this.selectedPeriod = val as any;
       this.loadTurnover(this.selectedPeriod);
-      this.loadTurnoverByCategory(this.selectedPeriod);
-      this.loadMonthlyTrend(this.selectedPeriod);
+      this.loadTurnoverByCategory(this.selectedPeriod).then(() => setTimeout(() => this.renderCategoryTurnoverChart(true as any), 0));
+      this.loadMonthlyTrend(this.selectedPeriod).then(() => setTimeout(() => this.renderTrendChart(true as any), 0));
       this.loadKpis(this.selectedPeriod);
     }
   }
@@ -480,6 +482,89 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     this.trendChart = new Chart(ctx, config);
+  }
+
+  private renderCategoryTurnoverChart(force?: boolean): void {
+    const canvas = document.getElementById('categoryTurnoverCanvas') as HTMLCanvasElement | null;
+    if (!canvas || !this.categoryTurnover || this.categoryTurnover.length === 0) return;
+
+    // Sort by turnover descending and take top 8
+    const sortedData = [...this.categoryTurnover]
+      .sort((a, b) => (b.turnover || 0) - (a.turnover || 0))
+      .slice(0, 8);
+
+    const labels = sortedData.map(c => c.category_name);
+    const turnoverValues = sortedData.map(c => c.turnover || 0);
+
+    const config: ChartConfiguration<'bar'> = {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Turnover',
+          data: turnoverValues,
+          backgroundColor: 'rgba(79, 70, 229, 0.6)',
+          borderColor: '#4F46E5',
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y', // Horizontal bar chart
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const idx = ctx.dataIndex;
+                const turnover = turnoverValues[idx] ?? 0;
+                const daysOnHand = sortedData[idx]?.days_on_hand;
+                let tooltip = `Turnover: ${turnover.toFixed(2)}x`;
+                if (daysOnHand !== null && daysOnHand !== undefined) {
+                  tooltip += `\nDays on Hand: ${daysOnHand.toFixed(1)}`;
+                }
+                return tooltip;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { 
+            beginAtZero: true, 
+            ticks: { 
+              precision: 2,
+              callback: function(value) {
+                return value + 'x';
+              }
+            },
+            title: {
+              display: true,
+              text: 'Turnover Ratio'
+            }
+          },
+          y: { 
+            grid: { display: false },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 0
+            }
+          }
+        }
+      }
+    };
+
+    if (this.categoryTurnoverChart && !force) {
+      this.categoryTurnoverChart.data.labels = labels;
+      this.categoryTurnoverChart.data.datasets[0].data = turnoverValues as any;
+      this.categoryTurnoverChart.update();
+      return;
+    }
+    if (this.categoryTurnoverChart && force) {
+      this.categoryTurnoverChart.destroy();
+      this.categoryTurnoverChart = undefined;
+    }
+    this.categoryTurnoverChart = new Chart(canvas.getContext('2d')!, config);
   }
 
   private renderAgingChart(force?: boolean): void {

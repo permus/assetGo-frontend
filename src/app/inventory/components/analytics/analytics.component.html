@@ -250,20 +250,11 @@
             <h3 class="panel-title">Inventory Turnover by Category</h3>
             <p class="panel-subtitle">How quickly inventory moves across categories</p>
           </div>
-          <div class="chart-container">
+          <div class="chart-container" style="height:260px;padding:12px 8px;">
             <div class="chart-placeholder" *ngIf="!categoryTurnover?.length">
               <div class="empty-state">No data yet</div>
             </div>
-            <div class="bar-chart" *ngIf="categoryTurnover?.length">
-              <div class="bars">
-                <div class="bar" *ngFor="let c of categoryTurnover.slice(0,8)" [title]="c.category_name + ': ' + (c.turnover | number:'1.1-2') + 'x'">
-                  <div class="bar-fill" [style.height]="(c.turnover / getMaxCategoryTurnover()) * 100 + '%'">
-                    <span class="bar-value">{{ (c.turnover || 0) | number:'1.1-2' }}x</span>
-                  </div>
-                  <div class="bar-label">{{ c.category_name }}</div>
-                </div>
-              </div>
-            </div>
+            <canvas id="categoryTurnoverCanvas" *ngIf="categoryTurnover?.length"></canvas>
           </div>
         </div>
 

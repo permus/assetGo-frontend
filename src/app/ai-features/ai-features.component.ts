@@ -1,11 +1,14 @@
 import { Component, ViewChild, ElementRef, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AIImageUploadService } from './shared/ai-image-upload.service';
 import { RecognitionResult } from './shared/ai-recognition-result.interface';
 import { LocationService, Location } from '../locations/services/location.service';
+import { AssetService } from '../assets/services/asset.service';
+import { ToastService } from '../core/services/toast.service';
 // Removed old analytics service import
 import { PredictiveMaintenanceComponent } from './components/predictive-maintenance/predictive-maintenance.component';
 import { NaturalLanguageComponent } from './components/natural-language/natural-language.component';
@@ -48,6 +51,23 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
     location: ''
   };
 
+  // Status properties
+  showStatusDropdown: boolean = false;
+  selectedStatus: any | null = null;
+  statusOptions: Array<{
+    value: number;
+    label: string;
+    color: string;
+    description: string;
+    hexColor?: string;
+    sort_order: number;
+  }> = [
+    { value: 1, label: 'Active', color: 'green', description: 'Asset is operational and in use', hexColor: '#10B981', sort_order: 1 },
+    { value: 2, label: 'Maintenance', color: 'orange', description: 'Asset is under maintenance or repair', hexColor: '#F59E0B', sort_order: 2 },
+    { value: 3, label: 'Inactive', color: 'gray', description: 'Asset is not currently in use', hexColor: '#9CA3AF', sort_order: 3 },
+    { value: 4, label: 'Retired', color: 'red', description: 'Asset is retired and no longer in service', hexColor: '#EF4444', sort_order: 4 }
+  ];
+
   // Location properties
   private destroy$ = new Subject<void>();
   locations: Location[] = [];
@@ -76,7 +96,10 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
 
   constructor(
     private aiImageUploadService: AIImageUploadService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private assetService: AssetService,
+    private toastService: ToastService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -204,6 +227,8 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
     this.isCreatingAsset = false;
     this.selectedLocation = null;
     this.showLocationDropdown = false;
+    this.selectedStatus = null;
+    this.showStatusDropdown = false;
     this.assetForm = {
       name: '',
       model: '',
@@ -351,6 +376,10 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
         location: ''
       };
     }
+    // Set default status to Active
+    if (!this.selectedStatus && this.statusOptions.length > 0) {
+      this.selectedStatus = this.statusOptions[0]; // Active
+    }
     this.showCreateAssetModal = true;
   }
 
@@ -366,17 +395,30 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
     };
     this.selectedLocation = null;
     this.showLocationDropdown = false;
+    this.selectedStatus = null;
+    this.showStatusDropdown = false;
   }
 
   // Dropdown methods
   toggleLocationDropdown(): void {
     this.showLocationDropdown = !this.showLocationDropdown;
+    this.showStatusDropdown = false; // Close status dropdown when opening location
   }
 
   selectLocation(location: any): void {
     this.selectedLocation = location;
     this.showLocationDropdown = false;
     this.assetForm.location = location?.id ?? null;
+  }
+
+  toggleStatusDropdown(): void {
+    this.showStatusDropdown = !this.showStatusDropdown;
+    this.showLocationDropdown = false; // Close location dropdown when opening status
+  }
+
+  selectStatus(status: any): void {
+    this.selectedStatus = status;
+    this.showStatusDropdown = false;
   }
 
   getLocationDescription(location: any): string {
@@ -386,41 +428,196 @@ export class AIFeaturesComponent implements OnInit, OnDestroy {
   @HostListener('document:click')
   closeOnOutsideClick(): void {
     this.showLocationDropdown = false;
+    this.showStatusDropdown = false;
   }
 
   // Validation helpers
   hasFieldError(controlName: string): boolean {
-    // For now, return false since we're using ngModel instead of reactive forms
-    // In a real implementation, you'd check the form control state
+    if (controlName === 'name' && !this.assetForm.name.trim()) {
+      return true;
+    }
+    if (controlName === 'location' && !this.selectedLocation) {
+      return true;
+    }
+    if (controlName === 'status' && !this.selectedStatus) {
+      return true;
+    }
     return false;
   }
 
   getFieldError(controlName: string): string {
-    // For now, return empty string since we're using ngModel instead of reactive forms
-    // In a real implementation, you'd return the actual validation error
+    if (controlName === 'name' && !this.assetForm.name.trim()) {
+      return 'Asset name is required';
+    }
+    if (controlName === 'location' && !this.selectedLocation) {
+      return 'Asset location is required';
+    }
+    if (controlName === 'status' && !this.selectedStatus) {
+      return 'Asset status is required';
+    }
     return '';
   }
 
-  createAsset() {
-    if (!this.assetForm.name.trim()) {
+  // Convert images to base64
+  private convertImagesToBase64(): Promise<string[]> {
+    if (this.selectedFiles.length === 0) {
+      return Promise.resolve([]);
+    }
+
+    return Promise.all(
+      this.selectedFiles.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (reader.result) {
+              // Return just the base64 data part (remove data:image/...;base64, prefix)
+              const base64String = reader.result as string;
+              const base64Data = base64String.includes(',') ? base64String.split(',')[1] : base64String;
+              resolve(base64Data);
+            } else {
+              reject(new Error('Failed to read file'));
+            }
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+      })
+    );
+  }
+
+  createAsset(event?: Event) {
+    // Prevent default form submission if event is provided
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // Clear previous errors
+    this.errorMessage = '';
+
+    // Validate required fields
+    if (!this.assetForm.name || !this.assetForm.name.trim()) {
       this.errorMessage = 'Asset name is required';
       return;
     }
 
-    this.isCreatingAsset = true;
+    if (!this.selectedLocation || !this.selectedLocation.id) {
+      this.errorMessage = 'Asset location is required';
+      return;
+    }
 
-    // Simulate API call (replace with actual asset creation)
-    setTimeout(() => {
-      this.isCreatingAsset = false;
-      this.showCreateAssetModal = false;
-      this.analysisResult = null; // Clear results after creating asset
-      this.selectedFiles = [];
-      this.filePreviews = {};
-      
-      // Show success message
-      this.errorMessage = '';
-      // You could add a success notification here
-    }, 1500);
+    if (!this.selectedStatus || !this.selectedStatus.value) {
+      this.errorMessage = 'Asset status is required';
+      return;
+    }
+
+    this.isCreatingAsset = true;
+    this.errorMessage = '';
+
+    // Convert images to base64
+    this.convertImagesToBase64()
+      .then((base64Images) => {
+        // Prepare payload - match the same structure as asset-create component
+        const payload: any = {
+          name: this.assetForm.name.trim(),
+          description: this.assetForm.description?.trim() || null,
+          serial_number: this.assetForm.serialNumber?.trim() || null,
+          model: this.assetForm.model?.trim() || null,
+          manufacturer: this.assetForm.manufacturer?.trim() || null,
+          location_id: this.selectedLocation?.id || null,
+          status: this.selectedStatus?.value || 1 // Default to Active (1) if not selected
+        };
+
+        // Add health score based on AI analysis if available
+        if (this.analysisResult?.condition) {
+          const condition = this.analysisResult.condition.toLowerCase();
+          payload.health_score = condition === 'excellent' ? 95 : 
+                                condition === 'good' ? 85 :
+                                condition === 'fair' ? 70 : 60;
+        }
+
+        // Add images if available (base64 strings)
+        if (base64Images.length > 0) {
+          payload.images = base64Images;
+        }
+
+        // Call asset creation API
+        this.assetService.createAsset(payload).subscribe({
+          next: (response) => {
+            this.isCreatingAsset = false;
+            if (response.success) {
+              this.toastService.success('Asset created successfully!');
+              this.closeCreateAssetModal();
+              this.analysisResult = null;
+              this.selectedFiles = [];
+              this.filePreviews = {};
+              
+              // Navigate to assets list after a short delay
+              setTimeout(() => {
+                this.router.navigate(['/assets/list']);
+              }, 1000);
+            } else {
+              this.errorMessage = response.message || 'Failed to create asset';
+              this.toastService.error(this.errorMessage);
+            }
+          },
+          error: (error) => {
+            this.isCreatingAsset = false;
+            
+            // Handle validation errors
+            if (error?.error?.errors) {
+              const fieldErrors = error.error.errors;
+              const errorMessages: string[] = [];
+              
+              // Collect all field errors
+              Object.keys(fieldErrors).forEach(field => {
+                const messages = fieldErrors[field];
+                if (Array.isArray(messages)) {
+                  errorMessages.push(...messages);
+                } else {
+                  errorMessages.push(messages);
+                }
+              });
+              
+              this.errorMessage = errorMessages.join(', ') || 'Validation failed. Please check the form.';
+            } else {
+              // Get the actual error message from the response
+              let errorMsg = 'Failed to create asset';
+              
+              if (error?.error?.message) {
+                errorMsg = error.error.message;
+              } else if (error?.message) {
+                errorMsg = error.message;
+              } else if (error?.error) {
+                // Try to extract message from error object
+                errorMsg = JSON.stringify(error.error);
+              }
+              
+              // If it's a database error, show a user-friendly message
+              if (errorMsg.includes('SQLSTATE') || errorMsg.includes('Integrity constraint')) {
+                if (errorMsg.includes('status') && errorMsg.includes('cannot be null')) {
+                  errorMsg = 'Status is required. Please select an asset status.';
+                } else if (errorMsg.includes('location_id') && errorMsg.includes('cannot be null')) {
+                  errorMsg = 'Location is required. Please select an asset location.';
+                } else {
+                  errorMsg = 'Database error occurred. Please check all required fields and try again.';
+                }
+              }
+              
+              this.errorMessage = errorMsg;
+            }
+            
+            this.toastService.error(this.errorMessage);
+            console.error('Asset creation error:', error);
+          }
+        });
+      })
+      .catch((error) => {
+        this.isCreatingAsset = false;
+        this.errorMessage = 'Failed to process images. Please try again.';
+        this.toastService.error(this.errorMessage);
+        console.error('Image conversion error:', error);
+      });
   }
 
   // Removed old analytics methods

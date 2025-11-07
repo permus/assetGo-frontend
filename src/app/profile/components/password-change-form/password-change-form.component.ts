@@ -80,7 +80,39 @@ export class PasswordChangeFormComponent implements OnInit, OnDestroy {
           this.loading = false;
         },
         error: (error) => {
-          this.error = error.error?.message || 'Failed to change password';
+          // Handle validation errors from API
+          if (error.error?.errors) {
+            const fieldErrors = error.error.errors;
+            const errorMessages: string[] = [];
+            
+            Object.keys(fieldErrors).forEach(field => {
+              const messages = fieldErrors[field];
+              if (Array.isArray(messages)) {
+                messages.forEach(msg => {
+                  // Format field names in error messages
+                  const formattedMsg = msg.replace(/\b([a-z_]+)\b/g, (match: string) => {
+                    if (match.includes('_')) {
+                      return this.formatFieldName(match);
+                    }
+                    return match;
+                  });
+                  errorMessages.push(formattedMsg);
+                });
+              } else {
+                const formattedMsg = messages.replace(/\b([a-z_]+)\b/g, (match: string) => {
+                  if (match.includes('_')) {
+                    return this.formatFieldName(match);
+                  }
+                  return match;
+                });
+                errorMessages.push(formattedMsg);
+              }
+            });
+            
+            this.error = errorMessages.join(', ') || 'Validation failed. Please check the form.';
+          } else {
+            this.error = error.error?.message || 'Failed to change password';
+          }
           this.loading = false;
         }
       });
@@ -93,11 +125,24 @@ export class PasswordChangeFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Convert snake_case field name to Title Case
+   * Example: first_name -> First name, password_confirmation -> Password confirmation
+   */
+  private formatFieldName(fieldName: string): string {
+    return fieldName
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+
   getFieldError(fieldName: string): string {
     const control = this.passwordForm.get(fieldName);
     if (!control || !control.errors || !control.touched) return '';
 
-    if (control.errors['required']) return `${fieldName} is required`;
+    const formattedFieldName = this.formatFieldName(fieldName);
+
+    if (control.errors['required']) return `${formattedFieldName} is required`;
     if (control.errors['minlength']) return 'Password must be at least 8 characters';
     if (control.errors['passwordMismatch']) return 'Passwords do not match';
     
