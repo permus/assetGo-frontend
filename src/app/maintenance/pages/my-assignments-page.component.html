@@ -1,0 +1,127 @@
+<div class="my-assignments-page">
+  <div class="page-header">
+    <h1 class="page-title">My Assigned Maintenance</h1>
+    <p class="page-subtitle">Complete your assigned maintenance tasks and checklists</p>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button 
+      class="filter-tab"
+      [class.active]="filter === 'all'"
+      (click)="setFilter('all')">
+      All ({{ assignments.length }})
+    </button>
+    <button 
+      class="filter-tab"
+      [class.active]="filter === 'pending'"
+      (click)="setFilter('pending')">
+      Pending
+    </button>
+    <button 
+      class="filter-tab"
+      [class.active]="filter === 'completed'"
+      (click)="setFilter('completed')">
+      Completed
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading your assignments...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredAssignments.length === 0" class="empty-state">
+    <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+    </svg>
+    <h3>No Assignments Found</h3>
+    <p>You don't have any maintenance tasks assigned at the moment.</p>
+  </div>
+
+  <!-- Assignments Grid -->
+  <div *ngIf="!loading && filteredAssignments.length > 0" class="assignments-grid">
+    <div 
+      *ngFor="let assignment of filteredAssignments" 
+      class="assignment-card"
+      [class]="getStatusClass(assignment)">
+      
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="plan-info">
+          <h3 class="plan-name">{{ assignment.plan?.name || 'Maintenance Task' }}</h3>
+          <span class="status-badge" [class]="getStatusClass(assignment)">
+            {{ getStatusLabel(assignment) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <!-- Due Date -->
+        <div class="info-row">
+          <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span class="info-label">Due Date:</span>
+          <span class="info-value">{{ formatDate(assignment.schedule?.due_date) }}</span>
+        </div>
+
+        <!-- Duration -->
+        <div class="info-row" *ngIf="assignment.plan?.estimeted_duration">
+          <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="info-label">Estimated:</span>
+          <span class="info-value">{{ assignment.plan.estimeted_duration }} minutes</span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span class="progress-label">Progress</span>
+            <span class="progress-percentage">{{ getCompletionPercentage(assignment) }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              [style.width.%]="getCompletionPercentage(assignment)">
+            </div>
+          </div>
+          <div class="checklist-count">
+            <span>{{ assignment.responses?.length || 0 }} / {{ assignment.checklist_items?.length || 0 }} items completed</span>
+          </div>
+        </div>
+
+        <!-- Safety Notes -->
+        <div *ngIf="assignment.plan?.safety_notes" class="safety-notes">
+          <svg class="safety-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <span class="safety-text">Safety notes available</span>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <button 
+          class="btn-start"
+          (click)="startMaintenance(assignment)"
+          [disabled]="isCompleted(assignment)">
+          <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+          {{ isCompleted(assignment) ? 'Completed' : getCompletionPercentage(assignment) > 0 ? 'Continue' : 'Start' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

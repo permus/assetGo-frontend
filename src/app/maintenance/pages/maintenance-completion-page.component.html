@@ -1,0 +1,222 @@
+<div class="completion-page">
+  <!-- Header -->
+  <div class="page-header">
+    <button class="btn-back" (click)="goBack()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Back to Assignments
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading maintenance task...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && assignment" class="main-content">
+    <!-- Task Info Card -->
+    <div class="task-info-card">
+      <h1 class="task-title">{{ assignment.plan?.name || 'Maintenance Task' }}</h1>
+      
+      <div class="task-meta">
+        <div class="meta-item">
+          <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span>Due: {{ assignment.schedule?.due_date | date:'mediumDate' }}</span>
+        </div>
+        
+        <div class="meta-item" *ngIf="assignment.plan?.estimeted_duration">
+          <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>Est. {{ assignment.plan.estimeted_duration }} min</span>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-label">Overall Progress</span>
+          <span class="progress-percentage">{{ getCompletionPercentage() }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getCompletionPercentage()"></div>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div *ngIf="assignment.plan?.instractions" class="instructions-section">
+        <h3 class="section-title">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Instructions
+        </h3>
+        <p class="instructions-text">{{ assignment.plan.instractions }}</p>
+      </div>
+
+      <!-- Safety Notes -->
+      <div *ngIf="assignment.plan?.safety_notes" class="safety-section">
+        <h3 class="section-title safety-title">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          Safety Notes
+        </h3>
+        <p class="safety-text">{{ assignment.plan.safety_notes }}</p>
+      </div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="checklist-section">
+      <h2 class="checklist-header">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+        </svg>
+        Checklist Items
+      </h2>
+
+      <div class="checklist-items">
+        <div 
+          *ngFor="let item of assignment.checklist_items; let i = index" 
+          class="checklist-item"
+          [class.completed]="isItemCompleted(item.id!)"
+          [class.required]="item.is_required">
+          
+          <div class="item-header">
+            <div class="item-number">{{ i + 1 }}</div>
+            <div class="item-title-section">
+              <h4 class="item-title">
+                {{ item.title }}
+                <span *ngIf="item.is_required" class="required-badge">Required</span>
+                <span *ngIf="item.is_safety_critical" class="safety-badge">Safety Critical</span>
+              </h4>
+              <p *ngIf="item.description" class="item-description">{{ item.description }}</p>
+            </div>
+            <div *ngIf="isItemCompleted(item.id!)" class="completed-icon">
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="item-input">
+            <!-- Checkbox Input -->
+            <div *ngIf="item.type === 'checkbox'" class="checkbox-input">
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="itemValues[item.id!]"
+                  (change)="saveResponse(item)"
+                  [disabled]="saving">
+                <span>Mark as completed</span>
+              </label>
+            </div>
+
+            <!-- Text Input -->
+            <div *ngIf="item.type === 'text_input'" class="text-input">
+              <textarea 
+                [(ngModel)]="itemValues[item.id!]"
+                (blur)="saveResponse(item)"
+                [disabled]="saving"
+                placeholder="Enter your notes or observations..."
+                rows="4"></textarea>
+            </div>
+
+            <!-- Measurements -->
+            <div *ngIf="item.type === 'measurements'" class="measurements-input">
+              <div *ngFor="let measurement of itemValues[item.id!]; let j = index" class="measurement-row">
+                <input 
+                  type="number" 
+                  [(ngModel)]="measurement.value"
+                  (blur)="saveResponse(item)"
+                  [disabled]="saving"
+                  placeholder="Value"
+                  class="measurement-value">
+                <input 
+                  type="text" 
+                  [(ngModel)]="measurement.unit"
+                  (blur)="saveResponse(item)"
+                  [disabled]="saving"
+                  placeholder="Unit"
+                  class="measurement-unit">
+                <button 
+                  *ngIf="itemValues[item.id!].length > 1"
+                  (click)="removeMeasurement(item.id!, j)"
+                  class="btn-remove-measurement">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+              <button (click)="addMeasurement(item.id!)" class="btn-add-measurement">
+                + Add Measurement
+              </button>
+            </div>
+
+            <!-- Pass/Fail -->
+            <div *ngIf="item.type === 'pass_fail'" class="pass-fail-input">
+              <label class="radio-label">
+                <input 
+                  type="radio" 
+                  [name]="'pass_fail_' + item.id"
+                  [value]="'pass'"
+                  [(ngModel)]="itemValues[item.id!]"
+                  (change)="saveResponse(item)"
+                  [disabled]="saving">
+                <span class="pass-option">Pass</span>
+              </label>
+              <label class="radio-label">
+                <input 
+                  type="radio" 
+                  [name]="'pass_fail_' + item.id"
+                  [value]="'fail'"
+                  [(ngModel)]="itemValues[item.id!]"
+                  (change)="saveResponse(item)"
+                  [disabled]="saving">
+                <span class="fail-option">Fail</span>
+              </label>
+            </div>
+
+            <!-- Photo Capture -->
+            <div *ngIf="item.type === 'photo_capture'" class="photo-input">
+              <div *ngIf="!itemValues[item.id!]" class="photo-upload">
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  (change)="onFileSelected($event, item)"
+                  [disabled]="saving"
+                  [id]="'photo_' + item.id"
+                  style="display: none;">
+                <label [for]="'photo_' + item.id" class="upload-label">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <span>Click to upload photo</span>
+                </label>
+              </div>
+              <div *ngIf="itemValues[item.id!]" class="photo-preview">
+                <img [src]="itemValues[item.id!]" alt="Uploaded photo">
+                <button (click)="itemValues[item.id!] = null" class="btn-remove-photo">
+                  Change Photo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

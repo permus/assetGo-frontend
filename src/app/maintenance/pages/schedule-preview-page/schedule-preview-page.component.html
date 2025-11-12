@@ -32,6 +32,18 @@
         </nav>
       </div>
 
+      <!-- Assign Team Button -->
+      <button 
+        *ngIf="canManageAssignments() && !loading && !error"
+        (click)="openAssignDialog()"
+        class="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+        </svg>
+        <span>Assign Team</span>
+      </button>
+
     </div>
   </div>
   <div class="min-h-screen bg-gray-50 p-6">
@@ -44,38 +56,56 @@
     }
 
     @if (!loading && !error && schedule) {
-      <div class="max-w-3xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <div class="text-sm text-gray-500">Maintenance Schedule</div>
-            <h1 class="text-2xl font-semibold">#{{ schedule?.id }} • {{ schedule?.plan_name || 'Plan ' + schedule?.maintenance_plan_id }}</h1>
+      <div class="max-w-3xl mx-auto space-y-6">
+        <!-- Schedule Details Card -->
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="text-sm text-gray-500">Maintenance Schedule</div>
+              <h1 class="text-2xl font-semibold">#{{ schedule?.id }} • {{ schedule?.plan_name || 'Plan ' + schedule?.maintenance_plan_id }}</h1>
+            </div>
+            <span
+              class="bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">{{ getStatusName(schedule?.status) || 'Scheduled' }}</span>
           </div>
-          <span
-            class="bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-1 rounded-full">{{ getStatusName(schedule?.status) || 'Scheduled' }}</span>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div class="text-sm text-gray-600">Start</div>
+              <div class="font-medium">{{ formatDate(schedule?.start_date) }}</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-600">Due</div>
+              <div class="font-medium">{{ formatDate(schedule?.due_date) }}</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-600">Priority</div>
+              <div class="font-medium">{{ schedule?.priority?.name || '-' }}</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-600">Assets</div>
+              <div class="font-medium">{{ getAssetNames() || '-' }}</div>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div class="text-sm text-gray-600">Start</div>
-            <div class="font-medium">{{ formatDate(schedule?.start_date) }}</div>
-          </div>
-          <div>
-            <div class="text-sm text-gray-600">Due</div>
-            <div class="font-medium">{{ formatDate(schedule?.due_date) }}</div>
-          </div>
-          <div>
-            <div class="text-sm text-gray-600">Priority</div>
-            <div class="font-medium">{{ schedule?.priority?.name || '-' }}</div>
-          </div>
-          <div>
-            <div class="text-sm text-gray-600">Assets</div>
-            <div class="font-medium">{{ getAssetNames() || '-' }}</div>
-          </div>
-        </div>
+        <!-- Assigned Users Section -->
+        <app-assigned-users-list
+          [assignments]="assignments"
+          [loading]="assignmentsLoading"
+          (removeAssignment)="onRemoveAssignment($event)">
+        </app-assigned-users-list>
       </div>
     }
 
   </div>
 </div>
+
+<!-- Assignment Dialog -->
+<app-assign-team-dialog
+  [scheduleId]="scheduleId"
+  [(isOpen)]="isAssignDialogOpen"
+  (assigned)="onAssigned()">
+</app-assign-team-dialog>
+
 
 

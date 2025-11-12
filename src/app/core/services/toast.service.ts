@@ -5,7 +5,7 @@ export interface Toast {
   id: string;
   type: 'success' | 'error' | 'warning' | 'info';
   message: string;
-  duration?: number;
+  duration: number;
 }
 
 @Injectable({
@@ -15,38 +15,11 @@ export class ToastService {
   private toastsSubject = new BehaviorSubject<Toast[]>([]);
   public toasts$: Observable<Toast[]> = this.toastsSubject.asObservable();
 
-  /**
-   * Show a success toast
-   */
-  success(message: string, duration: number = 5000): void {
-    this.show('success', message, duration);
+  private generateId(): string {
+    return `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  /**
-   * Show an error toast
-   */
-  error(message: string, duration: number = 7000): void {
-    this.show('error', message, duration);
-  }
-
-  /**
-   * Show a warning toast
-   */
-  warning(message: string, duration: number = 6000): void {
-    this.show('warning', message, duration);
-  }
-
-  /**
-   * Show an info toast
-   */
-  info(message: string, duration: number = 5000): void {
-    this.show('info', message, duration);
-  }
-
-  /**
-   * Show a toast notification
-   */
-  private show(type: Toast['type'], message: string, duration: number): void {
+  private show(type: Toast['type'], message: string, duration: number = 5000): void {
     const toast: Toast = {
       id: this.generateId(),
       type,
@@ -54,37 +27,37 @@ export class ToastService {
       duration
     };
 
-    const current = this.toastsSubject.value;
-    this.toastsSubject.next([...current, toast]);
+    const currentToasts = this.toastsSubject.value;
+    this.toastsSubject.next([...currentToasts, toast]);
 
     // Auto-dismiss after duration
-    if (duration > 0) {
-      setTimeout(() => {
-        this.remove(toast.id);
-      }, duration);
-    }
+    setTimeout(() => {
+      this.dismiss(toast.id);
+    }, duration);
   }
 
-  /**
-   * Remove a specific toast
-   */
-  remove(id: string): void {
-    const current = this.toastsSubject.value;
-    this.toastsSubject.next(current.filter(t => t.id !== id));
+  success(message: string, duration?: number): void {
+    this.show('success', message, duration);
   }
 
-  /**
-   * Clear all toasts
-   */
+  error(message: string, duration?: number): void {
+    this.show('error', message, duration);
+  }
+
+  warning(message: string, duration?: number): void {
+    this.show('warning', message, duration);
+  }
+
+  info(message: string, duration?: number): void {
+    this.show('info', message, duration);
+  }
+
+  dismiss(id: string): void {
+    const currentToasts = this.toastsSubject.value;
+    this.toastsSubject.next(currentToasts.filter(toast => toast.id !== id));
+  }
+
   clear(): void {
     this.toastsSubject.next([]);
   }
-
-  /**
-   * Generate unique ID for toast
-   */
-  private generateId(): string {
-    return `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  }
 }
-

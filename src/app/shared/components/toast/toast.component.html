@@ -1,0 +1,24 @@
+<div class="toast-container">
+  <div 
+    *ngFor="let toast of toasts" 
+    class="toast"
+    [class.toast-success]="toast.type === 'success'"
+    [class.toast-error]="toast.type === 'error'"
+    [class.toast-warning]="toast.type === 'warning'"
+    [class.toast-info]="toast.type === 'info'"
+    (click)="dismiss(toast.id)">
+    <div class="toast-content">
+      <svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getIcon(toast.type)"></path>
+      </svg>
+      <span class="toast-message">{{ toast.message }}</span>
+      <button class="toast-close" (click)="dismiss(toast.id)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="toast-progress" [style.animation-duration]="toast.duration + 'ms'"></div>
+  </div>
+</div>
+

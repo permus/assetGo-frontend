@@ -1,0 +1,101 @@
+<div class="assigned-users">
+  <div class="section-header">
+    <h3 class="section-title">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+      </svg>
+      Assigned Team ({{ assignments.length }})
+    </h3>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading assignments...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && assignments.length === 0" class="empty-state">
+    <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+    </svg>
+    <p class="empty-text">No users assigned yet</p>
+    <p class="empty-subtext">Click "Assign Team" to add users to this maintenance schedule</p>
+  </div>
+
+  <!-- Assignments Grid -->
+  <div *ngIf="!loading && assignments.length > 0" class="assignments-grid">
+    <div *ngFor="let assignment of assignments" class="assignment-card">
+      <div class="card-header">
+        <div class="user-avatar">
+          {{ getUserInitials(assignment) }}
+        </div>
+        <div class="user-info">
+          <div class="user-name">
+            {{ assignment.user.first_name }} {{ assignment.user.last_name }}
+          </div>
+          <div class="user-email">{{ assignment.user.email }}</div>
+        </div>
+        <button class="btn-remove" (click)="onRemove(assignment)" title="Remove assignment">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="card-body">
+        <div class="info-row">
+          <span class="role-badge" [ngClass]="getRoleBadgeClass(assignment.user.user_type)">
+            {{ getRoleLabel(assignment.user.user_type) }}
+          </span>
+          <span class="assigned-date">
+            Assigned {{ formatDate(assignment.created_at) }}
+          </span>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span class="progress-label">Progress</span>
+            <span class="progress-percentage" [style.color]="getProgressColor(assignment.completion_percentage)">
+              {{ assignment.completion_percentage }}%
+            </span>
+          </div>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              [style.width.%]="assignment.completion_percentage"
+              [style.background-color]="getProgressColor(assignment.completion_percentage)">
+            </div>
+          </div>
+          <div class="progress-details">
+            <span class="items-count">
+              {{ assignment.completed_items }} / {{ assignment.total_items }} items completed
+            </span>
+            <span *ngIf="assignment.is_completed" class="completed-badge">
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              Completed
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<app-confirmation-modal
+  [(isOpen)]="showConfirmModal"
+  [title]="'Remove Assignment'"
+  [message]="'Are you sure you want to remove ' + userToRemoveName + ' from this maintenance schedule?'"
+  [confirmText]="'Remove'"
+  [isDanger]="true"
+  (confirmed)="confirmRemoval()"
+  (cancelled)="cancelRemoval()">
+</app-confirmation-modal>
+

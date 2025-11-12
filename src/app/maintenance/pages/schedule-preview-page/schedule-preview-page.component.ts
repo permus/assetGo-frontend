@@ -2,12 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import { MaintenanceService } from '../../maintenance.service';
-import { ScheduleMaintenance } from '../../models';
+import { ScheduleMaintenance, ScheduleAssignment } from '../../models';
+import { AssignTeamDialogComponent } from '../../components/assign-team-dialog.component';
+import { AssignedUsersListComponent } from '../../components/assigned-users-list.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-schedule-preview-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AssignTeamDialogComponent, AssignedUsersListComponent],
   templateUrl: './schedule-preview-page.component.html',
   styleUrls: ['./schedule-preview-page.component.scss']
 })
@@ -15,13 +19,27 @@ export class SchedulePreviewPageComponent implements OnInit {
   loading = false;
   error: string | null = null;
   schedule: ScheduleMaintenance | null = null;
+  
+  // Assignment management
+  assignments: ScheduleAssignment[] = [];
+  assignmentsLoading = false;
+  isAssignDialogOpen = false;
+  scheduleId: number = 0;
 
-  constructor(private route: ActivatedRoute, private router: Router, private api: MaintenanceService) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router, 
+    private api: MaintenanceService,
+    private authService: AuthService,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!id) { this.error = 'Invalid schedule id'; return; }
+    this.scheduleId = id;
     this.fetch(id);
+    this.loadAssignments(id);
   }
 
   fetch(id: number) {
@@ -45,6 +63,48 @@ export class SchedulePreviewPageComponent implements OnInit {
         this.error = 'Failed to load schedule'; 
       }
     });
+  }
+
+  loadAssignments(scheduleId: number): void {
+    this.assignmentsLoading = true;
+    this.api.getScheduleAssignments(scheduleId).subscribe({
+      next: (response) => {
+        this.assignments = response.data;
+        this.assignmentsLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading assignments:', error);
+        this.assignmentsLoading = false;
+      }
+    });
+  }
+
+  openAssignDialog(): void {
+    this.isAssignDialogOpen = true;
+  }
+
+  onAssigned(): void {
+    this.loadAssignments(this.scheduleId);
+  }
+
+  onRemoveAssignment(assignmentId: number): void {
+    this.api.removeAssignment(assignmentId).subscribe({
+      next: () => {
+        this.toastService.success('Assignment removed successfully');
+        this.loadAssignments(this.scheduleId);
+      },
+      error: (error) => {
+        console.error('Error removing assignment:', error);
+        this.toastService.error('Failed to remove assignment. Please try again.');
+      }
+    });
+  }
+
+  canManageAssignments(): boolean {
+    const user = this.authService.getCurrentUser();
+    if (!user) return false;
+    const userType = user.user_type?.toLowerCase();
+    return userType === 'admin' || userType === 'manager' || userType === 'owner';
   }
 
   formatDate(value: string | null | undefined): string {

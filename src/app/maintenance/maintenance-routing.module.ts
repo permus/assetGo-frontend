@@ -18,7 +18,11 @@ const routes: Routes = [
         loadComponent: () => import('./pages/scheduled-page.component').then(m => m.ScheduledPageComponent),
         title: 'Preventive Maintenance — Scheduled'
       },
-
+      {
+        path: 'my-assignments',
+        loadComponent: () => import('./pages/my-assignments-page.component').then(m => m.MyAssignmentsPageComponent),
+        title: 'My Maintenance Assignments'
+      },
       {
         path: 'ppm-gantt',
         loadComponent: () => import('./pages/gantt-page.component').then(m => m.GanttPageComponent),
@@ -52,6 +56,12 @@ const routes: Routes = [
     path: 'scheduled/:id',
     loadComponent: () => import('./pages/schedule-preview-page/schedule-preview-page.component').then(m => m.SchedulePreviewPageComponent),
     title: 'Maintenance Schedule Preview'
+  },
+
+  {
+    path: 'complete/:assignmentId',
+    loadComponent: () => import('./pages/maintenance-completion-page.component').then(m => m.MaintenanceCompletionPageComponent),
+    title: 'Complete Maintenance Task'
   },
 ];
 

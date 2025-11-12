@@ -59,6 +59,78 @@ export interface ScheduleMaintenance {
   priority?: Priority | null;
 }
 
+export interface MaintenanceChecklistResponse {
+  id?: number;
+  schedule_maintenance_assigned_id: number;
+  checklist_item_id: number;
+  user_id: number;
+  response_type: ChecklistType;
+  response_value: any;
+  photo_url?: string | null;
+  completed_at?: string | null;
+  checklist_item?: MaintenancePlanChecklist;
+}
+
+export interface AssignedMaintenance {
+  id: number;
+  schedule_maintenance_id: number;
+  team_id: number;
+  created_at?: string;
+  updated_at?: string;
+  schedule?: {
+    id: number;
+    start_date: string;
+    due_date: string;
+    status: ScheduleStatus;
+    priority_id?: number;
+    asset_ids?: number[];
+  };
+  plan?: {
+    id: number;
+    name: string;
+    descriptions?: string;
+    instractions?: string;
+    safety_notes?: string;
+    estimeted_duration?: number;
+    priority_id?: number;
+  };
+  checklist_items?: MaintenancePlanChecklist[];
+  responses?: MaintenanceChecklistResponse[];
+  user?: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+  };
+}
+
+export interface AssignableUser {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  user_type: string;
+}
+
+export interface ScheduleAssignment {
+  id: number;
+  schedule_maintenance_id: number;
+  team_id: number;
+  user: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    user_type: string;
+  };
+  completion_percentage: number;
+  completed_items: number;
+  total_items: number;
+  is_completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Paginated<T> {
   success: boolean;
   data: T[] | { [key: string]: any };

@@ -1,0 +1,91 @@
+<div *ngIf="isOpen" class="modal-overlay" (click)="close()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Assign Team Members</h2>
+      <button class="btn-close" (click)="close()" [disabled]="saving">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="modal-search">
+      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search by name or email..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+        [disabled]="loading || saving">
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="modal-loading">
+      <div class="spinner"></div>
+      <p>Loading users...</p>
+    </div>
+
+    <!-- Users List -->
+    <div *ngIf="!loading" class="modal-body">
+      <div *ngIf="filteredUsers.length === 0" class="empty-state">
+        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <p>{{ searchQuery ? 'No users found matching your search.' : 'All users are already assigned.' }}</p>
+      </div>
+
+      <div *ngIf="filteredUsers.length > 0" class="users-list">
+        <div 
+          *ngFor="let user of filteredUsers" 
+          class="user-card"
+          [class.selected]="isSelected(user.id)"
+          (click)="toggleUser(user.id)">
+          <div class="user-checkbox">
+            <input 
+              type="checkbox" 
+              [checked]="isSelected(user.id)"
+              [disabled]="saving"
+              (click)="$event.stopPropagation()">
+          </div>
+          <div class="user-avatar">
+            {{ getUserInitials(user) }}
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ user.first_name }} {{ user.last_name }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+          <div class="user-role">
+            <span class="role-badge" [ngClass]="getRoleBadgeClass(user.user_type)">
+              {{ getRoleLabel(user.user_type) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="close()" [disabled]="saving">
+        Cancel
+      </button>
+      <button 
+        class="btn-assign" 
+        (click)="assign()" 
+        [disabled]="selectedUsers.size === 0 || saving">
+        <svg *ngIf="!saving" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <div *ngIf="saving" class="btn-spinner"></div>
+        {{ saving ? 'Assigning...' : 'Assign ' + selectedUsers.size + ' User' + (selectedUsers.size !== 1 ? 's' : '') }}
+      </button>
+    </div>
+  </div>
+</div>
+
