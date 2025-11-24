@@ -71,8 +71,8 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
-      // Load modules
-      this.settingsService.listModules().subscribe({
+      // Load modules - force refresh on app initialization to ensure fresh data
+      this.settingsService.listModules(true).subscribe({
         next: () => console.log('[AppComponent] Modules loaded'),
         error: (err) => {
           console.warn('[AppComponent] Modules load failed:', err);

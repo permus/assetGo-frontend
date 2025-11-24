@@ -653,6 +653,18 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
+  isPartSelected(partId: number): boolean {
+    return !!this.selectedParts.find(p => p.id === partId);
+  }
+
+  toggleAllPartsSelection() {
+    if (this.selectedParts.length === this.linkedParts.length) {
+      this.selectedParts = [];
+    } else {
+      this.selectedParts = [...this.linkedParts];
+    }
+  }
+
   removePart(partId: number) {
     this.selectedParts = this.selectedParts.filter(p => p.id !== partId);
     const linkedPart = this.linkedParts.find(p => p.id === partId);
@@ -741,16 +753,23 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
               is_required: p.is_required !== false
             }));
             // First get existing parts and remove them, then add new ones
-            this.api.getPlanParts(this.planToEdit.id).subscribe({
+            const planId = this.planToEdit?.id;
+            if (!planId) {
+              this.loading = false;
+              this.updated.emit(res);
+              this.close();
+              return;
+            }
+            this.api.getPlanParts(planId).subscribe({
               next: (partsRes) => {
                 if (partsRes.success && partsRes.data) {
                   // Remove all existing parts
                   partsRes.data.forEach((existingPart: any) => {
-                    this.api.removePlanPart(this.planToEdit!.id, existingPart.id).subscribe();
+                    this.api.removePlanPart(planId, existingPart.id).subscribe();
                   });
                 }
                 // Add new parts
-                this.api.addPartsToPlan(this.planToEdit.id, partsPayload).subscribe({
+                this.api.addPartsToPlan(planId, partsPayload).subscribe({
                   next: () => {
                     this.loading = false;
                     this.updated.emit(res);
@@ -766,7 +785,7 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
               },
               error: () => {
                 // If get parts fails, just add new ones
-                this.api.addPartsToPlan(this.planToEdit.id, partsPayload).subscribe({
+                this.api.addPartsToPlan(planId, partsPayload).subscribe({
                   next: () => {
                     this.loading = false;
                     this.updated.emit(res);

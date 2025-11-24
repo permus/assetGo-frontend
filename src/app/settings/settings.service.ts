@@ -104,32 +104,47 @@ export class SettingsService {
   }
 
   // Modules
-  listModules() {
+  listModules(forceRefresh: boolean = false) {
     // Prevent multiple simultaneous requests
-    if (this.modulesLoading) {
+    if (this.modulesLoading && !forceRefresh) {
       return this.modulesEnabled$.asObservable().pipe(
         map(() => ({ success: true, data: { modules: [] } } as ApiResponse<{ modules: ModuleItem[] }>))
       );
     }
 
-    // Check cache first
-    const cached = localStorage.getItem('cached_modules');
-    if (cached) {
-      try {
-        const cachedData = JSON.parse(cached);
-        this.pushModulesEnabled(cachedData?.data?.modules || []);
-        this.modulesLoaded = true;
-        return new Observable<ApiResponse<{ modules: ModuleItem[] }>>(observer => {
-          observer.next(cachedData);
-          observer.complete();
-        });
-      } catch (error) {
-        console.error('Failed to parse cached modules:', error);
-        localStorage.removeItem('cached_modules');
+    // Check cache first (unless forcing refresh)
+    if (!forceRefresh) {
+      const cached = localStorage.getItem('cached_modules');
+      const cacheTimestamp = localStorage.getItem('cached_modules_timestamp');
+      if (cached && cacheTimestamp) {
+        try {
+          // Check if cache is stale (older than 30 seconds)
+          const cacheAge = Date.now() - parseInt(cacheTimestamp, 10);
+          const maxCacheAge = 30 * 1000; // 30 seconds
+          
+          if (cacheAge < maxCacheAge) {
+            const cachedData = JSON.parse(cached);
+            this.pushModulesEnabled(cachedData?.data?.modules || []);
+            this.modulesLoaded = true;
+            return new Observable<ApiResponse<{ modules: ModuleItem[] }>>(observer => {
+              observer.next(cachedData);
+              observer.complete();
+            });
+          } else {
+            // Cache is stale, remove it and fetch fresh data
+            console.log('[SettingsService] Cache is stale, fetching fresh modules');
+            localStorage.removeItem('cached_modules');
+            localStorage.removeItem('cached_modules_timestamp');
+          }
+        } catch (error) {
+          console.error('Failed to parse cached modules:', error);
+          localStorage.removeItem('cached_modules');
+          localStorage.removeItem('cached_modules_timestamp');
+        }
       }
     }
 
-    // No cache, fetch from server and cache it
+    // No cache or force refresh, fetch from server and cache it
     this.modulesLoading = true;
     return this.http
       .get<ApiResponse<{ modules: ModuleItem[] }>>(`${this.base}/settings/modules`)
@@ -137,21 +152,42 @@ export class SettingsService {
         this.pushModulesEnabled(res?.data?.modules || []);
         this.modulesLoaded = true;
         this.modulesLoading = false;
-        // Cache the response
+        // Cache the response with timestamp
         if (res.success && res.data) {
           localStorage.setItem('cached_modules', JSON.stringify(res));
+          localStorage.setItem('cached_modules_timestamp', Date.now().toString());
         }
       }));
   }
   enableModule(moduleId: number) {
     return this.http
       .post<ApiResponse<{ module_id: number }>>(`${this.base}/settings/modules/${moduleId}/enable`, {})
-      .pipe(tap(() => this.refreshModulesEnabled().subscribe()));
+      .pipe(tap(() => {
+        // Refresh modules immediately to update BehaviorSubject
+        this.refreshModulesEnabled().subscribe({
+          next: () => {
+            // Modules refreshed successfully
+          },
+          error: (err) => {
+            console.error('Failed to refresh modules after enable:', err);
+          }
+        });
+      }));
   }
   disableModule(moduleId: number) {
     return this.http
       .post<ApiResponse<{ module_id: number }>>(`${this.base}/settings/modules/${moduleId}/disable`, {})
-      .pipe(tap(() => this.refreshModulesEnabled().subscribe()));
+      .pipe(tap(() => {
+        // Refresh modules immediately to update BehaviorSubject
+        this.refreshModulesEnabled().subscribe({
+          next: () => {
+            // Modules refreshed successfully
+          },
+          error: (err) => {
+            console.error('Failed to refresh modules after disable:', err);
+          }
+        });
+      }));
   }
 
   // Preferences
@@ -190,7 +226,11 @@ export class SettingsService {
 
   refreshModulesEnabled() {
     this.modulesLoaded = false;
-    return this.listModules();
+    this.modulesLoading = false;
+    // Clear cache to force fresh fetch
+    localStorage.removeItem('cached_modules');
+    localStorage.removeItem('cached_modules_timestamp');
+    return this.listModules(true); // Force refresh
   }
 
   private pushModulesEnabled(list: ModuleItem[]): void {

@@ -139,6 +139,8 @@ export class ModuleSettingsComponent implements OnInit {
       next: () => {
         this.saving.set(false);
         this.toast.success(`Module ${action} successfully!`);
+        // Note: refreshModulesEnabled() is already called via tap() in enableModule/disableModule
+        // which will update the BehaviorSubject and trigger UI updates
       },
       error: (error) => {
         this.modules.update(list => list.map(x => x.id === m.id ? {...x, is_enabled: prev} : x));
