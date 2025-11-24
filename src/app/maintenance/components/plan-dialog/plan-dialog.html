@@ -401,6 +401,75 @@
                         [disabled]="assetsPage()===totalAssetPages() || assetsLoading">Next
                 </button>
               </div>
+
+              <!-- Linked Inventory Parts Section -->
+              <div *ngIf="selectedAssetIds().size > 0" class="mt-6 parts-section">
+                <h3 class="section-title">Linked Inventory Parts</h3>
+                <p class="section-subtitle">Parts linked to selected assets will appear here. You can adjust quantities and select which parts to include in this maintenance plan.</p>
+
+                <!-- Loading State -->
+                <div *ngIf="partsLoading" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div class="flex items-center">
+                    <svg class="animate-spin w-5 h-5 text-blue-400 mr-2" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-blue-800">Loading parts...</span>
+                  </div>
+                </div>
+
+                <!-- No Parts State -->
+                <div *ngIf="!partsLoading && linkedParts.length === 0" class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                  <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                  </svg>
+                  <p class="text-gray-600">No inventory parts linked to selected assets</p>
+                </div>
+
+                <!-- Parts Table -->
+                <div *ngIf="!partsLoading && linkedParts.length > 0" class="mt-4 overflow-x-auto">
+                  <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <input type="checkbox" [checked]="selectedParts.length === linkedParts.length" (change)="selectedParts.length === linkedParts.length ? selectedParts = [] : selectedParts = [...linkedParts]">
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Part Name</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Part Number</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Default Quantity</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Is Consumable?</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                      <tr *ngFor="let part of linkedParts" class="hover:bg-gray-50">
+                        <td class="px-4 py-3">
+                          <input type="checkbox" [checked]="selectedParts.find(p => p.id === part.id)" (change)="togglePartSelection(part.id)">
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-900">{{ part.name }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 font-mono">{{ part.part_number }}</td>
+                        <td class="px-4 py-3">
+                          <input type="number" 
+                                 [(ngModel)]="part.default_qty" 
+                                 (ngModelChange)="updatePartQuantity(part.id, part.default_qty)"
+                                 min="0" 
+                                 step="0.001"
+                                 class="w-24 px-2 py-1 border border-gray-300 rounded text-sm"
+                                 [disabled]="!selectedParts.find(p => p.id === part.id)">
+                        </td>
+                        <td class="px-4 py-3">
+                          <span *ngIf="part.is_consumable" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Yes
+                          </span>
+                          <span *ngIf="!part.is_consumable" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            No
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p class="text-xs text-gray-500 mt-2">Selected parts will be automatically added to work orders generated from this plan.</p>
+                </div>
+              </div>
             </div>
           </ng-container>
 

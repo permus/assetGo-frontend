@@ -33,6 +33,9 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
     start_date: '',
     status: 'scheduled',
     priority_id: null,
+    assigned_user_id: null,
+    assigned_role_id: null,
+    assigned_team_id: null,
   } as any;
 
   // Dropdown per FRONTEND_RULES
@@ -62,7 +65,12 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
   startDatePart: string = '';
   startTimePart: string = '';
 
-  constructor(private api: MaintenanceService, private meta: MetaWorkOrdersService, private assetsApi: AssetService) {}
+  constructor(
+    private api: MaintenanceService, 
+    private meta: MetaWorkOrdersService, 
+    private assetsApi: AssetService,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     // Load plans for dropdown (limit to 50 for performance)
@@ -120,7 +128,39 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
   selectOption(opt: any) { this.selectedStatus = opt; this.model.status = opt.id as any; this.showStatusDropdown = false; }
 
   togglePlanDropdown() { this.showPlanDropdown = !this.showPlanDropdown; }
-  selectPlan(opt: { id: number; name: string }) { this.selectedPlan = opt; this.model.maintenance_plan_id = opt.id; this.showPlanDropdown = false; }
+  selectPlan(opt: { id: number; name: string }) { 
+    this.selectedPlan = opt; 
+    this.model.maintenance_plan_id = opt.id; 
+    this.showPlanDropdown = false;
+    // Load plan parts when plan is selected
+    this.loadPlanParts(opt.id);
+  }
+
+  planParts: any[] = [];
+  loadingPlanParts = false;
+  
+  loadPlanParts(planId: number) {
+    this.loadingPlanParts = true;
+    this.api.getPlanParts(planId).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.planParts = res.data.map((pp: any) => ({
+            ...pp.part,
+            default_qty: pp.default_qty,
+            is_required: pp.is_required
+          }));
+        } else {
+          this.planParts = [];
+        }
+        this.loadingPlanParts = false;
+      },
+      error: (err) => {
+        console.error('Failed to load plan parts:', err);
+        this.planParts = [];
+        this.loadingPlanParts = false;
+      }
+    });
+  }
 
   togglePriorityDropdown() { this.showPriorityDropdown = !this.showPriorityDropdown; }
   selectPriority(priority: MetaItem) { this.selectedPriorityMeta = priority; this.model.priority_id = priority.id as any; this.showPriorityDropdown = false; }
@@ -142,6 +182,9 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
       start_date: this.combineStartParts(),
       status: this.model.status,
       priority_id: this.model.priority_id || null,
+      assigned_user_id: this.model.assigned_user_id || null,
+      assigned_role_id: this.model.assigned_role_id || null,
+      assigned_team_id: this.model.assigned_team_id || null,
     } as any;
 
     const request$ = this.editMode && this.scheduleToEdit?.id
@@ -151,6 +194,13 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
     request$.subscribe({
       next: (res) => {
         this.loading = false;
+        const woCount = res?.generated_work_orders_count || 0;
+        if (woCount > 0 && !this.editMode) {
+          // Show success message with work order count
+          this.toastService.success(`Schedule created successfully! ${woCount} work order(s) have been automatically generated.`, 7000);
+        } else if (!this.editMode) {
+          this.toastService.success('Schedule created successfully!');
+        }
         if (this.editMode) this.updated.emit(res); else this.created.emit(res);
         this.close();
       },

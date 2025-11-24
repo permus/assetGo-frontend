@@ -32,7 +32,8 @@ export class AddPartModalComponent implements OnInit {
       reorder_qty: [1],
       barcode: [''],
       status: ['active'],
-      abc_class: ['']
+      abc_class: [''],
+      is_consumable: [false]
     });
   }
 
@@ -49,7 +50,8 @@ export class AddPartModalComponent implements OnInit {
         reorder_qty: this.part.reorder_qty,
         barcode: this.part.barcode,
         status: this.part.status,
-        abc_class: this.part.abc_class
+        abc_class: this.part.abc_class,
+        is_consumable: this.part.is_consumable ?? false
       });
     } else {
       // Ensure form is properly initialized for create mode
@@ -64,7 +66,8 @@ export class AddPartModalComponent implements OnInit {
         reorder_qty: 1,
         barcode: '',
         status: 'active',
-        abc_class: ''
+        abc_class: '',
+        is_consumable: false
       });
     }
     
@@ -92,7 +95,8 @@ export class AddPartModalComponent implements OnInit {
           reorder_qty: formValue.reorder_qty ? parseInt(formValue.reorder_qty) : undefined,
           barcode: formValue.barcode || undefined,
           status: formValue.status,
-          abc_class: formValue.abc_class || undefined
+          abc_class: formValue.abc_class || undefined,
+          is_consumable: formValue.is_consumable ?? false
         };
 
         this.updatePart.emit(updateData);
@@ -109,7 +113,8 @@ export class AddPartModalComponent implements OnInit {
           reorder_qty: formValue.reorder_qty ? parseInt(formValue.reorder_qty) : undefined,
           barcode: formValue.barcode || undefined,
           status: formValue.status,
-          abc_class: formValue.abc_class || undefined
+          abc_class: formValue.abc_class || undefined,
+          is_consumable: formValue.is_consumable ?? false
         };
 
         this.createPart.emit(partData);

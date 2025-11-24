@@ -12,6 +12,7 @@ import { RecognitionResult } from '../../ai-features/shared/ai-recognition-resul
 import { ToastService } from '../../core/services/toast.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { NumberFormatPipe } from '../../core/pipes/number-format.pipe';
+import { InventoryAnalyticsService } from '../../core/services/inventory-analytics.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -76,6 +77,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   showTagsDropdown = false;
   showDepartmentDropdown = false;
   showParentDropdown = false;
+  showInventoryPartsDropdown = false;
   selectedAssetType: any | null = null;
   selectedCategory: any | null = null;
   selectedLocation: any | null = null;
@@ -83,6 +85,13 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedDepartment: any | null = null;
   selectedTags: any[] = [];
   newTagInput: string = '';
+  
+  // Inventory Parts
+  inventoryPartIds: number[] = [];
+  availableInventoryParts: any[] = [];
+  selectedInventoryParts: any[] = [];
+  inventoryPartsSearch: string = '';
+  isLoadingInventoryParts = false;
 
   // Validation error properties
   nameError: string = '';
@@ -221,7 +230,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         health_score: this.health_score,
         status: this.status,
         tags: this.selectedTags.map(tag => tag.name),
-        meta: this.meta
+        meta: this.meta,
+        inventory_part_ids: this.inventoryPartIds.length > 0 ? this.inventoryPartIds : undefined
       };
 
       if (!this.isDuplicate) {
@@ -313,7 +323,8 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     public route: ActivatedRoute,
     private http: HttpClient,
     private aiImageUploadService: AIImageUploadService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private inventoryAnalyticsService: InventoryAnalyticsService
   ) {
 
   }
@@ -408,6 +419,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    // Load inventory parts
+    this.loadInventoryParts();
+
     this.assetService.getAssets({ per_page: 1000 }).subscribe(res => {
       if (res.success && res.data?.assets) {
         this.possibleParents = res.data.assets;
@@ -423,6 +437,62 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.initializeFlatpickr();
     }, 100);
+  }
+
+  // Inventory Parts Methods
+  loadInventoryParts() {
+    this.isLoadingInventoryParts = true;
+    this.inventoryAnalyticsService.getPartsCatalog('', 'active', 1, 1000, false).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.availableInventoryParts = Array.isArray(res.data) ? res.data : (res.data.data || []);
+        }
+        this.isLoadingInventoryParts = false;
+      },
+      error: (err) => {
+        console.error('Failed to load inventory parts:', err);
+        this.isLoadingInventoryParts = false;
+      }
+    });
+  }
+
+  toggleInventoryPartsDropdown() {
+    this.showInventoryPartsDropdown = !this.showInventoryPartsDropdown;
+    this.showAssetTypeDropdown = false;
+    this.showCategoryDropdown = false;
+    this.showLocationDropdown = false;
+    this.showStatusDropdown = false;
+    this.showTagsDropdown = false;
+    this.showDepartmentDropdown = false;
+    if (this.showInventoryPartsDropdown) {
+      this.loadInventoryParts();
+    }
+  }
+
+  selectInventoryPart(part: any) {
+    if (!this.inventoryPartIds.includes(part.id)) {
+      this.inventoryPartIds.push(part.id);
+      this.selectedInventoryParts.push(part);
+    }
+    this.inventoryPartsSearch = '';
+    this.showInventoryPartsDropdown = false;
+  }
+
+  removeInventoryPart(partId: number) {
+    this.inventoryPartIds = this.inventoryPartIds.filter(id => id !== partId);
+    this.selectedInventoryParts = this.selectedInventoryParts.filter(part => part.id !== partId);
+  }
+
+  getFilteredInventoryParts() {
+    if (!this.inventoryPartsSearch) {
+      return this.availableInventoryParts.filter(part => !this.inventoryPartIds.includes(part.id));
+    }
+    const searchLower = this.inventoryPartsSearch.toLowerCase();
+    return this.availableInventoryParts.filter(part => 
+      !this.inventoryPartIds.includes(part.id) &&
+      (part.name?.toLowerCase().includes(searchLower) || 
+       part.part_number?.toLowerCase().includes(searchLower))
+    );
   }
 
   ngOnDestroy(): void {

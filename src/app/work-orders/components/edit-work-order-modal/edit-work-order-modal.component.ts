@@ -9,6 +9,7 @@ import {ToastService} from '../../../core/services/toast.service';
 import {firstValueFrom, Subscription} from 'rxjs';
 import {MetaItem} from '../../../core/types/work-order.types';
 import {MetaWorkOrdersService} from '../../../core/services/meta-work-orders.service';
+import {DropdownOption} from '../../../shared/components/global-dropdown';
 
 // Interfaces for dropdown data
 interface User {
@@ -91,6 +92,13 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
   statusOptions: MetaItem[] = [];
   priorityOptions: MetaItem[] = [];
   categoryOptions: MetaItem[] = [];
+  typeDropdownOptions: DropdownOption[] = [
+    { id: 'ppm', name: 'PPM (Planned Preventive Maintenance)', description: 'Planned Preventive Maintenance - scheduled maintenance to prevent issues' },
+    { id: 'corrective', name: 'Corrective', description: 'Corrective - fixing issues that have been identified' },
+    { id: 'predictive', name: 'Predictive', description: 'Predictive - maintenance based on data and predictions' },
+    { id: 'reactive', name: 'Reactive', description: 'Reactive - responding to unexpected failures or issues' }
+  ];
+  selectedTypeOption: DropdownOption | null = null;
   // Getter to safely access the form
   get form(): FormGroup | null {
     return this.editForm || null;
@@ -177,6 +185,7 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
         priority_id: ['', Validators.required],
         status_id: ['', Validators.required],
         category_id: [''],
+        type: ['', Validators.required],
         due_date: [''],
         description: ['', [Validators.maxLength(1000)]],
         estimated_hours: ['', [Validators.min(0)]],
@@ -203,11 +212,14 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
       return;
     }
 
+    const type = this.workOrder.type || '';
+    
     this.editForm.patchValue({
       title: this.workOrder.title || '',
       priority_id: this.workOrder.priority?.id || this.workOrder.priority || '',
       status_id: this.workOrder.status?.id || this.workOrder.status || '',
       category_id: this.workOrder.category?.id || this.workOrder.category || '',
+      type: type,
       due_date:this.workOrder?.due_date ? this.workOrder.due_date.split('T')[0] : undefined,
       description: this.workOrder.description || '',
       estimated_hours: this.workOrder.estimated_hours || '',
@@ -216,7 +228,16 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
       location_id: this.getFieldValue(this.workOrder.location),
       assigned_to: this.getFieldValue(this.workOrder.assigned_to)
     });
+
+    // Set selected type option
+    this.selectedTypeOption = this.typeDropdownOptions.find(opt => opt.id === type) || null;
+    
     console.log(this.editForm.get('due_date')?.value,'due_date',this.workOrder.due_date);
+  }
+
+  selectType(option: DropdownOption | null): void {
+    this.selectedTypeOption = option;
+    this.editForm.patchValue({ type: option?.id || '' });
   }
 
   private getFieldValue(field: any): any {
@@ -296,6 +317,7 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
       status_id: 'Status',
       category_id: 'Category',
       priority_id: 'Priority',
+      type: 'Work Order Type',
       due_date: 'Due Date',
       description: 'Description',
       estimated_hours: 'Estimated Hours',
@@ -340,6 +362,7 @@ export class EditWorkOrderModalComponent implements OnInit, OnChanges {
         status_id: formData.status_id,
         category_id: formData.category_id,
         priority_id: formData.priority_id,
+        type: formData.type,
         due_date: formData.due_date || null,
         description: formData.description || null,
         estimated_hours: formData.estimated_hours || null,

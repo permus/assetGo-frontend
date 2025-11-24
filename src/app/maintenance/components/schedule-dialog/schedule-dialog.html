@@ -122,6 +122,42 @@
           </div>
         </div>
 
+        <!-- Assignment Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="form-group">
+            <label>Assigned User (Optional)</label>
+            <input type="number" [(ngModel)]="model.assigned_user_id" placeholder="User ID" class="form-input">
+            <div class="field-help"><small>User ID to assign this schedule</small></div>
+          </div>
+          <div class="form-group">
+            <label>Assigned Role (Optional)</label>
+            <input type="number" [(ngModel)]="model.assigned_role_id" placeholder="Role ID" class="form-input">
+            <div class="field-help"><small>Role ID to assign this schedule</small></div>
+          </div>
+          <div class="form-group">
+            <label>Assigned Team (Optional)</label>
+            <input type="number" [(ngModel)]="model.assigned_team_id" placeholder="Team ID" class="form-input">
+            <div class="field-help"><small>Team ID to assign this schedule</small></div>
+          </div>
+        </div>
+
+        <!-- Plan Parts Preview -->
+        <div *ngIf="selectedPlan && planParts.length > 0" class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 class="text-sm font-semibold text-blue-900 mb-2">Plan Parts (will be added to generated work orders)</h4>
+          <div class="space-y-2">
+            <div *ngFor="let part of planParts" class="flex items-center justify-between text-sm">
+              <div>
+                <span class="font-medium text-blue-900">{{ part.name }}</span>
+                <span class="text-blue-600 ml-2">({{ part.part_number }})</span>
+                <span *ngIf="part.is_consumable" class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs bg-green-100 text-green-800">
+                  Consumable
+                </span>
+              </div>
+              <span class="text-blue-700">Qty: {{ part.default_qty || 1 }}</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Assets moved to bottom -->
         <div class="grid grid-cols-1">
           <div class="form-group">

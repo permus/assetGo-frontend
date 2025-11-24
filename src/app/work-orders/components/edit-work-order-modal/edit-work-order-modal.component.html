@@ -118,6 +118,21 @@
           </div>
 
           <div class="form-row">
+            <div class="form-group">
+              <app-global-dropdown
+                [options]="typeDropdownOptions"
+                [selectedOption]="selectedTypeOption"
+                [label]="'Work Order Type'"
+                [required]="true"
+                [placeholder]="'Select Work Order Type'"
+                [error]="isFieldInvalid('type')"
+                [errorMessage]="getFieldError('type')"
+                (selectionChange)="selectType($event)">
+              </app-global-dropdown>
+            </div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group" [class.error]="hasFieldError('description')">
               <label for="description" class="form-label">Description</label>
               <textarea

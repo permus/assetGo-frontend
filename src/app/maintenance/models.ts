@@ -21,6 +21,15 @@ export interface MaintenancePlanChecklist {
   order?: number;
 }
 
+export interface MaintenancePlanPart {
+  id?: number;
+  maintenance_plan_id: number;
+  part_id: number;
+  part?: any; // InventoryPart
+  default_qty?: number;
+  is_required?: boolean;
+}
+
 export interface MaintenancePlan {
   id?: number;
   company_id?: number;
@@ -42,6 +51,10 @@ export interface MaintenancePlan {
   is_active?: boolean;
   scheduled_count?: number;
   checklists?: MaintenancePlanChecklist[];
+  parts?: MaintenancePlanPart[];
+  assigned_user_id?: number | null;
+  assigned_role_id?: number | null;
+  assigned_team_id?: number | null;
   created_at?: string | null;
   updated_at?: string | null;
 }
@@ -57,6 +70,9 @@ export interface ScheduleMaintenance {
   status?: ScheduleStatus;
   priority_id?: number | null;
   priority?: Priority | null;
+  assigned_user_id?: number | null;
+  assigned_role_id?: number | null;
+  assigned_team_id?: number | null;
 }
 
 export interface MaintenanceChecklistResponse {

@@ -132,6 +132,9 @@
               <span class="chip" style="background:#ecfeff;color:#155e75;padding:2px 8px;border-radius:9999px;font-size:12px;">
                 {{ workOrder?.category?.name || 'Uncategorized' }}
               </span>
+              <span class="chip" style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:9999px;font-size:12px;">
+                {{ getTypeLabel(workOrder?.type) }}
+              </span>
             </div>
           </div>
         </div>
@@ -194,6 +197,10 @@
           <div class="detail-item col-6">
             <label>Category</label>
             <p>{{ workOrder?.category?.name || 'Uncategorized' }}</p>
+          </div>
+          <div class="detail-item col-6">
+            <label>Type</label>
+            <p>{{ getTypeLabel(workOrder?.type) }}</p>
           </div>
           <div class="detail-item col-6">
             <label>Assigned To</label>

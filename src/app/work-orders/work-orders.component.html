@@ -92,152 +92,64 @@
             </div>
           </div>
 
-          <div class="form-row">
+          <div class="form-row two-columns">
             <div class="form-group" [class.error]="hasFieldError('status_id')">
-              <label>Status <span class="required">*</span></label>
-              <!-- Custom Status Dropdown -->
-              <div class="relative status-dropdown" (click)="$event.stopPropagation()">
-                <button type="button" (click)="toggleStatusDropdown()" class="dropdown-button" [class.error]="hasFieldError('status_id')" [class.active]="showStatusDropdown">
-                  <div class="dropdown-content">
-                    <span *ngIf="!selectedStatus" class="placeholder">Select status</span>
-                    <div *ngIf="selectedStatus" class="selected-item">
-                      <div class="status-icon" [style.background-color]="getStatusColor(selectedStatus.slug) + '20'">
-                        <svg class="icon" [style.color]="getStatusColor(selectedStatus.slug)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                      </div>
-                      <span class="selected-text">{{selectedStatus.name}}</span>
-                    </div>
-                    <svg class="dropdown-arrow" [class.rotated]="showStatusDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </button>
-                <!-- Dropdown Menu -->
-                <div *ngIf="showStatusDropdown" class="dropdown-menu">
-                  <div class="dropdown-header">Select status</div>
-                  <button *ngFor="let status of statusOptions" type="button" (click)="selectStatus(status)" class="dropdown-item" [class.selected]="selectedStatus?.id === status.id">
-                    <div class="item-content">
-                      <div class="item-icon" [style.background-color]="getStatusColor(status.slug) + '20'">
-                        <svg class="icon" [style.color]="getStatusColor(status.slug)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                      </div>
-                      <div class="item-details">
-                        <div class="item-name">{{status.name}}</div>
-                        <div class="item-description !text-xs">{{getStatusDescription(status)}}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-              <div class="field-error" *ngIf="hasFieldError('status_id')">
-                {{ getFieldError('status_id') }}
-              </div>
+              <app-global-dropdown
+                [options]="statusDropdownOptions"
+                [selectedOption]="selectedStatusOption"
+                [label]="'Status'"
+                [required]="true"
+                [placeholder]="'Select status'"
+                [error]="hasFieldError('status_id')"
+                [errorMessage]="getFieldError('status_id')"
+                (selectionChange)="selectStatus($event)">
+              </app-global-dropdown>
             </div>
 
             <div class="form-group" [class.error]="hasFieldError('priority_id')">
-              <label>Priority <span class="required">*</span></label>
-              <!-- Custom Priority Dropdown -->
-              <div class="relative priority-dropdown" (click)="$event.stopPropagation()">
-                <button type="button" (click)="togglePriorityDropdown()" class="dropdown-button" [class.error]="hasFieldError('priority_id')" [class.active]="showPriorityDropdown">
-                  <div class="dropdown-content">
-                    <span *ngIf="!selectedPriority" class="placeholder">Select priority</span>
-                    <div *ngIf="selectedPriority" class="selected-item">
-                      <div class="priority-icon" [style.background-color]="getPriorityColor(selectedPriority) + '20'">
-                        <svg class="icon" [style.color]="getPriorityColor(selectedPriority)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                      </div>
-                      <span class="selected-text">{{selectedPriority.name}}</span>
-                    </div>
-                    <svg class="dropdown-arrow" [class.rotated]="showPriorityDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </button>
-                <!-- Dropdown Menu -->
-                <div *ngIf="showPriorityDropdown" class="dropdown-menu">
-                  <div class="dropdown-header">Select priority</div>
-                  <button *ngFor="let priority of priorityOptions" type="button" (click)="selectPriority(priority)" class="dropdown-item" [class.selected]="selectedPriority?.id === priority.id">
-                    <div class="item-content">
-                      <div class="item-icon" [style.background-color]="getPriorityColor(priority) + '20'">
-                        <svg class="icon" [style.color]="getPriorityColor(priority)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                      </div>
-                      <div class="item-details">
-                        <div class="item-name">{{priority.name}}</div>
-                        <div class="item-description !text-xs">{{getPriorityDescription(priority)}}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-              <div class="field-error" *ngIf="hasFieldError('priority_id')">
-                {{ getFieldError('priority_id') }}
-              </div>
+              <app-global-dropdown
+                [options]="priorityDropdownOptions"
+                [selectedOption]="selectedPriorityOption"
+                [label]="'Priority'"
+                [required]="true"
+                [placeholder]="'Select priority'"
+                [error]="hasFieldError('priority_id')"
+                [errorMessage]="getFieldError('priority_id')"
+                (selectionChange)="selectPriority($event)">
+              </app-global-dropdown>
+            </div>
+
+          </div>
+
+          <div class="">
+            <div class="form-group mb-2" [class.error]="hasFieldError('category_id')">
+              <app-global-dropdown
+                [options]="categoryDropdownOptions"
+                [selectedOption]="selectedCategoryOption"
+                [label]="'Category (Optional)'"
+                [required]="false"
+                [placeholder]="'Select category (optional)'"
+                [error]="hasFieldError('category_id')"
+                [errorMessage]="getFieldError('category_id')"
+                (selectionChange)="selectCategory($event)">
+              </app-global-dropdown>
+            </div>
+            <div class="form-group mb-2" [class.error]="hasFieldError('type')">
+              <app-global-dropdown
+                [options]="typeDropdownOptions"
+                [selectedOption]="selectedTypeOption"
+                [label]="'Work Order Type'"
+                [required]="true"
+                [placeholder]="'Select work order type'"
+                [error]="hasFieldError('type')"
+                [errorMessage]="getFieldError('type')"
+                (selectionChange)="selectType($event)">
+              </app-global-dropdown>
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group" [class.error]="hasFieldError('category_id')">
-              <label>Category (Optional)</label>
-              <!-- Custom Category Dropdown -->
-              <div class="relative category-dropdown" (click)="$event.stopPropagation()">
-                <button type="button" (click)="toggleCategoryDropdown()" class="dropdown-button" [class.error]="hasFieldError('category_id')" [class.active]="showCategoryDropdown">
-                  <div class="dropdown-content">
-                    <span *ngIf="!selectedCategory" class="placeholder">Select category (optional)</span>
-                    <div *ngIf="selectedCategory" class="selected-item">
-                      <div class="category-icon">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                        </svg>
-                      </div>
-                      <span class="selected-text">{{selectedCategory.name}}</span>
-                    </div>
-                    <svg class="dropdown-arrow" [class.rotated]="showCategoryDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </button>
-                <!-- Dropdown Menu -->
-                <div *ngIf="showCategoryDropdown" class="dropdown-menu">
-                  <div class="dropdown-header">Select category</div>
-                  <button type="button" (click)="selectCategory(null)" class="dropdown-item">
-                    <div class="item-content">
-                      <div class="item-icon no-category">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                      </div>
-                      <div class="item-details">
-                        <div class="item-name">No Category</div>
-                        <div class="item-description">Work order without specific category</div>
-                      </div>
-                    </div>
-                  </button>
-                  <button *ngFor="let category of categoryOptions" type="button" (click)="selectCategory(category)" class="dropdown-item" [class.selected]="selectedCategory?.id === category.id">
-                    <div class="item-content">
-                      <div class="item-icon">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                        </svg>
-                      </div>
-                      <div class="item-details">
-                        <div class="item-name">{{category.name}}</div>
-                        <div class="item-description">{{getCategoryDescription(category)}}</div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-              <div class="field-error" *ngIf="hasFieldError('category_id')">
-                {{ getFieldError('category_id') }}
-              </div>
-            </div>
-
-            <div class="form-group">
+          <div class="form-row w-full d-block" style="grid-template-columns: 1fr!important;">
+            <div class="form-group  ">
               <label>Due Date</label>
               <input
                 type="datetime-local"

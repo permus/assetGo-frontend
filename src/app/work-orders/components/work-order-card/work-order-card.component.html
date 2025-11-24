@@ -79,6 +79,9 @@
       <span class="badge priority-badge" [ngClass]="'priority-' + ($any(workOrder.priority)?.slug || workOrder.priority || 'medium')">
           {{ getPriorityLabel($any(workOrder.priority)) }}
         </span>
+      <span class="badge type-badge" [ngClass]="'type-' + (workOrder.type || 'ppm')">
+        {{ getTypeLabel(workOrder.type) }}
+      </span>
       <span *ngIf="getCategoryName()" class="badge bg-gray-100 text-gray-800">{{ getCategoryName() }}</span>
     </div>
   </div>

@@ -99,6 +99,17 @@ export class WorkOrderCardComponent {
     return priorityMap[slug] || slug;
   }
 
+  getTypeLabel(type: string | undefined): string {
+    if (!type) return 'PPM';
+    const typeMap: { [key: string]: string } = {
+      'ppm': 'PPM',
+      'corrective': 'Corrective',
+      'predictive': 'Predictive',
+      'reactive': 'Reactive'
+    };
+    return typeMap[type] || type;
+  }
+
   getAssigneeName(): string {
     if (this.workOrder.assigned_to) {
       if (typeof this.workOrder.assigned_to === 'object' && this.workOrder.assigned_to !== null) {

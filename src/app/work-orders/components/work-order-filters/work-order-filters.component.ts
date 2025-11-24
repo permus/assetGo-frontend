@@ -25,6 +25,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
   showStatusDropdown = false;
   showPriorityDropdown = false;
   showCategoryDropdown = false;
+  showTypeDropdown = false;
   showAdvanced = false;
   showDateRangePicker = false;
   showAssetDropdown = false;
@@ -38,6 +39,12 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
   statusOptions: MetaItem[] = [];
   priorityOptions: MetaItem[] = [];
   categoryOptions: MetaItem[] = [];
+  typeOptions: Array<{value: string; label: string}> = [
+    { value: 'ppm', label: 'PPM (Planned Preventive Maintenance)' },
+    { value: 'corrective', label: 'Corrective' },
+    { value: 'predictive', label: 'Predictive' },
+    { value: 'reactive', label: 'Reactive' }
+  ];
 
   sortOptions = [
     { value: 'created_at', label: 'Created Date' },
@@ -64,6 +71,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
       status_id: [null],
       priority_id: [null],
       category_id: [null],
+      type: [null],
       asset_id: [''],
       location_id: [''],
       assigned_to: [''],
@@ -169,6 +177,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     this.showStatusDropdown = !this.showStatusDropdown;
     this.showPriorityDropdown = false;
     this.showCategoryDropdown = false;
+    this.showTypeDropdown = false;
     this.showAssetDropdown = false;
     this.showLocationDropdown = false;
   }
@@ -190,6 +199,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     this.showPriorityDropdown = !this.showPriorityDropdown;
     this.showStatusDropdown = false;
     this.showCategoryDropdown = false;
+    this.showTypeDropdown = false;
     this.showAssetDropdown = false;
     this.showLocationDropdown = false;
   }
@@ -212,6 +222,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     this.showStatusDropdown = false;
     this.showPriorityDropdown = false;
     this.showCategoryDropdown = false;
+    this.showTypeDropdown = false;
     this.showLocationDropdown = false;
   }
 
@@ -232,6 +243,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     this.showCategoryDropdown = !this.showCategoryDropdown;
     this.showStatusDropdown = false;
     this.showPriorityDropdown = false;
+    this.showTypeDropdown = false;
     this.showAssetDropdown = false;
     this.showLocationDropdown = false;
   }
@@ -252,12 +264,40 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     return this.filterForm.value.category_id;
   }
 
+  // Type dropdown methods
+  toggleTypeDropdown(): void {
+    this.showTypeDropdown = !this.showTypeDropdown;
+    this.showStatusDropdown = false;
+    this.showPriorityDropdown = false;
+    this.showCategoryDropdown = false;
+    this.showAssetDropdown = false;
+    this.showLocationDropdown = false;
+  }
+
+  selectType(type: string | null): void {
+    this.filterForm.patchValue({ type: type });
+    this.showTypeDropdown = false;
+    this.onFilterChange();
+  }
+
+  getTypeLabel(): string {
+    const type = this.filterForm.value.type;
+    if (!type) return 'All Types';
+    const selected = this.typeOptions.find(opt => opt.value === type);
+    return selected ? selected.label : 'All Types';
+  }
+
+  getTypeValue(): string | null {
+    return this.filterForm.value.type;
+  }
+
   // Location dropdown methods
   toggleLocationDropdown(): void {
     this.showLocationDropdown = !this.showLocationDropdown;
     this.showStatusDropdown = false;
     this.showPriorityDropdown = false;
     this.showCategoryDropdown = false;
+    this.showTypeDropdown = false;
     this.showAssetDropdown = false;
   }
 
@@ -320,6 +360,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
       status_id: null,
       priority_id: null,
       category_id: null,
+      type: null,
       asset_id: '',
       location_id: '',
       assigned_to: '',
@@ -336,12 +377,13 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
     this.onFilterChange();
   }
   checkFilter(): boolean {
-    const { status_id, priority_id, category_id, search } = this.filterForm.value;
+    const { status_id, priority_id, category_id, type, search } = this.filterForm.value;
 
     return !!(
       status_id ||
       priority_id ||
       category_id ||
+      type ||
       (search && search.trim() !== '')
     );
   }
@@ -352,6 +394,7 @@ export class WorkOrderFiltersComponent implements OnInit, OnDestroy {
       this.showStatusDropdown = false;
       this.showPriorityDropdown = false;
       this.showCategoryDropdown = false;
+      this.showTypeDropdown = false;
       this.showAssetDropdown = false;
       this.showLocationDropdown = false;
     }

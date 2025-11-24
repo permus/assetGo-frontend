@@ -12,6 +12,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { MetaItem } from '../../../core/types/work-order.types';
 import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
 import { FormatService } from '../../../core/services/format.service';
+import { GlobalDropdownComponent, DropdownOption } from '../../../shared/components/global-dropdown';
 
 interface User {
   id: number;
@@ -43,7 +44,7 @@ interface Team {
 @Component({
   selector: 'app-create-work-order-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NumberFormatPipe],
+  imports: [CommonModule, ReactiveFormsModule, NumberFormatPipe, GlobalDropdownComponent],
   templateUrl: './create-work-order-modal.component.html',
   styleUrls: ['./create-work-order-modal.component.scss'],
   animations: [
@@ -87,6 +88,12 @@ export class CreateWorkOrderModalComponent implements OnInit {
   statusOptions: MetaItem[] = [];
   priorityOptions: MetaItem[] = [];
   categoryOptions: MetaItem[] = [];
+  typeOptions: DropdownOption[] = [
+    { id: 'ppm', name: 'PPM (Planned Preventive Maintenance)', description: 'Planned Preventive Maintenance - scheduled maintenance to prevent issues' },
+    { id: 'corrective', name: 'Corrective', description: 'Corrective - fixing issues that have been identified' },
+    { id: 'predictive', name: 'Predictive', description: 'Predictive - maintenance based on data and predictions' },
+    { id: 'reactive', name: 'Reactive', description: 'Reactive - responding to unexpected failures or issues' }
+  ];
   
   users: User[] = [];
   assets: Asset[] = [];
@@ -97,6 +104,7 @@ export class CreateWorkOrderModalComponent implements OnInit {
   selectedPriority: MetaItem | null = null;
   selectedStatus: MetaItem | null = null;
   selectedCategory: MetaItem | null = null;
+  selectedTypeOption: DropdownOption | null = null;
   errorMessage = '';
 
   constructor(
@@ -122,12 +130,17 @@ export class CreateWorkOrderModalComponent implements OnInit {
   }
 
   initForm(): void {
+    // Set default type to 'ppm'
+    const defaultType = this.typeOptions.find(t => t.id === 'ppm') || null;
+    this.selectedTypeOption = defaultType;
+    
     this.form = this.fb.group({
       title: ['', [Validators.required]],
       description: [''],
       priority_id: [null, [Validators.required]],
       status_id: [null, [Validators.required]],
       category_id: [null],
+      type: [defaultType?.id || '', [Validators.required]],
       due_date: [''],
       asset_id: [null],
       location_id: [null],
@@ -283,8 +296,18 @@ ${this.prediction.recommendedAction}`;
     }
   }
 
+  onTypeChange(option: DropdownOption | null): void {
+    if (option) {
+      this.selectedTypeOption = option;
+      this.form.patchValue({ type: option.id });
+    } else {
+      this.selectedTypeOption = null;
+      this.form.patchValue({ type: '' });
+    }
+  }
+
   onSubmit(): void {
-    if (!this.form.valid || !this.selectedPriority || !this.selectedStatus) {
+    if (!this.form.valid || !this.selectedPriority || !this.selectedStatus || !this.selectedTypeOption) {
       this.errorMessage = 'Please fill in all required fields';
       return;
     }
@@ -298,6 +321,7 @@ ${this.prediction.recommendedAction}`;
       priority_id: this.selectedPriority.id,
       status_id: this.selectedStatus.id,
       category_id: this.selectedCategory?.id || undefined,
+      type: this.selectedTypeOption.id as 'ppm' | 'corrective' | 'predictive' | 'reactive',
       due_date: this.form.value.due_date || undefined,
       asset_id: this.form.value.asset_id || undefined,
       location_id: this.form.value.location_id || undefined,
@@ -336,6 +360,9 @@ ${this.prediction.recommendedAction}`;
     this.selectedPriority = null;
     this.selectedStatus = null;
     this.selectedCategory = null;
+    this.selectedTypeOption = null;
+    // Re-initialize form to set default type
+    this.initForm();
   }
 
   ngOnDestroy(): void {

@@ -186,6 +186,7 @@
           <div class="list-table-row">
             <div class="list-table-cell header-cell">Work Order</div>
             <div class="list-table-cell header-cell">Status & Priority</div>
+            <div class="list-table-cell header-cell">Type</div>
             <div class="list-table-cell header-cell">Assignee & Asset</div>
             <div class="list-table-cell header-cell">Location</div>
             <div class="list-table-cell header-cell">Due Date</div>
@@ -223,6 +224,12 @@
                 {{ getPriorityLabel(workOrder.priority.name) }}
               </span>
               </div>
+            </div>
+
+            <div class="list-table-cell">
+              <span class="badge type-badge" [ngClass]="'type-' + workOrder.type">
+                {{ getTypeLabel(workOrder.type) }}
+              </span>
             </div>
 
             <div class="list-table-cell">

@@ -411,6 +411,17 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
     return map[slug] || slug;
   }
 
+  getTypeLabel(type: string | undefined): string {
+    if (!type) return 'PPM';
+    const typeMap: { [key: string]: string } = {
+      'ppm': 'PPM',
+      'corrective': 'Corrective',
+      'predictive': 'Predictive',
+      'reactive': 'Reactive'
+    };
+    return typeMap[type] || type;
+  }
+
   private startCountdown(start: Date): void {
     this.activeStartTime = start;
     this.updateDisplayedElapsed();

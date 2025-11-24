@@ -11,6 +11,7 @@ import { WorkOrderListComponent } from './components/work-order-list/work-order-
 import { WorkOrderStatsComponent } from './components/work-order-stats/work-order-stats.component';
 import { WorkOrderAnalyticsComponent } from './components/work-order-analytics/work-order-analytics.component';
 import { MetaItem } from '../core/types/work-order.types';
+import { DropdownOption } from '../shared/components/global-dropdown';
 
 @Component({
   selector: 'app-work-orders',
@@ -43,15 +44,22 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
   priorityOptions: MetaItem[] = [];
   categoryOptions: MetaItem[] = [];
 
-  // Dropdown states for new standardized select boxes
-  showStatusDropdown = false;
-  showPriorityDropdown = false;
-  showCategoryDropdown = false;
+  // Dropdown options for global dropdown component
+  statusDropdownOptions: DropdownOption[] = [];
+  priorityDropdownOptions: DropdownOption[] = [];
+  categoryDropdownOptions: DropdownOption[] = [];
+  typeDropdownOptions: DropdownOption[] = [
+    { id: 'ppm', name: 'PPM (Planned Preventive Maintenance)', description: 'Planned Preventive Maintenance - scheduled maintenance to prevent issues' },
+    { id: 'corrective', name: 'Corrective', description: 'Corrective - fixing issues that have been identified' },
+    { id: 'predictive', name: 'Predictive', description: 'Predictive - maintenance based on data and predictions' },
+    { id: 'reactive', name: 'Reactive', description: 'Reactive - responding to unexpected failures or issues' }
+  ];
 
-  // Selected values for new standardized select boxes
-  selectedStatus: MetaItem | null = null;
-  selectedPriority: MetaItem | null = null;
-  selectedCategory: MetaItem | null = null;
+  // Selected values for global dropdown component
+  selectedStatusOption: DropdownOption | null = null;
+  selectedPriorityOption: DropdownOption | null = null;
+  selectedCategoryOption: DropdownOption | null = null;
+  selectedTypeOption: DropdownOption | null = null;
 
   private subscription = new Subscription();
 
@@ -69,6 +77,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       status_id: [null, Validators.required],
       priority_id: [null, Validators.required],
       category_id: [null],
+      type: ['ppm', Validators.required],
       due_date: [''],
       description: [''],
       asset_id: [''],
@@ -107,10 +116,11 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       this.metaWorkOrdersService.getStatus().subscribe({
         next: (statuses) => {
           this.statusOptions = statuses;
+          this.statusDropdownOptions = statuses.map(s => this.convertStatusToDropdownOption(s));
           // Set default status to first available
           if (statuses.length > 0) {
             const defaultStatus = statuses.find(s => s.slug === 'open') || statuses[0];
-            this.selectedStatus = defaultStatus;
+            this.selectedStatusOption = this.convertStatusToDropdownOption(defaultStatus);
             this.workOrderForm.patchValue({ status_id: defaultStatus.id });
           }
         },
@@ -118,6 +128,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
           console.error('Error loading statuses:', error);
           this.toastService.error('Failed to load status options');
           this.statusOptions = [];
+          this.statusDropdownOptions = [];
         }
       })
     );
@@ -127,10 +138,11 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       this.metaWorkOrdersService.getPriorities().subscribe({
         next: (priorities) => {
           this.priorityOptions = priorities;
+          this.priorityDropdownOptions = priorities.map(p => this.convertPriorityToDropdownOption(p));
           // Set default priority to medium
           if (priorities.length > 0) {
             const defaultPriority = priorities.find(p => p.slug === 'medium') || priorities[0];
-            this.selectedPriority = defaultPriority;
+            this.selectedPriorityOption = this.convertPriorityToDropdownOption(defaultPriority);
             this.workOrderForm.patchValue({ priority_id: defaultPriority.id });
           }
         },
@@ -138,6 +150,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
           console.error('Error loading priorities:', error);
           this.toastService.error('Failed to load priority options');
           this.priorityOptions = [];
+          this.priorityDropdownOptions = [];
         }
       })
     );
@@ -147,14 +160,29 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       this.metaWorkOrdersService.getCategories().subscribe({
         next: (categories) => {
           this.categoryOptions = categories;
+          // Add "No Category" option at the beginning
+          this.categoryDropdownOptions = [
+            { id: null, name: 'No Category', description: 'Work order without specific category' },
+            ...categories.map(c => this.convertCategoryToDropdownOption(c))
+          ];
         },
         error: (error) => {
           console.error('Error loading categories:', error);
           this.toastService.error('Failed to load category options');
           this.categoryOptions = [];
+          this.categoryDropdownOptions = [
+            { id: null, name: 'No Category', description: 'Work order without specific category' }
+          ];
         }
       })
     );
+
+    // Set default type to 'ppm'
+    const defaultType = this.typeDropdownOptions.find(t => t.id === 'ppm');
+    if (defaultType) {
+      this.selectedTypeOption = defaultType;
+      this.workOrderForm.patchValue({ type: 'ppm' });
+    }
   }
 
   private loadSelectData(): void {
@@ -208,66 +236,75 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     );
   }
 
-  // New standardized select box methods
-  toggleStatusDropdown(): void {
-    this.showStatusDropdown = !this.showStatusDropdown;
-    this.showPriorityDropdown = false;
-    this.showCategoryDropdown = false;
+  // Helper methods to convert MetaItem to DropdownOption
+  convertStatusToDropdownOption(status: MetaItem): DropdownOption {
+    return {
+      id: status.id,
+      name: status.name,
+      description: this.getStatusDescription(status)
+    };
   }
 
-  togglePriorityDropdown(): void {
-    this.showPriorityDropdown = !this.showPriorityDropdown;
-    this.showStatusDropdown = false;
-    this.showCategoryDropdown = false;
+  convertPriorityToDropdownOption(priority: MetaItem): DropdownOption {
+    return {
+      id: priority.id,
+      name: priority.name,
+      description: this.getPriorityDescription(priority)
+    };
   }
 
-  toggleCategoryDropdown(): void {
-    this.showCategoryDropdown = !this.showCategoryDropdown;
-    this.showStatusDropdown = false;
-    this.showPriorityDropdown = false;
+  convertCategoryToDropdownOption(category: MetaItem): DropdownOption {
+    return {
+      id: category.id,
+      name: category.name,
+      description: this.getCategoryDescription(category)
+    };
   }
 
-  selectStatus(status: MetaItem): void {
-    this.selectedStatus = status;
-    this.workOrderForm.patchValue({ status_id: status.id });
-    this.showStatusDropdown = false;
+  // Selection methods for global dropdown component
+  selectStatus(option: DropdownOption | null): void {
+    this.selectedStatusOption = option;
+    this.workOrderForm.patchValue({ status_id: option?.id || null });
   }
 
-  selectPriority(priority: MetaItem): void {
-    this.selectedPriority = priority;
-    this.workOrderForm.patchValue({ priority_id: priority.id });
-    this.showPriorityDropdown = false;
+  selectPriority(option: DropdownOption | null): void {
+    this.selectedPriorityOption = option;
+    this.workOrderForm.patchValue({ priority_id: option?.id || null });
   }
 
-  selectCategory(category: MetaItem | null): void {
-    this.selectedCategory = category;
-    this.workOrderForm.patchValue({ category_id: category?.id || null });
-    this.showCategoryDropdown = false;
+  selectCategory(option: DropdownOption | null): void {
+    this.selectedCategoryOption = option;
+    this.workOrderForm.patchValue({ category_id: option?.id || null });
   }
 
-  getStatusLabel(): string {
-    return this.selectedStatus ? this.selectedStatus.name : 'Select status';
+  selectType(option: DropdownOption | null): void {
+    this.selectedTypeOption = option;
+    this.workOrderForm.patchValue({ type: option?.id || '' });
   }
 
-  getPriorityLabel(): string {
-    return this.selectedPriority ? this.selectedPriority.name : 'Select priority';
+
+  getTypeColor(type: string): string {
+    if (!type) return '#6B7280';
+    switch (type) {
+      case 'ppm': return '#3B82F6';      // Blue
+      case 'corrective': return '#F59E0B';  // Amber
+      case 'predictive': return '#10B981';  // Green
+      case 'reactive': return '#EF4444';    // Red
+      default: return '#6B7280';
+    }
   }
 
-  getCategoryLabel(): string {
-    return this.selectedCategory ? this.selectedCategory.name : 'Select category (optional)';
+  getTypeDescription(type: string): string {
+    if (!type) return 'Select a work order type';
+    switch (type) {
+      case 'ppm': return 'Planned Preventive Maintenance - scheduled maintenance to prevent issues';
+      case 'corrective': return 'Corrective - fixing issues that have been identified';
+      case 'predictive': return 'Predictive - maintenance based on data and predictions';
+      case 'reactive': return 'Reactive - responding to unexpected failures or issues';
+      default: return 'Work order type';
+    }
   }
 
-  getStatusValue(): number | null {
-    return this.selectedStatus ? this.selectedStatus.id : null;
-  }
-
-  getPriorityValue(): number | null {
-    return this.selectedPriority ? this.selectedPriority.id : null;
-  }
-
-  getCategoryValue(): number | null {
-    return this.selectedCategory ? this.selectedCategory.id : null;
-  }
 
   getStatusColor(slug: string): string {
     if (!slug) return '#6B7280';
@@ -337,16 +374,6 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Close dropdowns when clicking outside
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.status-dropdown') && !target.closest('.priority-dropdown') && !target.closest('.category-dropdown')) {
-      this.showStatusDropdown = false;
-      this.showPriorityDropdown = false;
-      this.showCategoryDropdown = false;
-    }
-  }
 
   setActiveTab(tab: 'work-orders' | 'analytics') {
     console.log('WorkOrdersComponent: setActiveTab called with:', tab);
@@ -436,6 +463,7 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
         status_id: this.workOrderForm.value.status_id,
         priority_id: this.workOrderForm.value.priority_id,
         category_id: this.workOrderForm.value.category_id || undefined,
+        type: this.workOrderForm.value.type as 'ppm' | 'corrective' | 'predictive' | 'reactive',
         due_date: this.workOrderForm.value.due_date || undefined,
         asset_id: this.workOrderForm.value.asset_id || undefined,
         location_id: this.workOrderForm.value.location_id || undefined,
@@ -450,13 +478,15 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
           next: (response) => {
             this.toastService.success('Work order created successfully');
             this.closeCreateModal();
+            // Reset form with default values
             this.workOrderForm.reset({
-              status_id: this.selectedStatus?.id || null,
-              priority_id: this.selectedPriority?.id || null,
-              category_id: null
+              status_id: this.selectedStatusOption?.id || null,
+              priority_id: this.selectedPriorityOption?.id || null,
+              category_id: null,
+              type: this.selectedTypeOption?.id || 'ppm'
             });
 
-            this.selectedCategory = null;
+            this.selectedCategoryOption = null;
 
             if (this.workOrderList) {
               this.workOrderList.refreshWorkOrders();

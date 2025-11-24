@@ -44,6 +44,7 @@ export interface WorkOrder {
   priority_id: number | null;
   status_id: number | null;
   category_id: number | null;
+  type: 'ppm' | 'corrective' | 'predictive' | 'reactive';
   due_date: string | null;
   completed_at: string | null;
   asset_id: number | null;
@@ -108,6 +109,7 @@ export interface CreateWorkOrderRequest {
   priority_id: number;
   status_id: number;
   category_id?: number;
+  type: 'ppm' | 'corrective' | 'predictive' | 'reactive';
   due_date?: string;
   asset_id?: number;
   location_id?: number;
@@ -240,12 +242,14 @@ export interface WorkOrderFilters {
   users: Array<{ id: number; first_name: string; last_name: string }>;
   status_options: { [key: string]: string };
   priority_options: { [key: string]: string };
+  type_options?: { [key: string]: string };
 }
 
 export interface WorkOrderSearchParams {
   status_id?: number | null;
   priority_id?: number | null;
   category_id?: number | null;
+  type?: 'ppm' | 'corrective' | 'predictive' | 'reactive';
   asset_id?: number;
   location_id?: number;
   assigned_to?: number;

@@ -9,6 +9,7 @@ import { Location as angularLocation } from '@angular/common';
 import flatpickr from 'flatpickr';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
+import { InventoryAnalyticsService } from '../../../core/services/inventory-analytics.service';
 
 @Component({
   selector: 'app-asset-edit',
@@ -50,6 +51,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   showTagsDropdown = false;
   showDepartmentDropdown = false;
   showParentDropdown = false;
+  showInventoryPartsDropdown = false;
   selectedAssetType: any | null = null;
   selectedCategory: any | null = null;
   selectedLocation: any | null = null;
@@ -57,6 +59,13 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedDepartment: any | null = null;
   selectedTags: any[] = [];
   newTagInput: string = '';
+  
+  // Inventory Parts
+  inventoryPartIds: number[] = [];
+  availableInventoryParts: any[] = [];
+  selectedInventoryParts: any[] = [];
+  inventoryPartsSearch: string = '';
+  isLoadingInventoryParts = false;
 
   // Asset types
   assetTypes: any[] = [];
@@ -109,7 +118,8 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private assetService: AssetService,
-    private angularLocation: angularLocation
+    private angularLocation: angularLocation,
+    private inventoryAnalyticsService: InventoryAnalyticsService
   ) {
     this.assetForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -327,6 +337,12 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
           this.selectedTags = this.asset.tags.map((tag: any) => {
             return this.availableTags.find(t => t.id === tag.id) || tag;
           });
+        }
+
+        // Set inventory parts if available
+        if (this.asset.inventory_parts && Array.isArray(this.asset.inventory_parts)) {
+          this.inventoryPartIds = this.asset.inventory_parts.map((part: any) => part.id);
+          this.selectedInventoryParts = this.asset.inventory_parts;
         }
 
         // Mark form as touched to trigger validation
@@ -916,6 +932,13 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
           formData.remove_image_ids = this.removedImageIds;
         }
 
+        // Add inventory part IDs
+        if (this.inventoryPartIds.length > 0) {
+          formData.inventory_part_ids = this.inventoryPartIds;
+        } else {
+          formData.inventory_part_ids = [];
+        }
+
         // parent_id is already included in formData
         this.assetService.updateAsset(this.asset.id, formData)
           .pipe(takeUntil(this.destroy$))
@@ -949,6 +972,62 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.angularLocation.back();
   }
 
+  // Inventory Parts Methods
+  loadInventoryParts() {
+    this.isLoadingInventoryParts = true;
+    this.inventoryAnalyticsService.getPartsCatalog('', 'active', 1, 1000, false).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.availableInventoryParts = Array.isArray(res.data) ? res.data : (res.data.data || []);
+        }
+        this.isLoadingInventoryParts = false;
+      },
+      error: (err) => {
+        console.error('Failed to load inventory parts:', err);
+        this.isLoadingInventoryParts = false;
+      }
+    });
+  }
+
+  toggleInventoryPartsDropdown() {
+    this.showInventoryPartsDropdown = !this.showInventoryPartsDropdown;
+    this.showAssetTypeDropdown = false;
+    this.showCategoryDropdown = false;
+    this.showLocationDropdown = false;
+    this.showStatusDropdown = false;
+    this.showTagsDropdown = false;
+    this.showDepartmentDropdown = false;
+    if (this.showInventoryPartsDropdown) {
+      this.loadInventoryParts();
+    }
+  }
+
+  selectInventoryPart(part: any) {
+    if (!this.inventoryPartIds.includes(part.id)) {
+      this.inventoryPartIds.push(part.id);
+      this.selectedInventoryParts.push(part);
+    }
+    this.inventoryPartsSearch = '';
+    this.showInventoryPartsDropdown = false;
+  }
+
+  removeInventoryPart(partId: number) {
+    this.inventoryPartIds = this.inventoryPartIds.filter(id => id !== partId);
+    this.selectedInventoryParts = this.selectedInventoryParts.filter(part => part.id !== partId);
+  }
+
+  getFilteredInventoryParts() {
+    if (!this.inventoryPartsSearch) {
+      return this.availableInventoryParts.filter(part => !this.inventoryPartIds.includes(part.id));
+    }
+    const searchLower = this.inventoryPartsSearch.toLowerCase();
+    return this.availableInventoryParts.filter(part => 
+      !this.inventoryPartIds.includes(part.id) &&
+      (part.name?.toLowerCase().includes(searchLower) || 
+       part.part_number?.toLowerCase().includes(searchLower))
+    );
+  }
+
   // Close dropdowns when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
@@ -958,6 +1037,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showStatusDropdown = false;
     this.showTagsDropdown = false;
     this.showDepartmentDropdown = false;
+    this.showInventoryPartsDropdown = false;
   }
 
   isFormValid(): boolean {

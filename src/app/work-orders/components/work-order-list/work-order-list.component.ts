@@ -121,6 +121,9 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
       if (filters.category_id) {
         params.category_id = filters.category_id;
       }
+      if (filters.type) {
+        params.type = filters.type;
+      }
       if (filters.asset_id && filters.asset_id !== '') {
         params.asset_id = filters.asset_id;
       }
@@ -222,6 +225,16 @@ export class WorkOrderListComponent implements OnInit, OnDestroy {
       'critical': 'Critical'
     };
     return priorityMap[priority] || priority;
+  }
+
+  getTypeLabel(type: string): string {
+    const typeMap: { [key: string]: string } = {
+      'ppm': 'PPM',
+      'corrective': 'Corrective',
+      'predictive': 'Predictive',
+      'reactive': 'Reactive'
+    };
+    return typeMap[type] || type;
   }
 
   onCardSelectionChanged(event: { workOrderId: number; selected: boolean }): void {

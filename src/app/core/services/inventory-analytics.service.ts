@@ -175,6 +175,7 @@ export interface InventoryPart {
   barcode?: string;
   status?: string;
   abc_class?: string;
+  is_consumable?: boolean;
   is_archived?: boolean;
   company_id: number;
   user_id: number;
@@ -210,6 +211,7 @@ export interface CreatePartRequest {
   barcode?: string;
   status?: string;
   abc_class?: string;
+  is_consumable?: boolean;
 }
 
 export interface UpdatePartRequest {
@@ -224,6 +226,7 @@ export interface UpdatePartRequest {
   barcode?: string;
   status?: string;
   abc_class?: string;
+  is_consumable?: boolean;
 }
 
 // Stock Levels Interfaces

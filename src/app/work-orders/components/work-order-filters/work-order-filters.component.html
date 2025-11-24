@@ -283,6 +283,93 @@
         </div>
       </div>
 
+      <!-- Type Dropdown -->
+      <div class="filter-dropdown" (clickOutside)="showTypeDropdown = false">
+        <label class="filter-label">
+          <svg class="w-4 h-4" 
+               [class.mr-2]="!isRtl()" 
+               [class.ml-2]="isRtl()" 
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          Type
+        </label>
+        <div class="relative" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="toggleTypeDropdown()"
+            class="filter-button"
+            [class.active]="showTypeDropdown">
+            <div class="button-content">
+              <span *ngIf="!getTypeLabel() || getTypeLabel() === 'All Types'" class="placeholder-text">All Types</span>
+              <div *ngIf="getTypeLabel() && getTypeLabel() !== 'All Types'" class="selected-option">
+                <div class="type-indicator bg-blue-100">
+                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                </div>
+                <span class="selected-text">{{ getTypeLabel() }}</span>
+              </div>
+              <svg class="chevron-icon" [class.active]="showTypeDropdown" fill="none" stroke="currentColor"
+                   viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div *ngIf="showTypeDropdown" class="dropdown-menu">
+            <div class="dropdown-header">
+              <svg class="w-4 h-4" 
+               [class.mr-2]="!isRtl()" 
+               [class.ml-2]="isRtl()" 
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+              Select Work Order Type
+            </div>
+            <button
+              class="dropdown-option"
+              (click)="selectType(null)">
+              <div class="option-content">
+                <div class="option-icon bg-gray-100">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">All Types</div>
+                  <div class="option-description">Show all types</div>
+                </div>
+              </div>
+            </button>
+            <button
+              *ngFor="let option of typeOptions"
+              type="button"
+              (click)="selectType(option.value)"
+              class="dropdown-option"
+              [class.selected]="getTypeValue() === option.value">
+              <div class="option-content">
+                <div class="option-icon bg-blue-100">
+                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                </div>
+                <div class="option-text">
+                  <div class="option-label">{{ option.label }}</div>
+                  <div class="option-description">Work order type</div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
     @if (checkFilter()) {
       <!-- Action Buttons Row -->

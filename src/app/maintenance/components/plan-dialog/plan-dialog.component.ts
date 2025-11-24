@@ -91,6 +91,11 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
   selectedAssetCategory: { id: number; name: string } | null = null;
   selectedAssetStatus: { id: number; name: string } | null = null;
   showBulkActions = false;
+  
+  // Inventory Parts
+  linkedParts: any[] = [];
+  selectedParts: any[] = [];
+  partsLoading = false;
   // Checklist - add new item form state
   newChecklistItem: MaintenancePlanChecklist = {
     title: '',
@@ -572,6 +577,7 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     this.selectedAssetIds.set(set);
     this.model.asset_ids = Array.from(set) as any;
     this.showBulkActions = set.size > 0;
+    this.loadAssetParts();
   }
   selectAllOnPage() {
     const set = new Set(this.selectedAssetIds());
@@ -579,11 +585,80 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     this.selectedAssetIds.set(set);
     this.model.asset_ids = Array.from(set) as any;
     this.showBulkActions = set.size > 0;
+    this.loadAssetParts();
   }
   clearAllSelection() {
     this.selectedAssetIds.set(new Set());
     this.model.asset_ids = [] as any;
     this.showBulkActions = false;
+    this.linkedParts = [];
+    this.selectedParts = [];
+  }
+
+  loadAssetParts() {
+    const assetIds = Array.from(this.selectedAssetIds());
+    if (assetIds.length === 0) {
+      this.linkedParts = [];
+      this.selectedParts = [];
+      return;
+    }
+
+    this.partsLoading = true;
+    this.api.getAssetParts(assetIds).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          // Map parts and add default quantity
+          this.linkedParts = res.data.map((part: any) => ({
+            ...part,
+            default_qty: 1,
+            is_required: true,
+            selected: true
+          }));
+          this.selectedParts = [...this.linkedParts];
+        } else {
+          this.linkedParts = [];
+          this.selectedParts = [];
+        }
+        this.partsLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load asset parts:', err);
+        this.linkedParts = [];
+        this.selectedParts = [];
+        this.partsLoading = false;
+      }
+    });
+  }
+
+  updatePartQuantity(partId: number, qty: number) {
+    const part = this.selectedParts.find(p => p.id === partId);
+    if (part) {
+      part.default_qty = qty;
+    }
+  }
+
+  togglePartSelection(partId: number) {
+    const part = this.selectedParts.find(p => p.id === partId);
+    if (part) {
+      part.selected = !part.selected;
+      if (!part.selected) {
+        this.selectedParts = this.selectedParts.filter(p => p.id !== partId);
+      }
+    } else {
+      const linkedPart = this.linkedParts.find(p => p.id === partId);
+      if (linkedPart) {
+        linkedPart.selected = true;
+        this.selectedParts.push(linkedPart);
+      }
+    }
+  }
+
+  removePart(partId: number) {
+    this.selectedParts = this.selectedParts.filter(p => p.id !== partId);
+    const linkedPart = this.linkedParts.find(p => p.id === partId);
+    if (linkedPart) {
+      linkedPart.selected = false;
+    }
   }
   // Add checklist item from the form
   addItemFromForm() {
@@ -658,9 +733,58 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
       // Update existing plan
       this.api.updatePlan(this.planToEdit.id, payload).subscribe({
         next: (res) => {
-          this.loading = false;
-          this.updated.emit(res);
-          this.close();
+          // Update parts if any selected
+          if (this.selectedParts.length > 0) {
+            const partsPayload = this.selectedParts.map(p => ({
+              part_id: p.id,
+              default_qty: p.default_qty || 1,
+              is_required: p.is_required !== false
+            }));
+            // First get existing parts and remove them, then add new ones
+            this.api.getPlanParts(this.planToEdit.id).subscribe({
+              next: (partsRes) => {
+                if (partsRes.success && partsRes.data) {
+                  // Remove all existing parts
+                  partsRes.data.forEach((existingPart: any) => {
+                    this.api.removePlanPart(this.planToEdit!.id, existingPart.id).subscribe();
+                  });
+                }
+                // Add new parts
+                this.api.addPartsToPlan(this.planToEdit.id, partsPayload).subscribe({
+                  next: () => {
+                    this.loading = false;
+                    this.updated.emit(res);
+                    this.close();
+                  },
+                  error: (err) => {
+                    console.error('Failed to update parts:', err);
+                    this.loading = false;
+                    this.updated.emit(res);
+                    this.close();
+                  }
+                });
+              },
+              error: () => {
+                // If get parts fails, just add new ones
+                this.api.addPartsToPlan(this.planToEdit.id, partsPayload).subscribe({
+                  next: () => {
+                    this.loading = false;
+                    this.updated.emit(res);
+                    this.close();
+                  },
+                  error: () => {
+                    this.loading = false;
+                    this.updated.emit(res);
+                    this.close();
+                  }
+                });
+              }
+            });
+          } else {
+            this.loading = false;
+            this.updated.emit(res);
+            this.close();
+          }
         },
         error: (err) => {
           this.loading = false;
@@ -681,9 +805,32 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
       // Create new plan
       this.api.createPlan(payload).subscribe({
         next: (res) => {
-          this.loading = false;
-          this.created.emit(res);
-          this.close();
+          // Save parts if any selected
+          if (this.selectedParts.length > 0 && res?.data?.id) {
+            const partsPayload = this.selectedParts.map(p => ({
+              part_id: p.id,
+              default_qty: p.default_qty || 1,
+              is_required: p.is_required !== false
+            }));
+            this.api.addPartsToPlan(res.data.id, partsPayload).subscribe({
+              next: () => {
+                this.loading = false;
+                this.created.emit(res);
+                this.close();
+              },
+              error: (err) => {
+                console.error('Failed to save parts:', err);
+                // Still emit created event even if parts save fails
+                this.loading = false;
+                this.created.emit(res);
+                this.close();
+              }
+            });
+          } else {
+            this.loading = false;
+            this.created.emit(res);
+            this.close();
+          }
         },
         error: (err) => {
           this.loading = false;

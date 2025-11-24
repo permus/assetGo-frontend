@@ -22,6 +22,7 @@ import {ClickOutsideDirective} from '../shared/directives/click-outside/click-ou
 import { DateFormatPipe } from '../core/pipes/date-format.pipe';
 import { TimeFormatPipe } from '../core/pipes/time-format.pipe';
 import { NumberFormatPipe } from '../core/pipes/number-format.pipe';
+import { GlobalDropdownComponent } from '../shared/components/global-dropdown';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { NumberFormatPipe } from '../core/pipes/number-format.pipe';
     ClickOutsideDirective,
     DateFormatPipe,
     TimeFormatPipe,
-    NumberFormatPipe
+    NumberFormatPipe,
+    GlobalDropdownComponent
   ]
 })
 export class WorkOrdersModule { }

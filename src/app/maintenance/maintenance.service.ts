@@ -66,6 +66,31 @@ export class MaintenanceService {
     return this.http.delete<any>(`${this.base}/schedules/${id}`);
   }
 
+  // Plan Parts Management
+  getPlanParts(planId: number): Observable<any> {
+    return this.http.get<any>(`${this.base}/plans/${planId}/parts`);
+  }
+
+  addPartsToPlan(planId: number, parts: Array<{ part_id: number; default_qty?: number; is_required?: boolean }>): Observable<any> {
+    return this.http.post<any>(`${this.base}/plans/${planId}/parts`, { parts });
+  }
+
+  updatePlanPart(planId: number, partId: number, data: { default_qty?: number; is_required?: boolean }): Observable<any> {
+    return this.http.put<any>(`${this.base}/plans/${planId}/parts/${partId}`, data);
+  }
+
+  removePlanPart(planId: number, partId: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}/plans/${planId}/parts/${partId}`);
+  }
+
+  getAssetParts(assetIds: number[]): Observable<any> {
+    let params = new HttpParams();
+    assetIds.forEach(id => {
+      params = params.append('asset_ids[]', id.toString());
+    });
+    return this.http.get<any>(`${this.base}/plans/asset-parts`, { params });
+  }
+
   getHistoryStats(): Observable<any> {
     return this.http.get<any>(`${this.base}/stats/history`);
   }
