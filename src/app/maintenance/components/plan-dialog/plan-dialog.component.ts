@@ -6,6 +6,8 @@ import { MaintenancePlan, MaintenancePlanChecklist, FrequencyType, FrequencyUnit
 import { MetaWorkOrdersService } from '../../../core/services/meta-work-orders.service';
 import { MetaItem } from '../../../core/types/work-order.types';
 import { AssetService } from '../../../assets/services/asset.service';
+import { TeamService, TeamMember } from '../../../teams/services/team.service';
+import { RoleService, Role } from '../../../roles/services/role.service';
 
 @Component({
   selector: 'app-plan-dialog',
@@ -44,6 +46,9 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     frequency_unit: 'days' as FrequencyUnit,
     is_active: true,
     checklist_items: [],
+    assigned_user_id: undefined,
+    assigned_role_id: undefined,
+    assigned_team_id: undefined,
   };
 
   items = signal<MaintenancePlanChecklist[]>([]);
@@ -107,7 +112,13 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
   };
   showNewItemTypeDropdown = false;
 
-  constructor(private api: MaintenanceService, private meta: MetaWorkOrdersService, private assetsApi: AssetService) {}
+  constructor(
+    private api: MaintenanceService, 
+    private meta: MetaWorkOrdersService, 
+    private assetsApi: AssetService,
+    private teamService: TeamService,
+    private roleService: RoleService
+  ) {}
 
   go(i: number) {
     this.step.set(i);
@@ -172,6 +183,17 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
   selectedPriorityMeta: MetaItem | null = null;
   showPriorityDropdown = false;
 
+  // Assignment fields
+  users: TeamMember[] = [];
+  roles: Role[] = [];
+  teams: any[] = [];
+  selectedUser: TeamMember | null = null;
+  selectedRole: Role | null = null;
+  selectedTeam: any = null;
+  showUserDropdown = false;
+  showRoleDropdown = false;
+  showTeamDropdown = false;
+
   ngOnInitHookLoaded = false;
   ngOnInitOnce() {
     if (this.ngOnInitHookLoaded) return;
@@ -187,6 +209,30 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
       },
       error: () => {
         this.priorityOptions = [];
+      }
+    });
+
+    // Load users/teams for assignment
+    this.teamService.getTeamMembersFlat(1000).subscribe({
+      next: (teams) => {
+        this.users = teams || [];
+        // Extract unique teams from team members (if they have team_id or similar)
+        // For now, we'll use team members as both users and teams
+        this.teams = teams || [];
+      },
+      error: () => {
+        this.users = [];
+        this.teams = [];
+      }
+    });
+
+    // Load roles
+    this.roleService.getRoles().subscribe({
+      next: (response) => {
+        this.roles = response?.data || [];
+      },
+      error: () => {
+        this.roles = [];
       }
     });
   }
@@ -229,6 +275,26 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
           }
         }
 
+        // Load assignment fields if available
+        if (planData?.assigned_user_id) {
+          const user = this.users.find(u => u.id === planData.assigned_user_id);
+          if (user) {
+            this.selectedUser = user;
+          }
+        }
+        if (planData?.assigned_role_id) {
+          const role = this.roles.find(r => r.id === planData.assigned_role_id);
+          if (role) {
+            this.selectedRole = role;
+          }
+        }
+        if (planData?.assigned_team_id) {
+          const team = this.teams.find(t => t.id === planData.assigned_team_id);
+          if (team) {
+            this.selectedTeam = team;
+          }
+        }
+
         this.loading = false;
       },
       error: (error) => {
@@ -261,14 +327,34 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
       this.assetIdsCsv.set(this.planToEdit.asset_ids.join(', '));
     }
 
-    // Load priority if available
-    if (this.planToEdit?.priority_id) {
-      // Find the priority in the options and set it
-      const priority = this.priorityOptions.find(p => p.id === this.planToEdit!.priority_id);
-      if (priority) {
-        this.selectedPriorityMeta = priority;
-      }
-    }
+        // Load priority if available
+        if (this.planToEdit?.priority_id) {
+          // Find the priority in the options and set it
+          const priority = this.priorityOptions.find(p => p.id === this.planToEdit!.priority_id);
+          if (priority) {
+            this.selectedPriorityMeta = priority;
+          }
+        }
+
+        // Load assignment fields if available
+        if (this.planToEdit?.assigned_user_id) {
+          const user = this.users.find(u => u.id === this.planToEdit!.assigned_user_id);
+          if (user) {
+            this.selectedUser = user;
+          }
+        }
+        if (this.planToEdit?.assigned_role_id) {
+          const role = this.roles.find(r => r.id === this.planToEdit!.assigned_role_id);
+          if (role) {
+            this.selectedRole = role;
+          }
+        }
+        if (this.planToEdit?.assigned_team_id) {
+          const team = this.teams.find(t => t.id === this.planToEdit!.assigned_team_id);
+          if (team) {
+            this.selectedTeam = team;
+          }
+        }
   }
   ngOnInit() {
     this.ngOnInitOnce();
@@ -387,6 +473,36 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     this.selectedPriorityMeta = priority;
     this.model.priority_id = priority.id as any;
     this.showPriorityDropdown = false;
+  }
+
+  // Assignment dropdown helpers
+  toggleUserDropdown() { this.showUserDropdown = !this.showUserDropdown; }
+  selectUser(user: TeamMember) {
+    this.selectedUser = user;
+    this.model.assigned_user_id = user.id as any;
+    this.showUserDropdown = false;
+  }
+  getUserDisplayName(user: TeamMember | null): string {
+    if (!user) return '';
+    return `${user.first_name} ${user.last_name}`.trim() || user.email;
+  }
+
+  toggleRoleDropdown() { this.showRoleDropdown = !this.showRoleDropdown; }
+  selectRole(role: Role) {
+    this.selectedRole = role;
+    this.model.assigned_role_id = role.id as any;
+    this.showRoleDropdown = false;
+  }
+
+  toggleTeamDropdown() { this.showTeamDropdown = !this.showTeamDropdown; }
+  selectTeam(team: any) {
+    this.selectedTeam = team;
+    this.model.assigned_team_id = team.id as any;
+    this.showTeamDropdown = false;
+  }
+  getTeamDisplayName(team: any | null): string {
+    if (!team) return '';
+    return team.name || `${team.first_name} ${team.last_name}`.trim() || team.email || '';
   }
 
   // Priority helpers (descriptions/colors consistent with Work Orders)
@@ -699,6 +815,9 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     this.showAssetCategoryDropdown = false;
     this.showAssetStatusDropdown = false;
     this.showNewItemTypeDropdown = false;
+    this.showUserDropdown = false;
+    this.showRoleDropdown = false;
+    this.showTeamDropdown = false;
   }
 
   canSubmit() {
@@ -880,12 +999,16 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
       this.model = {
         name: '', priority_id: undefined, sort: 0, descriptions: '', category_id: undefined,
         plan_type: 'preventive', estimeted_duration: undefined, instractions: '', safety_notes: '',
-        asset_ids: [], frequency_type: 'time', frequency_value: 30, frequency_unit: 'days', is_active: true, checklist_items: []
+        asset_ids: [], frequency_type: 'time', frequency_value: 30, frequency_unit: 'days', is_active: true, checklist_items: [],
+        assigned_user_id: undefined, assigned_role_id: undefined, assigned_team_id: undefined
       } as any;
       this.items.set([]);
       this.assetIdsCsv.set('');
       this.selectedAssetIds.set(new Set());
       this.showBulkActions = false;
+      this.selectedUser = null;
+      this.selectedRole = null;
+      this.selectedTeam = null;
     }
 
     this.error = null;

@@ -41,6 +41,7 @@
         <ng-container [ngSwitch]="step()">
           <ng-container *ngSwitchCase="0">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Row 1: Name and Priority (col-6 each) -->
               <div class="form-row full-width">
                 <div class="form-group" [class.error]="hasFieldError('name')">
                   <label>Name <span class="required">*</span></label>
@@ -106,6 +107,20 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Row 2: Estimated Duration and Plan Type (col-6 each) -->
+              <div class="form-row full-width">
+                <div class="form-group">
+                  <label>Estimated Duration (hours)</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="model.estimeted_duration"
+                    placeholder="0"
+                    min="0"
+                    [disabled]="editMode && loading"/>
+                </div>
+              </div>
 
               <div class="form-row full-width">
                 <div class="form-group">
@@ -152,18 +167,10 @@
                 </div>
               </div>
 
-              <div class="form-row full-width">
-                <div class="form-group">
-                  <label>Estimated Duration (hours)</label>
-                  <input
-                    type="number"
-                    [(ngModel)]="model.estimeted_duration"
-                    placeholder="0"
-                    min="0"
-                    [disabled]="editMode && loading"/>
-                </div>
-              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+              <!-- Row 3: Descriptions (full width) -->
               <div class="form-row full-width md:col-span-2">
                 <div class="form-group">
                   <label>Descriptions</label>
@@ -191,6 +198,109 @@
                     [(ngModel)]="model.safety_notes"
                     placeholder="Enter safety notes"
                     [disabled]="editMode && loading"></textarea>
+                </div>
+              </div>
+
+              <!-- Assignment Fields -->
+              <div class="form-row full-width md:col-span-3">
+                <div class="form-group">
+                  <label>Assigned User</label>
+                  <div class="relative user-dropdown" (click)="$event.stopPropagation()">
+                    <button type="button" (click)="toggleUserDropdown()" class="dropdown-button"
+                            [class.active]="showUserDropdown" [disabled]="editMode && loading">
+                      <div class="dropdown-content">
+                        <span *ngIf="!selectedUser" class="placeholder">Select user (optional)</span>
+                        <div *ngIf="selectedUser" class="selected-item">
+                          <span class="selected-text">{{ getUserDisplayName(selectedUser) }}</span>
+                        </div>
+                        <svg class="dropdown-arrow" [class.rotated]="showUserDropdown" fill="none"
+                             stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </button>
+                    <div *ngIf="showUserDropdown" class="dropdown-menu">
+                      <div class="dropdown-header">Select user</div>
+                      <button *ngFor="let user of users" type="button" (click)="selectUser(user)"
+                              class="dropdown-item" [class.selected]="selectedUser?.id === user.id">
+                        <div class="item-content">
+                          <div class="item-details">
+                            <div class="item-name">{{ getUserDisplayName(user) }}</div>
+                            <div class="item-description !text-xs">{{ user.email }}</div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row full-width md:col-span-3">
+                <div class="form-group">
+                  <label>Assigned Role</label>
+                  <div class="relative role-dropdown" (click)="$event.stopPropagation()">
+                    <button type="button" (click)="toggleRoleDropdown()" class="dropdown-button"
+                            [class.active]="showRoleDropdown" [disabled]="editMode && loading">
+                      <div class="dropdown-content">
+                        <span *ngIf="!selectedRole" class="placeholder">Select role (optional)</span>
+                        <div *ngIf="selectedRole" class="selected-item">
+                          <span class="selected-text">{{ selectedRole.name }}</span>
+                        </div>
+                        <svg class="dropdown-arrow" [class.rotated]="showRoleDropdown" fill="none"
+                             stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </button>
+                    <div *ngIf="showRoleDropdown" class="dropdown-menu">
+                      <div class="dropdown-header">Select role</div>
+                      <button *ngFor="let role of roles" type="button" (click)="selectRole(role)"
+                              class="dropdown-item" [class.selected]="selectedRole?.id === role.id">
+                        <div class="item-content">
+                          <div class="item-details">
+                            <div class="item-name">{{ role.name }}</div>
+                            <div *ngIf="role.description" class="item-description !text-xs">{{ role.description }}</div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row full-width md:col-span-3">
+                <div class="form-group">
+                  <label>Assigned Team</label>
+                  <div class="relative team-dropdown" (click)="$event.stopPropagation()">
+                    <button type="button" (click)="toggleTeamDropdown()" class="dropdown-button"
+                            [class.active]="showTeamDropdown" [disabled]="editMode && loading">
+                      <div class="dropdown-content">
+                        <span *ngIf="!selectedTeam" class="placeholder">Select team (optional)</span>
+                        <div *ngIf="selectedTeam" class="selected-item">
+                          <span class="selected-text">{{ getTeamDisplayName(selectedTeam) }}</span>
+                        </div>
+                        <svg class="dropdown-arrow" [class.rotated]="showTeamDropdown" fill="none"
+                             stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </button>
+                    <div *ngIf="showTeamDropdown" class="dropdown-menu">
+                      <div class="dropdown-header">Select team</div>
+                      <button *ngFor="let team of teams" type="button" (click)="selectTeam(team)"
+                              class="dropdown-item" [class.selected]="selectedTeam?.id === team.id">
+                        <div class="item-content">
+                          <div class="item-details">
+                            <div class="item-name">{{ getTeamDisplayName(team) }}</div>
+                            <div *ngIf="team.email" class="item-description !text-xs">{{ team.email }}</div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
