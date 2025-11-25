@@ -3,17 +3,16 @@ import {CommonModule} from '@angular/common';
 import {RouterOutlet, RouterModule} from '@angular/router';
 import {AuthService, User} from '../../../core/services/auth.service';
 import {Router} from '@angular/router';
-import { SettingsService, ModuleItem } from '../../../settings/settings.service';
-import { ModuleAccessService } from '../../../core/services/module-access.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationDropdownComponent } from '../notification-dropdown/notification-dropdown.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 import {HostListener} from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, NotificationDropdownComponent],
+  imports: [CommonModule, RouterOutlet, RouterModule, NotificationDropdownComponent, SidebarComponent],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss'
 })
@@ -21,14 +20,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
   public currentUser: User | null = null;
   public showUserDropdown = false;
   sidebarOpen = true;
-  modules = signal<Record<string, boolean>>({});
   private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private settings: SettingsService,
-    private moduleAccessService: ModuleAccessService,
     private notificationService: NotificationService
   ) {
     console.log('[LayoutComponent] Constructor called');
@@ -58,13 +54,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
         console.log('[LayoutComponent] User logged out, disconnecting notifications');
         this.notificationService.disconnectPusher(true); // Pass true to reset initialization flags
       }
-    });
-    
-    // Use module access service to determine visible modules
-    this.moduleAccessService.visibleModules$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(visibleModules => {
-      this.modules.set(visibleModules);
     });
   }
 
@@ -105,6 +94,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.sidebarOpen = !this.sidebarOpen;
   }
 
+  isRtl(): boolean {
+    return document.documentElement.dir === 'rtl';
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event) {
     const target = event.target as HTMLElement;
@@ -113,22 +106,4 @@ export class LayoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  isOwner(): boolean {
-    if (!this.currentUser) {
-      return false;
-    }
-    // Check if user is admin (by user_type)
-    if (this.currentUser.user_type?.toLowerCase() === 'admin') {
-      return true;
-    }
-    // Check if the current user's ID matches the company's owner_id
-    if (this.currentUser.company) {
-      return this.currentUser.company.owner_id === this.currentUser.id;
-    }
-    return false;
-  }
-
-  isRtl(): boolean {
-    return document.documentElement.dir === 'rtl';
-  }
 }

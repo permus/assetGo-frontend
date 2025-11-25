@@ -1,12 +1,12 @@
 import {Component, OnInit, inject, signal, computed} from '@angular/core';
 import {SettingsService, ModuleItem} from '../settings.service';
 import {ToastService} from '../../core/services/toast.service';
-import {NgFor} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
 
 @Component({
   selector: 'module-settings',
   standalone: true,
-  imports: [NgFor],
+  imports: [NgFor, NgIf],
   template: `
     <div class="space-y-4">
       <div class="border border-gray-200 p-5 rounded-2xl shadow bg-white">
@@ -56,10 +56,18 @@ import {NgFor} from '@angular/common';
                         [class.text-blue-700]="m.is_enabled" [class.bg-gray-100]="!m.is_enabled"
                         [class.text-gray-600]="!m.is_enabled">{{ m.is_enabled ? 'Enabled' : 'Disabled' }}</span>
 
-                  <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 cursor-pointer"
-                          [class.bg-blue-600]="m.is_enabled" [class.bg-gray-300]="!m.is_enabled" [disabled]="saving()"
+                  <button type="button" class="relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300"
+                          [class.bg-blue-600]="m.is_enabled" [class.bg-gray-300]="!m.is_enabled"
+                          [class.opacity-50]="saving()" [class.cursor-not-allowed]="saving()" [class.cursor-pointer]="!saving()"
+                          [disabled]="saving()"
                           (click)="toggle(m)">
-                    <span class="inline-block h-5 w-5 transform rounded-full bg-white transition-all duration-400"
+                    <span *ngIf="loadingModuleId() === m.id" class="absolute inset-0 flex items-center justify-center">
+                      <svg class="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </span>
+                    <span *ngIf="loadingModuleId() !== m.id" class="inline-block h-5 w-5 transform rounded-full bg-white transition-all duration-400"
                           [class.translate-x-5]="m.is_enabled" [class.translate-x-1]="!m.is_enabled"></span>
                   </button>
                 </div>
@@ -76,6 +84,7 @@ export class ModuleSettingsComponent implements OnInit {
   private toast = inject(ToastService);
   modules = signal<ModuleItem[]>([]);
   saving = signal(false);
+  loadingModuleId = signal<number | null>(null);
   systemModules = computed(() => this.modules().filter(m => m.is_system_module));
   featureModules = computed(() => this.modules().filter(m => !m.is_system_module));
 
@@ -129,23 +138,31 @@ export class ModuleSettingsComponent implements OnInit {
   }
 
   toggle(m: ModuleItem) {
-    if (m.is_system_module) return;
+    if (m.is_system_module || this.saving()) return;
+    
     this.saving.set(true);
+    this.loadingModuleId.set(m.id);
     const prev = m.is_enabled;
     const action = prev ? 'disabled' : 'enabled';
+    
+    // Optimistically update UI
     this.modules.update(list => list.map(x => x.id === m.id ? {...x, is_enabled: !prev} : x));
+    
     const req = prev ? this.api.disableModule(m.id) : this.api.enableModule(m.id);
     req.subscribe({
       next: () => {
         this.saving.set(false);
+        this.loadingModuleId.set(null);
         this.toast.success(`Module ${action} successfully!`);
-        // Note: refreshModulesEnabled() is already called via tap() in enableModule/disableModule
+        // Note: refreshModulesEnabled() is already called via switchMap() in enableModule/disableModule
         // which will update the BehaviorSubject and trigger UI updates
       },
       error: (error) => {
+        // Revert optimistic update on error
         this.modules.update(list => list.map(x => x.id === m.id ? {...x, is_enabled: prev} : x));
         this.toast.error(error.error?.message || `Failed to ${action.slice(0, -1)} module`);
         this.saving.set(false);
+        this.loadingModuleId.set(null);
       }
     });
   }

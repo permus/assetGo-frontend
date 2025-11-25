@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { map, tap, switchMap, catchError, timeout } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { of } from 'rxjs';
 
 export type ApiResponse<T> = { success: boolean; message?: string; data?: T };
 
@@ -62,6 +63,7 @@ export class SettingsService {
   private modulesEnabled$ = new BehaviorSubject<Record<string, boolean>>({});
   private modulesLoaded = false;
   private modulesLoading = false;
+  private modulesLoadSubscription?: Subscription;
 
   // Company
   getCompany() {
@@ -148,46 +150,40 @@ export class SettingsService {
     this.modulesLoading = true;
     return this.http
       .get<ApiResponse<{ modules: ModuleItem[] }>>(`${this.base}/settings/modules`)
-      .pipe(tap(res => {
-        this.pushModulesEnabled(res?.data?.modules || []);
-        this.modulesLoaded = true;
-        this.modulesLoading = false;
-        // Cache the response with timestamp
-        if (res.success && res.data) {
-          localStorage.setItem('cached_modules', JSON.stringify(res));
-          localStorage.setItem('cached_modules_timestamp', Date.now().toString());
-        }
-      }));
+      .pipe(
+        timeout(10000), // 10 second timeout to prevent hanging
+        tap(res => {
+          this.pushModulesEnabled(res?.data?.modules || []);
+          this.modulesLoaded = true;
+          this.modulesLoading = false;
+          // Cache the response with timestamp
+          if (res.success && res.data) {
+            localStorage.setItem('cached_modules', JSON.stringify(res));
+            localStorage.setItem('cached_modules_timestamp', Date.now().toString());
+          }
+        }),
+        catchError(error => {
+          // Reset loading state on error
+          this.modulesLoading = false;
+          console.error('Failed to load modules:', error);
+          // Return empty response to prevent breaking the chain
+          return of({ success: false, message: 'Failed to load modules', data: { modules: [] } } as ApiResponse<{ modules: ModuleItem[] }>);
+        })
+      );
   }
   enableModule(moduleId: number) {
     return this.http
       .post<ApiResponse<{ module_id: number }>>(`${this.base}/settings/modules/${moduleId}/enable`, {})
-      .pipe(tap(() => {
-        // Refresh modules immediately to update BehaviorSubject
-        this.refreshModulesEnabled().subscribe({
-          next: () => {
-            // Modules refreshed successfully
-          },
-          error: (err) => {
-            console.error('Failed to refresh modules after enable:', err);
-          }
-        });
-      }));
+      .pipe(
+        switchMap(() => this.refreshModulesEnabled())
+      );
   }
   disableModule(moduleId: number) {
     return this.http
       .post<ApiResponse<{ module_id: number }>>(`${this.base}/settings/modules/${moduleId}/disable`, {})
-      .pipe(tap(() => {
-        // Refresh modules immediately to update BehaviorSubject
-        this.refreshModulesEnabled().subscribe({
-          next: () => {
-            // Modules refreshed successfully
-          },
-          error: (err) => {
-            console.error('Failed to refresh modules after disable:', err);
-          }
-        });
-      }));
+      .pipe(
+        switchMap(() => this.refreshModulesEnabled())
+      );
   }
 
   // Preferences
@@ -200,31 +196,76 @@ export class SettingsService {
 
   // ----- Modules enabled stream helpers -----
   getModulesEnabled$(): Observable<Record<string, boolean>> {
-    // Auto-load modules on first access if not already loaded
-    if (!this.modulesLoaded && !this.modulesLoading) {
-      const currentValue = this.modulesEnabled$.value;
-      // Only load if BehaviorSubject is empty (no cached data)
-      if (Object.keys(currentValue).length === 0) {
-        this.modulesLoading = true;
-        this.listModules().subscribe({
-          next: () => {
+    // Check localStorage cache FIRST (fast, no HTTP wait)
+    // This prevents blocking if HTTP requests are slow
+    const currentValue = this.modulesEnabled$.value;
+    if (Object.keys(currentValue).length === 0) {
+      // Try to load from localStorage cache immediately
+      const cached = localStorage.getItem('cached_modules');
+      const cacheTimestamp = localStorage.getItem('cached_modules_timestamp');
+      if (cached && cacheTimestamp) {
+        try {
+          const cacheAge = Date.now() - parseInt(cacheTimestamp, 10);
+          const maxCacheAge = 30 * 1000; // 30 seconds
+          
+          if (cacheAge < maxCacheAge) {
+            const cachedData = JSON.parse(cached);
+            const modules = cachedData?.data?.modules || [];
+            const enabledMap: Record<string, boolean> = {};
+            modules.forEach((m: any) => {
+              enabledMap[m.key] = !!m.is_enabled;
+            });
+            // Populate BehaviorSubject immediately with cached data
+            this.modulesEnabled$.next(enabledMap);
             this.modulesLoaded = true;
-            this.modulesLoading = false;
-          },
-          error: () => {
-            this.modulesLoading = false;
-            // Keep modulesLoaded as false so it can retry on next access
+            // Return immediately - don't wait for HTTP
+            return this.modulesEnabled$.asObservable();
           }
-        });
-      } else {
-        // Data already exists in BehaviorSubject, mark as loaded
-        this.modulesLoaded = true;
+        } catch (error) {
+          console.warn('[SettingsService] Failed to parse cached modules:', error);
+        }
       }
+    } else {
+      // Data already exists in BehaviorSubject, mark as loaded
+      this.modulesLoaded = true;
+      return this.modulesEnabled$.asObservable();
     }
+
+    // Only trigger HTTP request if no cache and not already loading
+    // Do this in background - don't block the observable
+    if (!this.modulesLoaded && !this.modulesLoading) {
+      this.modulesLoading = true;
+      // Unsubscribe previous subscription if it exists
+      if (this.modulesLoadSubscription) {
+        this.modulesLoadSubscription.unsubscribe();
+        this.modulesLoadSubscription = undefined;
+      }
+      // Load modules in background - use listModules(false) to respect cache
+      this.modulesLoadSubscription = this.listModules(false).subscribe({
+        next: () => {
+          this.modulesLoaded = true;
+          this.modulesLoading = false;
+          this.modulesLoadSubscription = undefined;
+        },
+        error: () => {
+          this.modulesLoading = false;
+          this.modulesLoadSubscription = undefined;
+          // Keep modulesLoaded as false so it can retry on next access
+        }
+      });
+    }
+    
+    // Always return the observable immediately (non-blocking)
+    // Even if HTTP request is pending, return current value
     return this.modulesEnabled$.asObservable();
   }
 
   refreshModulesEnabled() {
+    // Unsubscribe any existing load subscription
+    if (this.modulesLoadSubscription) {
+      this.modulesLoadSubscription.unsubscribe();
+      this.modulesLoadSubscription = undefined;
+    }
     this.modulesLoaded = false;
     this.modulesLoading = false;
     // Clear cache to force fresh fetch

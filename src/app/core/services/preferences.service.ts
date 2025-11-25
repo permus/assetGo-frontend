@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -203,6 +203,7 @@ export class PreferencesService {
   }
 
   private syncing = false;
+  private backgroundSyncSubscription?: Subscription;
 
   /**
    * Sync preferences from backend
@@ -221,22 +222,30 @@ export class PreferencesService {
     if (cached) {
       try {
         const cachedData = JSON.parse(cached);
-        // Return cached data but still fetch fresh data in background
-        this.syncing = true;
-        this.http.get(`${this.apiUrl}/settings/preferences`).pipe(
-          tap((response: any) => {
-            this.syncing = false;
-            if (response.success && response.data) {
-              localStorage.setItem('cached_preferences', JSON.stringify(response));
-              const prefs = response.data as UserPreferences;
-              const merged = { ...this.preferencesSubject.value, ...prefs };
-              this.preferencesSubject.next(merged);
-              this.applyPreferences(merged);
+        // Return cached data immediately
+        // Only sync in background if not already syncing
+        if (!this.syncing && !this.backgroundSyncSubscription) {
+          this.syncing = true;
+          // Create background sync subscription
+          this.backgroundSyncSubscription = this.http.get(`${this.apiUrl}/settings/preferences`).pipe(
+            tap((response: any) => {
+              this.syncing = false;
+              this.backgroundSyncSubscription = undefined;
+              if (response.success && response.data) {
+                localStorage.setItem('cached_preferences', JSON.stringify(response));
+                const prefs = response.data as UserPreferences;
+                const merged = { ...this.preferencesSubject.value, ...prefs };
+                this.preferencesSubject.next(merged);
+                this.applyPreferences(merged);
+              }
+            })
+          ).subscribe({
+            error: () => { 
+              this.syncing = false;
+              this.backgroundSyncSubscription = undefined;
             }
-          })
-        ).subscribe({
-          error: () => { this.syncing = false; }
-        });
+          });
+        }
         return new Observable(observer => {
           observer.next(cachedData);
           observer.complete();
