@@ -1,7 +1,8 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil, timer, switchMap } from 'rxjs';
-import { DashboardService, DashboardData } from './dashboard.service';
+import { Router } from '@angular/router';
+import { DashboardService, DashboardData, RecentWorkOrder } from './dashboard.service';
 import { PreferencesService } from '../core/services/preferences.service';
 import { Chart, ArcElement, Tooltip, Legend, DoughnutController } from 'chart.js';
 
@@ -48,7 +49,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { title: 'Overdue', value: 1 }
   ];
 
-  constructor(private dashboardApi: DashboardService) {}
+  recentWorkOrders: RecentWorkOrder[] = [];
+
+  constructor(
+    private dashboardApi: DashboardService,
+    private router: Router
+  ) {}
 
   ngOnInit() { 
     this.fetch(); 
@@ -116,6 +122,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { title: 'Scheduled This Week', value: d.maintenance_insights.scheduled_this_week },
       { title: 'Overdue', value: d.maintenance_insights.overdue },
     ];
+    this.recentWorkOrders = d.recent_work_orders || [];
   }
 
   private renderAssetHealthChart() {
@@ -157,5 +164,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
   get totalAssets(): number { return Number(this.data?.asset_health.total ?? 0); }
   get activePercent(): number {
     const t = this.totalAssets; if (!t) return 0; return Math.round((this.activeAssets / t) * 100);
+  }
+
+  // Work order helpers
+  truncateTitle(title: string, maxLength: number = 30): string {
+    if (title.length <= maxLength) return title;
+    return title.substring(0, maxLength) + '...';
+  }
+
+  formatDueDate(dueDate: string | null): string {
+    if (!dueDate) return '';
+    const date = new Date(dueDate);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `Due: ${months[date.getMonth()]} ${date.getDate()}`;
+  }
+
+  getPriorityColorClass(prioritySlug: string | null | undefined): string {
+    if (!prioritySlug) return 'bg-gray-100 text-gray-800';
+    const slug = prioritySlug.toLowerCase();
+    if (slug === 'high' || slug === 'urgent' || slug === 'critical') {
+      return 'bg-red-100 text-red-800';
+    } else if (slug === 'medium' || slug === 'normal') {
+      return 'bg-purple-100 text-purple-800';
+    } else {
+      return 'bg-gray-100 text-gray-800';
+    }
+  }
+
+  viewWorkOrder(workOrderId: number): void {
+    this.router.navigate(['/work-orders', workOrderId]);
   }
 }

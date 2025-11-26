@@ -3,6 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 
+export interface RecentWorkOrder {
+  id: number;
+  title: string;
+  priority: { name: string; slug: string } | null;
+  asset: { id: number; name: string } | null;
+  assigned_to: { id: number; name: string } | null;
+  due_date: string | null;
+  status: { name: string; slug: string } | null;
+}
+
 export interface DashboardData {
   total_assets: number;
   active_assets: number;
@@ -16,6 +26,7 @@ export interface DashboardData {
   maintenance_insights: { completion_rate: number; avg_days_to_complete: number; total_work_orders: number; scheduled_this_week: number; overdue: number };
   transfer_approvals: number;
   ai_insights: string;
+  recent_work_orders: RecentWorkOrder[];
 }
 
 @Injectable({ providedIn: 'root' })

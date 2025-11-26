@@ -8,6 +8,8 @@ import { ScheduleMaintenance } from '../../models';
 import { MetaWorkOrdersService } from '../../../core/services/meta-work-orders.service';
 import { MetaItem } from '../../../core/types/work-order.types';
 import { ToastService } from '../../../core/services/toast.service';
+import { TeamService, TeamMember } from '../../../teams/services/team.service';
+import { RoleService, Role } from '../../../roles/services/role.service';
 
 @Component({
   selector: 'app-schedule-dialog',
@@ -34,7 +36,6 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
     start_date: '',
     status: 'scheduled',
     priority_id: null,
-    assigned_user_id: null,
     assigned_role_id: null,
     assigned_team_id: null,
   } as any;
@@ -66,11 +67,21 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
   startDatePart: string = '';
   startTimePart: string = '';
 
+  // Assignment fields
+  roles: Role[] = [];
+  teams: TeamMember[] = [];
+  selectedRole: Role | null = null;
+  selectedTeam: TeamMember | null = null;
+  showRoleDropdown = false;
+  showTeamDropdown = false;
+
   constructor(
     private api: MaintenanceService, 
     private meta: MetaWorkOrdersService, 
     private assetsApi: AssetService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private teamService: TeamService,
+    private roleService: RoleService
   ) {}
 
   ngOnInit(): void {
@@ -102,6 +113,26 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
       },
       error: () => { this.assetsLoading = false; this.assetOptions = []; }
     });
+
+    // Load team members for assignment
+    this.teamService.getTeamMembersFlat(1000).subscribe({
+      next: (teamMembers) => {
+        this.teams = teamMembers || [];
+      },
+      error: () => {
+        this.teams = [];
+      }
+    });
+
+    // Load roles
+    this.roleService.getRoles().subscribe({
+      next: (response) => {
+        this.roles = response?.data || [];
+      },
+      error: () => {
+        this.roles = [];
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -123,7 +154,13 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
   }
 
   @HostListener('document:click')
-  closeOnOutsideClick() { this.showStatusDropdown = false; this.showPlanDropdown = false; this.showPriorityDropdown = false; }
+  closeOnOutsideClick() { 
+    this.showStatusDropdown = false; 
+    this.showPlanDropdown = false; 
+    this.showPriorityDropdown = false;
+    this.showRoleDropdown = false;
+    this.showTeamDropdown = false;
+  }
 
   toggleDropdown() { this.showStatusDropdown = !this.showStatusDropdown; }
   selectOption(opt: any) { this.selectedStatus = opt; this.model.status = opt.id as any; this.showStatusDropdown = false; }
@@ -166,6 +203,25 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
   togglePriorityDropdown() { this.showPriorityDropdown = !this.showPriorityDropdown; }
   selectPriority(priority: MetaItem) { this.selectedPriorityMeta = priority; this.model.priority_id = priority.id as any; this.showPriorityDropdown = false; }
 
+  toggleRoleDropdown() { this.showRoleDropdown = !this.showRoleDropdown; }
+  selectRole(role: Role) { 
+    this.selectedRole = role; 
+    this.model.assigned_role_id = role.id as any; 
+    this.showRoleDropdown = false; 
+  }
+
+  toggleTeamDropdown() { this.showTeamDropdown = !this.showTeamDropdown; }
+  selectTeam(team: TeamMember) { 
+    this.selectedTeam = team; 
+    this.model.assigned_team_id = team.id as any; 
+    this.showTeamDropdown = false; 
+  }
+
+  getTeamDisplayName(team: TeamMember | null): string {
+    if (!team) return '';
+    return `${team.first_name} ${team.last_name}`.trim() || team.email || '';
+  }
+
   onBackdrop(e: MouseEvent) { this.close(); }
   close() { this.closed.emit(); this.reset(); }
 
@@ -183,7 +239,6 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
       start_date: this.combineStartParts(),
       status: this.model.status,
       priority_id: this.model.priority_id || null,
-      assigned_user_id: this.model.assigned_user_id || null,
       assigned_role_id: this.model.assigned_role_id || null,
       assigned_team_id: this.model.assigned_team_id || null,
     } as any;
@@ -273,6 +328,8 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
           start_date: s.start_date || '',
           status: s.status || 'scheduled',
           priority_id: s.priority_id || null,
+          assigned_role_id: s.assigned_role_id || null,
+          assigned_team_id: s.assigned_team_id || null,
         } as any;
 
         // populate parts
@@ -297,6 +354,16 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
         }
         if (s.status) this.selectedStatus = this.statusOptions.find(o => o.id === s.status) || this.selectedStatus;
 
+        // Load assignment fields if available
+        if (s.assigned_role_id) {
+          const role = this.roles.find(r => r.id === s.assigned_role_id) || null;
+          if (role) this.selectedRole = role;
+        }
+        if (s.assigned_team_id) {
+          const team = this.teams.find(t => t.id === s.assigned_team_id) || null;
+          if (team) this.selectedTeam = team;
+        }
+
         this.loading = false;
       },
       error: () => { this.loading = false; }
@@ -304,7 +371,7 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
   }
 
   private reset() {
-    this.model = { maintenance_plan_id: 0, asset_ids: [], start_date: '', status: 'scheduled', priority_id: null } as any;
+    this.model = { maintenance_plan_id: 0, asset_ids: [], start_date: '', status: 'scheduled', priority_id: null, assigned_role_id: null, assigned_team_id: null } as any;
     this.error = null;
     this.fieldErrors = {};
     this.loading = false;
@@ -312,9 +379,15 @@ export class ScheduleDialogComponent implements OnInit, OnChanges {
     this.selectedPlan = null;
     this.selectedPriorityMeta = null;
     this.selectedStatus = { id: 'scheduled', name: 'Scheduled' } as any;
+    this.selectedRole = null;
+    this.selectedTeam = null;
     this.showPlanDropdown = false;
     this.showPriorityDropdown = false;
     this.showStatusDropdown = false;
+    this.showRoleDropdown = false;
+    this.showTeamDropdown = false;
+    this.startDatePart = '';
+    this.startTimePart = '';
   }
 
   onAssetIdsCsvChange(value: string) {

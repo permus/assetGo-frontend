@@ -123,21 +123,68 @@
         </div>
 
         <!-- Assignment Fields -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="form-group">
-            <label>Assigned User (Optional)</label>
-            <input type="number" [(ngModel)]="model.assigned_user_id" placeholder="User ID" class="form-input">
-            <div class="field-help"><small>User ID to assign this schedule</small></div>
-          </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="form-group">
             <label>Assigned Role (Optional)</label>
-            <input type="number" [(ngModel)]="model.assigned_role_id" placeholder="Role ID" class="form-input">
-            <div class="field-help"><small>Role ID to assign this schedule</small></div>
+            <div class="relative role-dropdown" (click)="$event.stopPropagation()">
+              <button type="button" (click)="toggleRoleDropdown()" class="dropdown-button"
+                      [class.active]="showRoleDropdown" [disabled]="editMode && loading">
+                <div class="dropdown-content">
+                  <span *ngIf="!selectedRole" class="placeholder">Select role (optional)</span>
+                  <div *ngIf="selectedRole" class="selected-item">
+                    <span class="selected-text">{{ selectedRole.name }}</span>
+                  </div>
+                  <svg class="dropdown-arrow" [class.rotated]="showRoleDropdown" fill="none"
+                       stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+              <div *ngIf="showRoleDropdown" class="dropdown-menu" style="z-index: 9999;">
+                <div class="dropdown-header">Select role</div>
+                <button *ngFor="let role of roles" type="button" (click)="selectRole(role)"
+                        class="dropdown-item" [class.selected]="selectedRole?.id === role.id">
+                  <div class="item-content">
+                    <div class="item-details">
+                      <div class="item-name">{{ role.name }}</div>
+                      <div *ngIf="role.description" class="item-description !text-xs">{{ role.description }}</div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label>Assigned Team (Optional)</label>
-            <input type="number" [(ngModel)]="model.assigned_team_id" placeholder="Team ID" class="form-input">
-            <div class="field-help"><small>Team ID to assign this schedule</small></div>
+            <div class="relative team-dropdown" (click)="$event.stopPropagation()">
+              <button type="button" (click)="toggleTeamDropdown()" class="dropdown-button"
+                      [class.active]="showTeamDropdown" [disabled]="editMode && loading">
+                <div class="dropdown-content">
+                  <span *ngIf="!selectedTeam" class="placeholder">Select team (optional)</span>
+                  <div *ngIf="selectedTeam" class="selected-item">
+                    <span class="selected-text">{{ getTeamDisplayName(selectedTeam) }}</span>
+                  </div>
+                  <svg class="dropdown-arrow" [class.rotated]="showTeamDropdown" fill="none"
+                       stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </button>
+              <div *ngIf="showTeamDropdown" class="dropdown-menu" style="z-index: 9999;">
+                <div class="dropdown-header">Select team</div>
+                <button *ngFor="let team of teams" type="button" (click)="selectTeam(team)"
+                        class="dropdown-item" [class.selected]="selectedTeam?.id === team.id">
+                  <div class="item-content">
+                    <div class="item-details">
+                      <div class="item-name">{{ getTeamDisplayName(team) }}</div>
+                      <div *ngIf="team.email" class="item-description !text-xs">{{ team.email }}</div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

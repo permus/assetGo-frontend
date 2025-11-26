@@ -202,39 +202,6 @@
               </div>
 
               <!-- Assignment Fields -->
-              <div class="form-row full-width md:col-span-3">
-                <div class="form-group">
-                  <label>Assigned User</label>
-                  <div class="relative user-dropdown" (click)="$event.stopPropagation()">
-                    <button type="button" (click)="toggleUserDropdown()" class="dropdown-button"
-                            [class.active]="showUserDropdown" [disabled]="editMode && loading">
-                      <div class="dropdown-content">
-                        <span *ngIf="!selectedUser" class="placeholder">Select user (optional)</span>
-                        <div *ngIf="selectedUser" class="selected-item">
-                          <span class="selected-text">{{ getUserDisplayName(selectedUser) }}</span>
-                        </div>
-                        <svg class="dropdown-arrow" [class.rotated]="showUserDropdown" fill="none"
-                             stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                      </div>
-                    </button>
-                    <div *ngIf="showUserDropdown" class="dropdown-menu">
-                      <div class="dropdown-header">Select user</div>
-                      <button *ngFor="let user of users" type="button" (click)="selectUser(user)"
-                              class="dropdown-item" [class.selected]="selectedUser?.id === user.id">
-                        <div class="item-content">
-                          <div class="item-details">
-                            <div class="item-name">{{ getUserDisplayName(user) }}</div>
-                            <div class="item-description !text-xs">{{ user.email }}</div>
-                          </div>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               <div class="form-row full-width md:col-span-3">
                 <div class="form-group">

@@ -212,13 +212,12 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
       }
     });
 
-    // Load users/teams for assignment
+    // Load team members for assignment (using assigned_team_id field)
     this.teamService.getTeamMembersFlat(1000).subscribe({
-      next: (teams) => {
-        this.users = teams || [];
-        // Extract unique teams from team members (if they have team_id or similar)
-        // For now, we'll use team members as both users and teams
-        this.teams = teams || [];
+      next: (teamMembers) => {
+        this.users = teamMembers || [];
+        // Populate teams with team members since teams are represented as team members
+        this.teams = teamMembers || [];
       },
       error: () => {
         this.users = [];
@@ -264,6 +263,9 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
         if (planData.asset_ids && planData.asset_ids.length > 0) {
           this.selectedAssetIds.set(new Set(planData.asset_ids));
           this.assetIdsCsv.set(planData.asset_ids.join(', '));
+          this.showBulkActions = true;
+          // Load linked parts for selected assets
+          setTimeout(() => this.loadAssetParts(), 200);
         }
 
         // Load priority if available
@@ -325,6 +327,9 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     if (this.planToEdit.asset_ids && this.planToEdit.asset_ids.length > 0) {
       this.selectedAssetIds.set(new Set(this.planToEdit.asset_ids));
       this.assetIdsCsv.set(this.planToEdit.asset_ids.join(', '));
+      this.showBulkActions = true;
+      // Load linked parts for selected assets
+      setTimeout(() => this.loadAssetParts(), 200);
     }
 
         // Load priority if available
@@ -720,9 +725,11 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     this.partsLoading = true;
+    console.log('Loading asset parts for asset IDs:', assetIds);
     this.api.getAssetParts(assetIds).subscribe({
       next: (res) => {
-        if (res.success && res.data) {
+        console.log('Asset parts API response:', res);
+        if (res.success && res.data && Array.isArray(res.data)) {
           // Map parts and add default quantity
           this.linkedParts = res.data.map((part: any) => ({
             ...part,
@@ -731,7 +738,9 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
             selected: true
           }));
           this.selectedParts = [...this.linkedParts];
+          console.log('Loaded linked parts:', this.linkedParts.length);
         } else {
+          console.warn('No parts data in response:', res);
           this.linkedParts = [];
           this.selectedParts = [];
         }
@@ -739,6 +748,7 @@ export class PlanDialogComponent implements OnInit, AfterViewInit, OnChanges {
       },
       error: (err) => {
         console.error('Failed to load asset parts:', err);
+        console.error('Error details:', err.error);
         this.linkedParts = [];
         this.selectedParts = [];
         this.partsLoading = false;
