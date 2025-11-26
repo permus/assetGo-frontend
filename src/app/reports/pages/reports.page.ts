@@ -25,6 +25,7 @@ import { ReportCategory, ReportConfig, DateRange, ReportPeriod, AssetSummaryResp
 })
 export class ReportsPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private activePollIntervals: Map<number, any> = new Map();
 
   // State
   activeTab: ReportCategory = 'assets';
@@ -43,6 +44,12 @@ export class ReportsPage implements OnInit, OnDestroy {
   successMessage: string = '';
   assetSummaryData: AssetSummaryResponse | null = null;
   maintenanceSummaryData: MaintenanceSummaryResponse | null = null;
+  
+  // Last completed export tracking
+  lastCompletedRunId: number | null = null;
+  lastCompletedDownloadUrl: string | null = null;
+  lastCompletedReportKey: string | null = null;
+  lastCompletedFormat: string | null = null;
 
   // Configuration
   reportConfig: ReportConfig = {
@@ -392,6 +399,12 @@ export class ReportsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Stop all active polling
+    this.activePollIntervals.forEach((interval, runId) => {
+      clearInterval(interval);
+    });
+    this.activePollIntervals.clear();
+    
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -970,87 +983,160 @@ export class ReportsPage implements OnInit, OnDestroy {
    * Poll export status until completion
    */
   private pollExportStatus(runId: number, reportKey: string): void {
-    const maxPolls = 15; // 30 seconds max
-    let pollCount = 0;
+    // Stop any existing polling for this runId
+    this.stopPolling(runId);
     
-    const pollInterval = setInterval(() => {
+    const maxPolls = 30; // 60 seconds max (30 polls * 2 seconds)
+    let pollCount = 0;
+    let isPolling = true;
+    let isRequestInProgress = false;
+    
+    const poll = () => {
+      if (!isPolling || isRequestInProgress) {
+        return; // Skip if polling stopped or request in progress
+      }
+      
       pollCount++;
+      isRequestInProgress = true;
+      console.log(`[Poll ${pollCount}/${maxPolls}] Checking export status for run ${runId}...`);
       
       this.reportsApi.getExportStatus(runId).pipe(
         takeUntil(this.destroy$)
       ).subscribe({
         next: (statusResponse) => {
+          isRequestInProgress = false;
+          
+          if (!isPolling) return; // Stop processing if polling was cancelled
+          
           if (statusResponse.success && statusResponse.data) {
             const status = statusResponse.data;
-            console.log(`Poll ${pollCount}: Export status for run ${runId}:`, status.status);
+            console.log(`[Poll ${pollCount}] Status:`, status.status, '| Data:', status);
             
             if (status.status === 'success') {
               // Export completed successfully
-              clearInterval(pollInterval);
+              this.stopPolling(runId);
               this.isGenerating = false;
               
-              if (status.download_url) {
-                this.downloadFile(status.download_url, status.report_key, status.format);
-                this.successMessage = `Report generated successfully! (${status.execution_time_formatted})`;
+              console.log('✅ Export completed! Download URL:', status.download_url);
+              
+              const downloadUrl = status.download_url;
+              const format = status.format;
+              
+              if (downloadUrl && format) {
+                // Store completed export info for download button
+                this.lastCompletedRunId = runId;
+                this.lastCompletedDownloadUrl = downloadUrl;
+                this.lastCompletedReportKey = status.report_key || reportKey;
+                this.lastCompletedFormat = format;
+                
+                // Trigger download immediately
+                // TypeScript narrowing: we've checked downloadUrl and format are truthy
+                const reportKeyForDownload = status.report_key || reportKey;
+                
+                setTimeout(() => {
+                  console.log('🚀 Triggering download...');
+                  // Use non-null assertion since we've verified they exist above
+                  this.downloadFile(downloadUrl!, reportKeyForDownload, format!);
+                }, 300);
+                this.successMessage = `Report generated successfully! (${status.execution_time_formatted || ''})`;
               } else {
-                this.errorMessage = 'Export completed but no download URL provided';
+                console.error('❌ No download URL or format provided in status response');
+                this.errorMessage = 'Export completed but no download URL or format provided';
+                // Clear last completed export if no download URL
+                this.lastCompletedDownloadUrl = null;
               }
             } else if (status.status === 'failed') {
               // Export failed
-              clearInterval(pollInterval);
+              this.stopPolling(runId);
               this.isGenerating = false;
               this.errorMessage = 'Export failed: ' + (status.error_message || 'Unknown error');
             } else if (pollCount >= maxPolls) {
               // Timeout
-              clearInterval(pollInterval);
+              this.stopPolling(runId);
               this.isGenerating = false;
               this.errorMessage = 'Export timed out. Please check the export status manually.';
             }
             // Continue polling for 'queued' or 'running' status
           } else {
             // API error
-            clearInterval(pollInterval);
-            this.isGenerating = false;
-            this.errorMessage = 'Failed to check export status: ' + (statusResponse.error || 'Unknown error');
+            console.error('❌ Status response error:', statusResponse);
+            if (pollCount >= maxPolls) {
+              this.stopPolling(runId);
+              this.isGenerating = false;
+              this.errorMessage = 'Failed to check export status: ' + (statusResponse.error || 'Unknown error');
+            }
           }
         },
         error: (error) => {
-          clearInterval(pollInterval);
-          this.isGenerating = false;
-          this.errorMessage = 'Error checking export status: ' + error.message;
+          isRequestInProgress = false;
+          console.error('❌ Error polling export status:', error);
+          if (pollCount >= maxPolls) {
+            this.stopPolling(runId);
+            this.isGenerating = false;
+            this.errorMessage = 'Error checking export status: ' + error.message;
+          }
         }
       });
-    }, 2000); // Poll every 2 seconds
+    };
+    
+    // Start polling immediately, then every 2 seconds
+    poll();
+    const pollInterval = setInterval(poll, 2000);
+    this.activePollIntervals.set(runId, pollInterval);
+  }
+  
+  /**
+   * Stop polling for a specific run ID
+   */
+  private stopPolling(runId: number): void {
+    const interval = this.activePollIntervals.get(runId);
+    if (interval) {
+      clearInterval(interval);
+      this.activePollIntervals.delete(runId);
+      console.log(`Stopped polling for run ${runId}`);
+    }
   }
 
   /**
    * Download file from URL - Force download using blob
    */
   downloadFile(downloadUrl: string, reportKey: string, format: string): void {
-    console.log('Downloading file from URL:', downloadUrl);
+    console.log('📥 downloadFile called with:', { downloadUrl, reportKey, format });
     
     // Extract run ID from download URL (e.g., /api/reports/runs/123/download -> 123)
     const runIdMatch = downloadUrl.match(/\/runs\/(\d+)\//);
     if (!runIdMatch) {
-      console.error('Could not extract run ID from download URL:', downloadUrl);
-      this.errorMessage = 'Invalid download URL format';
+      console.error('❌ Could not extract run ID from download URL:', downloadUrl);
+      this.errorMessage = 'Invalid download URL format: ' + downloadUrl;
       return;
     }
     
     const runId = parseInt(runIdMatch[1], 10);
+    console.log('📋 Extracted run ID:', runId);
     
     // Generate filename
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
     const reportName = reportKey.replace(/\./g, '-').replace(/[^a-zA-Z0-9-]/g, '');
     const filename = `${reportName}-${timestamp}.${format}`;
+    console.log('📄 Generated filename:', filename);
     
     // Use ReportsApiService to download as blob for force download
+    console.log('🔄 Calling downloadExport API for run ID:', runId);
     this.reportsApi.downloadExport(runId).pipe(
       takeUntil(this.destroy$)
     ).subscribe({
       next: (blob: Blob) => {
+        console.log('✅ Blob received, size:', blob.size, 'bytes, type:', blob.type);
+        
+        if (blob.size === 0) {
+          console.error('❌ Received empty blob');
+          this.errorMessage = 'Downloaded file is empty';
+          return;
+        }
+        
         // Create blob URL
         const blobUrl = window.URL.createObjectURL(blob);
+        console.log('🔗 Created blob URL:', blobUrl);
         
         // Create a temporary link and click it to trigger download
         const link = document.createElement('a');
@@ -1060,22 +1146,47 @@ export class ReportsPage implements OnInit, OnDestroy {
         
         // Add to DOM, click, and remove
         document.body.appendChild(link);
+        console.log('🖱️ Clicking download link...');
         link.click();
         document.body.removeChild(link);
         
         // Clean up blob URL after a delay
         setTimeout(() => {
           window.URL.revokeObjectURL(blobUrl);
-        }, 100);
+          console.log('🧹 Cleaned up blob URL');
+        }, 1000);
         
-        console.log('Download initiated for:', filename);
+        console.log('✅ Download initiated for:', filename);
         this.successMessage = `Report downloaded: ${filename}`;
       },
       error: (error) => {
-        console.error('Download failed:', error);
-        this.errorMessage = 'Failed to download report: ' + (error.message || 'Unknown error');
+        console.error('❌ Download failed:', error);
+        console.error('Error details:', {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText,
+          error: error.error
+        });
+        this.errorMessage = 'Failed to download report: ' + (error.message || error.statusText || 'Unknown error');
       }
     });
+  }
+
+  /**
+   * Download the last completed report
+   */
+  onDownloadLastReport(): void {
+    if (!this.lastCompletedDownloadUrl || !this.lastCompletedReportKey || !this.lastCompletedFormat) {
+      this.errorMessage = 'No completed report available to download';
+      return;
+    }
+
+    console.log('📥 Downloading last completed report...');
+    this.downloadFile(
+      this.lastCompletedDownloadUrl,
+      this.lastCompletedReportKey,
+      this.lastCompletedFormat
+    );
   }
 
   /**
