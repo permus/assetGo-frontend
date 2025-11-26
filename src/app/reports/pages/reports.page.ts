@@ -1024,33 +1024,58 @@ export class ReportsPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Download file from URL
+   * Download file from URL - Force download using blob
    */
   downloadFile(downloadUrl: string, reportKey: string, format: string): void {
-    // Construct full URL
-    const baseUrl = 'http://assetgo-backend.test';
-    const fullUrl = downloadUrl.startsWith('http') ? downloadUrl : `${baseUrl}${downloadUrl}`;
+    console.log('Downloading file from URL:', downloadUrl);
     
-    console.log('Downloading file from URL:', fullUrl);
+    // Extract run ID from download URL (e.g., /api/reports/runs/123/download -> 123)
+    const runIdMatch = downloadUrl.match(/\/runs\/(\d+)\//);
+    if (!runIdMatch) {
+      console.error('Could not extract run ID from download URL:', downloadUrl);
+      this.errorMessage = 'Invalid download URL format';
+      return;
+    }
+    
+    const runId = parseInt(runIdMatch[1], 10);
     
     // Generate filename
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
     const reportName = reportKey.replace(/\./g, '-').replace(/[^a-zA-Z0-9-]/g, '');
     const filename = `${reportName}-${timestamp}.${format}`;
     
-    // Create a temporary link and click it to trigger download
-    const link = document.createElement('a');
-    link.href = fullUrl;
-    link.target = '_blank';
-    link.download = filename;
-    link.rel = 'noopener noreferrer';
-    
-    // Add to DOM, click, and remove
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    console.log('Download initiated for:', filename);
+    // Use ReportsApiService to download as blob for force download
+    this.reportsApi.downloadExport(runId).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (blob: Blob) => {
+        // Create blob URL
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        // Create a temporary link and click it to trigger download
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename;
+        link.style.display = 'none';
+        
+        // Add to DOM, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up blob URL after a delay
+        setTimeout(() => {
+          window.URL.revokeObjectURL(blobUrl);
+        }, 100);
+        
+        console.log('Download initiated for:', filename);
+        this.successMessage = `Report downloaded: ${filename}`;
+      },
+      error: (error) => {
+        console.error('Download failed:', error);
+        this.errorMessage = 'Failed to download report: ' + (error.message || 'Unknown error');
+      }
+    });
   }
 
   /**
