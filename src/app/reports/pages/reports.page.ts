@@ -962,10 +962,43 @@ export class ReportsPage implements OnInit, OnDestroy {
       ).subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            console.log('Export job queued successfully:', response.data);
+            const runId = response.data.run_id;
+            const status = response.data.status || 'queued';
+            console.log('Export response received, run ID:', runId, 'status:', status);
             
-            // Start polling for the export status
-            this.pollExportStatus(response.data.run_id, reportKey);
+            // If status is already 'success' (sync driver), handle immediately
+            if (status === 'success') {
+              console.log('✅ Export completed immediately (sync driver)');
+              this.isGenerating = false;
+              // Fetch the full status to get download URL
+              this.reportsApi.getExportStatus(runId).pipe(
+                takeUntil(this.destroy$)
+              ).subscribe({
+                next: (statusResponse) => {
+                  if (statusResponse.success && statusResponse.data) {
+                    const statusData = statusResponse.data;
+                    if (statusData.download_url && statusData.format) {
+                      this.lastCompletedRunId = runId;
+                      this.lastCompletedDownloadUrl = statusData.download_url;
+                      this.lastCompletedReportKey = statusData.report_key || reportKey;
+                      this.lastCompletedFormat = statusData.format;
+                      
+                      setTimeout(() => {
+                        this.downloadFile(statusData.download_url!, statusData.report_key || reportKey, statusData.format!);
+                      }, 300);
+                      this.successMessage = `Report generated successfully! (${statusData.execution_time_formatted || ''})`;
+                    }
+                  }
+                },
+                error: (error) => {
+                  console.error('Failed to get export status:', error);
+                  this.errorMessage = 'Export completed but failed to get download URL';
+                }
+              });
+            } else {
+              // Start polling for status (async queue)
+              this.pollExportStatus(runId, reportKey);
+            }
           } else {
             this.errorMessage = 'Export failed: ' + (response.error || 'Unknown error');
             this.isGenerating = false;
