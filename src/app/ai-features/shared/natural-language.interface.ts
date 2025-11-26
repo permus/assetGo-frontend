@@ -3,7 +3,7 @@ export type ChatRole = 'system' | 'user' | 'assistant';
 export interface ChatMessage {
   type: 'user' | 'assistant';
   content: string;
-  timestamp: string; // ISO
+  formattedContent?: any; // Pre-formatted HTML content (SafeHtml)
 }
 
 export interface AssetContext {

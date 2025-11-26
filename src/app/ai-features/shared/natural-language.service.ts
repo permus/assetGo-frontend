@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, timeout, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { 
   AssetContext, 
@@ -14,6 +14,8 @@ import {
 })
 export class NaturalLanguageService {
   private apiUrl = `${environment.apiUrl}/ai/natural-language`;
+  private readonly REQUEST_TIMEOUT = 30000; // 30 seconds
+  private readonly API_KEY_CHECK_TIMEOUT = 10000; // 10 seconds
 
   constructor(private http: HttpClient) { }
 
@@ -21,21 +23,48 @@ export class NaturalLanguageService {
    * Get asset context for natural language queries.
    */
   getContext(): Observable<ContextResponse> {
-    return this.http.get<ContextResponse>(`${this.apiUrl}/context`);
+    return this.http.get<ContextResponse>(`${this.apiUrl}/context`)
+      .pipe(
+        timeout(this.REQUEST_TIMEOUT),
+        catchError(error => {
+          if (error.name === 'TimeoutError' || error.error?.name === 'TimeoutError') {
+            return throwError(() => new Error('Request timed out. Please try again.'));
+          }
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
    * Send chat message to AI.
    */
   chat(request: ChatRequest): Observable<ChatResponse> {
-    return this.http.post<ChatResponse>(`${this.apiUrl}/chat`, request);
+    return this.http.post<ChatResponse>(`${this.apiUrl}/chat`, request)
+      .pipe(
+        timeout(this.REQUEST_TIMEOUT),
+        catchError(error => {
+          if (error.name === 'TimeoutError' || error.error?.name === 'TimeoutError') {
+            return throwError(() => new Error('Request timed out. Please try again.'));
+          }
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
    * Check if OpenAI API key is configured.
    */
   checkApiKey(): Observable<{ success: boolean; hasApiKey: boolean }> {
-    return this.http.get<{ success: boolean; hasApiKey: boolean }>(`${this.apiUrl}/check-api-key`);
+    return this.http.get<{ success: boolean; hasApiKey: boolean }>(`${this.apiUrl}/check-api-key`)
+      .pipe(
+        timeout(this.API_KEY_CHECK_TIMEOUT),
+        catchError(error => {
+          if (error.name === 'TimeoutError' || error.error?.name === 'TimeoutError') {
+            return throwError(() => new Error('Request timed out.'));
+          }
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
