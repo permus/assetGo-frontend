@@ -32,8 +32,7 @@ export interface NLQState {
 
 export interface ChatRequest {
   messages: Array<{ role: ChatRole; content: string }>;
-  assetContext: AssetContext;
-  companyContext?: { name?: string };
+  // assetContext and companyContext are now fetched automatically by backend - no need to send from frontend
 }
 
 export interface ChatResponse {

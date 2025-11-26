@@ -178,16 +178,12 @@ export class NaturalLanguageComponent implements OnInit, OnDestroy {
     this.state.isProcessing = true;
     this.errorMessage = null;
 
-    // Prepare chat request
+    // Prepare chat request - backend will automatically fetch assetContext and companyContext
     const chatRequest: ChatRequest = {
       messages: this.state.messages.map(msg => ({
         role: msg.type as 'user' | 'assistant',
         content: msg.content
-      })),
-      assetContext: this.state.assetContext!,
-      companyContext: {
-        name: this.companyName
-      }
+      }))
     };
 
     // Send to AI
