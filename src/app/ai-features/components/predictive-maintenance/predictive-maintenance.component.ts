@@ -51,12 +51,7 @@ import { ScheduleMaintenanceModalComponent } from '../schedule-maintenance-modal
             <svg *ngIf="isGenerating" class="btn-icon animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 12a9 9 0 11-6.219-8.56"></path>
             </svg>
-            {{ isGenerating 
-              ? (jobProgress > 0 
-                ? 'Generating... ' + jobProgress + '%' 
-                : 'Generating...') 
-              : 'Generate Predictions' 
-            }}
+            {{ isGenerating ? 'Generating...' : 'Generate Predictions' }}
           </button>
 
           <button 
@@ -261,9 +256,6 @@ export class PredictiveMaintenanceComponent implements OnInit, OnDestroy {
   showCreateWorkOrderModal = false;
   showScheduleMaintenanceModal = false;
   selectedPrediction: Prediction | null = null;
-  generationJobId: string | null = null;
-  pollingInterval: any = null;
-  jobProgress = 0;
 
   constructor(
     private pmService: PredictiveMaintenanceService,
@@ -275,7 +267,6 @@ export class PredictiveMaintenanceComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.stopPolling();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -316,63 +307,35 @@ export class PredictiveMaintenanceComponent implements OnInit, OnDestroy {
   onGenerate() {
     this.isGenerating = true;
     this.errorMessage = '';
-    this.jobProgress = 0;
 
     this.pmService.generatePredictions({ forceRefresh: true })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          if (response.success && response.data?.job_id) {
-            this.generationJobId = response.data.job_id;
-            this.startPollingJobStatus();
+          if (response.success && response.data) {
+            // Update predictions and summary from response
+            this.predictions = response.data.predictions || [];
+            this.summary = response.data.summary || null;
+            if (this.summary) {
+              this.lastUpdated = this.summary.lastUpdated;
+            }
+            this.isGenerating = false;
+            this.toastService.success(response.data.message || 'Predictions generated successfully!');
+            // Reload data to ensure consistency
+            this.loadData();
+          } else {
+            this.isGenerating = false;
+            this.errorMessage = response.error || 'Failed to generate predictions';
+            this.toastService.error(this.errorMessage);
           }
         },
         error: (error) => {
-          console.error('Error starting generation:', error);
-          this.errorMessage = 'Failed to start predictions generation.';
+          console.error('Error generating predictions:', error);
           this.isGenerating = false;
-          this.toastService.error('Failed to start predictions generation.');
+          this.errorMessage = error.error?.error || 'Failed to generate predictions. Please try again.';
+          this.toastService.error(this.errorMessage);
         }
       });
-  }
-
-  startPollingJobStatus() {
-    this.pollingInterval = setInterval(() => {
-      if (this.generationJobId) {
-        this.pmService.getJobStatus(this.generationJobId)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (response) => {
-              if (response.data.status === 'completed') {
-                this.stopPolling();
-                this.isGenerating = false;
-                this.jobProgress = 100;
-                this.loadData();
-                this.toastService.success('Predictions generated successfully!');
-              } else if (response.data.status === 'failed') {
-                this.stopPolling();
-                this.isGenerating = false;
-                this.errorMessage = response.data.error || 'Generation failed';
-                this.toastService.error(this.errorMessage);
-              } else if (response.data.status === 'processing') {
-                this.jobProgress = response.data.progress || 0;
-              }
-            },
-            error: () => {
-              this.stopPolling();
-              this.isGenerating = false;
-            }
-          });
-      }
-    }, 3000); // Poll every 3 seconds
-  }
-
-  stopPolling() {
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
-      this.pollingInterval = null;
-      this.generationJobId = null;
-    }
   }
 
   onScheduleMaintenance(prediction: Prediction) {

@@ -48,10 +48,10 @@ export interface GeneratePredictionsResponse {
   data?: {
     predictions: Prediction[];
     summary: Summary;
-    generatedAt: string;
-    job_id?: string;
+    generated_at: string;
+    message: string;
   };
-  message?: string;
+  error?: string;
 }
 
 export interface ExportRequest {

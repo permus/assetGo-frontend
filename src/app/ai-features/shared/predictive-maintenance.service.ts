@@ -87,35 +87,6 @@ export class PredictiveMaintenanceService {
   }
 
   /**
-   * Get job status for async generation.
-   */
-  getJobStatus(jobId: string): Observable<{
-    success: boolean;
-    data: {
-      job_id: string;
-      status: 'queued' | 'processing' | 'completed' | 'failed';
-      progress: number;
-      total_assets: number;
-      predictions_generated: number;
-      error: string | null;
-      completed_at: string | null;
-    }
-  }> {
-    return this.http.get<{
-      success: boolean;
-      data: {
-        job_id: string;
-        status: 'queued' | 'processing' | 'completed' | 'failed';
-        progress: number;
-        total_assets: number;
-        predictions_generated: number;
-        error: string | null;
-        completed_at: string | null;
-      }
-    }>(`${this.baseUrl}/job-status/${jobId}`);
-  }
-
-  /**
    * Download CSV file.
    */
   downloadCsv(blob: Blob, filename: string = 'predictive_maintenance.csv'): void {
