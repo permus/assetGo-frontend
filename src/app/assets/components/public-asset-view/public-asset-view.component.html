@@ -60,9 +60,9 @@
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ getStatusColorFromAssetStatus(asset.asset_status) }}">
                   {{ asset.asset_status?.name || asset.status || 'Unknown' }}
                 </span>
-                <span class="text-sm text-gray-500">ID: {{ asset.id }}</span>
+                <span class="text-sm text-gray-500">ID: {{ asset.asset_id || asset.id }}</span>
                 <button 
-                  *ngIf="asset.id"
+                  *ngIf="asset.asset_id || asset.id"
                   (click)="copyAssetId()"
                   class="text-blue-600 hover:text-blue-700 text-sm">
                   Copy ID
@@ -142,9 +142,9 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Asset ID</label>
               <div class="flex items-center space-x-2">
-                <p class="text-gray-900">{{ asset.id || 'N/A' }}</p>
+                <p class="text-gray-900">{{ asset.asset_id || asset.id || 'N/A' }}</p>
                 <button 
-                  *ngIf="asset.id"
+                  *ngIf="asset.asset_id || asset.id"
                   (click)="copyAssetId()"
                   class="text-blue-600 hover:text-blue-700 text-sm">
                   Copy
@@ -227,6 +227,7 @@
               <div class="mt-3 text-xs text-gray-500">
                 <p>Scan this QR code to access this asset's public page</p>
                 <p *ngIf="asset.id" class="mt-1">Public URL: {{ windowLocation }}/public/asset/{{ asset.id }}</p>
+                <p *ngIf="asset.asset_id" class="mt-1 text-xs text-gray-400">Asset ID: {{ asset.asset_id }}</p>
               </div>
             </div>
           </div>
@@ -308,11 +309,11 @@
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div 
               *ngFor="let image of asset.images; let i = index"
-              (click)="viewFullImage(image)"
+              (click)="viewFullImage(image.url || image)"
               class="relative group cursor-pointer">
               <img 
-                [src]="image" 
-                [alt]="'Asset image ' + (i + 1)"
+                [src]="image.url || image" 
+                [alt]="image.alt || 'Asset image ' + (i + 1)"
                 (error)="onImageError($event)"
                 class="w-full h-32 object-cover rounded-lg group-hover:opacity-75 transition-opacity">
               <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">

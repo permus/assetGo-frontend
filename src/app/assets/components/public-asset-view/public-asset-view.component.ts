@@ -66,21 +66,44 @@ export class PublicAssetViewComponent implements OnInit, OnDestroy, AfterViewIni
     
     this.assetService.getAssetPublic(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response) => {
-        this.asset = response.data;
+        console.log('API Response:', response);
+        // API returns { success: true, data: { asset: {...} } }
+        if (response && response.success && response.data) {
+          // Check if data has an asset property (nested structure)
+          if (response.data.asset) {
+            this.asset = response.data.asset;
+          } else {
+            // Fallback: data might be the asset directly
+            this.asset = response.data;
+          }
+        } else if (response && response.data) {
+          // Handle case where success might not be present
+          this.asset = response.data.asset || response.data;
+        } else {
+          console.error('Unexpected response structure:', response);
+          this.error = 'Invalid response format from server.';
+          this.loading = false;
+          return;
+        }
+        
+        console.log('Asset loaded:', this.asset);
         this.loading = false;
+        
         // Generate QR code after asset is loaded
-        this.generateQRCode();
+        if (this.asset && this.asset.id) {
+          this.generateQRCode();
+        }
       },
       error: (error) => {
         console.error('Error loading asset:', error);
-        this.error = 'Failed to load asset details. Please check the URL and try again.';
+        this.error = error.error?.message || error.message || 'Failed to load asset details. Please check the URL and try again.';
         this.loading = false;
       }
     });
   }
 
   generateQRCode() {
-    if (!this.asset) return;
+    if (!this.asset || !this.asset.id) return;
     
     this.qrCodeLoading = true;
     const publicUrl = `${window.location.origin}/public/asset/${this.asset.id}`;
@@ -214,7 +237,12 @@ export class PublicAssetViewComponent implements OnInit, OnDestroy, AfterViewIni
 
 
   copyAssetId() {
-    if (this.asset?.id) {
+    if (this.asset?.asset_id) {
+      navigator.clipboard.writeText(this.asset.asset_id).then(() => {
+        // Could add a toast notification here
+        console.log('Asset ID copied to clipboard');
+      });
+    } else if (this.asset?.id) {
       navigator.clipboard.writeText(this.asset.id.toString()).then(() => {
         // Could add a toast notification here
         console.log('Asset ID copied to clipboard');
