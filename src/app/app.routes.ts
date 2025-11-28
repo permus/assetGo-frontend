@@ -97,6 +97,11 @@ export const routes: Routes = [
         canActivate: [moduleGuard('maintenance')]
       },
       {
+        path: 'sla',
+        loadChildren: () => import('./sla/sla.module').then(m => m.SlaModule),
+        canActivate: [moduleGuard('sla')]
+      },
+      {
         path: 'settings',
         component: SettingsComponent,
         title: 'Settings',

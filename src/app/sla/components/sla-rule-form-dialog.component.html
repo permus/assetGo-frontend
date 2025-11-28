@@ -1,0 +1,204 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">{{ editMode ? 'Edit' : 'Create' }} SLA Rule</h2>
+        <p class="modal-subtitle">Define service level agreement rules for work orders and maintenance tasks.</p>
+      </div>
+      <button type="button" class="close-button" (click)="close()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="submit()">
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h3 class="section-title">Basic Information</h3>
+          
+          <div class="form-group">
+            <label class="form-label">SLA Rule Name</label>
+            <input
+              type="text"
+              class="form-input"
+              [(ngModel)]="model.name"
+              name="name"
+              placeholder="e.g., Critical Equipment Response"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-textarea"
+              [(ngModel)]="model.description"
+              name="description"
+              placeholder="Optional description of this SLA rule"
+              rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Applies To -->
+        <div class="form-section">
+          <h3 class="section-title">Applies To</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Applies To</label>
+              <div class="dropdown-container">
+                <button
+                  type="button"
+                  class="dropdown-button"
+                  (click)="showAppliesToDropdown = !showAppliesToDropdown">
+                  {{ getAppliesToLabel() }}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div class="dropdown-menu" *ngIf="showAppliesToDropdown">
+                  <button
+                    type="button"
+                    class="dropdown-item"
+                    *ngFor="let option of appliesToOptions"
+                    (click)="selectAppliesTo(option.value)">
+                    {{ option.label }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Priority Level (Optional)</label>
+              <div class="dropdown-container">
+                <button
+                  type="button"
+                  class="dropdown-button"
+                  (click)="showPriorityDropdown = !showPriorityDropdown">
+                  {{ getPriorityLabel() }}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div class="dropdown-menu" *ngIf="showPriorityDropdown">
+                  <button
+                    type="button"
+                    class="dropdown-item"
+                    (click)="selectPriority(null)">
+                    None
+                  </button>
+                  <button
+                    type="button"
+                    class="dropdown-item"
+                    *ngFor="let option of priorityOptions"
+                    (click)="selectPriority(option.value)">
+                    {{ option.label }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category (Optional)</label>
+            <input
+              type="text"
+              class="form-input"
+              [(ngModel)]="model.category"
+              name="category"
+              placeholder="e.g., HVAC, Electrical, Plumbing">
+          </div>
+        </div>
+
+        <!-- Time Thresholds -->
+        <div class="form-section">
+          <h3 class="section-title">Time Thresholds</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Response Time (hours)</label>
+              <input
+                type="number"
+                class="form-input"
+                [(ngModel)]="model.responseTimeHours"
+                name="responseTimeHours"
+                step="0.01"
+                min="0.01"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Containment Time (hours)</label>
+              <input
+                type="number"
+                class="form-input"
+                [(ngModel)]="model.containmentTimeHours"
+                name="containmentTimeHours"
+                step="0.01"
+                min="0.01"
+                placeholder="Optional">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Completion Time (hours)</label>
+              <input
+                type="number"
+                class="form-input"
+                [(ngModel)]="model.completionTimeHours"
+                name="completionTimeHours"
+                step="0.01"
+                min="0.01"
+                required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Working Schedule -->
+        <div class="form-section">
+          <h3 class="section-title">Working Schedule</h3>
+          
+          <div class="form-group">
+            <div class="toggle-group">
+              <div>
+                <label class="form-label">Business Hours Only</label>
+                <p class="form-hint">SLA timers will pause outside business hours</p>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="model.businessHoursOnly"
+                  name="businessHoursOnly">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Working Days</label>
+            <div class="working-days-grid">
+              <label class="checkbox-label" *ngFor="let day of workingDaysOptions">
+                <input
+                  type="checkbox"
+                  [checked]="isWorkingDaySelected(day.value)"
+                  (change)="toggleWorkingDay(day.value)">
+                <span>{{ day.label }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="close()">Cancel</button>
+          <button type="submit" class="btn-submit" [disabled]="loading">
+            <span *ngIf="loading">Saving...</span>
+            <span *ngIf="!loading">{{ editMode ? 'Update' : 'Create' }} SLA Rule</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

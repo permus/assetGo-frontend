@@ -1,0 +1,23 @@
+<div class="sla-container">
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">SLA Management</h1>
+      <p class="page-subtitle">Monitor and manage Service Level Agreements for work orders and maintenance tasks.</p>
+    </div>
+  </div>
+
+  <div class="navigation-tabs">
+    <nav class="tabs-nav">
+      <!-- Dashboard, Active SLAs, and Reports tabs disabled for now -->
+      <!-- <a routerLink="/sla/dashboard" routerLinkActive="active" class="tab-link">Dashboard</a> -->
+      <a routerLink="/sla/rules" routerLinkActive="active" class="tab-link">SLA Rules</a>
+      <!-- <a routerLink="/sla/active" routerLinkActive="active" class="tab-link">Active SLAs</a> -->
+      <!-- <a routerLink="/sla/reports" routerLinkActive="active" class="tab-link">Reports</a> -->
+    </nav>
+  </div>
+
+  <div class="content-area">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+

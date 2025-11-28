@@ -32,7 +32,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     
     // Modules to hide from sidebar
     const hiddenModules = [
-      'sla',
       'sensors',
       'eservices',
       'tenant_portal',
@@ -302,6 +301,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       'inventory': '/inventory',
       'ai_features': '/ai',
       'reports': '/reports',
+      'sla': '/sla',
       'settings': '/settings'
     };
 

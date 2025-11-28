@@ -1,0 +1,122 @@
+<div class="sla-rules-page">
+  <div class="header-section">
+    <div>
+      <h2 class="section-title">SLA Definitions</h2>
+      <p class="section-subtitle">Configure SLA rules and thresholds.</p>
+    </div>
+    <button type="button" class="btn-create" (click)="openCreateDialog()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14"></path>
+        <path d="M12 5v14"></path>
+      </svg>
+      Create SLA Rule
+    </button>
+  </div>
+
+  <div class="definitions-list" *ngIf="!loading()">
+    <div class="sla-card" *ngFor="let definition of definitions()">
+      <div class="card-header">
+        <div class="card-title-section">
+          <h3 class="card-title">{{ definition.name }}</h3>
+          <p class="card-description" *ngIf="definition.description">{{ definition.description }}</p>
+        </div>
+        <div class="card-actions">
+          <div class="active-toggle">
+            <span class="toggle-label">Active</span>
+            <label class="toggle-switch">
+              <input type="checkbox" [checked]="definition.isActive" (change)="toggleActive(definition)">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="menu-container">
+            <button type="button" class="menu-button" (click)="toggleMenu(definition.id!)" (clickOutside)="closeMenu(definition.id!)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+              </svg>
+            </button>
+            <div class="dropdown-menu" *ngIf="menuOpen()[definition.id!]">
+              <button type="button" class="menu-item" (click)="openEditDialog(definition); closeMenu(definition.id!)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Edit
+              </button>
+              <button type="button" class="menu-item delete" (click)="deleteDefinition(definition); closeMenu(definition.id!)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="badges">
+          <span class="badge applies-to">{{ getAppliesToLabel(definition.appliesTo) }}</span>
+          <span class="badge priority" *ngIf="definition.priorityLevel" [class.critical]="definition.priorityLevel === 'critical'">
+            {{ getPriorityLabel(definition.priorityLevel).toUpperCase() }}
+          </span>
+        </div>
+
+        <div class="time-details">
+          <div class="time-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Response: {{ definition.responseTimeHours }}h</span>
+          </div>
+          <div class="time-item" *ngIf="definition.containmentTimeHours">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Containment: {{ definition.containmentTimeHours }}h</span>
+          </div>
+          <div class="time-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Completion: {{ definition.completionTimeHours }}h</span>
+          </div>
+        </div>
+
+        <div class="schedule-details">
+          <div class="schedule-item">
+            <span class="label">Business hours:</span>
+            <span class="value">{{ definition.businessHoursOnly ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="schedule-item">
+            <span class="label">Working days:</span>
+            <span class="value">{{ formatWorkingDays(definition.workingDays) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="definitions().length === 0">
+      <p>No SLA definitions found. Create your first SLA rule to get started.</p>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="loading()">
+    <p>Loading SLA definitions...</p>
+  </div>
+</div>
+
+<app-sla-rule-form-dialog
+  *ngIf="isDialogOpen()"
+  [isOpen]="isDialogOpen()"
+  [editMode]="editMode()"
+  [definition]="definitionToEdit()"
+  (closed)="onDialogClosed()"
+  (saved)="onSaved()">
+</app-sla-rule-form-dialog>
+

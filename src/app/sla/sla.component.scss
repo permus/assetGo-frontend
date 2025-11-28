@@ -1,0 +1,56 @@
+.sla-container {
+  padding: 1.5rem;
+  max-width: 100%;
+}
+
+.header-section {
+  margin-bottom: 2rem;
+}
+
+.title-section {
+  h1.page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+  }
+
+  p.page-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+  }
+}
+
+.navigation-tabs {
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 2rem;
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 0;
+}
+
+.tab-link {
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  color: #6b7280;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #2563eb;
+  }
+
+  &.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+  }
+}
+
+.content-area {
+  min-height: 400px;
+}
+

@@ -86,7 +86,29 @@ export class ModuleSettingsComponent implements OnInit {
   saving = signal(false);
   loadingModuleId = signal<number | null>(null);
   systemModules = computed(() => this.modules().filter(m => m.is_system_module));
-  featureModules = computed(() => this.modules().filter(m => !m.is_system_module));
+  
+  // Unused modules to hide from settings
+  private unusedModules = [
+    'sensors',
+    'eservices',
+    'tenant_portal',
+    'maintenance_requests',
+    'amenity_bookings',
+    'move_in_out_requests',
+    'fitout_requests',
+    'inhouse_services',
+    'parcel_management',
+    'visitor_management',
+    'business_directory',
+    'tenant_communication',
+    'facilities_locations'
+  ];
+  
+  featureModules = computed(() => 
+    this.modules().filter(m => 
+      !m.is_system_module && !this.unusedModules.includes(m.key)
+    )
+  );
 
   ngOnInit() {
     this.refresh();
