@@ -73,6 +73,45 @@
             <p class="text-gray-900">${{ user.hourly_rate }}</p>
           </div>
           <div>
+            <label class="block text-sm font-medium text-gray-500 mb-1">Teams Allowed Count</label>
+            <div *ngIf="!editingTeamsAllowedCount" class="flex items-center gap-2">
+              <div class="flex flex-col">
+                <p class="text-gray-900">
+                  {{ user.teams_allowed_count !== null && user.teams_allowed_count !== undefined ? user.teams_allowed_count : 'Unlimited' }}
+                </p>
+                <span class="text-gray-500 text-sm">
+                  ({{ user.created_teams_count ?? teamsTotal ?? 0 }} team member(s) created)
+                </span>
+              </div>
+              <button
+                (click)="startEditingTeamsAllowedCount()"
+                class="ml-2 px-2 py-1 text-xs text-blue-600 hover:text-blue-800 cursor-pointer">
+                Edit
+              </button>
+            </div>
+            <div *ngIf="editingTeamsAllowedCount" class="flex items-center gap-2">
+              <input
+                type="number"
+                [(ngModel)]="teamsAllowedCountValue"
+                min="0"
+                class="w-24 px-2 py-1 border border-gray-300 rounded text-gray-900"
+                placeholder="Unlimited">
+              <button
+                (click)="saveTeamsAllowedCount()"
+                [disabled]="savingTeamsAllowedCount"
+                class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 cursor-pointer">
+                {{ savingTeamsAllowedCount ? 'Saving...' : 'Save' }}
+              </button>
+              <button
+                (click)="cancelEditingTeamsAllowedCount()"
+                [disabled]="savingTeamsAllowedCount"
+                class="px-2 py-1 text-xs bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50 cursor-pointer">
+                Cancel
+              </button>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Leave empty for unlimited teams</p>
+          </div>
+          <div>
             <label class="block text-sm font-medium text-gray-500 mb-1">Created Date</label>
             <p class="text-gray-900">{{ formatDate(user.created_at) }}</p>
           </div>

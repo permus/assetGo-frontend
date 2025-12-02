@@ -51,6 +51,8 @@ export interface User {
   company?: Company;
   roles?: Role[];
   created_teams?: TeamMember[];
+  created_teams_count?: number;
+  teams_allowed_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -105,6 +107,7 @@ export interface CreateUserRequest {
   company_phone?: string;
   company_address?: string;
   logo?: File;
+  teams_allowed_count?: number;
 }
 
 export interface ChangePasswordRequest {
@@ -229,6 +232,9 @@ export class AdminUsersService {
     formData.append('password_confirmation', data.password_confirmation);
     formData.append('company_name', data.company_name);
     
+    if (data.teams_allowed_count !== undefined && data.teams_allowed_count !== null) {
+      formData.append('teams_allowed_count', data.teams_allowed_count.toString());
+    }
     if (data.industry) formData.append('industry', data.industry);
     if (data.business_type) formData.append('business_type', data.business_type);
     if (data.company_email) formData.append('company_email', data.company_email);

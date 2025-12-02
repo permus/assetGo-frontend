@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { LocationTreeService, LocationTreeNode } from '../../../locations/services/location-tree.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastService } from '../../../core/services/toast.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-team-form-modal',
@@ -35,12 +36,18 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
   expandDescendants = true;
   flatLocationOptions: { id: number; label: string }[] = [];
 
+  // Team limit state
+  currentTeamCount: number = 0;
+  teamsAllowedCount: number | null = null;
+  limitStatus: 'ok' | 'warning' | 'error' = 'ok';
+
   constructor(
     private fb: FormBuilder,
     private teamService: TeamService,
     private roleService: RoleService,
     private locationTreeService: LocationTreeService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private authService: AuthService
   ) {
     this.teamMemberForm = this.fb.group({
       first_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -57,6 +64,9 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    // Load team limit information
+    this.loadTeamLimitInfo();
+
     if (this.teamMember && this.isEditMode) {
       // Fetch full team details to ensure we have role(s), locations, and rate
       this.teamService.getTeamMember(this.teamMember.id).subscribe({
@@ -221,6 +231,13 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
     if (this.teamMemberForm.invalid) {
       this.markFormGroupTouched();
       this.toastService.warning('Please fill in all required fields correctly');
+      return;
+    }
+
+    // Check team limit before creating (only for new team members)
+    if (!this.isEditMode && !this.canCreateMoreTeams()) {
+      this.error = `You have reached your team limit of ${this.teamsAllowedCount} team member(s). Please contact your administrator to increase your limit.`;
+      this.toastService.error(this.error);
       return;
     }
 
@@ -416,5 +433,58 @@ export class TeamFormModalComponent implements OnInit, OnChanges {
     }
     
     return null;
+  }
+
+  // Team limit methods
+  loadTeamLimitInfo(): void {
+    // Get current user's team limit
+    this.authService.currentUser$.subscribe(user => {
+      this.teamsAllowedCount = user?.teams_allowed_count ?? null;
+    });
+
+    // Get current team count from statistics
+    if (!this.isEditMode) {
+      this.teamService.getTeamMemberStatistics().subscribe({
+        next: (response: any) => {
+          this.currentTeamCount = response.data?.total_team_members || 0;
+          this.updateLimitStatus();
+        },
+        error: () => {
+          // Silently fail - limit check will still work via backend
+        }
+      });
+    }
+  }
+
+  updateLimitStatus(): void {
+    if (this.teamsAllowedCount === null || this.teamsAllowedCount === undefined) {
+      this.limitStatus = 'ok';
+      return;
+    }
+    if (this.currentTeamCount >= this.teamsAllowedCount) {
+      this.limitStatus = 'error';
+    } else if (this.currentTeamCount >= this.teamsAllowedCount * 0.8) {
+      this.limitStatus = 'warning';
+    } else {
+      this.limitStatus = 'ok';
+    }
+  }
+
+  isUnlimited(): boolean {
+    return this.teamsAllowedCount === null || this.teamsAllowedCount === undefined;
+  }
+
+  canCreateMoreTeams(): boolean {
+    if (this.isUnlimited()) {
+      return true;
+    }
+    return this.currentTeamCount < (this.teamsAllowedCount || 0);
+  }
+
+  getRemainingTeams(): number {
+    if (this.isUnlimited()) {
+      return Infinity;
+    }
+    return Math.max(0, (this.teamsAllowedCount || 0) - this.currentTeamCount);
   }
 }

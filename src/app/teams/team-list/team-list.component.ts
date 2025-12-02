@@ -27,6 +27,8 @@ export class TeamListComponent implements OnInit {
   analytics: TeamAnalyticsResponse['data'] | null = null;
   currentPerPage = 10;
   currentUserId: number | null = null;
+  currentUser: any = null;
+  teamsAllowedCount: number | null = null;
 
   // Search and filtering
   searchTerm = '';
@@ -109,9 +111,11 @@ export class TeamListComponent implements OnInit {
   // Removed scroll prevention listener as it might interfere with dropdown functionality
 
   ngOnInit(): void {
-    // Get current user ID
+    // Get current user ID and team limit
     this.authService.currentUser$.subscribe(user => {
       this.currentUserId = user?.id || null;
+      this.currentUser = user;
+      this.teamsAllowedCount = user?.teams_allowed_count ?? null;
     });
     
     this.loadTeamMembers();
@@ -495,5 +499,40 @@ export class TeamListComponent implements OnInit {
       ...tm,
       showMenu: false
     }));
+  }
+
+  // Team limit helper methods
+  getCurrentTeamCount(): number {
+    return this.statistics?.total_team_members || 0;
+  }
+
+  getTeamLimit(): number | null {
+    return this.teamsAllowedCount ?? null;
+  }
+
+  isUnlimited(): boolean {
+    return this.teamsAllowedCount === null || this.teamsAllowedCount === undefined;
+  }
+
+  getLimitStatus(): 'ok' | 'warning' | 'error' {
+    if (this.isUnlimited()) {
+      return 'ok';
+    }
+    const current = this.getCurrentTeamCount();
+    const limit = this.teamsAllowedCount!;
+    if (current >= limit) {
+      return 'error';
+    }
+    if (current >= limit * 0.8) {
+      return 'warning';
+    }
+    return 'ok';
+  }
+
+  canCreateMoreTeams(): boolean {
+    if (this.isUnlimited()) {
+      return true;
+    }
+    return this.getCurrentTeamCount() < (this.teamsAllowedCount || 0);
   }
 }

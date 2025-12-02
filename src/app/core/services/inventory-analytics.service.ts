@@ -172,6 +172,8 @@ export interface InventoryPart {
   category_id?: number;
   reorder_point?: number;
   reorder_qty?: number;
+  minimum_stock?: number;
+  maintenance_category?: string;
   barcode?: string;
   status?: string;
   abc_class?: string;
@@ -181,6 +183,21 @@ export interface InventoryPart {
   user_id: number;
   created_at: string;
   updated_at: string;
+  // Stock information (from backend enhancement)
+  total_available_stock?: number;
+  total_on_hand_stock?: number;
+  primary_location?: {
+    id: number;
+    name: string;
+  } | null;
+  stocks_summary?: Array<{
+    location_id: number;
+    location_name: string | null;
+    available: number;
+    on_hand: number;
+    reserved: number;
+  }>;
+  stocks?: any[];
 }
 
 export interface PartsCatalogResponse {

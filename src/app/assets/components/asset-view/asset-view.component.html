@@ -180,7 +180,7 @@
           </div>
           <div>
             <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ asset.name }}</h1>
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-4 flex-wrap">
               <span
                 *ngIf="asset.asset_status"
                 [style.background-color]="asset.asset_status.color + '20'"
@@ -188,9 +188,20 @@
                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
                 {{ asset.asset_status.name }}
               </span>
+              <span
+                *ngIf="asset.criticality_level"
+                [ngClass]="getCriticalityBadgeClass(asset.criticality_level)"
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium capitalize">
+                {{ asset.criticality_level }} Criticality
+              </span>
               <span class="text-gray-500">{{ getAssetTypeName(asset.type) }}</span>
               <span class="text-gray-500">•</span>
               <span class="text-gray-500">{{ asset.category?.name || 'General' }}</span>
+            </div>
+            <div class="mt-2">
+              <span class="text-sm text-gray-600">
+                <strong>Asset Code:</strong> {{ asset.asset_id || asset.id || 'N/A' }}
+              </span>
             </div>
           </div>
         </div>
@@ -280,6 +291,10 @@
                   {{ currentImageIndex + 1 }} / {{ asset.images.length }}
                 </div>
               </div>
+              <!-- Image Caption -->
+              <div *ngIf="asset.images[currentImageIndex]?.caption" class="mt-2 text-sm text-gray-600 text-center">
+                {{ asset.images[currentImageIndex].caption }}
+              </div>
             </div>
 
             <!-- Thumbnail Gallery -->
@@ -292,9 +307,13 @@
                 [class.border-gray-200]="i !== currentImageIndex">
                 <img
                   [src]="image.image_url"
-                  [alt]="'Asset image ' + (i + 1)"
+                  [alt]="image.caption || 'Asset image ' + (i + 1)"
                   class="w-full h-full object-cover"
                   (error)="onImageError($event)">
+                <!-- Caption Tooltip -->
+                <div *ngIf="image.caption" class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 truncate">
+                  {{ image.caption }}
+                </div>
               </div>
             </div>
           </div>
@@ -385,23 +404,80 @@
                 <span *ngIf="!asset.asset_status" class="text-gray-900">Not specified</span>
               </div>
 
-              <!-- Inventory Parts -->
+              <!-- Parts & Materials -->
               <div>
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Linked Inventory Parts</h4>
-                <div *ngIf="asset.inventory_parts && asset.inventory_parts.length > 0; else noInventoryParts">
-                  <div class="flex flex-wrap gap-2">
-                    <div *ngFor="let part of asset.inventory_parts" class="inline-flex items-center px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-                      <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                      </svg>
-                      <span class="text-blue-900 font-medium">{{ part.name }}</span>
-                      <span class="text-blue-600 ml-1">({{ part.part_number }})</span>
+                <div class="flex items-center justify-between mb-2">
+                  <h4 class="text-sm font-medium text-gray-700">Parts & Materials</h4>
+                  <button 
+                    type="button"
+                    (click)="openPartsModal()"
+                    class="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Parts
+                  </button>
+                </div>
+                <div *ngIf="assetParts.length === 0" class="text-gray-500 text-sm">
+                  No parts added
+                </div>
+                <div *ngIf="assetParts.length > 0" class="space-y-2">
+                  <div *ngFor="let part of assetParts" class="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-900">{{ part.part?.name || 'Unknown Part' }}</div>
+                      <div class="text-gray-600 text-xs">
+                        {{ part.qty }} {{ part.part?.uom || 'each' }} 
+                        <span *ngIf="part.unit_cost || part.part?.unit_cost">• {{ currencySymbol }} {{ (part.unit_cost || part.part?.unit_cost || 0) | number:'1.2-2' }} each</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <span class="text-gray-900 font-medium text-sm">
+                        {{ currencySymbol }} {{ ((part.unit_cost || part.part?.unit_cost || 0) * part.qty) | number:'1.2-2' }}
+                      </span>
+                      <button 
+                        type="button"
+                        (click)="removePart(part.id!)"
+                        class="text-red-600 hover:text-red-800">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div *ngIf="assetParts.length > 0" class="pt-2 border-t border-gray-200 flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-700">Total Cost:</span>
+                    <span class="text-sm font-bold text-gray-900">{{ currencySymbol }} {{ getTotalPartsCost() | number:'1.2-2' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Documents Section -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <h4 class="text-sm font-medium text-gray-700">Documents</h4>
+                </div>
+                <div *ngIf="assetDocuments.length === 0" class="text-gray-500 text-sm">
+                  No documents uploaded
+                </div>
+                <div *ngIf="assetDocuments.length > 0" class="space-y-2">
+                  <div *ngFor="let doc of assetDocuments" class="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
+                    <div class="flex-1">
+                      <div class="font-medium text-gray-900">{{ doc.document_name }}</div>
+                      <div class="text-gray-600 text-xs">
+                        {{ getDocumentTypeLabel(doc.document_type) }}
+                        <span *ngIf="doc.file_size">• {{ ((doc.file_size ?? 0) / 1024 / 1024) | numberFormat:2 }} MB</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <a 
+                        [href]="doc.document_url" 
+                        target="_blank"
+                        class="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Download
+                      </a>
                     </div>
                   </div>
                 </div>
-                <ng-template #noInventoryParts>
-                  <p class="text-gray-500 text-sm">No inventory parts linked</p>
-                </ng-template>
               </div>
             </div>
 
@@ -1805,4 +1881,13 @@
     (closeModal)="onTransferModalClose()"
     (transferComplete)="onTransferComplete($event)"
   ></app-transfer-asset-modal>
+
+  <!-- Add Parts Modal -->
+  <app-add-asset-parts-modal
+    [isOpen]="showPartsModal"
+    [assetId]="asset?.id || 0"
+    [assetLocationId]="getAssetLocationId()"
+    (closed)="closePartsModal()"
+    (saved)="onPartsAdded($event)">
+  </app-add-asset-parts-modal>
 </div>

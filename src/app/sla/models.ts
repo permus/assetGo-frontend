@@ -1,6 +1,5 @@
 export type AppliesTo = 'work_orders' | 'maintenance' | 'both';
 export type PriorityLevel = 'low' | 'medium' | 'high' | 'critical' | 'ppm';
-export type WorkingDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
 export interface SlaDefinition {
   id?: number;
@@ -9,12 +8,15 @@ export interface SlaDefinition {
   description?: string | null;
   appliesTo: AppliesTo;
   priorityLevel?: PriorityLevel | null;
-  category?: string | null;
+  categoryId?: number | null;
+  category?: {
+    id: number;
+    name: string;
+    slug: string;
+  } | null;
   responseTimeHours: number;
   containmentTimeHours?: number | null;
   completionTimeHours: number;
-  businessHoursOnly: boolean;
-  workingDays: WorkingDay[];
   isActive: boolean;
   createdBy?: number;
   creator?: {

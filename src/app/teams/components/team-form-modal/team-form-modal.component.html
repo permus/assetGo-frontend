@@ -31,6 +31,43 @@
           </div>
         </div>
 
+        <!-- Team Limit Warning (only for new team members) -->
+        <div *ngIf="!isEditMode && !isUnlimited()" class="mb-4">
+          <!-- Warning when approaching limit -->
+          <div *ngIf="limitStatus === 'warning'" class="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+            <div class="flex items-start">
+              <svg class="w-5 h-5 text-orange-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+              <div class="ml-2">
+                <p class="text-sm font-medium text-orange-800">Approaching Team Limit</p>
+                <p class="text-sm text-orange-700 mt-1">You have {{ currentTeamCount }} / {{ teamsAllowedCount }} teams. Only {{ getRemainingTeams() }} more team member(s) allowed.</p>
+              </div>
+            </div>
+          </div>
+          <!-- Error when limit reached -->
+          <div *ngIf="limitStatus === 'error'" class="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div class="flex items-start">
+              <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div class="ml-2">
+                <p class="text-sm font-medium text-red-800">Team Limit Reached</p>
+                <p class="text-sm text-red-700 mt-1">You have reached your team limit of {{ teamsAllowedCount }} team member(s). Please contact your administrator to increase your limit.</p>
+              </div>
+            </div>
+          </div>
+          <!-- Info when under limit -->
+          <div *ngIf="limitStatus === 'ok' && teamsAllowedCount !== null" class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <p class="ml-2 text-sm text-blue-700">You have {{ currentTeamCount }} / {{ teamsAllowedCount }} teams. {{ getRemainingTeams() }} more team member(s) allowed.</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Two Column Grid -->
         <div class="grid grid-cols-2 gap-4">
           <!-- First Name -->
@@ -204,7 +241,7 @@
           </button>
           <button
             type="submit"
-            [disabled]="teamMemberForm.invalid || loading"
+            [disabled]="teamMemberForm.invalid || loading || (!isEditMode && !canCreateMoreTeams())"
             class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <svg *ngIf="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

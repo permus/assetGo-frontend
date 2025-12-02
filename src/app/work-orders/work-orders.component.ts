@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { WorkOrderService, CreateWorkOrderRequest } from './services/work-order.service';
+import { WorkOrderService, CreateWorkOrderRequest, WorkOrderPartItem } from './services/work-order.service';
 import { AssetService } from '../assets/services/asset.service';
 import { LocationService } from '../locations/services/location.service';
 import { TeamService } from '../teams/services/team.service';
 import { MetaWorkOrdersService } from '../core/services/meta-work-orders.service';
 import { ToastService } from '../core/services/toast.service';
+import { CurrencyService } from '../core/services/currency.service';
 import { Subscription } from 'rxjs';
 import { WorkOrderListComponent } from './components/work-order-list/work-order-list.component';
 import { WorkOrderStatsComponent } from './components/work-order-stats/work-order-stats.component';
@@ -39,6 +40,10 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
   locations: any[] = [];
   teamMembers: any[] = [];
 
+  // Parts & Materials
+  selectedParts: WorkOrderPartItem[] = [];
+  showPartsModal = false;
+
   // Metadata options for new standardized select boxes
   statusOptions: MetaItem[] = [];
   priorityOptions: MetaItem[] = [];
@@ -63,6 +68,8 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
 
   private subscription = new Subscription();
 
+  currencySymbol = 'AED'; // Default, will be updated from service
+
   constructor(
     private fb: FormBuilder,
     private workOrderService: WorkOrderService,
@@ -70,7 +77,8 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     private locationService: LocationService,
     private teamService: TeamService,
     private metaWorkOrdersService: MetaWorkOrdersService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private currencyService: CurrencyService
   ) {
     this.workOrderForm = this.fb.group({
       title: ['', Validators.required],
@@ -94,6 +102,18 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     console.log('WorkOrdersComponent: Initial activeTab:', this.activeTab);
     this.loadSelectData();
     this.loadMetadataOptions();
+    
+    // Initialize currency from service
+    this.currencyService.refreshFromServer().subscribe(() => {
+      this.currencySymbol = this.currencyService.getSymbol();
+    });
+    
+    // Subscribe to currency changes
+    this.subscription.add(
+      this.currencyService.get$().subscribe(() => {
+        this.currencySymbol = this.currencyService.getSymbol();
+      })
+    );
   }
 
   ngAfterViewInit(): void {
@@ -476,17 +496,18 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
       this.subscription.add(
         this.workOrderService.createWorkOrder(workOrderData).subscribe({
           next: (response) => {
-            this.toastService.success('Work order created successfully');
-            this.closeCreateModal();
-            // Reset form with default values
-            this.workOrderForm.reset({
-              status_id: this.selectedStatusOption?.id || null,
-              priority_id: this.selectedPriorityOption?.id || null,
-              category_id: null,
-              type: this.selectedTypeOption?.id || 'ppm'
-            });
-
-            this.selectedCategoryOption = null;
+            console.log('Work order created, response:', response);
+            console.log('Selected parts count:', this.selectedParts.length);
+            // If parts were selected, add them to the work order
+            if (this.selectedParts.length > 0 && response?.id) {
+              console.log('Calling addPartsToWorkOrder with ID:', response.id);
+              this.addPartsToWorkOrder(response.id);
+            } else {
+              console.log('No parts to add or no work order ID');
+              this.toastService.success('Work order created successfully');
+              this.closeCreateModal();
+              this.resetForm();
+            }
 
             if (this.workOrderList) {
               this.workOrderList.refreshWorkOrders();
@@ -549,6 +570,111 @@ export class WorkOrdersComponent implements OnInit, OnDestroy {
     const selectedId = (event.target as HTMLSelectElement).value;
     const selectedAsset = this.assets.find(a => a.id === +selectedId);
     this.workOrderForm.patchValue({ location_id: selectedAsset?.location?.id || '' });
+  }
+
+  // Parts & Materials Methods
+  openPartsModal(): void {
+    this.showPartsModal = true;
+  }
+
+  closePartsModal(): void {
+    this.showPartsModal = false;
+  }
+
+  onPartsAdded(parts: WorkOrderPartItem[]): void {
+    console.log('onPartsAdded called with parts:', parts);
+    // Merge new parts with existing ones, avoiding duplicates
+    parts.forEach(newPart => {
+      const existingIndex = this.selectedParts.findIndex(p => p.part_id === newPart.part_id);
+      if (existingIndex >= 0) {
+        // Update quantity if part already exists
+        this.selectedParts[existingIndex].qty += newPart.qty;
+      } else {
+        this.selectedParts.push(newPart);
+      }
+    });
+    console.log('Selected parts after merge:', this.selectedParts);
+    this.closePartsModal();
+  }
+
+  removePart(partId: number): void {
+    this.selectedParts = this.selectedParts.filter(p => p.part_id !== partId);
+  }
+
+  getTotalPartsCost(): number {
+    return this.selectedParts.reduce((sum, part) => {
+      return sum + ((part.unit_cost || 0) * part.qty);
+    }, 0);
+  }
+
+  addPartsToWorkOrder(workOrderId: number): void {
+    console.log('addPartsToWorkOrder called with workOrderId:', workOrderId);
+    console.log('selectedParts:', this.selectedParts);
+    
+    if (this.selectedParts.length === 0) {
+      console.log('No parts to add, closing modal');
+      this.toastService.success('Work order created successfully');
+      this.closeCreateModal();
+      this.resetForm();
+      return;
+    }
+
+    const payload = this.selectedParts.map(part => {
+      const item: any = {
+        part_id: part.part_id,
+        qty: part.qty
+      };
+      
+      // Only include unit_cost if it's not null/undefined
+      if (part.unit_cost !== null && part.unit_cost !== undefined) {
+        item.unit_cost = part.unit_cost;
+      }
+      
+      // Only include location_id if it's available
+      const locationId = part.location_id || this.workOrderForm.value.location_id;
+      if (locationId !== null && locationId !== undefined) {
+        item.location_id = locationId;
+      }
+      
+      return item;
+    });
+    
+    console.log('Payload to send:', payload);
+
+    this.isLoading = true;
+    this.workOrderService.addParts(workOrderId, payload).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        console.log('Parts added successfully:', response);
+        this.toastService.success('Work order created with parts successfully');
+        this.closeCreateModal();
+        this.resetForm();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Error adding parts to work order:', error);
+        console.error('Payload sent:', payload);
+        console.error('Selected parts:', this.selectedParts);
+        const errorMsg = error?.error?.message || 'Work order created but failed to add parts';
+        this.toastService.error(errorMsg);
+        // Don't close modal on error, let user see the error and retry
+        // this.closeCreateModal();
+        // this.resetForm();
+      }
+    });
+  }
+
+  resetForm(): void {
+    // Reset form with default values
+    this.workOrderForm.reset({
+      status_id: this.selectedStatusOption?.id || null,
+      priority_id: this.selectedPriorityOption?.id || null,
+      category_id: null,
+      type: this.selectedTypeOption?.id || 'ppm'
+    });
+    this.selectedCategoryOption = null;
+    this.selectedParts = [];
+    this.isLoading = false;
   }
 
 }

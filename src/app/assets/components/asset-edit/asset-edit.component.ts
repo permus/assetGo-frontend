@@ -95,9 +95,15 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedFile: File | null = null;
   images: File[] = [];
   imagePreviewUrls: string[] = [];
+  imageCaptions: string[] = []; // Captions for each image
   existingImages: any[] = [];
   removedImageIds: number[] = [];
   isDragOver = false;
+  
+  // Documents
+  documents: File[] = [];
+  documentMetadata: Array<{name: string, type: 'manual' | 'certificate' | 'warranty' | 'other'}> = [];
+  existingDocuments: any[] = [];
 
   // Validation errors
   nameError: string = '';
@@ -122,6 +128,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private inventoryAnalyticsService: InventoryAnalyticsService
   ) {
     this.assetForm = this.fb.group({
+      asset_id: [''],
       name: ['', [Validators.required, Validators.minLength(2)]],
       description: [''],
       serial_number: ['', [Validators.minLength(0)]],
@@ -137,6 +144,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       warranty: [''],
       insurance: [''],
       health_score: [85, [Validators.min(0), Validators.max(100)]],
+      criticality_level: [null],
       brand: [''],
       dimensions: [''],
       weight: [''],
@@ -739,6 +747,7 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       newImages.push(file);
+      this.imageCaptions.push(''); // Initialize caption for each new image
 
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -756,19 +765,28 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   removeImage(index: number) {
-    this.images.splice(index, 1);
-    this.imagePreviewUrls.splice(index, 1);
+    if (index >= 0 && index < this.images.length) {
+      this.images.splice(index, 1);
+      this.imagePreviewUrls.splice(index, 1);
+      this.imageCaptions.splice(this.existingImages.length + index, 1);
+    }
   }
 
   removeAllImages() {
     this.images = [];
     this.imagePreviewUrls = [];
+    // Only remove captions for new images
+    this.imageCaptions = this.imageCaptions.slice(0, this.existingImages.length);
   }
 
   removeExistingImage(index: number) {
     const removedImage = this.existingImages[index];
     if (removedImage && removedImage.id) {
       this.removedImageIds.push(removedImage.id);
+    }
+    // Remove corresponding caption
+    if (index >= 0 && index < this.imageCaptions.length) {
+      this.imageCaptions.splice(index, 1);
     }
     this.existingImages.splice(index, 1);
   }
@@ -781,6 +799,8 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
     this.existingImages = [];
+    // Clear captions for existing images
+    this.imageCaptions = [];
   }
 
   moveImage(fromIndex: number, toIndex: number) {
@@ -924,6 +944,12 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
         // Add images to form data
         formData.images = base64Images;
         
+        // Include image captions for new images
+        if (this.imageCaptions.length > this.existingImages.length) {
+          const newImageCaptions = this.imageCaptions.slice(this.existingImages.length);
+          formData.images_captions = newImageCaptions;
+        }
+        
         // Add existing images that should be kept (only send IDs)
         formData.existing_images = this.existingImages.map(img => img.id || img.image_url);
         
@@ -939,12 +965,27 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
           formData.inventory_part_ids = [];
         }
 
+        // Handle asset_id override if provided
+        if (formData.asset_id && formData.asset_id.trim()) {
+          formData.asset_id = formData.asset_id.trim();
+        } else {
+          formData.asset_id = undefined; // Let backend handle auto-generation
+        }
+
         // parent_id is already included in formData
         this.assetService.updateAsset(this.asset.id, formData)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
-            next: (response) => {
+            next: async (response) => {
               if (response.success) {
+                // Upload documents if any
+                if (this.documents.length > 0) {
+                  try {
+                    await this.uploadDocuments(this.asset.id);
+                  } catch (error) {
+                    console.error('Error uploading documents:', error);
+                  }
+                }
                 this.submitSuccess = 'Asset updated successfully!';
                 // Navigate back to asset view after 2 seconds
                 setTimeout(() => {
@@ -1117,5 +1158,30 @@ export class AssetEditComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error('Date conversion error:', error);
       return null;
     }
+  }
+
+  // Upload documents to asset
+  async uploadDocuments(assetId: number): Promise<void> {
+    const uploadPromises = this.documents.map((file, index) => {
+      const metadata = this.documentMetadata[index];
+      if (!metadata || !metadata.name) {
+        // Use filename if name is not provided
+        const defaultMetadata = { name: file.name, type: 'other' as const };
+        return this.assetService.uploadAssetDocument(
+          assetId,
+          file,
+          defaultMetadata.name,
+          defaultMetadata.type
+        ).toPromise();
+      }
+      return this.assetService.uploadAssetDocument(
+        assetId,
+        file,
+        metadata.name,
+        metadata.type || 'other'
+      ).toPromise();
+    });
+    
+    await Promise.all(uploadPromises);
   }
 }

@@ -62,6 +62,9 @@
           <span class="badge priority" *ngIf="definition.priorityLevel" [class.critical]="definition.priorityLevel === 'critical'">
             {{ getPriorityLabel(definition.priorityLevel).toUpperCase() }}
           </span>
+          <span class="badge category" *ngIf="definition.category">
+            {{ definition.category.name }}
+          </span>
         </div>
 
         <div class="time-details">
@@ -85,17 +88,6 @@
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
             <span>Completion: {{ definition.completionTimeHours }}h</span>
-          </div>
-        </div>
-
-        <div class="schedule-details">
-          <div class="schedule-item">
-            <span class="label">Business hours:</span>
-            <span class="value">{{ definition.businessHoursOnly ? 'Yes' : 'No' }}</span>
-          </div>
-          <div class="schedule-item">
-            <span class="label">Working days:</span>
-            <span class="value">{{ formatWorkingDays(definition.workingDays) }}</span>
           </div>
         </div>
       </div>

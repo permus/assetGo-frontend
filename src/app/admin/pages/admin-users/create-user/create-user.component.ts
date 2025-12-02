@@ -34,6 +34,7 @@ export class CreateUserComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)]],
       password_confirmation: ['', [Validators.required]],
+      teams_allowed_count: [null, [Validators.min(0)]],
       
       // Company Information
       company_name: ['', [Validators.required, Validators.maxLength(255)]],
@@ -102,6 +103,7 @@ export class CreateUserComponent implements OnInit {
       'email': 'Email',
       'password': 'Password',
       'password_confirmation': 'Password confirmation',
+      'teams_allowed_count': 'Teams Allowed Count',
       'company_name': 'Company name',
       'industry': 'Industry',
       'business_type': 'Business type',
@@ -177,6 +179,7 @@ export class CreateUserComponent implements OnInit {
       email: formValue.email,
       password: formValue.password,
       password_confirmation: formValue.password_confirmation,
+      teams_allowed_count: formValue.teams_allowed_count ? Number(formValue.teams_allowed_count) : undefined,
       company_name: formValue.company_name,
       industry: formValue.industry || undefined,
       business_type: formValue.business_type || undefined,

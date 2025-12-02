@@ -2,12 +2,38 @@
   <!-- Page Title and Subtitle + Actions -->
   <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 mb-1">Team Management</h1>
+      <div class="flex items-center gap-3 mb-1">
+        <h1 class="text-2xl font-bold text-gray-900">Team Management</h1>
+        <!-- Team Limit Badge -->
+        @if (!isUnlimited()) {
+          <span [class]="getLimitStatus() === 'error' ? 'px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800' : getLimitStatus() === 'warning' ? 'px-3 py-1 text-sm font-semibold rounded-full bg-orange-100 text-orange-800' : 'px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800'">
+            {{ getCurrentTeamCount() }} / {{ getTeamLimit() }} teams
+          </span>
+        }
+      </div>
       <p class="text-gray-600 text-base">Manage team members, assign work orders, and track team performance</p>
+      <!-- Limit Warning Message -->
+      @if (getLimitStatus() === 'warning' && !isUnlimited()) {
+        <div class="mt-2 flex items-center text-sm text-orange-600">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          Approaching team limit. {{ (getTeamLimit() || 0) - getCurrentTeamCount() }} more team member(s) allowed.
+        </div>
+      }
+      @if (getLimitStatus() === 'error' && !isUnlimited()) {
+        <div class="mt-2 flex items-center text-sm text-red-600">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Team limit reached. Please contact your administrator to increase your limit.
+        </div>
+      }
     </div>
     <div class="flex items-center space-x-3 mt-4 md:mt-0">
       <button (click)="createTeamMember()"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer">
+              [disabled]="!canCreateMoreTeams()"
+              [class]="canCreateMoreTeams() ? 'bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors flex items-center cursor-pointer' : 'bg-gray-400 text-white font-semibold px-5 py-2 rounded-lg shadow-sm flex items-center cursor-not-allowed opacity-60'">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>

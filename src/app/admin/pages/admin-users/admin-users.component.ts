@@ -21,7 +21,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   users: User[] = [];
   loading = false;
   searchTerm = '';
-  selectedUserType: string | null = null;
+  selectedUserType: string | null = 'admin'; // Default to 'admin'
   currentPage = 1;
   perPage = 15;
   total = 0;
@@ -47,6 +47,11 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
 
   // View mode: 'list' or 'grid'
   viewMode: 'list' | 'grid' = 'list';
+
+  // Inline editing for team limit
+  editingTeamLimitUserId: number | null = null;
+  editingTeamLimitValue: number | null = null;
+  savingTeamLimit = false;
 
   // Search subject for debounced search
   private searchSubject = new Subject<string>();
@@ -178,6 +183,51 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   onCloseChangePasswordModal(): void {
     this.showChangePasswordModal = false;
     this.selectedUser = null;
+  }
+
+  // Inline editing methods for team limit
+  startEditingTeamLimit(user: User): void {
+    this.editingTeamLimitUserId = user.id;
+    this.editingTeamLimitValue = user.teams_allowed_count ?? null;
+  }
+
+  cancelEditingTeamLimit(): void {
+    this.editingTeamLimitUserId = null;
+    this.editingTeamLimitValue = null;
+  }
+
+  saveTeamLimit(userId: number): void {
+    if (this.editingTeamLimitValue !== null && this.editingTeamLimitValue < 0) {
+      this.toastService.error('Team limit cannot be negative');
+      return;
+    }
+
+    this.savingTeamLimit = true;
+    this.adminUsersService.updateUser(userId, {
+      teams_allowed_count: this.editingTeamLimitValue ?? undefined
+    }).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Update the user in the local array
+          const userIndex = this.users.findIndex(u => u.id === userId);
+          if (userIndex !== -1) {
+            this.users[userIndex].teams_allowed_count = this.editingTeamLimitValue ?? undefined;
+          }
+          this.toastService.success('Team limit updated successfully');
+          this.cancelEditingTeamLimit();
+        }
+        this.savingTeamLimit = false;
+      },
+      error: (error) => {
+        this.savingTeamLimit = false;
+        this.toastService.error('Failed to update team limit');
+        console.error(error);
+      }
+    });
+  }
+
+  isEditingTeamLimit(userId: number): boolean {
+    return this.editingTeamLimitUserId === userId;
   }
 
   Math = Math;

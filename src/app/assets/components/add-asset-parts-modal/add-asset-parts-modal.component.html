@@ -3,7 +3,7 @@
     <div class="modal-header">
       <div>
         <h2 class="modal-title">Select Parts from Inventory</h2>
-        <p class="modal-subtitle">Search and add parts to this work order</p>
+        <p class="modal-subtitle">Search and add parts to this asset</p>
       </div>
       <button class="close-btn" (click)="close()" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -151,8 +151,9 @@
       <button class="btn btn-secondary" (click)="close()" [disabled]="loading">Cancel</button>
       <button class="btn btn-primary" (click)="save()" [disabled]="cart.length === 0 || loading">
         <span *ngIf="loading">Adding...</span>
-        <span *ngIf="!loading">Add {{ cart.length }} Part{{ cart.length !== 1 ? 's' : '' }} to Work Order</span>
+        <span *ngIf="!loading">Add {{ cart.length }} Part{{ cart.length !== 1 ? 's' : '' }} to Asset</span>
       </button>
     </div>
   </div>
 </div>
+

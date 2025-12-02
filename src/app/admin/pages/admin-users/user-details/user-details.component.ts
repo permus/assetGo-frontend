@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminUsersService, User, TeamMember } from '../../../services/admin-users.service';
 import { SuspendActivateConfirmationModalComponent } from '../../../components/suspend-activate-confirmation-modal/suspend-activate-confirmation-modal.component';
@@ -9,7 +10,7 @@ import { ChangePasswordModalComponent } from '../../../components/change-passwor
 @Component({
   selector: 'app-user-details',
   standalone: true,
-  imports: [CommonModule, SuspendActivateConfirmationModalComponent, ChangePasswordModalComponent],
+  imports: [CommonModule, FormsModule, SuspendActivateConfirmationModalComponent, ChangePasswordModalComponent],
   templateUrl: './user-details.component.html',
   styleUrl: './user-details.component.scss'
 })
@@ -33,6 +34,11 @@ export class UserDetailsComponent implements OnInit {
   // Change password modal
   showChangePasswordModal = false;
   changePasswordLoading = false;
+
+  // Teams allowed count editing
+  editingTeamsAllowedCount = false;
+  teamsAllowedCountValue: number | null = null;
+  savingTeamsAllowedCount = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,6 +65,7 @@ export class UserDetailsComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.user = response.data.user;
+          this.teamsAllowedCountValue = this.user.teams_allowed_count ?? null;
         }
         this.loading = false;
       },
@@ -161,6 +168,48 @@ export class UserDetailsComponent implements OnInit {
 
   onCloseChangePasswordModal(): void {
     this.showChangePasswordModal = false;
+  }
+
+  startEditingTeamsAllowedCount(): void {
+    if (!this.user) return;
+    this.editingTeamsAllowedCount = true;
+    this.teamsAllowedCountValue = this.user.teams_allowed_count ?? null;
+  }
+
+  cancelEditingTeamsAllowedCount(): void {
+    this.editingTeamsAllowedCount = false;
+    if (this.user) {
+      this.teamsAllowedCountValue = this.user.teams_allowed_count ?? null;
+    }
+  }
+
+  saveTeamsAllowedCount(): void {
+    if (!this.user || !this.userId) return;
+
+    // Validate input
+    if (this.teamsAllowedCountValue !== null && this.teamsAllowedCountValue < 0) {
+      this.toastService.error('Team limit cannot be negative');
+      return;
+    }
+
+    this.savingTeamsAllowedCount = true;
+    this.adminUsersService.updateUser(this.userId, { 
+      teams_allowed_count: this.teamsAllowedCountValue ?? undefined
+    }).subscribe({
+      next: (response) => {
+        if (response.success && this.user) {
+          this.user.teams_allowed_count = this.teamsAllowedCountValue ?? undefined;
+          this.editingTeamsAllowedCount = false;
+          this.toastService.success('Team limit updated successfully');
+        }
+        this.savingTeamsAllowedCount = false;
+      },
+      error: (error) => {
+        this.savingTeamsAllowedCount = false;
+        this.toastService.error('Failed to update team limit');
+        console.error(error);
+      }
+    });
   }
 
   Math = Math;

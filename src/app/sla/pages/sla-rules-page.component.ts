@@ -138,8 +138,8 @@ export class SlaRulesPageComponent implements OnInit {
     return priority.charAt(0).toUpperCase() + priority.slice(1);
   }
 
-  formatWorkingDays(days: string[]): string {
-    return days.map(day => day.charAt(0).toUpperCase() + day.slice(1)).join(', ');
+  getCategoryName(definition: SlaDefinition): string {
+    return definition.category?.name || 'N/A';
   }
 }
 

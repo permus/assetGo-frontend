@@ -78,6 +78,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
+              Asset Code
+            </label>
+            <input
+              type="text"
+              class="input"
+              placeholder="Leave empty for auto-generation"
+              [(ngModel)]="asset_id"
+              name="asset_id"
+              maxlength="50" />
+            <div class="text-xs text-gray-500 mt-1">Leave empty for auto-generation</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
               Asset Name <span class="text-red-500">*</span>
             </label>
             <input
@@ -220,6 +233,21 @@
               <span>Very Good (75%)</span>
               <span>Excellent (100%)</span>
             </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Criticality Level
+            </label>
+            <select
+              class="input"
+              [(ngModel)]="criticality_level"
+              name="criticality_level">
+              <option [ngValue]="undefined">Select criticality level</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <div class="text-xs text-gray-500 mt-1">Optional: Set the criticality level for this asset</div>
           </div>
         </div>
       </div>
@@ -388,69 +416,70 @@
           </div>
         </div>
 
-        <!-- Inventory Parts -->
+        <!-- Parts & Materials -->
         <div class="mt-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Inventory Parts
-          </label>
-          <div class="relative" (click)="$event.stopPropagation()">
-            <button
-              type="button"
-              (click)="toggleInventoryPartsDropdown()"
-              class="w-full px-4 py-3 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
-              [class.border-blue-500]="showInventoryPartsDropdown">
-              <div class="flex items-center justify-between">
-                <span class="text-gray-400">Select inventory parts</span>
-                <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="showInventoryPartsDropdown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-            </button>
-
-            <!-- Dropdown Menu -->
-            <div *ngIf="showInventoryPartsDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-              <div class="p-2">
-                <input
-                  type="text"
-                  [(ngModel)]="inventoryPartsSearch"
-                  (ngModelChange)="showInventoryPartsDropdown = true"
-                  placeholder="Search parts..."
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2">
-              </div>
-              <div class="py-1 max-h-48 overflow-auto">
-                <div *ngIf="isLoadingInventoryParts" class="px-3 py-2 text-sm text-gray-500">Loading parts...</div>
-                <div *ngIf="!isLoadingInventoryParts && getFilteredInventoryParts().length === 0" class="px-3 py-2 text-sm text-gray-500">No parts available</div>
-                <button
-                  *ngFor="let part of getFilteredInventoryParts()"
-                  type="button"
-                  (click)="selectInventoryPart(part)"
-                  class="w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <div class="font-medium text-gray-900">{{part.name}}</div>
-                      <div class="text-sm text-gray-500">{{part.part_number}}</div>
-                    </div>
-                  </div>
-                </button>
-              </div>
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+              </svg>
             </div>
+            <h3 class="text-lg font-semibold text-gray-900">Parts & Materials</h3>
           </div>
 
-          <!-- Selected Parts Chips -->
-          <div *ngIf="selectedInventoryParts.length > 0" class="mt-3 flex flex-wrap gap-2">
-            <div *ngFor="let part of selectedInventoryParts" class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-              <span>{{part.name}} ({{part.part_number}})</span>
-              <button
-                type="button"
-                (click)="removeInventoryPart(part.id)"
-                class="ml-2 text-blue-600 hover:text-blue-800 focus:outline-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          <!-- Empty State -->
+          <div *ngIf="selectedParts.length === 0" class="parts-empty-state">
+            <div class="empty-state-content">
+              <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+              </svg>
+              <p class="empty-state-text">No parts selected</p>
+              <p class="empty-state-hint">Click 'Add Parts' to select from inventory</p>
+              <button type="button" class="add-parts-btn" (click)="openPartsModal()">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
+                Add Parts from Inventory
               </button>
             </div>
           </div>
-          <div class="text-xs text-gray-500 mt-1">Optional: Link inventory parts to this asset</div>
+
+          <!-- Parts List -->
+          <div *ngIf="selectedParts.length > 0" class="parts-list-container">
+            <div class="parts-list-header">
+              <span class="parts-count">{{ selectedParts.length }} part{{ selectedParts.length !== 1 ? 's' : '' }} selected</span>
+              <button type="button" class="add-more-parts-btn" (click)="openPartsModal()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add More
+              </button>
+            </div>
+            <div class="parts-items">
+              <div class="parts-item" *ngFor="let part of selectedParts; trackBy: trackByPartId">
+                <div class="parts-item-info">
+                  <div class="parts-item-name">{{ part.part?.name || 'Unknown Part' }}</div>
+                  <div class="parts-item-details">
+                    <span class="parts-item-qty">{{ part.qty }} {{ part.part?.uom || 'each' }}</span>
+                    <span class="parts-item-separator">•</span>
+                    <span class="parts-item-cost">Unit: {{ currencySymbol() }} {{ (part.unit_cost || part.part?.unit_cost || 0) | number:'1.2-2' }}</span>
+                  </div>
+                </div>
+                <div class="parts-item-actions">
+                  <div class="parts-item-total">{{ currencySymbol() }} {{ ((part.unit_cost || part.part?.unit_cost || 0) * part.qty) | number:'1.2-2' }}</div>
+                  <button type="button" class="remove-part-btn" (click)="removePart(part.part_id)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="parts-total">
+              <span class="total-label">Total Cost:</span>
+              <span class="total-value">{{ currencySymbol() }} {{ getTotalPartsCost() | number:'1.2-2' }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1033,6 +1062,16 @@
                   <p class="text-xs text-gray-600 truncate">{{images[i].name}}</p>
                   <p class="text-xs text-gray-500">{{ ((images[i].size ?? 0) / 1024 / 1024) | numberFormat:1 }} MB</p>
                 </div>
+                <!-- Image Caption Input -->
+                <div class="mt-2">
+                  <input
+                    type="text"
+                    class="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                    placeholder="Enter image name/description (e.g., 'Front View', 'Serial Number Plate')"
+                    [value]="imageCaptions[i] || ''"
+                    (input)="updateImageCaption(i, $any($event.target).value)"
+                    maxlength="255" />
+                </div>
               </div>
             </div>
 
@@ -1045,6 +1084,103 @@
                 <p class="text-blue-800 text-sm">
                   <strong>Gallery Tips:</strong> Hover over images to reorder them. The first image will be the primary asset image.
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents Section -->
+      <div class="section-card">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <h2 class="section-title">Documents</h2>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Upload Documents</label>
+          <div class="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition-all">
+            <div class="space-y-1 text-center">
+              <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+              </div>
+              <p class="text-sm text-gray-500">
+                PDF, DOC, DOCX, XLS, XLSX, TXT, JPG, PNG up to 10MB - click to browse or drag and drop files here
+              </p>
+              <input
+                type="file"
+                (change)="onDocumentChange($event)"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png"
+                multiple
+                class="sr-only"
+                id="document-upload-create" />
+              <label for="document-upload-create" class="mt-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 cursor-pointer">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Select Documents
+              </label>
+            </div>
+          </div>
+
+          <!-- New Documents List -->
+          <div *ngIf="documents.length > 0" class="mt-6">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="text-sm font-medium text-gray-700">New Documents ({{documents.length}})</h4>
+              <button
+                type="button"
+                (click)="documents = []; documentMetadata = []"
+                class="text-red-600 hover:text-red-700 text-sm font-medium transition-colors">
+                Remove All
+              </button>
+            </div>
+
+            <div class="space-y-3">
+              <div *ngFor="let doc of documents; let i = index" class="p-4 border border-gray-200 rounded-lg">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <div class="mb-2">
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Document Name <span class="text-red-500">*</span></label>
+                      <input
+                        type="text"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded"
+                        [(ngModel)]="documentMetadata[i].name"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                        maxlength="255" />
+                    </div>
+                    <div class="mb-2">
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Document Type <span class="text-red-500">*</span></label>
+                      <select
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded"
+                        [(ngModel)]="documentMetadata[i].type"
+                        [ngModelOptions]="{standalone: true}"
+                        required>
+                        <option value="manual">Manual</option>
+                        <option value="certificate">Certificate</option>
+                        <option value="warranty">Warranty</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      <span class="font-medium">{{doc.name}}</span> - {{ ((doc.size ?? 0) / 1024 / 1024) | numberFormat:2 }} MB
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    (click)="removeDocument(i)"
+                    class="ml-4 p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1101,5 +1237,14 @@
         </button>
       </div>
     </form>
+
+    <!-- Add Parts Modal -->
+    <app-add-asset-parts-modal
+      [isOpen]="showPartsModal"
+      [assetId]="0"
+      [assetLocationId]="location_id"
+      (closed)="closePartsModal()"
+      (saved)="onPartsAdded($event)">
+    </app-add-asset-parts-modal>
   </div>
 </div>

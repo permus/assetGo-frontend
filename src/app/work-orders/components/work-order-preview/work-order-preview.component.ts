@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WorkOrderService, WorkOrderPreview, WorkOrderComment, WorkOrderHistoryEvent, WorkOrderAssignment } from '../../services/work-order.service';
+import { WorkOrderService, WorkOrderPreview, WorkOrderComment, WorkOrderHistoryEvent, WorkOrderAssignment, WorkOrderPartItem } from '../../services/work-order.service';
 import { TeamService, TeamMember } from '../../../teams/services/team.service';
 import { MetaWorkOrdersService } from '../../../core/services/meta-work-orders.service';
 import { MetaItem } from '../../../core/types/work-order.types';
@@ -45,6 +45,10 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
   teamMembers: TeamMember[] = [];
   selectedUserIds = new Set<number>();
   assignmentStatuses = new Map<number, string>();
+  
+  // Parts & Materials
+  workOrderParts: WorkOrderPartItem[] = [];
+  currencySymbol: string = '$';
   assignmentStatusOptions: Array<{ value: string; label: string }> = [
     { value: 'assigned', label: 'Assigned' },
     { value: 'accepted', label: 'Accepted' },
@@ -80,7 +84,35 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
 
   openAddPartsModal(): void { this.showAddPartsModal = true; }
   closeAddPartsModal(): void { this.showAddPartsModal = false; }
-  onPartsAdded(): void { this.closeAddPartsModal(); }
+  onPartsAdded(parts?: WorkOrderPartItem[]): void {
+    this.closeAddPartsModal();
+    if (this.workOrder) {
+      this.loadWorkOrderParts(this.workOrder.id);
+    }
+  }
+  
+  getWorkOrderLocationId(): number | undefined {
+    return this.workOrder?.location_id || undefined;
+  }
+  
+  getTotalPartsCost(): number {
+    return this.workOrderParts.reduce((sum, part) => {
+      const unitCost = part.unit_cost || 0;
+      return sum + (unitCost * part.qty);
+    }, 0);
+  }
+  
+  loadWorkOrderParts(workOrderId: number): void {
+    this.workOrderService.getParts(workOrderId).subscribe({
+      next: (parts) => {
+        this.workOrderParts = parts || [];
+      },
+      error: (error) => {
+        console.error('Error loading work order parts:', error);
+        this.workOrderParts = [];
+      }
+    });
+  }
 
   toggleUserSelection(userId: number, checked: boolean): void {
     if (checked) {
@@ -174,6 +206,16 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
     this.commentForm = this.fb.group({
       comment: ['', Validators.required]
     });
+    
+    // Initialize currency symbol
+    this.currencySymbol = this.currencyService.getSymbol();
+    
+    // Subscribe to currency changes
+    this.subscription.add(
+      this.currencyService.get$().subscribe(() => {
+        this.currencySymbol = this.currencyService.getSymbol();
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -242,6 +284,9 @@ export class WorkOrderPreviewComponent implements OnInit, OnDestroy {
               this.historyPreview = (events || []).slice(0, 3);
             }
           });
+          // Load parts
+          this.loadWorkOrderParts(workOrder.id);
+          
           // Load time logs
           this.workOrderService.getTimeLogs(workOrder.id).subscribe({
             next: (data) => {

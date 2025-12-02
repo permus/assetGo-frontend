@@ -1,35 +1,50 @@
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
-import { WorkOrderPartItem, WorkOrderService } from '../../services/work-order.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { InventoryAnalyticsService, InventoryPart, PartsCatalogResponse } from '../../../core/services/inventory-analytics.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { AssetService } from '../../services/asset.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { NumberFormatPipe } from '../../../core/pipes/number-format.pipe';
+
+export interface AssetPartItem {
+  id?: number;
+  asset_id: number;
+  part_id: number;
+  part?: { id: number; name: string; uom?: string };
+  qty: number;
+  unit_cost?: number | null;
+  created_at?: string;
+  updated_at?: string;
+}
 
 @Component({
-  selector: 'app-add-work-order-parts-modal',
-  standalone: false,
-  templateUrl: './add-work-order-parts-modal.component.html',
-  styleUrls: ['./add-work-order-parts-modal.component.scss']
+  selector: 'app-add-asset-parts-modal',
+  standalone: true,
+  imports: [CommonModule, FormsModule, NumberFormatPipe],
+  templateUrl: './add-asset-parts-modal.component.html',
+  styleUrls: ['./add-asset-parts-modal.component.scss']
 })
-export class AddWorkOrderPartsModalComponent implements OnChanges, OnDestroy {
-  @Input() workOrderId!: number;
+export class AddAssetPartsModalComponent implements OnChanges, OnDestroy {
+  @Input() assetId!: number;
   @Input() isOpen = false;
-  @Input() workOrderLocationId?: number | null;
+  @Input() assetLocationId?: number | null;
   @Output() closed = new EventEmitter<void>();
-  @Output() saved = new EventEmitter<WorkOrderPartItem[]>();
+  @Output() saved = new EventEmitter<AssetPartItem[]>();
 
   query = '';
   results: InventoryPart[] = [];
-  cart: Array<{ part: InventoryPart; qty: number; unit_cost?: number; location_id?: number }> = [];
+  cart: Array<{ part: InventoryPart; qty: number; unit_cost?: number }> = [];
   loading = false;
   searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  currencySymbol = 'AED'; // Default, will be updated from service
+  currencySymbol = '$'; // Default, will be updated from service
 
   constructor(
-    private woService: WorkOrderService, 
+    private assetService: AssetService, 
     private inv: InventoryAnalyticsService,
     private toastService: ToastService,
     private currencyService: CurrencyService
@@ -150,8 +165,7 @@ export class AddWorkOrderPartsModalComponent implements OnChanges, OnDestroy {
     this.cart.push({ 
       part, 
       qty: 1, 
-      unit_cost: part.unit_cost || undefined,
-      location_id: this.workOrderLocationId || undefined
+      unit_cost: part.unit_cost || undefined
     });
   }
 
@@ -169,53 +183,54 @@ export class AddWorkOrderPartsModalComponent implements OnChanges, OnDestroy {
       return;
     }
 
-    // If workOrderId is 0 or not set, we're creating a new work order
+    // If assetId is 0 or not set, we're creating a new asset
     // In this case, emit the parts to the parent component instead of saving via API
-    if (!this.workOrderId || this.workOrderId === 0) {
-      // Convert cart items to WorkOrderPartItem format for parent component
-      const parts: WorkOrderPartItem[] = this.cart.map((c) => ({
-        id: 0, // Temporary ID, will be set when work order is created
-        work_order_id: 0,
+    if (!this.assetId || this.assetId === 0) {
+      // Convert cart items to AssetPartItem format for parent component
+      const parts: AssetPartItem[] = this.cart.map((c) => ({
+        asset_id: 0,
         part_id: c.part.id,
         qty: c.qty,
-        unit_cost: c.unit_cost || null,
-        location_id: c.location_id || this.workOrderLocationId || null,
-        status: 'reserved' as 'reserved' | 'consumed',
+        unit_cost: c.unit_cost || c.part.unit_cost || null,
         part: {
           id: c.part.id,
           name: c.part.name,
-          uom: c.part.uom || 'each'
+          uom: c.part.uom || 'each',
+          part_number: c.part.part_number,
+          unit_cost: c.part.unit_cost
         },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }));
       
-      this.toastService.success(`${parts.length} part${parts.length !== 1 ? 's' : ''} added to work order`);
+      console.log('Modal: Emitting parts to parent:', parts);
+      this.toastService.success(`${parts.length} part${parts.length !== 1 ? 's' : ''} added to asset`);
       this.saved.emit(parts);
-      this.reset();
-      this.closed.emit();
+      // Use setTimeout to ensure event is processed before closing
+      setTimeout(() => {
+        this.reset();
+        this.closed.emit();
+      }, 100);
       return;
     }
 
-    // Existing work order - save via API
+    // Existing asset - save via API
     const payload = this.cart.map((c) => ({ 
       part_id: c.part.id, 
-      qty: c.qty, 
-      unit_cost: c.unit_cost,
-      location_id: c.location_id || this.workOrderLocationId || undefined
+      qty: c.qty
     }));
     this.loading = true;
-    this.woService.addParts(this.workOrderId, payload).subscribe({
+    this.assetService.addAssetParts(this.assetId, payload).subscribe({
       next: (items) => {
         this.loading = false;
-        this.toastService.success('Parts added to work order successfully');
+        this.toastService.success('Parts added to asset successfully');
         this.saved.emit(items);
         this.reset();
         this.closed.emit();
       },
       error: (error) => {
         this.loading = false;
-        const errorMsg = error?.error?.message || 'Failed to add parts to work order';
+        const errorMsg = error?.error?.message || 'Failed to add parts to asset';
         this.toastService.error(errorMsg);
       }
     });
@@ -240,5 +255,4 @@ export class AddWorkOrderPartsModalComponent implements OnChanges, OnDestroy {
     }
   }
 }
-
 

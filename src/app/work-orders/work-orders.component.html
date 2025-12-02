@@ -258,6 +258,70 @@
             </div>
           </div>
         </div>
+
+        <!-- Parts & Materials Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <svg class="section-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <h3>Parts & Materials</h3>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="selectedParts.length === 0" class="parts-empty-state">
+            <div class="empty-state-content">
+              <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+              <p class="empty-state-text">No parts selected</p>
+              <p class="empty-state-hint">Click "Add Parts" to select from inventory</p>
+              <button type="button" class="add-parts-btn" (click)="openPartsModal()">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add Parts from Inventory
+              </button>
+            </div>
+          </div>
+
+          <!-- Parts List -->
+          <div *ngIf="selectedParts.length > 0" class="parts-list-container">
+            <div class="parts-list-header">
+              <span class="parts-count">{{ selectedParts.length }} part{{ selectedParts.length !== 1 ? 's' : '' }} selected</span>
+              <button type="button" class="add-more-parts-btn" (click)="openPartsModal()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add More Parts
+              </button>
+            </div>
+            <div class="parts-items">
+              <div class="parts-item" *ngFor="let part of selectedParts">
+                <div class="parts-item-info">
+                  <div class="parts-item-name">{{ part.part?.name || 'Part #' + part.part_id }}</div>
+                  <div class="parts-item-details">
+                    <span class="parts-item-qty">{{ part.qty }} {{ part.part?.uom || '' }}</span>
+                    <span class="parts-item-separator">•</span>
+                    <span class="parts-item-cost">Unit: {{ currencySymbol }} {{ (part.unit_cost || 0) | number:'1.2-2' }}</span>
+                  </div>
+                </div>
+                <div class="parts-item-actions">
+                  <span class="parts-item-total">{{ currencySymbol }} {{ ((part.unit_cost || 0) * part.qty) | number:'1.2-2' }}</span>
+                  <button type="button" class="remove-part-btn" (click)="removePart(part.part_id)" title="Remove part">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="parts-total">
+              <span class="total-label">Total Parts Cost:</span>
+              <span class="total-value">{{ currencySymbol }} {{ getTotalPartsCost() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
 
@@ -276,3 +340,13 @@
     </div>
   </div>
 </div>
+
+<!-- Add Parts Modal -->
+<app-add-work-order-parts-modal
+  *ngIf="showPartsModal"
+  [isOpen]="showPartsModal"
+  [workOrderId]="0"
+  [workOrderLocationId]="workOrderForm.value.location_id"
+  (closed)="closePartsModal()"
+  (saved)="onPartsAdded($event)">
+</app-add-work-order-parts-modal>

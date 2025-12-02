@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HostListener, AfterViewInit, ViewChild, ElementRef, OnDestroy, ViewChildren, QueryList, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AssetService } from '../services/asset.service';
+import { AssetService, AssetPartItem } from '../services/asset.service';
 import { Router } from '@angular/router';
 import {NgForOf, NgIf} from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -14,13 +14,14 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { NumberFormatPipe } from '../../core/pipes/number-format.pipe';
 import { InventoryAnalyticsService } from '../../core/services/inventory-analytics.service';
 import { Subject, takeUntil } from 'rxjs';
+import { AddAssetPartsModalComponent } from '../components/add-asset-parts-modal/add-asset-parts-modal.component';
 
 @Component({
   selector: 'app-asset-create',
   templateUrl: './asset-create.component.html',
   styleUrls: ['./asset-create.component.scss'],
   standalone: true,
-  imports: [FormsModule, NgIf, NgForOf, NumberFormatPipe]
+  imports: [FormsModule, NgIf, NgForOf, NumberFormatPipe, AddAssetPartsModalComponent]
 })
 export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('dateInput') dateInputs!: QueryList<ElementRef>;
@@ -34,6 +35,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   isAnalyzing = false;
 
   // Asset form fields
+  asset_id?: string = ''; // Manual override for asset code
   name: string = '';
   description: string = '';
   serial_number: string = '';
@@ -50,10 +52,14 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   warranty: string = '';
   insurance: string = '';
   health_score: number = 85;
+  criticality_level?: 'high' | 'medium' | 'low' = undefined;
   status: number | null = null;
   tags: number[] = [];
   images: File[] = [];
   imagePreviewUrls: string[] = [];
+  imageCaptions: string[] = []; // Captions for each image
+  documents: File[] = [];
+  documentMetadata: Array<{name: string, type: 'manual' | 'certificate' | 'warranty' | 'other'}> = [];
   meta: any = {};
   isSubmitting = false;
   isDragOver = false;
@@ -77,7 +83,6 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   showTagsDropdown = false;
   showDepartmentDropdown = false;
   showParentDropdown = false;
-  showInventoryPartsDropdown = false;
   selectedAssetType: any | null = null;
   selectedCategory: any | null = null;
   selectedLocation: any | null = null;
@@ -86,12 +91,9 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedTags: any[] = [];
   newTagInput: string = '';
   
-  // Inventory Parts
-  inventoryPartIds: number[] = [];
-  availableInventoryParts: any[] = [];
-  selectedInventoryParts: any[] = [];
-  inventoryPartsSearch: string = '';
-  isLoadingInventoryParts = false;
+  // Parts & Materials
+  selectedParts: AssetPartItem[] = [];
+  showPartsModal = false;
 
   // Validation error properties
   nameError: string = '';
@@ -174,6 +176,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       newImages.push(file);
+      this.imageCaptions.push(''); // Initialize caption for each image
 
       // Generate preview
       const reader = new FileReader();
@@ -210,6 +213,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     const submitCreate = (base64Images: string[]) => {
       const payload: any = {
         name: this.name,
+        asset_id: this.asset_id && this.asset_id.trim() ? this.asset_id.trim() : undefined,
         description: this.description,
         category_id: this.category_id,
         type: this.assetType,
@@ -228,14 +232,19 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         warranty: this.warranty,
         insurance: this.insurance,
         health_score: this.health_score,
+        criticality_level: this.criticality_level,
         status: this.status,
         tags: this.selectedTags.map(tag => tag.name),
         meta: this.meta,
-        inventory_part_ids: this.inventoryPartIds.length > 0 ? this.inventoryPartIds : undefined
+        inventory_parts: this.selectedParts.length > 0 ? this.selectedParts.map(p => ({ part_id: p.part_id, qty: p.qty })) : undefined
       };
 
       if (!this.isDuplicate) {
         payload.images = base64Images;
+        // Include image captions
+        if (this.imageCaptions.length > 0) {
+          payload.images_captions = this.imageCaptions;
+        }
       }
 
       const request$ = this.isDuplicate && this.duplicateSourceId
@@ -243,14 +252,31 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
         : this.assetService.createAsset(payload);
 
       request$.subscribe({
-        next: (res) => {
+        next: async (res) => {
           this.isSubmitting = false;
           if (res.success) {
-            this.submitSuccess = this.isDuplicate ? 'Asset duplicated successfully!' : 'Asset created successfully!';
-            // Navigate back after 2 seconds
-            setTimeout(() => {
-              this.router.navigate(['/assets/list']);
-            }, 2000);
+            const assetId = res.data?.asset?.id || res.data?.id;
+            
+            // Upload documents if any
+            if (this.documents.length > 0 && assetId) {
+              try {
+                await this.uploadDocuments(assetId);
+              } catch (error) {
+                console.error('Error uploading documents:', error);
+                // Continue with success message even if document upload fails
+              }
+            }
+            
+            // If parts were selected, add them to the asset
+            if (this.selectedParts.length > 0 && assetId) {
+              this.addPartsToAsset(assetId);
+            } else {
+              this.submitSuccess = this.isDuplicate ? 'Asset duplicated successfully!' : 'Asset created successfully!';
+              // Navigate back after 2 seconds
+              setTimeout(() => {
+                this.router.navigate(['/assets/list']);
+              }, 2000);
+            }
           } else {
             this.submitError = res.message || 'Failed to create asset.';
             this.handleFieldErrors(res.errors || {});
@@ -324,9 +350,11 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient,
     private aiImageUploadService: AIImageUploadService,
     private toastService: ToastService,
-    private inventoryAnalyticsService: InventoryAnalyticsService
+    private inventoryAnalyticsService: InventoryAnalyticsService,
+    private cdr: ChangeDetectorRef
   ) {
-
+    // Initialize currency symbol
+    this.currencySymbol.set(this.currencyService.getSymbol());
   }
 
   ngOnInit() {
@@ -419,8 +447,7 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    // Load inventory parts
-    this.loadInventoryParts();
+    // Parts will be loaded via modal when needed
 
     this.assetService.getAssets({ per_page: 1000 }).subscribe(res => {
       if (res.success && res.data?.assets) {
@@ -439,60 +466,100 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
 
-  // Inventory Parts Methods
-  loadInventoryParts() {
-    this.isLoadingInventoryParts = true;
-    this.inventoryAnalyticsService.getPartsCatalog('', 'active', 1, 1000, false).subscribe({
-      next: (res) => {
-        if (res.success && res.data) {
-          this.availableInventoryParts = Array.isArray(res.data) ? res.data : (res.data.data || []);
-        }
-        this.isLoadingInventoryParts = false;
-      },
-      error: (err) => {
-        console.error('Failed to load inventory parts:', err);
-        this.isLoadingInventoryParts = false;
+  // Parts & Materials Methods
+  openPartsModal(): void {
+    this.showPartsModal = true;
+  }
+
+  closePartsModal(): void {
+    this.showPartsModal = false;
+  }
+
+  onPartsAdded(parts: AssetPartItem[]): void {
+    console.log('onPartsAdded called with parts:', parts);
+    console.log('Current selectedParts before merge:', this.selectedParts);
+    if (!parts || parts.length === 0) {
+      console.warn('No parts received in onPartsAdded');
+      return;
+    }
+    // Create a new array reference to trigger change detection
+    const updatedParts = [...this.selectedParts];
+    
+    // Merge new parts with existing ones, avoiding duplicates
+    parts.forEach(newPart => {
+      console.log('Processing part:', newPart);
+      const existingIndex = updatedParts.findIndex(p => p.part_id === newPart.part_id);
+      if (existingIndex >= 0) {
+        // Update quantity if part already exists
+        updatedParts[existingIndex] = { ...updatedParts[existingIndex], qty: updatedParts[existingIndex].qty + newPart.qty };
+        console.log('Updated existing part at index:', existingIndex);
+      } else {
+        updatedParts.push({ ...newPart });
+        console.log('Added new part:', newPart);
       }
     });
+    
+    // Assign the new array to trigger change detection
+    this.selectedParts = updatedParts;
+    console.log('Selected parts after merge:', this.selectedParts);
+    console.log('Selected parts length:', this.selectedParts.length);
+    console.log('selectedParts array reference:', this.selectedParts);
+    
+    // Force change detection to update the view
+    this.cdr.detectChanges();
+    
+    // Close modal after a brief delay to ensure UI updates
+    setTimeout(() => {
+      this.closePartsModal();
+    }, 50);
   }
 
-  toggleInventoryPartsDropdown() {
-    this.showInventoryPartsDropdown = !this.showInventoryPartsDropdown;
-    this.showAssetTypeDropdown = false;
-    this.showCategoryDropdown = false;
-    this.showLocationDropdown = false;
-    this.showStatusDropdown = false;
-    this.showTagsDropdown = false;
-    this.showDepartmentDropdown = false;
-    if (this.showInventoryPartsDropdown) {
-      this.loadInventoryParts();
+  trackByPartId(index: number, part: AssetPartItem): number {
+    return part.part_id;
+  }
+
+  removePart(partId: number): void {
+    this.selectedParts = this.selectedParts.filter(p => p.part_id !== partId);
+    this.cdr.detectChanges();
+  }
+
+  getTotalPartsCost(): number {
+    return this.selectedParts.reduce((sum, part) => {
+      const unitCost = part.unit_cost || part.part?.unit_cost || 0;
+      return sum + (unitCost * part.qty);
+    }, 0);
+  }
+
+  addPartsToAsset(assetId: number): void {
+    if (this.selectedParts.length === 0) {
+      this.submitSuccess = this.isDuplicate ? 'Asset duplicated successfully!' : 'Asset created successfully!';
+      setTimeout(() => {
+        this.router.navigate(['/assets/list']);
+      }, 2000);
+      return;
     }
-  }
 
-  selectInventoryPart(part: any) {
-    if (!this.inventoryPartIds.includes(part.id)) {
-      this.inventoryPartIds.push(part.id);
-      this.selectedInventoryParts.push(part);
-    }
-    this.inventoryPartsSearch = '';
-    this.showInventoryPartsDropdown = false;
-  }
+    const payload = this.selectedParts.map(part => ({
+      part_id: part.part_id,
+      qty: part.qty
+    }));
 
-  removeInventoryPart(partId: number) {
-    this.inventoryPartIds = this.inventoryPartIds.filter(id => id !== partId);
-    this.selectedInventoryParts = this.selectedInventoryParts.filter(part => part.id !== partId);
-  }
-
-  getFilteredInventoryParts() {
-    if (!this.inventoryPartsSearch) {
-      return this.availableInventoryParts.filter(part => !this.inventoryPartIds.includes(part.id));
-    }
-    const searchLower = this.inventoryPartsSearch.toLowerCase();
-    return this.availableInventoryParts.filter(part => 
-      !this.inventoryPartIds.includes(part.id) &&
-      (part.name?.toLowerCase().includes(searchLower) || 
-       part.part_number?.toLowerCase().includes(searchLower))
-    );
+    this.assetService.addAssetParts(assetId, payload).subscribe({
+      next: () => {
+        this.submitSuccess = this.isDuplicate ? 'Asset duplicated with parts successfully!' : 'Asset created with parts successfully!';
+        setTimeout(() => {
+          this.router.navigate(['/assets/list']);
+        }, 2000);
+      },
+      error: (error) => {
+        const errorMsg = error?.error?.message || 'Asset created but failed to add parts';
+        this.toastService.error(errorMsg);
+        this.submitSuccess = this.isDuplicate ? 'Asset duplicated successfully!' : 'Asset created successfully!';
+        setTimeout(() => {
+          this.router.navigate(['/assets/list']);
+        }, 2000);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -960,14 +1027,83 @@ export class AssetCreateComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  updateImageCaption(index: number, caption: string): void {
+    if (index >= 0 && index < this.imageCaptions.length) {
+      this.imageCaptions[index] = caption;
+    }
+  }
+
   removeImage(index: number): void {
-    this.images.splice(index, 1);
-    this.imagePreviewUrls.splice(index, 1);
+    if (index >= 0 && index < this.images.length) {
+      this.images.splice(index, 1);
+      this.imagePreviewUrls.splice(index, 1);
+      this.imageCaptions.splice(index, 1);
+    }
   }
 
   removeAllImages(): void {
     this.images = [];
     this.imagePreviewUrls = [];
+    this.imageCaptions = [];
+  }
+
+  // Document handling methods
+  onDocumentChange(event: any): void {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files) as File[];
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+                           'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                           'text/plain', 'image/jpeg', 'image/png'];
+      
+      fileArray.forEach(file => {
+        if (file.size > maxSize) {
+          console.warn('File too large:', file.name);
+          return;
+        }
+        if (!allowedTypes.includes(file.type)) {
+          console.warn('Invalid file type:', file.name);
+          return;
+        }
+        this.documents.push(file);
+        this.documentMetadata.push({
+          name: file.name.replace(/\.[^/.]+$/, ''), // Remove extension for default name
+          type: 'other'
+        });
+      });
+    }
+  }
+
+  removeDocument(index: number): void {
+    if (index >= 0 && index < this.documents.length) {
+      this.documents.splice(index, 1);
+      this.documentMetadata.splice(index, 1);
+    }
+  }
+
+  getDocumentTypeLabel(type: string): string {
+    const labels: { [key: string]: string } = {
+      'manual': 'Manual',
+      'certificate': 'Certificate',
+      'warranty': 'Warranty',
+      'other': 'Other'
+    };
+    return labels[type] || type;
+  }
+
+  async uploadDocuments(assetId: number): Promise<void> {
+    const uploadPromises = this.documents.map((file, index) => {
+      const metadata = this.documentMetadata[index];
+      return this.assetService.uploadAssetDocument(
+        assetId,
+        file,
+        metadata.name,
+        metadata.type
+      ).toPromise();
+    });
+    
+    await Promise.all(uploadPromises);
   }
 
   moveImage(fromIndex: number, toIndex: number): void {

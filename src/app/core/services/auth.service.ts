@@ -16,6 +16,7 @@ export interface User {
   user_type: string;
   company_id: number;
   company?: Company;
+  teams_allowed_count?: number;
 }
 
 export interface Company {

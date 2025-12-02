@@ -2,8 +2,10 @@ import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChange
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SlaService } from '../sla.service';
-import { SlaDefinition, AppliesTo, PriorityLevel, WorkingDay } from '../models';
+import { SlaDefinition, AppliesTo, PriorityLevel } from '../models';
 import { ToastService } from '../../core/services/toast.service';
+import { MetaWorkOrdersService } from '../../core/services/meta-work-orders.service';
+import { MetaItem } from '../../core/types/work-order.types';
 
 @Component({
   selector: 'app-sla-rule-form-dialog',
@@ -27,18 +29,21 @@ export class SlaRuleFormDialogComponent implements OnInit, OnChanges {
     description: '',
     appliesTo: 'work_orders',
     priorityLevel: null,
-    category: '',
+    categoryId: null,
     responseTimeHours: 4,
     containmentTimeHours: null,
     completionTimeHours: 24,
-    businessHoursOnly: false,
-    workingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
     isActive: true,
   };
 
   // Dropdown states
   showAppliesToDropdown = false;
   showPriorityDropdown = false;
+  showCategoryDropdown = false;
+
+  // Category options
+  categoryOptions: MetaItem[] = [];
+  selectedCategoryId: number | null = null;
 
   // Options
   appliesToOptions: Array<{ value: AppliesTo; label: string }> = [
@@ -55,25 +60,30 @@ export class SlaRuleFormDialogComponent implements OnInit, OnChanges {
     { value: 'ppm', label: 'PPM' },
   ];
 
-  workingDaysOptions: Array<{ value: WorkingDay; label: string }> = [
-    { value: 'monday', label: 'Monday' },
-    { value: 'tuesday', label: 'Tuesday' },
-    { value: 'wednesday', label: 'Wednesday' },
-    { value: 'thursday', label: 'Thursday' },
-    { value: 'friday', label: 'Friday' },
-    { value: 'saturday', label: 'Saturday' },
-    { value: 'sunday', label: 'Sunday' },
-  ];
-
   constructor(
     private slaService: SlaService,
-    private toast: ToastService
+    private toast: ToastService,
+    private metaWorkOrdersService: MetaWorkOrdersService
   ) {}
 
   ngOnInit(): void {
+    this.loadCategories();
     if (this.editMode && this.definition) {
       this.loadDefinition();
     }
+  }
+
+  loadCategories(): void {
+    this.metaWorkOrdersService.getCategories().subscribe({
+      next: (categories) => {
+        this.categoryOptions = categories;
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+        this.toast.error('Failed to load category options');
+        this.categoryOptions = [];
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -90,14 +100,13 @@ export class SlaRuleFormDialogComponent implements OnInit, OnChanges {
       description: this.definition.description || '',
       appliesTo: this.definition.appliesTo,
       priorityLevel: this.definition.priorityLevel || null,
-      category: this.definition.category || '',
+      categoryId: this.definition.categoryId || null,
       responseTimeHours: this.definition.responseTimeHours,
       containmentTimeHours: this.definition.containmentTimeHours || null,
       completionTimeHours: this.definition.completionTimeHours,
-      businessHoursOnly: this.definition.businessHoursOnly,
-      workingDays: [...(this.definition.workingDays || [])],
       isActive: this.definition.isActive,
     };
+    this.selectedCategoryId = this.model.categoryId || null;
   }
 
   close(): void {
@@ -113,29 +122,16 @@ export class SlaRuleFormDialogComponent implements OnInit, OnChanges {
       description: '',
       appliesTo: 'work_orders',
       priorityLevel: null,
-      category: '',
+      categoryId: null,
       responseTimeHours: 4,
       containmentTimeHours: null,
       completionTimeHours: 24,
-      businessHoursOnly: false,
-      workingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
       isActive: true,
     };
+    this.selectedCategoryId = null;
     this.showAppliesToDropdown = false;
     this.showPriorityDropdown = false;
-  }
-
-  toggleWorkingDay(day: WorkingDay): void {
-    const index = this.model.workingDays?.indexOf(day);
-    if (index === undefined || index === -1) {
-      this.model.workingDays = [...(this.model.workingDays || []), day];
-    } else {
-      this.model.workingDays = this.model.workingDays?.filter(d => d !== day);
-    }
-  }
-
-  isWorkingDaySelected(day: WorkingDay): boolean {
-    return this.model.workingDays?.includes(day) || false;
+    this.showCategoryDropdown = false;
   }
 
   getAppliesToLabel(): string {
@@ -157,10 +153,22 @@ export class SlaRuleFormDialogComponent implements OnInit, OnChanges {
     this.showPriorityDropdown = false;
   }
 
+  selectCategory(categoryId: number | null): void {
+    this.model.categoryId = categoryId;
+    this.selectedCategoryId = categoryId;
+    this.showCategoryDropdown = false;
+  }
+
+  getCategoryLabel(): string {
+    if (!this.selectedCategoryId) return 'No Category';
+    const category = this.categoryOptions.find(c => c.id === this.selectedCategoryId);
+    return category ? category.name : 'No Category';
+  }
+
   submit(): void {
     this.submitted = true;
 
-    if (!this.model.name || !this.model.appliesTo || !this.model.responseTimeHours || !this.model.completionTimeHours || !this.model.workingDays?.length) {
+    if (!this.model.name || !this.model.appliesTo || !this.model.responseTimeHours || !this.model.completionTimeHours) {
       return;
     }
 
@@ -171,12 +179,10 @@ export class SlaRuleFormDialogComponent implements OnInit, OnChanges {
       description: this.model.description || null,
       applies_to: this.model.appliesTo,
       priority_level: this.model.priorityLevel || null,
-      category: this.model.category || null,
+      category_id: this.model.categoryId || null,
       response_time_hours: this.model.responseTimeHours,
       containment_time_hours: this.model.containmentTimeHours || null,
       completion_time_hours: this.model.completionTimeHours,
-      business_hours_only: this.model.businessHoursOnly || false,
-      working_days: this.model.workingDays,
       is_active: this.model.isActive !== false,
     };
 

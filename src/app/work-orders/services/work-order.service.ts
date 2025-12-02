@@ -406,7 +406,9 @@ export class WorkOrderService {
 
   // Create a new work order
   createWorkOrder(workOrder: CreateWorkOrderRequest): Observable<WorkOrder> {
-    return this.http.post<WorkOrder>(this.apiUrl, workOrder, this.getAuthHeaders());
+    return this.http
+      .post<ApiResponse<WorkOrder>>(this.apiUrl, workOrder, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
   }
 
   // Update an existing work order

@@ -103,12 +103,32 @@
 
           <div class="form-group">
             <label class="form-label">Category (Optional)</label>
-            <input
-              type="text"
-              class="form-input"
-              [(ngModel)]="model.category"
-              name="category"
-              placeholder="e.g., HVAC, Electrical, Plumbing">
+            <div class="dropdown-container">
+              <button
+                type="button"
+                class="dropdown-button"
+                (click)="showCategoryDropdown = !showCategoryDropdown">
+                {{ getCategoryLabel() }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="dropdown-menu" *ngIf="showCategoryDropdown">
+                <button
+                  type="button"
+                  class="dropdown-item"
+                  (click)="selectCategory(null)">
+                  No Category
+                </button>
+                <button
+                  type="button"
+                  class="dropdown-item"
+                  *ngFor="let category of categoryOptions"
+                  (click)="selectCategory(category.id)">
+                  {{ category.name }}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -151,40 +171,6 @@
                 step="0.01"
                 min="0.01"
                 required>
-            </div>
-          </div>
-        </div>
-
-        <!-- Working Schedule -->
-        <div class="form-section">
-          <h3 class="section-title">Working Schedule</h3>
-          
-          <div class="form-group">
-            <div class="toggle-group">
-              <div>
-                <label class="form-label">Business Hours Only</label>
-                <p class="form-hint">SLA timers will pause outside business hours</p>
-              </div>
-              <label class="toggle-switch">
-                <input
-                  type="checkbox"
-                  [(ngModel)]="model.businessHoursOnly"
-                  name="businessHoursOnly">
-                <span class="slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Working Days</label>
-            <div class="working-days-grid">
-              <label class="checkbox-label" *ngFor="let day of workingDaysOptions">
-                <input
-                  type="checkbox"
-                  [checked]="isWorkingDaySelected(day.value)"
-                  (change)="toggleWorkingDay(day.value)">
-                <span>{{ day.label }}</span>
-              </label>
             </div>
           </div>
         </div>

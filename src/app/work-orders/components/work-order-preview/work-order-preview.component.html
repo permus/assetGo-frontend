@@ -163,8 +163,9 @@
       *ngIf="showAddPartsModal && workOrder"
       [isOpen]="showAddPartsModal"
       [workOrderId]="$any(workOrder)?.id"
+      [workOrderLocationId]="getWorkOrderLocationId()"
       (closed)="closeAddPartsModal()"
-      (saved)="onPartsAdded()">
+      (saved)="onPartsAdded($event)">
     </app-add-work-order-parts-modal>
 
     <app-view-costs-modal
@@ -481,6 +482,52 @@
           </div>
         </div>
 
+        <!-- Parts & Materials Card -->
+        <div class="info-card">
+          <div class="assignments-header">
+            <h3 class="card-title">
+              <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+              </svg>
+              Parts & Materials<span *ngIf="workOrderParts?.length"> ({{ workOrderParts.length }})</span>
+            </h3>
+            <button class="assign-add-btn" (click)="openAddPartsModal()">+ Add Parts</button>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="workOrderParts.length === 0" class="parts-empty-state">
+            <div class="empty-state-content">
+              <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-14V4a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0H4"></path>
+              </svg>
+              <p class="empty-state-text">No parts selected</p>
+              <p class="empty-state-hint">Click 'Add Parts' to select from inventory</p>
+            </div>
+          </div>
+
+          <!-- Parts List -->
+          <div *ngIf="workOrderParts.length > 0" class="parts-list-container">
+            <div class="parts-items">
+              <div class="parts-item" *ngFor="let part of workOrderParts">
+                <div class="parts-item-info">
+                  <div class="parts-item-name">{{ part.part?.name || 'Unknown Part' }}</div>
+                  <div class="parts-item-details">
+                    <span class="parts-item-qty">{{ part.qty }} {{ part.part?.uom || 'each' }}</span>
+                    <span class="parts-item-separator">•</span>
+                    <span class="parts-item-cost">{{ currencySymbol }} {{ (part.unit_cost || 0) | number:'1.2-2' }} per {{ part.part?.uom || 'each' }}</span>
+                  </div>
+                </div>
+                <div class="parts-item-total">
+                  {{ currencySymbol }} {{ ((part.unit_cost || 0) * part.qty) | number:'1.2-2' }}
+                </div>
+              </div>
+            </div>
+            <div class="parts-total">
+              <span class="total-label">Total Cost:</span>
+              <span class="total-value">{{ currencySymbol }} {{ getTotalPartsCost() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
 
         <!-- Quick Actions Card -->
         <div class="info-card">

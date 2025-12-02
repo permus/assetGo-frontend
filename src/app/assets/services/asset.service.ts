@@ -1,8 +1,39 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {AuthService} from '../../core/services/auth.service';
 import {environment} from '../../../environments/environment';
+
+export interface AssetPartItem {
+  id?: number;
+  asset_id: number;
+  part_id: number;
+  part?: { id: number; name: string; uom?: string; part_number?: string; unit_cost?: number; category?: { id: number; name: string } };
+  qty: number;
+  unit_cost?: number | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface AssetDocument {
+  id: number;
+  asset_id: number;
+  document_path: string;
+  document_name: string;
+  document_type: 'manual' | 'certificate' | 'warranty' | 'other';
+  file_size: number;
+  mime_type: string;
+  document_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AssetService {
@@ -280,4 +311,70 @@ export class AssetService {
     
     return this.http.get(`${this.baseUrl}/assets/${assetId}/health-performance-chart${queryParams}`, this.getAuthHeaders());
   }
+
+  // Asset Parts Management
+  getAssetParts(assetId: number): Observable<AssetPartItem[]> {
+    return this.http
+      .get<ApiResponse<AssetPartItem[]>>(`${this.baseUrl}/assets/${assetId}/parts`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  addAssetParts(assetId: number, items: Array<{ part_id: number; qty: number }>): Observable<AssetPartItem[]> {
+    return this.http
+      .post<ApiResponse<AssetPartItem[]>>(`${this.baseUrl}/assets/${assetId}/parts`, { items }, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  updateAssetPart(assetId: number, partId: number, qty: number): Observable<AssetPartItem> {
+    return this.http
+      .put<ApiResponse<AssetPartItem>>(`${this.baseUrl}/assets/${assetId}/parts/${partId}`, { qty }, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  removeAssetPart(assetId: number, partId: number): Observable<void> {
+    return this.http
+      .delete<ApiResponse<void>>(`${this.baseUrl}/assets/${assetId}/parts/${partId}`, this.getAuthHeaders())
+      .pipe(map(() => undefined));
+  }
+
+  // Asset Documents Management
+  getAssetDocuments(assetId: number): Observable<AssetDocument[]> {
+    return this.http
+      .get<ApiResponse<AssetDocument[]>>(`${this.baseUrl}/assets/${assetId}/documents`, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  uploadAssetDocument(assetId: number, file: File, documentName: string, documentType: 'manual' | 'certificate' | 'warranty' | 'other'): Observable<AssetDocument> {
+    const formData = new FormData();
+    formData.append('document', file);
+    formData.append('document_name', documentName);
+    formData.append('document_type', documentType);
+
+    const token = this.authService.getToken();
+    return this.http
+      .post<ApiResponse<AssetDocument>>(`${this.baseUrl}/assets/${assetId}/documents`, formData, {
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      })
+      .pipe(map((res) => res.data));
+  }
+
+  updateAssetDocument(assetId: number, documentId: number, data: { document_name?: string; document_type?: 'manual' | 'certificate' | 'warranty' | 'other' }): Observable<AssetDocument> {
+    return this.http
+      .put<ApiResponse<AssetDocument>>(`${this.baseUrl}/assets/${assetId}/documents/${documentId}`, data, this.getAuthHeaders())
+      .pipe(map((res) => res.data));
+  }
+
+  deleteAssetDocument(assetId: number, documentId: number): Observable<void> {
+    return this.http
+      .delete<ApiResponse<void>>(`${this.baseUrl}/assets/${assetId}/documents/${documentId}`, this.getAuthHeaders())
+      .pipe(map(() => undefined));
+  }
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
 }
