@@ -40,6 +40,11 @@ export class LocationViewComponent implements OnInit, OnDestroy {
   // Hierarchy expand/collapse state
   expandedNodes = new Set<number>();
 
+  // Hierarchy data
+  hierarchyData: any[] = [];
+  hierarchyLoading = false;
+  showCurrentLocation = false;
+
   // Modal state
   showAddSubLocationModal = false;
   showEditLocationModal = false;
@@ -157,6 +162,8 @@ export class LocationViewComponent implements OnInit, OnDestroy {
             });
             
             this.updateMockStats();
+            // Build hierarchy tree after loading sub-locations
+            this.buildHierarchyTree();
           }
           this.subLocationsLoading = false;
         },
@@ -179,6 +186,9 @@ export class LocationViewComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success && response.data.locations.length > 0) {
             location.children = response.data.locations;
+            
+            // Rebuild hierarchy tree after loading children
+            this.buildHierarchyTree();
             
             // Continue loading for deeper levels
             location.children.forEach((child: any) => {
@@ -499,5 +509,134 @@ export class LocationViewComponent implements OnInit, OnDestroy {
 
   isRtl(): boolean {
     return document.documentElement.dir === 'rtl';
+  }
+
+  // Build hierarchy tree starting from current location only (no ancestors)
+  buildHierarchyTree(): void {
+    if (!this.location) return;
+
+    this.hierarchyData = [];
+    
+    // Build the tree starting from current location only
+    // Do NOT include ancestors - only show current location and its children
+    const currentLocationNode: any = {
+      id: this.location.id,
+      name: this.location.name,
+      type: this.location.type,
+      hierarchy_level: this.location.hierarchy_level,
+      address: this.location.address,
+      assets_count: this.location.assets_count || this.location.asset_summary?.asset_count || 0,
+      children: this.buildChildrenTree(this.subLocations),
+      isCurrent: true
+    };
+    
+    this.hierarchyData = [currentLocationNode];
+  }
+
+  // Build children tree recursively
+  buildChildrenTree(locations: Location[]): any[] {
+    if (!locations || locations.length === 0) {
+      return [];
+    }
+    
+    return locations.map(loc => {
+      const node: any = {
+        id: loc.id,
+        name: loc.name,
+        type: loc.type,
+        hierarchy_level: loc.hierarchy_level,
+        address: loc.address,
+        assets_count: loc.assets_count || loc.asset_summary?.asset_count || 0,
+        children: []
+      };
+      
+      // Use the same children array reference so updates are reflected
+      if (loc.children && loc.children.length > 0) {
+        node.children = this.buildChildrenTree(loc.children);
+      }
+      
+      return node;
+    });
+  }
+
+  // Expand all nodes in hierarchy
+  expandAll(): void {
+    if (!this.hierarchyData || this.hierarchyData.length === 0) return;
+    
+    const expandNode = (node: any) => {
+      this.expandedNodes.add(node.id);
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child: any) => expandNode(child));
+      }
+    };
+    
+    this.hierarchyData.forEach(node => expandNode(node));
+  }
+
+  // Collapse all nodes
+  collapseAll(): void {
+    this.expandedNodes.clear();
+  }
+
+  // Show current location (expand path and scroll to it)
+  showCurrent(): void {
+    if (!this.location || !this.hierarchyData || this.hierarchyData.length === 0) return;
+    
+    // Expand path to current location
+    const expandPathToNode = (nodes: any[], targetId: number): boolean => {
+      for (const node of nodes) {
+        if (node.id === targetId) {
+          this.expandedNodes.add(node.id);
+          return true;
+        }
+        if (node.children && node.children.length > 0) {
+          if (expandPathToNode(node.children, targetId)) {
+            this.expandedNodes.add(node.id);
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    
+    expandPathToNode(this.hierarchyData, this.location.id);
+    this.showCurrentLocation = true;
+    
+    // Scroll to current location element after a short delay
+    setTimeout(() => {
+      const element = document.getElementById(`location-${this.location?.id}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Add highlight class temporarily
+        element.classList.add('highlight-current');
+        setTimeout(() => {
+          element.classList.remove('highlight-current');
+        }, 2000);
+      }
+      this.showCurrentLocation = false;
+    }, 100);
+  }
+
+  // Get location icon based on type
+  getLocationIcon(type: any): string {
+    if (!type || !type.name) return 'building';
+    const typeName = type.name.toLowerCase();
+    if (typeName.includes('factory') || typeName.includes('warehouse')) {
+      return 'factory';
+    }
+    return 'building';
+  }
+
+  // Count total children recursively
+  countChildren(node: any): number {
+    if (!node.children || node.children.length === 0) {
+      return 0;
+    }
+    return node.children.length + node.children.reduce((sum: number, child: any) => sum + this.countChildren(child), 0);
+  }
+
+  // Navigate to location
+  navigateToLocation(locationId: number): void {
+    this.router.navigate(['/locations', locationId]);
   }
 }

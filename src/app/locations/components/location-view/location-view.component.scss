@@ -171,3 +171,46 @@ a:focus {
     }
   }
 }
+
+// Hierarchy section styles
+.hierarchy-section {
+  .hierarchy-node {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f9fafb;
+      border-color: #d1d5db;
+    }
+  }
+  
+  .highlight-current {
+    animation: highlightPulse 2s ease-in-out;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .expand-icon {
+    transition: transform 0.2s ease-in-out;
+    
+    &.expanded {
+      transform: rotate(90deg);
+    }
+  }
+  
+  .location-icon {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.2);
+  }
+}
